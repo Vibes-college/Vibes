@@ -1,0 +1,31 @@
+---
+import '../styles/global.css';
+interface Props { title?: string; description?: string; noindex?: boolean; search?: boolean; }
+const { title = 'Explore — Vibes', description = 'A collection of projects, papers, websites, and ideas. Explore the AI economy with Vibes.', noindex = false, search = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname === '/explore/' ? '/' : Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title><meta name="description" content={description} />
+    <link rel="canonical" href={canonical} /><link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="Vibes home">vibes<span aria-hidden="true">.</span></a>
+      {search ? <form class="search" role="search" action="/explore/">
+        <label class="sr-only" for="search">Search Explore</label>
+        <input id="search" type="search" name="q" placeholder="Search Explore" autocomplete="off" maxlength="160" />
+        <button class="search-clear" type="reset" aria-label="Clear search" hidden>×</button>
+      </form> : <a class="header-explore" href="/explore/">Explore</a>}
+      <span class="header-note">A campus for the AI economy</span>
+    </header>
+    <slot />
+    <footer class="site-footer"><span>Vibes / A collection of things worth exploring.</span><a href="#main">Back to top ↑</a></footer>
+  </body>
+</html>

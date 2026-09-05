@@ -1,0 +1,16 @@
+---
+import Preview from './Preview.astro';
+import { formats, workPath, type Work } from '../data/works';
+interface Props { work: Work; }
+const { work } = Astro.props;
+---
+<div class="detail-preview"><Preview work={work} /></div>
+<div class="detail-copy">
+  <p class="detail-type">{formats[work.type]}</p>
+  <h1 id={`title-${work.slug}`} tabindex="-1">{work.title}</h1>
+  <p class="detail-creator">{work.creator}</p>
+  <p class="detail-description" lang="zh-CN">{work.description}</p>
+  <dl class="detail-meta"><div><dt>Source</dt><dd>{new URL(work.url).hostname.replace(/^www\./, '')}</dd></div><div><dt>Collection</dt><dd>Vibes / Explore</dd></div></dl>
+  <a class="source-link" href={work.url} target="_blank" rel="noopener noreferrer">Visit original <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+  <a class="permalink" href={workPath(work.slug)}>Open detail page <span aria-hidden="true">↗</span></a>
+</div>

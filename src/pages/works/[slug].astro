@@ -1,0 +1,10 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import WorkDetail from '../../components/WorkDetail.astro';
+import { works } from '../../data/works';
+export function getStaticPaths() { return works.map(work => ({ params: { slug: work.slug }, props: { work } })); }
+const { work } = Astro.props;
+---
+<Layout title={`${work.title} — Vibes`} description={work.summary}>
+  <main id="main" class="detail-page"><a class="back-link" href="/explore/">← Explore</a><article class="detail-layout"><WorkDetail work={work} /></article></main>
+</Layout>

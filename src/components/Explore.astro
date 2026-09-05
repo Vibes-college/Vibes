@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Preview from './Preview.astro';
+import WorkDetail from './WorkDetail.astro';
+import { works, formats, workPath } from '../data/works';
+---
+<Layout search>
+  <main id="main" class="explore-main">
+    <h1 class="page-heading"><a href="/">Vibes</a><span class="slash" aria-hidden="true">/</span>Explore</h1>
+    <div class="browse-controls" data-enhanced hidden>
+      <fieldset class="filter-group"><legend>View</legend><div class="format-options">
+        {Object.entries(formats).map(([key,label]) => <label><input type="radio" name="format" value={key} checked={key === 'all'} /><span>{label}</span></label>)}
+      </div></fieldset>
+      <fieldset class="filter-group sort-group"><legend>Order</legend><div class="sort-options">
+        <label><input type="radio" name="sort" value="curated" checked /><span>Curated</span></label>
+        <label><input type="radio" name="sort" value="title" /><span>A–Z</span></label>
+      </div></fieldset>
+      <p class="result-count" role="status" aria-live="polite" aria-atomic="true"><span id="result-count">{works.length}</span> things to explore</p>
+    </div>
+    <noscript><p class="no-script">Explore all {works.length} selections below. Open any card to read more.</p></noscript>
+    <ul class="work-grid">
+      {works.map((work,index) => <li class="work-card" data-type={work.type} data-title={work.title} data-index={index} data-search={`${work.title} ${work.creator} ${work.summary} ${work.description}`.toLocaleLowerCase()}>
+        <a class="card-link" href={workPath(work.slug)} data-work={work.slug} aria-label={`Explore ${work.title}`}>
+          <Preview work={work} />
+          <p class="card-summary" lang="zh-CN">{work.summary}</p>
+        </a>
+      </li>)}
+    </ul>
+    <div class="empty-state" hidden><h2>Nothing here, yet.</h2><p>Try another word or a different format.</p><button type="button" id="reset-filters">Clear search & filters</button></div>
+    <p class="collection-end">A small collection. More perspectives.</p>
+    {works.map(work => <template id={`detail-${work.slug}`}><WorkDetail work={work} /></template>)}
+  </main>
+  <dialog id="work-dialog" aria-label="Explore detail">
+    <div class="dialog-toolbar"><a id="dialog-back" href="/explore/">← Explore</a><button id="dialog-close" type="button" aria-label="Close detail">×</button></div>
+    <div id="dialog-content" class="detail-layout"></div>
+  </dialog>
+  <script src="../scripts/explore.ts"></script>
+</Layout>
