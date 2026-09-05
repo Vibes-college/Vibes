@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
+import { assertBudget } from '../scripts/budget-policy.ts';
 
 test('local filtering, empty state, and URL survive refresh', async ({ page }) => {
   await page.goto('/');
@@ -16,15 +17,21 @@ test('local filtering, empty state, and URL survive refresh', async ({ page }) =
   await expect(page.getByRole('heading', { name: 'Nothing here, yet.' })).toBeVisible();
   await page.getByRole('button', { name: 'Clear search & filters' }).click();
   await expect(page.locator('.work-card:visible')).toHaveCount(24);
-
 });
 
-test('cards navigate directly to a complete article; browser back restores filters', async ({ page }) => {
+test('cards navigate directly to a complete article; browser back restores filters', async ({
+  page,
+}) => {
   const errors: string[] = [];
-  page.on('pageerror', error => errors.push(error.message));
+  page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/?type=paper');
   await expect(page.locator('.work-card:visible')).toHaveCount(4);
-  await page.getByRole('link', { name: 'Explore LoRA: Low-Rank Adaptation of Large Language Models', exact: true }).click();
+  await page
+    .getByRole('link', {
+      name: 'Explore LoRA: Low-Rank Adaptation of Large Language Models',
+      exact: true,
+    })
+    .click();
   await expect(page).toHaveURL(/\/works\/lora\//);
   await expect(page.locator('dialog')).toHaveCount(0);
   await expect(page.getByRole('heading', { level: 1 })).toContainText('LoRA');
@@ -56,10 +63,16 @@ test('no horizontal overflow, no embeds, two-line card descriptions', async ({ p
   await page.goto('/');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(page.locator('iframe, video, audio')).toHaveCount(0);
-  expect(await page.locator('.card-summary').evaluateAll(elements => elements.every(el => {
-    const style = getComputedStyle(el);
-    return el.clientHeight <= parseFloat(style.lineHeight) * 2 + 1 && style.webkitLineClamp === '2';
-  }))).toBe(true);
+  expect(
+    await page.locator('.card-summary').evaluateAll((elements) =>
+      elements.every((el) => {
+        const style = getComputedStyle(el);
+        return (
+          el.clientHeight <= parseFloat(style.lineHeight) * 2 + 1 && style.webkitLineClamp === '2'
+        );
+      }),
+    ),
+  ).toBe(true);
   await page.getByRole('link', { name: 'Explore Transformers.js', exact: true }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(page.locator('.prose table')).toBeVisible();
@@ -68,12 +81,14 @@ test('no horizontal overflow, no embeds, two-line card descriptions', async ({ p
 });
 
 test('static output stays small and content routes exist', async ({ request }) => {
-  const js = readdirSync('dist/_astro').filter(file => file.endsWith('.js'));
-  const total = js.reduce((n,file) => n + gzipSync(readFileSync(`dist/_astro/${file}`)).length, 0);
+  const js = readdirSync('dist/_astro').filter((file) => file.endsWith('.js'));
+  const total = js.reduce((n, file) => n + gzipSync(readFileSync(`dist/_astro/${file}`)).length, 0);
   expect(js.length).toBeGreaterThan(0);
-  expect(total).toBeLessThan(10_000);
-  expect(gzipSync(readFileSync('dist/index.html')).length).toBeLessThan(40_000);
-  expect(statSync('src/scripts/explore.ts').size).toBeLessThan(12_000);
+  assertBudget({
+    javascriptGzip: total,
+    homepageGzip: gzipSync(readFileSync('dist/index.html')).length,
+    interactionSource: statSync('src/scripts/explore.ts').size,
+  });
   for (const slug of readdirSync('dist/works')) {
     const html = readFileSync(`dist/works/${slug}/index.html`, 'utf8');
     expect(html).toContain('<table>');

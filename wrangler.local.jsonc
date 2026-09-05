@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vibes-explore-local",
+  "compatibility_date": "2026-09-04",
+  "assets": { "directory": "./dist", "not_found_handling": "404-page" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "vibes-explore-local",
+      "database_id": "00000000-0000-0000-0000-000000000001",
+      "migrations_dir": "db/migrations",
+      "remote": false,
+    },
+  ],
+}

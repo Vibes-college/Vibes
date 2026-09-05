@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.git/
+.openai/
+references/
+research/
+test-results/
+playwright-report/
+package-lock.json
+public/

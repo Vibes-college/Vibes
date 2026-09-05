@@ -1,46 +1,125 @@
 ---
 import type { Work } from '../data/works';
-interface Props { work: Work; }
+interface Props {
+  work: Work;
+}
 const { work } = Astro.props;
 const { preview, display, eyebrow, note, color } = work;
 const dark = ['network', 'earth'].includes(preview);
 ---
-<div class:list={['preview', `preview--${preview}`, { 'preview--dark': dark }]} style={`--preview-bg:${color}`} aria-hidden="true">
+
+<div
+  class:list={['preview', `preview--${preview}`, { 'preview--dark': dark }]}
+  style={`--preview-bg:${color}`}
+  aria-hidden="true"
+>
   <div class="preview-art">
     <span class="preview-eyebrow">{eyebrow}</span>
-    {['network', 'plot', 'wave', 'audio', 'earth', 'field', 'shapes'].includes(preview) && (
-      <svg class="preview-drawing" viewBox="0 0 300 160" fill="none">
-        {preview === 'network' && <>
-          {[35, 85, 135].flatMap(y => [25, 60, 95, 130].map(y2 => <path d={`M40 ${y}L145 ${y2}L255 80`} stroke="currentColor" opacity=".35" />))}
-          {[35, 85, 135].map(y => <circle cx="40" cy={y} r="7" fill="currentColor" />)}
-          {[25, 60, 95, 130].map(y => <circle cx="145" cy={y} r="7" fill="currentColor" />)}
-          <circle cx="255" cy="80" r="9" fill="currentColor" />
-        </>}
-        {['wave','audio'].includes(preview) && Array.from({length: 49}, (_,i) => {
-          const h = 10 + Math.abs(Math.sin(i * .65) * Math.cos(i * .17)) * 95;
-          return <path d={`M${6 + i * 6} ${80-h/2}v${h}`} stroke="currentColor" stroke-width="2" />;
-        })}
-        {preview === 'plot' && <>
-          {[40,80,120].map(y => <path d={`M15 ${y}H285`} stroke="currentColor" opacity=".13" />)}
-          {Array.from({length: 35}, (_,i) => <circle cx={20+i*7.4} cy={128-i*2.6+Math.sin(i*1.7)*22} r={2.5+(i%3)} fill="currentColor" opacity={.35+(i%4)*.16} />)}
-          <path d="M15 15V145H285" stroke="currentColor" />
-        </>}
-        {preview === 'earth' && <>
-          <circle cx="150" cy="80" r="72" stroke="currentColor" />
-          {[22,45,62].map(r => <ellipse cx="150" cy="80" rx={r} ry="72" stroke="currentColor" opacity=".3" />)}
-          {[20,43,62].map(r => <ellipse cx="150" cy="80" rx="72" ry={r} stroke="currentColor" opacity=".3" />)}
-          <path d="M105 34L123 50 119 65 141 73 153 102 145 131M170 27L163 43 192 56 185 78 205 91M172 95L183 116 203 121" stroke="currentColor" stroke-width="3" />
-        </>}
-        {preview === 'field' && Array.from({length: 13}, (_,i) => <path d={`M0 ${i*13} C65 ${i*6-25}, 170 ${210-i*16},300 ${i*12}`} stroke="currentColor" opacity={.25+i*.04} stroke-width="2" />)}
-        {preview === 'shapes' && <>
-          <circle cx="70" cy="72" r="41" fill="#dfb346" />
-          <path d="M128 121L173 27 221 121Z" fill="#6c8da4" />
-          <rect x="209" y="78" width="58" height="58" rx="5" fill="#c46e55" transform="rotate(-12 238 107)" />
-        </>}
-      </svg>
-    )}
+    {
+      ['network', 'plot', 'wave', 'audio', 'earth', 'field', 'shapes'].includes(preview) && (
+        <svg class="preview-drawing" viewBox="0 0 300 160" fill="none">
+          {preview === 'network' && (
+            <>
+              {[35, 85, 135].flatMap((y) =>
+                [25, 60, 95, 130].map((y2) => (
+                  <path d={`M40 ${y}L145 ${y2}L255 80`} stroke="currentColor" opacity=".35" />
+                )),
+              )}
+              {[35, 85, 135].map((y) => (
+                <circle cx="40" cy={y} r="7" fill="currentColor" />
+              ))}
+              {[25, 60, 95, 130].map((y) => (
+                <circle cx="145" cy={y} r="7" fill="currentColor" />
+              ))}
+              <circle cx="255" cy="80" r="9" fill="currentColor" />
+            </>
+          )}
+          {['wave', 'audio'].includes(preview) &&
+            Array.from({ length: 49 }, (_, i) => {
+              const h = 10 + Math.abs(Math.sin(i * 0.65) * Math.cos(i * 0.17)) * 95;
+              return (
+                <path
+                  d={`M${6 + i * 6} ${80 - h / 2}v${h}`}
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              );
+            })}
+          {preview === 'plot' && (
+            <>
+              {[40, 80, 120].map((y) => (
+                <path d={`M15 ${y}H285`} stroke="currentColor" opacity=".13" />
+              ))}
+              {Array.from({ length: 35 }, (_, i) => (
+                <circle
+                  cx={20 + i * 7.4}
+                  cy={128 - i * 2.6 + Math.sin(i * 1.7) * 22}
+                  r={2.5 + (i % 3)}
+                  fill="currentColor"
+                  opacity={0.35 + (i % 4) * 0.16}
+                />
+              ))}
+              <path d="M15 15V145H285" stroke="currentColor" />
+            </>
+          )}
+          {preview === 'earth' && (
+            <>
+              <circle cx="150" cy="80" r="72" stroke="currentColor" />
+              {[22, 45, 62].map((r) => (
+                <ellipse cx="150" cy="80" rx={r} ry="72" stroke="currentColor" opacity=".3" />
+              ))}
+              {[20, 43, 62].map((r) => (
+                <ellipse cx="150" cy="80" rx="72" ry={r} stroke="currentColor" opacity=".3" />
+              ))}
+              <path
+                d="M105 34L123 50 119 65 141 73 153 102 145 131M170 27L163 43 192 56 185 78 205 91M172 95L183 116 203 121"
+                stroke="currentColor"
+                stroke-width="3"
+              />
+            </>
+          )}
+          {preview === 'field' &&
+            Array.from({ length: 13 }, (_, i) => (
+              <path
+                d={`M0 ${i * 13} C65 ${i * 6 - 25}, 170 ${210 - i * 16},300 ${i * 12}`}
+                stroke="currentColor"
+                opacity={0.25 + i * 0.04}
+                stroke-width="2"
+              />
+            ))}
+          {preview === 'shapes' && (
+            <>
+              <circle cx="70" cy="72" r="41" fill="#dfb346" />
+              <path d="M128 121L173 27 221 121Z" fill="#6c8da4" />
+              <rect
+                x="209"
+                y="78"
+                width="58"
+                height="58"
+                rx="5"
+                fill="#c46e55"
+                transform="rotate(-12 238 107)"
+              />
+            </>
+          )}
+        </svg>
+      )
+    }
     <span class="preview-title">{display}</span>
-    {preview === 'paper' && <div class="paper-lines"><span></span><span></span><span></span><span></span><span></span><span></span></div>}
+    {
+      preview === 'paper' && (
+        <div class="paper-lines">
+          <>
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+          </>
+        </div>
+      )
+    }
     <span class="preview-note">{note}</span>
   </div>
 </div>

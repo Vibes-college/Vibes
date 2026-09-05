@@ -1,0 +1,178 @@
+.preview {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-art {
+  background: var(--preview-bg);
+  width: 100%;
+  height: 100%;
+  padding: 9%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.preview-eyebrow {
+  font-size: clamp(7px, 0.65vw, 10px);
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  font-weight: 400;
+}
+.preview-title {
+  font-size: clamp(18px, 1.9vw, 32px);
+  line-height: 1.1;
+  font-weight: 400;
+  white-space: pre-line;
+  letter-spacing: -0.04em;
+}
+.preview-note {
+  white-space: pre-line;
+  font-size: clamp(8px, 0.72vw, 11px);
+  line-height: 1.45;
+}
+.preview-drawing {
+  width: 100%;
+  height: 44%;
+  margin: 5% 0;
+  flex-shrink: 1;
+}
+.preview--paper .preview-art {
+  width: 76%;
+  padding: 9% 6%;
+  box-shadow: 0 0 0 1px #e9e7df;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.preview--paper .preview-eyebrow {
+  font-size: 7px;
+  text-align: center;
+}
+.preview--paper .preview-title {
+  font-size: clamp(19px, 1.5vw, 26px);
+  text-align: center;
+  line-height: 1.18;
+}
+.preview--paper .preview-note {
+  text-align: center;
+  font-size: 9px;
+}
+.paper-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4% 3%;
+}
+.paper-lines span {
+  height: 1px;
+  background: #cac7bf;
+}
+.paper-lines span:last-child {
+  width: 62%;
+}
+.preview--code .preview-art {
+  height: 82%;
+}
+.preview--code .preview-title {
+  font-size: clamp(19px, 1.8vw, 29px);
+}
+.preview--code .preview-note,
+.preview--code .preview-eyebrow {
+  font-family: 'Courier New', monospace;
+}
+.preview--network .preview-art {
+  height: 76%;
+  color: #c3dedc;
+}
+.preview--network .preview-title {
+  font-size: clamp(16px, 1.35vw, 24px);
+}
+.preview--network .preview-note {
+  display: none;
+}
+.preview--audio .preview-art {
+  width: 90%;
+}
+.preview--audio .preview-title {
+  order: 1;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(27px, 2.8vw, 44px);
+}
+.preview--audio .preview-eyebrow {
+  order: 0;
+}
+.preview--audio .preview-drawing {
+  order: 2;
+  height: 21%;
+}
+.preview--audio .preview-note {
+  order: 3;
+}
+.preview--shapes .preview-art {
+  background: transparent;
+  padding: 7%;
+}
+.preview--shapes .preview-title {
+  font-size: clamp(21px, 1.7vw, 29px);
+}
+.preview--field .preview-art {
+  height: 86%;
+  color: #566844;
+}
+.preview--field .preview-title {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: clamp(17px, 1.5vw, 25px);
+}
+.preview--field .preview-note {
+  display: none;
+}
+.preview--report .preview-art {
+  width: 76%;
+  border-left: 6px solid #8b453d;
+  padding: 8%;
+}
+.preview--report .preview-note {
+  font-family: Georgia, serif;
+  font-size: clamp(35px, 3.6vw, 60px);
+}
+.preview--plot .preview-art {
+  height: 87%;
+  color: #577887;
+}
+.preview--plot .preview-title {
+  font-size: clamp(17px, 1.4vw, 24px);
+}
+.preview--plot .preview-note {
+  display: none;
+}
+.preview--text .preview-art {
+  justify-content: center;
+  gap: 23px;
+  text-align: center;
+  border: 1px solid #e0e0dc;
+  padding: 7%;
+}
+.preview--text .preview-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(24px, 2.4vw, 38px);
+}
+.preview--wave .preview-art {
+  height: 78%;
+}
+.preview--wave .preview-title {
+  font-size: clamp(18px, 1.5vw, 26px);
+}
+.preview--wave .preview-note {
+  display: none;
+}
+.preview--earth .preview-art {
+  color: #a8c5be;
+}
+.preview--earth .preview-title {
+  font-size: clamp(17px, 1.5vw, 26px);
+}
+.preview--earth .preview-note {
+  display: none;
+}

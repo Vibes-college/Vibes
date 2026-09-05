@@ -2,11 +2,15 @@
 
 首版仅实现多模态精选目录。视觉参考 Are.na；页面与局部交互的原则参考 roadmap.sh `3d3d07c`。实现独立编写，没有复制参考项目的源码或品牌素材。
 
+## 功能与验收
+
+[功能地图](docs/features/README.md) 是当前产品说明书和逐项验收入口，新增或修改功能时同步更新；维护规则见 [AGENTS.md](AGENTS.md)。
+
 ## 运行与检查
 
-Node 22.12+。`npm ci` 后运行 `npm run dev`。生产预览：`npm run build`、`npm run preview`。
+Node 22.20+。首次运行 `npm ci`，日常启动用 `npm run dev`，Cloudflare 本地预览用 `npm run preview`。
 
-`npm run verify` 检查类型、静态构建和桌面/手机关键浏览流程。首次运行测试需要 `npx playwright install chromium`。CI 已写入 `.github/workflows/check.yml`；尚未关联远程 GitHub 仓库，因此尚未在 GitHub 运行。
+`npm run check` 一次检查类型、lint、格式和单元测试。`npm run verify` 依次运行检查、本地测试库重建、ego-browser 端到端测试；运行前需安装并完成 ego lite 初始设置。所有命令及使用时机见 [命令说明](docs/CLI.md)。GitHub CI 执行 `verify` 和 `budget`，其中浏览器验收使用 Playwright；本地完整验收仍用 ego-browser。
 
 ## 改精选内容
 
@@ -27,3 +31,11 @@ Node 22.12+。`npm ci` 后运行 `npm run dev`。生产预览：`npm run build`�
 `wrangler.jsonc` 只托管 `dist` 静态资源；`public/_headers` 设置缓存与基础响应头。`npm run deploy` 会构建并发布，需已配置 Cloudflare 登录。当前通过内置 Sites 发布，公开地址见下方；未绑定或替换 vibes.college。正式发布前核对目标账户、域名和旧网址迁移清单。
 
 Sites 公网地址：https://vibes-explore.jachi2.chatgpt.site 。手机与电脑使用同一套响应式页面。Sites 项目绑定保存在 `.openai/hosting.json`，后续发布沿用这个站点。
+
+## 配置与维护文档
+
+- [配置与环境变量](docs/CONFIG.md)
+- [数据库结构与 SQL](docs/DATABASE.md)
+- [常量、规则与正则](docs/CONSTANTS.md)
+- [第三方集成](docs/INTEGRATIONS.md)
+- [CI、分支保护与 Cloudflare 连接](docs/CI.md)

@@ -1,8 +1,11 @@
 ---
 import { formats, type Work } from '../data/works';
-interface Props { work: Work; }
+interface Props {
+  work: Work;
+}
 const { work } = Astro.props;
 ---
+
 <header class="article-header">
   <p class="detail-type">{formats[work.type]} / Explore</p>
   <h1>{work.title}</h1>
@@ -11,4 +14,6 @@ const { work } = Astro.props;
   <p class="article-byline">Vibes 编辑导读 · 中文阅读稿 · 附原始来源</p>
 </header>
 <div class="prose" lang="zh-CN"><slot /></div>
-<a class="source-link" href={work.url} target="_blank" rel="noopener noreferrer">前往原始作品 ↗<span class="sr-only">（在新标签页打开）</span></a>
+<a class="source-link" href={work.url} target="_blank" rel="noopener noreferrer"
+  >前往原始作品 ↗<span class="sr-only">（在新标签页打开）</span></a
+>

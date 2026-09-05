@@ -3,24 +3,60 @@ import Layout from '../layouts/Layout.astro';
 import Preview from './Preview.astro';
 import { works, formats, workPath } from '../data/works';
 ---
+
 <Layout search>
   <main id="main" class="explore-main">
     <h1 class="sr-only">Explore</h1>
     <fieldset class="category-nav" data-enhanced hidden>
       <legend class="sr-only">内容分类</legend>
-      {Object.entries(formats).map(([key,label]) => <label><input type="radio" name="format" value={key} checked={key === 'all'} /><span>{label}</span></label>)}
+      {
+        Object.entries(formats).map(([key, label]) => (
+          <label>
+            <>
+              <input type="radio" name="format" value={key} checked={key === 'all'} />
+              <span>{label}</span>
+            </>
+          </label>
+        ))
+      }
     </fieldset>
     <p class="sr-only" role="status" aria-live="polite" id="result-count">{works.length} 项内容</p>
-    <noscript><p class="no-script">Explore all {works.length} selections below. Open any card to read more.</p></noscript>
+    <noscript
+      ><p class="no-script">
+        Explore all {works.length} selections below. Open any card to read more.
+      </p></noscript
+    >
     <ul class="work-grid">
-      {works.map((work,index) => <li class="work-card" data-type={work.type} data-title={work.title} data-index={index} data-search={`${work.title} ${work.creator} ${work.summary} ${work.description}`.toLocaleLowerCase()}>
-        <a class="card-link" href={workPath(work.slug)} data-work={work.slug} aria-label={`Explore ${work.title}`}>
-          <Preview work={work} />
-          <p class="card-summary" lang="zh-CN">{work.summary}</p>
-        </a>
-      </li>)}
+      {
+        works.map((work, index) => (
+          <li
+            class="work-card"
+            data-type={work.type}
+            data-title={work.title}
+            data-index={index}
+            data-search={`${work.title} ${work.creator} ${work.summary} ${work.description}`.toLocaleLowerCase()}
+          >
+            <a
+              class="card-link"
+              href={workPath(work.slug)}
+              data-work={work.slug}
+              aria-label={`Explore ${work.title}`}
+            >
+              <Preview work={work} />
+              <p class="card-summary" lang="zh-CN">
+                {work.summary}
+              </p>
+            </a>
+          </li>
+        ))
+      }
     </ul>
-    <div class="empty-state" hidden><h2>Nothing here, yet.</h2><p>Try another word or a different format.</p><button type="button" id="reset-filters">Clear search & filters</button></div>
+    <div class="empty-state" hidden>
+      <h2>Nothing here, yet.</h2><p>Try another word or a different format.</p><button
+        type="button"
+        id="reset-filters">Clear search & filters</button
+      >
+    </div>
     <p class="collection-end">A small collection. More perspectives.</p>
   </main>
   <script src="../scripts/explore.ts"></script>

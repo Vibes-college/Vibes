@@ -1,0 +1,138 @@
+@media (min-width: 1750px) {
+  .work-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1100px) {
+  .work-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .preview-title {
+    font-size: 23px;
+  }
+}
+@media (max-width: 800px) {
+  .work-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .header-note {
+    display: none;
+  }
+  .preview-title {
+    font-size: 21px;
+  }
+}
+@media (max-width: 560px) {
+  .site-header {
+    height: 62px;
+    padding: 0 20px;
+    gap: 26px;
+  }
+  .wordmark {
+    font-size: 23px;
+  }
+  .search {
+    width: 100%;
+    max-width: 240px;
+  }
+  .search input {
+    font-size: 14px;
+  }
+  .explore-main {
+    margin: 4px 20px 0;
+  }
+  .category-nav {
+    gap: 26px;
+  }
+  .category-nav label {
+    padding: 14px 2px;
+    font-size: 14px;
+  }
+  .work-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 18px;
+    margin-top: 24px;
+  }
+  .card-summary {
+    font-size: 11px;
+    line-height: 1.7;
+    margin-top: 10px;
+    min-height: 37.4px;
+  }
+  .preview-eyebrow {
+    font-size: 6px;
+  }
+  .preview-note {
+    font-size: 7px;
+  }
+  .preview-title {
+    font-size: 19px;
+  }
+  .preview--code .preview-title {
+    font-size: 18px;
+  }
+  .preview--paper .preview-title {
+    font-size: 16px;
+  }
+  .preview--paper .preview-eyebrow {
+    font-size: 5px;
+  }
+  .preview--paper .preview-note {
+    font-size: 7px;
+  }
+  .paper-lines {
+    gap: 4px;
+  }
+  .preview--audio .preview-title {
+    font-size: 27px;
+  }
+  .preview--text .preview-art {
+    gap: 15px;
+  }
+  .preview--text .preview-title {
+    font-size: 24px;
+  }
+  .preview--report .preview-title {
+    font-size: 18px;
+  }
+  .preview--report .preview-note {
+    font-size: 38px;
+  }
+  .collection-end {
+    margin: 65px 0;
+  }
+  .site-footer {
+    margin: 0 20px;
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  .site-footer span {
+    max-width: 200px;
+  }
+  .site-footer a {
+    white-space: nowrap;
+  }
+  .detail-page {
+    padding: 0 20px;
+    margin: 14px auto 64px;
+  }
+  .article-header {
+    margin: 24px 0 32px;
+  }
+  .article-header h1 {
+    font-size: 28px;
+  }
+  .prose h2 {
+    font-size: 24px;
+  }
+  .prose table {
+    margin: 24px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
