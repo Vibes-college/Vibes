@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
-test('local filtering, empty state, sorting, and URL survive refresh', async ({ page }) => {
+test('local filtering, empty state, and URL survive refresh', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.work-card:visible')).toHaveCount(24);
-  await page.getByText('Papers', { exact: true }).click();
+  await page.getByText('论文', { exact: true }).click();
   await expect(page.locator('.work-card:visible')).toHaveCount(4);
   await page.getByRole('searchbox').fill('LoRA');
   await expect(page.locator('.work-card:visible')).toHaveCount(1);
@@ -16,34 +16,26 @@ test('local filtering, empty state, sorting, and URL survive refresh', async ({ 
   await expect(page.getByRole('heading', { name: 'Nothing here, yet.' })).toBeVisible();
   await page.getByRole('button', { name: 'Clear search & filters' }).click();
   await expect(page.locator('.work-card:visible')).toHaveCount(24);
-  await page.getByText('A–Z', { exact: true }).click();
-  await expect(page.locator('.work-card:visible').first()).toHaveAttribute('data-title', 'AI Index Report 2025');
+
 });
 
-test('details open without requests; back, forward, Escape and focus work', async ({ page }) => {
+test('cards navigate directly to a complete article; browser back restores filters', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('/');
-  await expect(page.locator('[data-enhanced]')).toBeVisible();
-  const opener = page.getByRole('link', { name: 'Explore LoRA: Low-Rank Adaptation of Large Language Models', exact: true });
-  await opener.scrollIntoViewIfNeeded();
-  const scroll = await page.evaluate(() => scrollY);
-  const requests: string[] = [];
-  page.on('request', request => requests.push(request.url()));
-  await opener.click();
-  await expect(page.getByRole('dialog')).toBeVisible();
-  await expect(page.getByRole('dialog').getByRole('heading', { level: 1 })).toContainText('LoRA');
+  await page.goto('/?type=paper');
+  await expect(page.locator('.work-card:visible')).toHaveCount(4);
+  await page.getByRole('link', { name: 'Explore LoRA: Low-Rank Adaptation of Large Language Models', exact: true }).click();
   await expect(page).toHaveURL(/\/works\/lora\//);
-  await expect(page.getByRole('dialog').getByRole('link', { name: /Visit original/ })).toHaveAttribute('href', 'https://arxiv.org/abs/2106.09685');
+  await expect(page.locator('dialog')).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('LoRA');
+  await expect(page.locator('.prose table')).toHaveCount(1);
+  await expect(page.getByRole('heading', { name: '来源与延伸阅读' })).toBeVisible();
+  expect((await page.locator('.prose').innerText()).length).toBeGreaterThan(700);
+  await page.reload();
+  await expect(page.locator('.prose')).toContainText('低秩矩阵');
   await page.goBack();
-  await expect(page.getByRole('dialog')).not.toBeVisible();
-  await expect(opener).toBeFocused();
-  expect(Math.abs(await page.evaluate(() => scrollY) - scroll)).toBeLessThan(5);
-  await page.goForward();
-  await expect(page.getByRole('dialog')).toBeVisible();
-  await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog')).not.toBeVisible();
-  expect(requests).toEqual([]);
+  await expect(page).toHaveURL(/type=paper/);
+  await expect(page.locator('.work-card:visible')).toHaveCount(4);
   expect(errors).toEqual([]);
 });
 
@@ -70,8 +62,9 @@ test('no horizontal overflow, no embeds, two-line card descriptions', async ({ p
   }))).toBe(true);
   await page.getByRole('link', { name: 'Explore Transformers.js', exact: true }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.getByRole('button', { name: 'Close detail' }).click();
-  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await expect(page.locator('.prose table')).toBeVisible();
+  await page.setViewportSize({ width: 320, height: 700 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('static output stays small and content routes exist', async ({ request }) => {
@@ -81,6 +74,12 @@ test('static output stays small and content routes exist', async ({ request }) =
   expect(total).toBeLessThan(10_000);
   expect(gzipSync(readFileSync('dist/index.html')).length).toBeLessThan(40_000);
   expect(statSync('src/scripts/explore.ts').size).toBeLessThan(12_000);
+  for (const slug of readdirSync('dist/works')) {
+    const html = readFileSync(`dist/works/${slug}/index.html`, 'utf8');
+    expect(html).toContain('<table>');
+    expect(html).toContain('来源与延伸阅读');
+    expect(html).not.toContain('<dialog');
+  }
   const response = await request.get('/sitemap.xml');
   expect(response.ok()).toBe(true);
   expect(await response.text()).toContain('/works/lora/');

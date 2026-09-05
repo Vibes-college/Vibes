@@ -1,16 +1,14 @@
 ---
-import Preview from './Preview.astro';
-import { formats, workPath, type Work } from '../data/works';
+import { formats, type Work } from '../data/works';
 interface Props { work: Work; }
 const { work } = Astro.props;
 ---
-<div class="detail-preview"><Preview work={work} /></div>
-<div class="detail-copy">
-  <p class="detail-type">{formats[work.type]}</p>
-  <h1 id={`title-${work.slug}`} tabindex="-1">{work.title}</h1>
+<header class="article-header">
+  <p class="detail-type">{formats[work.type]} / Explore</p>
+  <h1>{work.title}</h1>
   <p class="detail-creator">{work.creator}</p>
-  <p class="detail-description" lang="zh-CN">{work.description}</p>
-  <dl class="detail-meta"><div><dt>Source</dt><dd>{new URL(work.url).hostname.replace(/^www\./, '')}</dd></div><div><dt>Collection</dt><dd>Vibes / Explore</dd></div></dl>
-  <a class="source-link" href={work.url} target="_blank" rel="noopener noreferrer">Visit original <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
-  <a class="permalink" href={workPath(work.slug)}>Open detail page <span aria-hidden="true">↗</span></a>
-</div>
+  <p class="detail-description">{work.description}</p>
+  <p class="article-byline">Vibes 编辑导读 · 中文阅读稿 · 附原始来源</p>
+</header>
+<div class="prose" lang="zh-CN"><slot /></div>
+<a class="source-link" href={work.url} target="_blank" rel="noopener noreferrer">前往原始作品 ↗<span class="sr-only">（在新标签页打开）</span></a>
