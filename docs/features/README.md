@@ -8,7 +8,7 @@
 | -------------------------- | --------- | ----------------------------------- | -------------------------------------------- |
 | 精选目录浏览               | ✅ 已完成 | /、/explore/                        | [explore-browse.md](explore-browse.md)       |
 | 搜索与分类筛选             | ✅ 已完成 | / 的搜索框和分类栏                  | [explore-filter.md](explore-filter.md)       |
-| 文章阅读与来源链接         | ✅ 已完成 | /works/{slug}/                      | [article-read.md](article-read.md)           |
+| 两段式详情与来源阅读       | ✅ 已完成 | /works/{slug}/                      | [article-read.md](article-read.md)           |
 | 手机阅读与基础键盘操作     | ✅ 已完成 | 目录和文章页                        | [responsive-access.md](responsive-access.md) |
 | 找不到页面的提示           | ✅ 已完成 | 任意不存在的站内地址                | [not-found.md](not-found.md)                 |
 | 页面标题与搜索引擎地址清单 | ✅ 已完成 | 页面标题、/sitemap.xml、/robots.txt | [site-metadata.md](site-metadata.md)         |
@@ -21,6 +21,8 @@
 | 本地测试库重建与迁移       | ✅ 已完成 | npm run db:reset / npm run db:migrate | [local-database.md](local-database.md)           |
 | 开发、检查、验收与部署命令 | ✅ 已完成 | 终端：npm run …                       | [project-commands.md](project-commands.md)       |
 | GitHub 自动验收与新站接入  | 🚧 开发中 | GitHub / Cloudflare                   | [delivery-setup.md](delivery-setup.md)           |
+
+产品方向与设计参考见 [产品概览](../PRODUCT_OVERVIEW.md)。第一版只做 Explore，当前首页为基础，旧站仅作局部参考。
 
 ## 配置与技术资料
 

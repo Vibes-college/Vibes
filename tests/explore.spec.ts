@@ -6,7 +6,7 @@ import { assertBudget } from '../scripts/budget-policy.ts';
 test('local filtering, empty state, and URL survive refresh', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.work-card:visible')).toHaveCount(24);
-  await page.getByText('论文', { exact: true }).click();
+  await page.getByText('Papers', { exact: true }).click();
   await expect(page.locator('.work-card:visible')).toHaveCount(4);
   await page.getByRole('searchbox').fill('LoRA');
   await expect(page.locator('.work-card:visible')).toHaveCount(1);
@@ -37,7 +37,7 @@ test('cards navigate directly to a complete article; browser back restores filte
   await expect(page.getByRole('heading', { level: 1 })).toContainText('LoRA');
   await expect(page.locator('.prose table')).toHaveCount(1);
   await expect(page.getByRole('heading', { name: '来源与延伸阅读' })).toBeVisible();
-  expect((await page.locator('.prose').innerText()).length).toBeGreaterThan(700);
+  expect((await page.locator('.prose').textContent())!.length).toBeGreaterThan(700);
   await page.reload();
   await expect(page.locator('.prose')).toContainText('低秩矩阵');
   await page.goBack();
@@ -75,6 +75,11 @@ test('no horizontal overflow, no embeds, two-line card descriptions', async ({ p
   ).toBe(true);
   await page.getByRole('link', { name: 'Explore Transformers.js', exact: true }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page
+    .locator('details')
+    .filter({ has: page.locator('table') })
+    .locator('summary')
+    .click();
   await expect(page.locator('.prose table')).toBeVisible();
   await page.setViewportSize({ width: 320, height: 700 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -99,4 +104,24 @@ test('static output stays small and content routes exist', async ({ request }) =
   expect(response.ok()).toBe(true);
   expect(await response.text()).toContain('/works/lora/');
   expect((await request.get('/not-a-real-page')).status()).toBe(404);
+});
+
+// 验证两段式阅读与真实相邻导航，避免折叠或切换破坏内容路径。
+test('detail overview, disclosure, and adjacent navigation', async ({ page }) => {
+  await page.goto('/works/attention-is-all-you-need/');
+  await expect(page.locator('[data-direction="previous"]')).toHaveCount(0);
+  await expect(page.locator('details[open]')).toHaveCount(0);
+  await page.getByRole('link', { name: '向下阅读正文' }).click();
+  const section = page.locator('details').first();
+  await section.locator('summary').click();
+  await expect(section).toHaveAttribute('open', '');
+  await section.locator('summary').click();
+  await expect(section).not.toHaveAttribute('open', '');
+  await page.locator('[data-direction="next"]').click();
+  await expect(page).toHaveURL(/transformers-js/);
+  await page.locator('body').click({ position: { x: 1, y: 1 } });
+  await page.keyboard.press('ArrowLeft');
+  await expect(page).toHaveURL(/attention-is-all-you-need/);
+  await page.locator('.work-facts a[href="/?type=paper"]').click();
+  await expect(page.locator('.work-card:visible')).toHaveCount(4);
 });

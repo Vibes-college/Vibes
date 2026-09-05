@@ -1,13 +1,13 @@
 import entries from './works.json';
 
 export const formats = {
-  all: '全部',
-  code: '代码',
-  paper: '论文',
-  website: '网站',
-  video: '视频',
-  audio: '音频',
-  article: '文章',
+  all: 'All',
+  code: 'Code',
+  paper: 'Papers',
+  website: 'Websites',
+  video: 'Video',
+  audio: 'Audio',
+  article: 'Articles',
 } as const;
 export type Format = Exclude<keyof typeof formats, 'all'>;
 export interface Work {

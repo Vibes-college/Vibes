@@ -5,12 +5,14 @@ interface Props {
   description?: string;
   noindex?: boolean;
   search?: boolean;
+  detail?: boolean;
 }
 const {
   title = 'Explore — Vibes',
   description = 'A collection of projects, papers, websites, and ideas. Explore the AI economy with Vibes.',
   noindex = false,
   search = false,
+  detail = false,
 } = Astro.props;
 const canonical = new URL(
   Astro.url.pathname === '/explore/' ? '/' : Astro.url.pathname,
@@ -35,7 +37,7 @@ const canonical = new URL(
     /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
   </head>
-  <body>
+  <body class:list={{ 'is-detail': detail }}>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="Vibes home">vibes<span aria-hidden="true">.</span></a

@@ -117,11 +117,12 @@ label:has(input:focus-visible) {
   font-size: 14px;
 }
 .explore-main {
-  margin: 34px 4.3vw 0;
+  margin: 0 4.3vw;
 }
 .category-nav {
+  min-width: 0;
   display: flex;
-  gap: 32px;
+  gap: 24px;
   border: 0;
   border-bottom: 1px solid var(--line);
   margin: 0;
@@ -135,8 +136,8 @@ label:has(input:focus-visible) {
 .category-nav label {
   position: relative;
   flex: none;
-  padding: 16px 2px;
-  font-size: 15px;
+  padding: 10px 2px;
+  font-size: 12px;
   color: #777;
   cursor: pointer;
 }
@@ -169,7 +170,7 @@ label:has(input:focus-visible) {
   row-gap: 52px;
   list-style: none;
   padding: 0;
-  margin: 32px 0 0;
+  margin: 12px 0 0;
 }
 .work-card {
   min-width: 0;

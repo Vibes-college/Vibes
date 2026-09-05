@@ -39,19 +39,19 @@
     font-size: 14px;
   }
   .explore-main {
-    margin: 4px 20px 0;
+    margin: 0 20px;
   }
   .category-nav {
-    gap: 26px;
+    gap: 22px;
   }
   .category-nav label {
-    padding: 14px 2px;
-    font-size: 14px;
+    padding: 10px 2px;
+    font-size: 12px;
   }
   .work-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 36px 18px;
-    margin-top: 24px;
+    margin-top: 10px;
   }
   .card-summary {
     font-size: 11px;

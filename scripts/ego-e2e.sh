@@ -40,6 +40,20 @@ await cdp('Emulation.setDeviceMetricsOverride', { width: 320, height: 700, devic
 await expectPage('document.documentElement.scrollWidth <= innerWidth', '手机列表不横向溢出');
 await click('a[data-work="lora"]');
 await expectPage("location.pathname === '/works/lora/' && document.documentElement.scrollWidth <= innerWidth", '手机文章不横向溢出');
+await expectPage("document.querySelectorAll('details[open]').length === 0", '正文章节默认折叠');
+await click('.read-down');
+await click('details:nth-child(2) summary');
+await expectPage("document.querySelectorAll('details[open]').length === 1", '章节可展开');
+await click('details:nth-child(2) summary');
+await expectPage("document.querySelectorAll('details[open]').length === 0", '章节可收起');
+await gotoAndWait('http://127.0.0.1:4322/works/transformers-js/');
+await cdp('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: 270, y: 430 }] });
+await cdp('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 200, y: 431 }] });
+await cdp('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 80, y: 432 }] });
+await cdp('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+await expectPage("location.pathname === '/works/neural-networks/'", '真实横向触摸切换下一作品');
+await click('[data-direction="previous"]');
+await expectPage("location.pathname === '/works/transformers-js/'", '按钮切回上一作品');
 await cdp('Emulation.clearDeviceMetricsOverride');
 await cdp('Emulation.setScriptExecutionDisabled', { value: true });
 try {
