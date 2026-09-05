@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 export default defineConfig({
-  site: 'https://vibes-explore.daring-chime-6331.chatgpt.site',
+  site: 'https://vibes-explore.jachi2.chatgpt.site',
   output: 'static',
   trailingSlash: 'always',
   devToolbar: { enabled: false },

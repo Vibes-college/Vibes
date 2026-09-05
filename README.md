@@ -24,4 +24,6 @@ Node 22.12+。`npm ci` 后运行 `npm run dev`。生产预览：`npm run build`�
 
 ## Cloudflare
 
-`wrangler.jsonc` 只托管 `dist` 静态资源；`public/_headers` 设置缓存与基础响应头。`npm run deploy` 会构建并发布，需已配置 Cloudflare 登录。当前仅本地预览，未绑定或替换 vibes.college。正式发布前核对目标账户、域名和旧网址迁移清单。
+`wrangler.jsonc` 只托管 `dist` 静态资源；`public/_headers` 设置缓存与基础响应头。`npm run deploy` 会构建并发布，需已配置 Cloudflare 登录。当前通过内置 Sites 发布，公开地址见下方；未绑定或替换 vibes.college。正式发布前核对目标账户、域名和旧网址迁移清单。
+
+Sites 公网地址：https://vibes-explore.jachi2.chatgpt.site 。手机与电脑使用同一套响应式页面。Sites 项目绑定保存在 `.openai/hosting.json`，后续发布沿用这个站点。
