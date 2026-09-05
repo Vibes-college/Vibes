@@ -45,7 +45,7 @@ Cloudflare 连接 Git 后可能在推送到生产分支时自动构建；它不�
 - 已发现本地已有 Git 历史，不重新初始化或改写历史；本次交接提交使用 `chore: 初始化项目`，不是伪造一个新的最早提交。
 - 私有仓库已创建：[Vibes-college/Vibes](https://github.com/Vibes-college/Vibes)。
 - GitHub CLI 与 Wrangler 已登录；不重复执行授权。
-- 初始化提交 `ab1fbdd` 已推送 main；[首次 CI](https://github.com/Vibes-college/Vibes/actions/runs/33956934131) 的 budget 通过，verify 因缺少显式 Node 类型依赖失败；修复在独立分支与 PR 中完成，不再直接推 main。
+- 初始化提交 `ab1fbdd` 已推送 main；[首次 CI](https://github.com/Vibes-college/Vibes/actions/runs/33956934131) 的 budget 通过，verify 因缺少显式 Node 类型依赖失败；已在独立分支显式补齐 `@types/node`，修复见 [PR #1](https://github.com/Vibes-college/Vibes/pull/1)，实时 CI 状态以 PR 检查区为准；由你决定合并，不再直接推 main。
 - main 分支保护：GitHub API 返回 HTTP 403，要求升级 GitHub Pro（或公开仓库）；保持私有，当前保护未生效，不执行购买。
 - 已找到 Chrome 中登录的 Cloudflare 账号，并打开 Cloudflare Workers and Pages 的 GitHub App 安装页；最终授权需你亲自确认，Git 连接和 Pages 部署尚未完成。
 - 旧域名保持不变；当前未创建新 Pages 部署，也未切换旧站。

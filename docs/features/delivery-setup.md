@@ -47,4 +47,4 @@
 
 ## 最近核对
 
-2026-09-05：main 已推送；首次 budget 通过，verify 的 Node 类型依赖缺失正在独立分支修复；分支保护受套餐限制，Pages 等待本人授权。
+2026-09-05：main 已推送；首次 budget 通过，verify 缺失的 Node 类型依赖已在 [PR #1](https://github.com/Vibes-college/Vibes/pull/1) 补齐，待你合并；分支保护受套餐限制，Pages 等待本人授权。
