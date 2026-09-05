@@ -90,3 +90,5 @@ Vibes/
 - 2026-09-05：建立功能地图、模板及 9 项现有功能/维护工具说明；新增对话阅读与功能变更同步维护规则。
 
 - 2026-09-05：补齐配置、数据库 SQL、常量规则、集成和 CI 文档，创建私有 GitHub 仓库；远端检查与 Cloudflare 接入状态见 docs/CI.md。
+
+- 2026-09-05：初始化提交已推送 Vibes-college/Vibes；首次云端检查暴露 Node 类型依赖缺失，已获准补齐，修复走 PR；分支保护需 GitHub Pro，Cloudflare 等待 GitHub App 本人授权。
