@@ -43,8 +43,8 @@
 
 ## 已知问题 / 待办
 
-Cloudflare 自动化浏览器尚未登录；Pages Git 连接待完成。GitHub 已返回 HTTP 403，当前私有仓库需 GitHub Pro 才能启用分支保护，保护尚未生效，详见 [CI.md](../CI.md)。人与 AI 共用同一 GitHub 身份，不能仅靠分支规则识别是否本人点击合并。
+已复用 Chrome 中的 Cloudflare 登录，现停在 GitHub App 授权页，需本人确认；Pages Git 连接待完成。GitHub 已返回 HTTP 403，当前私有仓库需 GitHub Pro 才能启用分支保护，保护尚未生效，详见 [CI.md](../CI.md)。人与 AI 共用同一 GitHub 身份，不能仅靠分支规则识别是否本人点击合并。
 
 ## 最近核对
 
-2026-09-05：已核对本地源码和新建私有仓库；远端 CI、保护和 Pages 接入仍在配置。
+2026-09-05：main 已推送；首次 budget 通过，verify 缺失的 Node 类型依赖已在 [PR #1](https://github.com/Vibes-college/Vibes/pull/1) 补齐，待你合并；分支保护受套餐限制，Pages 等待本人授权。
