@@ -76,14 +76,14 @@ flowchart TD
 
 ## 验收标准
 
-- [ ] Draft PR页面可见清单，阶段预览对应真实SHA并可操作。
+- [x] Draft PR页面可见清单，阶段预览对应真实SHA并可操作。
 - [ ] Draft与Ready触发分离，分支push不重复CI；失败/旧SHA/产物漂移阻断发布。
 - [x] 正式域名构建与来源校验通过，发布前保持明确目标和容量门槛。
 - [ ] main自动发布实际成功，线上版本与页面验收通过，再执行清理。
 - [x] 清理拒绝未合并、未上线、额外提交、脏文件/ignored配置/依赖PR，占用由AI核对声明；保护测试通过，保留恢复版本。
 - [x] 本地D1只用于命令验收，拒绝线上参数；2026-09-05本地verify验证有效，网站不读取此库。
 
-2026-09-06本地verify（52单元、26浏览器通过、2按设计跳过）、budget、Wrangler生产配置dry-run通过；专用worktreecheck再次通过。Draft/Ready和预览正在远端验收，首次生产待用户合并后执行，不沿用旧测试站发布勾选。历史证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，仅说明旧流程当时通过。
+2026-09-06本地verify（52单元、26浏览器通过、2按设计跳过）、budget、Wrangler生产配置dry-run通过；专用worktreecheck再次通过。Draft运行34028631687通过；预览372ced7经ego-browser验证搜索、详情、语言切换及noindex，canonical指向正式域名；Ready的最新verify/budget结果见PR #3。首次生产待用户合并后执行，不沿用旧测试站发布勾选。历史证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，仅说明旧流程当时通过。
 
 ## 对应的自动化测试
 

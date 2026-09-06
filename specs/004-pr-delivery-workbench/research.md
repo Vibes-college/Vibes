@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '触发、正式域名与历史迁移的依据'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

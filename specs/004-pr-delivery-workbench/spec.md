@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'PR工作台、节约CI与正式站交付'
-status: 'in-progress'
+status: 'complete'
 feature-ids: ['document-governance', 'project-commands']
 amends: ['001', '002']
 amended-by: []

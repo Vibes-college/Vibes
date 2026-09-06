@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'PR交付工作台技术计划'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

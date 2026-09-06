@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'PR交付工作台执行清单'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -22,7 +22,7 @@ amended-by: []
 - [x] T005 [US2] 实现scripts/release*.ts的同SHA产物发布、预览、过时提交拒绝及失败检查；更新wrangler.jsonc与src/config/site.ts。
 - [x] T006 [US2] 核对Cloudflare正式域名绑定与回滚路径，配置最小必要的GitHub部署身份，不输出秘密。
 - [x] T007 [US2] 实现scripts/cleanup*.ts的已合并、已部署且无未保存工作的清理保护与测试。
-- [ ] T008 [US2] 验证远端阶段预览与PR可见清单，检查合并后发布/清理入口和拒绝路径；真实首次上线与收尾由PR合并后跟进，不在合并前虚假勾选。
+- [x] T008 [US2] 验证远端阶段预览与PR可见清单，检查合并后发布/清理入口和拒绝路径；真实首次上线与收尾由PR合并后跟进，不在合并前虚假勾选。
 
 ## US3 原则与经验
 
@@ -31,10 +31,12 @@ amended-by: []
 ## 验证与现状同步
 
 - [x] T010 同步docs/features/document-governance.md、project-commands.md与索引、docs/system配置/规则/接口/交付及源码摘要。
-- [ ] T011 运行npm run verify、npm run budget、git diff --check，更新PR实际验收结果；不把合并前工作写成上线成功。
+- [x] T011 运行npm run verify、npm run budget、git diff --check，更新PR实际验收结果；不把合并前工作写成上线成功。
 
 依赖：T001→T002→T003/T009→T004/T005→T006/T007→T008→T010→T011；独立只读研究可并行，实现保持单一写入者。
 
 ## 合并后运行验收（PR持续跟进）
 
 用户决定合并后，核对main部署与vibes.college线上版本、实际浏览搜索详情，再执行满足条件的清理。此项是运行状态，记录在PR评论和发布证据，不通过改写已冻结tasks来补记；失败保留资源并修复。首次正式上线尚未发生。
+
+2026-09-06：本地verify（52单元、26浏览器通过、2既有设计跳过）及budget通过；预览372ced7经ego-browser验证搜索Transformer返回2项、论文详情与英文切换，canonical指向正式域名且响应noindex。Draft运行34028631687通过；Ready云端结果与后续运行状态见PR #3。
