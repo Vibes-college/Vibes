@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '连续阅读规格质量检查'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
