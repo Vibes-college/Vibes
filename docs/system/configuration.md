@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: '5836d7a07bfc090d7093479398bab32ef889129b0372c3a2a830d21f43f92c6a'
+code-revision: '60001ffe2e499781655132cacfa622fb0b0d3c2e8009b7d82ea0afd60ebdbbc4'
 ---
 
 # 配置和环境变量
@@ -73,7 +73,7 @@ code-revision: '5836d7a07bfc090d7093479398bab32ef889129b0372c3a2a830d21f43f92c6a
 
 ## 文件组织与检查排除
 
-外部快照在 `resources/references/`，本地证据在 `resources/evidence/`；`.gitignore`、`.prettierignore`、`eslint.config.mjs` 同步排除这两项，`tsconfig.json` 排除resources。它们不属于网站构建输入。完整文件职责见 [仓库地图](../README.md)。
+外部快照在 `resources/references/`，本地证据在 `resources/evidence/`；`.gitignore`、`.prettierignore`、`eslint.config.mjs` 同步排除这两项，`tsconfig.json` 排除resources。它们不属于网站构建输入。node_modules目录及隔离worktree复用依赖的同名符号链接均不提交，.gitignore以node_modules匹配。完整文件职责见 [仓库地图](../README.md)。
 
 CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GITHUB_OUTPUT用于传递范围。冻结检查独立使用DOCS_BASE_REF，缺失基线失败。详见[CI](../system/checks-and-release.md)。
 
