@@ -1,0 +1,120 @@
+import assert from 'node:assert/strict';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { test } from 'node:test';
+
+const checker = resolve('scripts/docs-check.ts');
+
+// 为临时仓库生成可解析、可冻结的文档。
+function markdown(meta: Record<string, unknown>, body: string): string {
+  return `---\n${Object.entries(meta)
+    .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+    .join('\n')}\n---\n\n${body}`;
+}
+
+// 临时仓库只包含最小规格和两个索引，不访问真实仓库内容或网络。
+function fixture(): { root: string; base: string } {
+  const root = mkdtempSync(join(tmpdir(), 'vibes-docs-'));
+  const living = { tense: 'living', describes: 'Current', status: 'current', 'shaped-by': ['001'] };
+  const frozen = {
+    tense: 'frozen',
+    describes: 'Decision',
+    status: 'merged',
+    'frozen-at': '2026-09-05',
+    'amended-by': [],
+  };
+  const files = {
+    'docs/features/example.md': markdown(living, '# Current\n'),
+    'docs/features/README.md': markdown(living, '| [Example](example.md) | current | / | 001 |\n'),
+    'specs/README.md': markdown(living, '| [001](001-example/spec.md) | merged | example |\n'),
+    'specs/001-example/spec.md': markdown(
+      { ...frozen, 'feature-ids': ['example'], amends: [], 'approved-artifacts': [] },
+      '# Original intent\n',
+    ),
+    'specs/001-example/plan.md': markdown(frozen, '# Original plan\n'),
+    'specs/001-example/tasks.md': markdown(
+      frozen,
+      '- [x] T001 更新docs/features/example.md最终行为，shaped-by；docs/features/README.md与specs/README.md\n',
+    ),
+  };
+  for (const [path, source] of Object.entries(files)) {
+    mkdirSync(dirname(join(root, path)), { recursive: true });
+    writeFileSync(join(root, path), source);
+  }
+  for (const args of [
+    ['init', '-b', 'main'],
+    ['add', '.'],
+    [
+      '-c',
+      'user.name=Docs Test',
+      '-c',
+      'user.email=docs@example.invalid',
+      'commit',
+      '-m',
+      'fixture',
+    ],
+  ]) {
+    execFileSync('git', args, { cwd: root, stdio: 'ignore' });
+  }
+  const base = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
+  return { root, base };
+}
+
+// 真正启动CLI并检查退出码，验证保护没有停留在纯函数测试。
+function run(root: string, base: string): { status: number | null; output: string } {
+  const result = spawnSync(process.execPath, ['--experimental-strip-types', checker], {
+    cwd: root,
+    env: { ...process.env, DOCS_BASE_REF: base },
+    encoding: 'utf8',
+    timeout: 10000,
+  });
+  return { status: result.status, output: result.stdout + result.stderr };
+}
+
+// 基线已合并内容被篡改或删除时CLI必须失败，当前文档原地修订仍可通过。
+test('docs CLI protects a real Git baseline, including deleted frozen files', () => {
+  const { root, base } = fixture();
+  try {
+    const valid = run(root, base);
+    assert.equal(valid.status, 0);
+    assert.match(valid.output, /仅观察/);
+    assert.doesNotMatch(valid.output, /触发裁剪|比例告警/);
+    const path = join(root, 'specs/001-example/plan.md');
+    const original = readFileSync(path, 'utf8');
+    writeFileSync(path, original.replace('Original plan', 'Tampered plan'));
+    const changed = run(root, base);
+    assert.notEqual(changed.status, 0);
+    assert.match(changed.output, /冻结正文/);
+    writeFileSync(path, original);
+    const livingPath = join(root, 'docs/features/example.md');
+    writeFileSync(
+      livingPath,
+      readFileSync(livingPath, 'utf8') + '\nCurrent documented constraint.\n',
+    );
+    assert.equal(run(root, base).status, 0);
+    rmSync(path);
+    assert.notEqual(run(root, base).status, 0);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+// 未跟踪草稿也不能漏标签，基线错误不能变成跳过检查的后门。
+test('docs CLI rejects missing metadata in untracked files and an unavailable baseline', () => {
+  const { root, base } = fixture();
+  try {
+    const path = join(root, 'docs/extra.md');
+    writeFileSync(path, '# Missing metadata\n');
+    const missing = run(root, base);
+    assert.notEqual(missing.status, 0);
+    assert.match(missing.output, /front matter/);
+    rmSync(path);
+    const invalid = run(root, 'does-not-exist');
+    assert.notEqual(invalid.status, 0);
+    assert.match(invalid.output, /基线不可读取/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});

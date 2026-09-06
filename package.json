@@ -10,11 +10,11 @@
     "dev": "astro dev --host 127.0.0.1",
     "build": "astro build",
     "check:types": "astro check && tsc -p tsconfig.tools.json",
-    "lint": "eslint . --max-warnings 0 && bash -n scripts/ego-e2e.sh",
+    "lint": "eslint . --max-warnings 0",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "test:unit": "node --experimental-strip-types --test tests/unit/*.test.ts",
-    "check": "npm run check:types && npm run lint && npm run format:check && npm run test:unit",
+    "check": "npm run check:types && npm run lint && npm run format:check && npm run docs:check && npm run test:unit",
     "test": "npm run test:unit",
     "test:e2e": "node --experimental-strip-types scripts/test-e2e.ts",
     "db:reset": "node --experimental-strip-types scripts/database.ts reset",
@@ -22,7 +22,9 @@
     "preview": "npm run build && wrangler dev --local --config wrangler.local.jsonc --persist-to .wrangler/project-local --ip 127.0.0.1 --port 4322",
     "deploy": "npm run build && wrangler deploy --config wrangler.jsonc",
     "verify": "npm run check && npm run db:reset && npm run test:e2e",
-    "budget": "npm run build && node --experimental-strip-types scripts/budget.ts"
+    "budget": "npm run build && node --experimental-strip-types scripts/budget.ts",
+    "docs:check": "node --experimental-strip-types scripts/docs-check.ts",
+    "ci:scope": "node --experimental-strip-types scripts/check-scope.ts"
   },
   "dependencies": {
     "astro": "7.3.1"

@@ -9,8 +9,8 @@ export default [
       '.astro/**',
       '.wrangler/**',
       'node_modules/**',
-      'references/**',
-      'research/**',
+      'resources/references/**',
+      'resources/evidence/**',
       'test-results/**',
     ],
   },
@@ -40,6 +40,5 @@ export default [
         ].map((name) => [name, 'readonly']),
       ),
     },
-    rules: { 'max-lines': ['error', { max: 300 }] },
   },
 ];

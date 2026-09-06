@@ -1,50 +1,27 @@
-# 功能地图
+---
+tense: 'living'
+describes: '功能现状索引'
+status: 'current'
+shaped-by: ['002']
+---
 
-这是当前项目的产品说明书和验收入口。先找功能，再读对应的一页；AI 不需要为了解整体情况重新扫描全部源码，但动手前仍需核对相关文件。
+# 功能现状索引
 
-## 产品功能
+这里描述当前行为；当初为什么这样设计，从各页shaped-by找到 [specs索引](../../specs/README.md)。未列来源编号的功能属于规格化之前的现有实现，不伪造编号。current表示文档描述现状，不代表功能全部上线；限制在对应页说明。
 
-| 功能                       | 状态      | 入口                                | 文档                                         |
-| -------------------------- | --------- | ----------------------------------- | -------------------------------------------- |
-| 精选目录浏览               | ✅ 已完成 | /、/explore/                        | [explore-browse.md](explore-browse.md)       |
-| 搜索与分类筛选             | ✅ 已完成 | / 的搜索框和分类栏                  | [explore-filter.md](explore-filter.md)       |
-| 两段式详情与来源阅读       | ✅ 已完成 | /works/{slug}/                      | [article-read.md](article-read.md)           |
-| 手机阅读与基础键盘操作     | ✅ 已完成 | 目录和文章页                        | [responsive-access.md](responsive-access.md) |
-| 找不到页面的提示           | ✅ 已完成 | 任意不存在的站内地址                | [not-found.md](not-found.md)                 |
-| 页面标题与搜索引擎地址清单 | ✅ 已完成 | 页面标题、/sitemap.xml、/robots.txt | [site-metadata.md](site-metadata.md)         |
+| 功能                                              | status  | 入口           | shaped-by |
+| ------------------------------------------------- | ------- | -------------- | --------- |
+| [两段式详情与来源阅读](article-read.md)           | current | 见功能操作路径 | —         |
+| [精选内容维护](content-maintenance.md)            | current | 见功能操作路径 | —         |
+| [GitHub 自动验收与新站接入](delivery-setup.md)    | current | 见功能操作路径 | 002       |
+| [文档时态与冻结检查](document-governance.md)      | current | 见功能操作路径 | 002       |
+| [精选目录浏览](explore-browse.md)                 | current | 见功能操作路径 | —         |
+| [搜索与分类筛选](explore-filter.md)               | current | 见功能操作路径 | —         |
+| [本地测试库重建与迁移](local-database.md)         | current | 见功能操作路径 | —         |
+| [找不到页面的提示](not-found.md)                  | current | 见功能操作路径 | —         |
+| [开发、检查、验收与部署命令](project-commands.md) | current | 见功能操作路径 | 002       |
+| [手机阅读与基础键盘操作](responsive-access.md)    | current | 见功能操作路径 | —         |
+| [页面标题与搜索引擎地址清单](site-metadata.md)    | current | 见功能操作路径 | —         |
+| [Spec Kit开发工作流](spec-kit-workflow.md)        | current | 见功能操作路径 | 002       |
 
-## 维护工具
-
-| 功能                       | 状态      | 入口                                  | 文档                                             |
-| -------------------------- | --------- | ------------------------------------- | ------------------------------------------------ |
-| 精选内容维护               | ✅ 已完成 | 由 AI 修改内容文件                    | [content-maintenance.md](content-maintenance.md) |
-| 本地测试库重建与迁移       | ✅ 已完成 | npm run db:reset / npm run db:migrate | [local-database.md](local-database.md)           |
-| 开发、检查、验收与部署命令 | ✅ 已完成 | 终端：npm run …                       | [project-commands.md](project-commands.md)       |
-| GitHub 自动验收与新站接入  | 🚧 开发中 | GitHub / Cloudflare                   | [delivery-setup.md](delivery-setup.md)           |
-
-产品方向与设计参考见 [产品概览](../PRODUCT_OVERVIEW.md)。第一版只做 Explore，当前首页为基础，旧站仅作局部参考。
-
-## 配置与技术资料
-
-[配置](../CONFIG.md) · [数据库](../DATABASE.md) · [常量与规则](../CONSTANTS.md) · [第三方集成](../INTEGRATIONS.md) · [CI 与仓库保护](../CI.md)
-
-## 怎么使用
-
-- **给你**：打开一项功能，按“用户操作路径”操作，再按“验收标准”逐条核对。网页路径是在本地网站地址后追加的部分；启动方法见 [CLI](../CLI.md)。
-- **给 AI**：新对话先读本索引，再读本次任务相关功能文档与涉及文件；需求历史不能代替当前实现。发现不一致，核对后同步修正文档。
-- ✅ 已完成：文档描述的范围已有本地实现；不表示所有功能已上线或所有边界测试都已通过。
-- 🚧 开发中：只完成一部分，必须列明可用部分和剩余工作。
-- 📋 计划中：用户已经确认要做、但尚未实现的功能；不能把举例或 AI 建议自动记为计划。
-- 勾选框是每次验收用的清单：本次实际验证后才能勾选，并在“最近核对”记录日期、环境和方法；未勾选不等于功能未实现。
-
-目前没有注册、登录、发布文章表单或评论功能；它们是模板示例，不是本项目已确认计划。数据库目前只供本地命令验收，网站内容来自文件。新站接入正在进行，详见维护工具中的接入说明；其他计划以用户明确确认的任务为准。
-
-## 持续维护规则
-
-1. 新增功能：复制 [_TEMPLATE.md](_TEMPLATE.md)，使用稳定的英文短横线文件名，在本索引新增一行。
-2. 修改功能：同步操作路径、文件位置、验收标准、测试覆盖、依赖和限制；相关验收框按实际重验结果更新。
-3. 重命名或移除功能：更新或删除索引行、失效文档及其他功能的依赖链接，避免把旧功能继续显示为可用。
-4. 交付前：确认每行都有对应文档，路径和测试确实存在，状态与实现一致；运行 `npm run check`，功能行为变更还要运行相应测试。
-5. 不把历史需求全文搬进功能地图，也不记录密钥值；配置名称清单见 [SECRETS_CHECKLIST.md](../SECRETS_CHECKLIST.md)。
-
-最近核对：2026-09-05，依据当前本地代码和测试文件；本次未进行线上功能验收。
+运行方法见 [CLI](../operations/CLI.md)，全仓位置见 [仓库地图](../README.md)。功能文件与本表一一对应；新增/删除功能必须同PR同步，规格合并后正文描述最终行为。模板为_TEMPLATE.md，不是产品功能。

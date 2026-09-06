@@ -1,3 +1,10 @@
+---
+tense: 'living'
+describes: '数据库结构'
+status: 'current'
+shaped-by: []
+---
+
 # 数据库结构
 
 目前只有一个**本机测试库**，用于验证重建和迁移命令；线上 D1 尚未创建，网站内容仍来自 `src/data/works.json`，不是从数据库读取。

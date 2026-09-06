@@ -1,8 +1,15 @@
+---
+tense: 'living'
+describes: '旧项目配置资产清单'
+status: 'stale'
+shaped-by: []
+---
+
 # 旧项目配置资产清单
 
 整理日期：2026-09-05。只记录名称、用途、来源和核对状态，不记录配置值、账号 ID、登录邮箱、密码、Token、私钥、Webhook 完整地址或恢复码。
 
-**状态：名称清单已保存；密钥值尚未备份到密码管理器。** 当前没有可用的密码管理器连接，也未找到 `op` / `bw` 命令。没有复制私密环境文件、运行 Secret 同步脚本或改动线上资源。清单不能代替密钥备份，备份验证前应保留旧项目。
+**状态：配置名称待平台核实，密钥值不在本文件中。** 此清单仅用于核对资产，不表示资源正在运行或密钥已备份。
 
 ## 来源和范围
 
@@ -12,8 +19,6 @@
 - 自动部署：`vibecoding-college/.github/workflows/`、`scripts/sync-github-secrets.ts`、`scripts/sync-worker-secrets.ts`、`scripts/worker-secret-policy.ts`。
 - 扩展配置：产品 `src/`、`tools/`、`scripts/` 中环境变量引用，及 `paseo-complete-root/.github/workflows/`。
 - 发布说明：旧项目 `docs/runbooks/release.md`。
-- 本地发现产品 `.env`、`.env.production` 文件存在，未打开内容；其中独有的配置名和值尚未盘点。
-- 未扫描 Git 历史、归档、备份、临时工作树、系统钥匙串或第三方账号后台。示例文件出现不代表服务正在使用。
 
 ## Cloudflare 资源与域名
 
@@ -37,10 +42,10 @@
 | `MAIN_SITE_ORIGIN`、`LEGACY_MAIN_SITE_ORIGIN`、`RUNTIME_HOST_SUFFIX`             | 作品运行服务中的站点地址配置名         |
 | Cron triggers、compatibility flags、observability、service bindings              | 定时任务、兼容选项、日志和服务关联设置 |
 
-- [ ] 在 Cloudflare 核对账号所有者、恢复方式、API Token 权限及到期时间。
-- [ ] 保存域名注册商、续费归属、Nameserver、DNS、代理开关、TLS、重定向和邮件验证设置到密码管理器安全备注。
-- [ ] 核对 Worker Secrets、D1/KV/R2 标识与绑定、存储访问权限、域名路由和定时任务。
-- [ ] 核对是否另有 Pages、Turnstile、Access、Tunnel 或未写入本地配置的资源；目前不确认这些服务存在。
+- 在 Cloudflare 核对账号所有者、恢复方式、API Token 权限及到期时间。
+- 保存域名注册商、续费归属、Nameserver、DNS、代理开关、TLS、重定向和邮件验证设置到密码管理器安全备注。
+- 核对 Worker Secrets、D1/KV/R2 标识与绑定、存储访问权限、域名路由和定时任务。
+- 核对是否另有 Pages、Turnstile、Access、Tunnel 或未写入本地配置的资源；目前不确认这些服务存在。
 
 ## 配置项名称与用途
 
@@ -94,19 +99,19 @@ VITE_SHOW_IMAGE_PROVIDER
 
 Paseo 仓库级 Secret 查询返回空列表；组织级、Environment 级、Dependabot/Codespaces Secrets 和私有文档仓未核对，不能据此认定没有凭据。
 
-- [ ] 核对组织/仓库所有者、登录恢复方式、2FA、成员权限和计费归属。
-- [ ] 核对 Actions Secrets 与 Variables、部署 Environment、审批规则、分支保护及 Rulesets。
-- [ ] 核对 GitHub App、OAuth App、部署密钥、PAT 权限、Webhook 和 Cloudflare 的 GitHub 安装授权。
-- [ ] 保存构建命令、输出目录、部署分支和工作流权限设置的安全备注。
+- 核对组织/仓库所有者、登录恢复方式、2FA、成员权限和计费归属。
+- 核对 Actions Secrets 与 Variables、部署 Environment、审批规则、分支保护及 Rulesets。
+- 核对 GitHub App、OAuth App、部署密钥、PAT 权限、Webhook 和 Cloudflare 的 GitHub 安装授权。
+- 保存构建命令、输出目录、部署分支和工作流权限设置的安全备注。
 
-旧同步脚本从 `.env.production` 写入 GitHub/Worker；它们不是备份读取工具，本次未运行。工作流引用的配置比本次仓库级 Secret 查询多，差异可能来自其他作用域、旧配置或停用功能，须逐项核对。
+旧同步脚本从 `.env.production` 写入 GitHub/Worker；它们不是备份读取工具，不应当作备份读取工具运行。工作流引用的配置与仓库级Secret清单可能不同，差异可能来自其他作用域、旧配置或停用功能，须逐项核对。
 
 ## 密码管理器待办
 
-- [ ] 指定并连接密码管理器，确认要保存到哪个保险库。
-- [ ] 为 Cloudflare、GitHub、域名及实际启用的第三方服务建立条目；保存真实账号、密钥、权限、到期时间、恢复方式与配置详情。
-- [ ] 对本地私密文件独有配置进行不回显值的补充盘点，并将值直接转存密码管理器，不经 Markdown、聊天或临时明文备份。
-- [ ] 逐项确认能从密码管理器取回；这里只更新备份状态和条目名称。
-- [ ] 另行核对线上配置与本地配置差异；备份完成前不删除旧项目。
+- 指定并连接密码管理器，确认要保存到哪个保险库。
+- 为 Cloudflare、GitHub、域名及实际启用的第三方服务建立条目；保存真实账号、密钥、权限、到期时间、恢复方式与配置详情。
+- 对本地私密文件独有配置进行不回显值的补充盘点，并将值直接转存密码管理器，不经 Markdown、聊天或临时明文备份。
+- 逐项确认能从密码管理器取回；这里只更新备份状态和条目名称。
+- 另行核对线上配置与本地配置差异；备份完成前不删除旧项目。
 
 建议条目命名：`Vibes / Cloudflare`、`Vibes / GitHub`、`Vibes / Domains`、`Vibes / 服务名称`。这些只是建议名称，目前未创建任何密码管理器条目。

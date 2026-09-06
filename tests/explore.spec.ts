@@ -60,6 +60,7 @@ test('standalone detail is readable with JavaScript disabled', async ({ browser 
 });
 
 test('no horizontal overflow, no embeds, two-line card descriptions', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 700 });
   await page.goto('/');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(page.locator('iframe, video, audio')).toHaveCount(0);
@@ -85,7 +86,7 @@ test('no horizontal overflow, no embeds, two-line card descriptions', async ({ p
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test('static output stays small and content routes exist', async ({ request }) => {
+test('static output stays small and content routes exist', async ({ request, page }) => {
   const js = readdirSync('dist/_astro').filter((file) => file.endsWith('.js'));
   const total = js.reduce((n, file) => n + gzipSync(readFileSync(`dist/_astro/${file}`)).length, 0);
   expect(js.length).toBeGreaterThan(0);
@@ -104,6 +105,8 @@ test('static output stays small and content routes exist', async ({ request }) =
   expect(response.ok()).toBe(true);
   expect(await response.text()).toContain('/works/lora/');
   expect((await request.get('/not-a-real-page')).status()).toBe(404);
+  await page.goto('/not-a-real-page');
+  await expect(page.locator('.not-found')).toContainText('404');
 });
 
 // 验证两段式阅读与真实相邻导航，避免折叠或切换破坏内容路径。
@@ -124,4 +127,35 @@ test('detail overview, disclosure, and adjacent navigation', async ({ page }) =>
   await expect(page).toHaveURL(/attention-is-all-you-need/);
   await page.locator('.work-facts a[href="/?type=paper"]').click();
   await expect(page.locator('.work-card:visible')).toHaveCount(4);
+});
+
+// 使用浏览器输入事件验证横滑，覆盖原有本地验收的触摸路径。
+test('touch swipe navigates to the next work and the previous button returns', async ({
+  page,
+  context,
+  isMobile,
+}) => {
+  test.skip(!isMobile, '触摸路径只在手机模拟项目执行');
+  await page.goto('/works/transformers-js/');
+  const session = await context.newCDPSession(page);
+  try {
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: [{ x: 270, y: 430 }],
+    });
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: [{ x: 200, y: 431 }],
+    });
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: [{ x: 80, y: 432 }],
+    });
+    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await expect(page).toHaveURL(/works\/neural-networks\//);
+    await page.locator('[data-direction="previous"]').click();
+    await expect(page).toHaveURL(/works\/transformers-js\//);
+  } finally {
+    await session.detach();
+  }
 });

@@ -1,50 +1,30 @@
-# 功能名：GitHub 自动验收与新站接入
+---
+tense: 'living'
+describes: '功能名：GitHub 自动验收与新站接入'
+status: 'current'
+shaped-by: ['002']
+---
 
-## 状态
+# GitHub检查与Cloudflare发布
 
-🚧 开发中（本地检查已配置，远端检查与 Cloudflare 接入结果见 CI 文档）
+## 当前行为
 
-## 一句话说明
+GitHub工作流保留verify与budget检查，按docs/tools/full范围执行；文档治理包含在verify的check中，每周单独运行文档体检。Cloudflare静态Worker部署入口为npm run deploy，需要有效登录和目标权限，没有自动发布步骤。
 
-每次提交自动检查代码和文件体积，之后通过 PR 管理正式分支，并把新站连接到独立的 Cloudflare Pages 项目。
+## 操作路径
 
-## 用户操作路径
+1. 功能分支提交PR，查看verify和budget结果；失败时按日志修复。
+2. 同一PR准备最终功能说明及规格元数据，检查通过后由用户明确决定合并。
+3. 核对要部署的SHA、账户与独立测试地址；实际发布和恢复记录在PR。
 
-1. 查看私有仓库 `Vibes-college/Vibes` 中的分支或 PR。
-2. 等待 `verify` 和 `budget` 两项检查完成，失败时查看 Details。
-3. 检查全部通过后，由你决定是否合并。
-4. Cloudflare 连接 GitHub 和首次发布按 [CI.md](../CI.md) 的步骤操作，旧域名暂不切换。
+## 文件与依赖
 
-## 涉及的文件
+.github/workflows/check.yml、package.json、wrangler.jsonc、scripts/test-e2e.ts、scripts/docs-check.ts；[CI规则](../operations/CI.md)、[命令](../operations/CLI.md)。
 
-- [工作流](../../.github/workflows/check.yml)
-- [体积规则](../../scripts/budget-policy.ts)
-- [体积检查](../../scripts/budget.ts)
-- [浏览器运行器](../../scripts/test-e2e.ts)
-- [配置说明](../CONFIG.md)
-- [CI 与初始化状态](../CI.md)
+## 验收标准与测试
 
-## 验收标准
+CI出现两个独立结果，失败不发布；本地与云端verify均使用Playwright；docs检查有可信基线。tests/unit/docs-check.test.ts验证基线错误会失败，范围分类由tests/unit/check-scope.test.ts验证，网站回归见tests/explore.spec.ts。
 
-- [ ] GitHub 仓库为私有，并有 main 分支。
-- [ ] 每次 push / PR 自动执行 verify 与 budget，失败显示红叉。
-- [ ] main 的 PR 和必需检查保护在 GitHub 实际生效。
-- [ ] Cloudflare 新 pages.dev 地址能显示目录并进入文章。
-- [ ] 旧 vibes.college 继续由原项目服务。
+## 限制
 
-## 对应的自动化测试
-
-`tests/unit/budget.test.ts` 验证超出阈值和无效计量被拒绝；`npm run verify` 验证主要功能；`npm run budget` 检查实际构建体积。仓库权限和部署状态需读取平台结果，不能用本地测试代替。
-
-## 依赖的其他功能
-
-- [统一项目命令](project-commands.md)
-- [精选目录](explore-browse.md)
-
-## 已知问题 / 待办
-
-已复用 Chrome 中的 Cloudflare 登录，现停在 GitHub App 授权页，需本人确认；Pages Git 连接待完成。GitHub 已返回 HTTP 403，当前私有仓库需 GitHub Pro 才能启用分支保护，保护尚未生效，详见 [CI.md](../CI.md)。人与 AI 共用同一 GitHub 身份，不能仅靠分支规则识别是否本人点击合并。
-
-## 最近核对
-
-2026-09-05：main 已推送；首次 budget 通过，verify 缺失的 Node 类型依赖已在 [PR #1](https://github.com/Vibes-college/Vibes/pull/1) 补齐，待你合并；分支保护受套餐限制，Pages 等待本人授权。
+配置存在不代表远端连接、分支保护或部署已完成，平台状态需实际核对；人与AI共享身份不能靠规则区分谁点击合并。旧vibes.college的域名/路由不修改；正式切换需单独授权。
