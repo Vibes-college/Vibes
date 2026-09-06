@@ -2,7 +2,7 @@
 tense: 'living'
 describes: 'VIBES Constitution'
 status: 'current'
-shaped-by: ['002']
+shaped-by: ['002', '003']
 ---
 
 # VIBES Constitution
@@ -39,7 +39,7 @@ shaped-by: ['002']
 
 项目治理Markdown必须声明tense、describes、status。living只有当前行为与规则，原地维护；frozen记录变更意图与决策，开发中draft/in-progress可改，PR合并时冻结；scratch只放被忽略的.scratch，不提交。流水账属于git log和PR，不写入文档正文。
 
-每个specs/NNN-*合并后，必须把该功能的最终行为同步到docs/features/<name>.md。specs是历史，docs/features是现状；当前行为看后者，当初理由看前者。功能文档在同一PR准备最终内容，随代码合并生效，合并后核对一致；不得等待合并后才另补必要文档。
+功能文档以用户完成一件事的操作路径为单位，访客与维护者分组，设备、语言、空结果和错误分支写在所属路径；采用用户操作、涉及文件、验收、测试、依赖和已知问题的模板，必要流程图据真实实现绘制。每个specs/NNN-*合并后，必须把该功能的最终行为同步到docs/features/<name>.md。specs是历史，docs/features是现状；当前行为看后者，当初理由看前者。功能文档在同一PR准备最终内容，随代码合并生效，合并后核对一致；不得等待合并后才另补必要文档。
 
 已冻结正文及文件名不可修改或删除，允许更新status、追加amended-by及首次据实补记frozen-at。修正决定另建spec，新spec写amends，旧spec追加amended-by；living文档写shaped-by。最终待合并稿可准备merged元数据，但实际是否合并以Git/PR为准；frozen-at可省略，确认合并后才据实补记，不能预测日期。保护以main基线为准，不能把未合并稿声称已合并。
 
@@ -57,6 +57,8 @@ data-model.md、contracts/*.md、quickstart.md默认不生成；Agent仅在必�
 
 spec目录不设总行数上限，只在确有独立用户价值和验收边界时拆功能。功能说明120行、宪章100行、AGENTS150行是篇幅审阅提示，不阻断CI，也不据此删必要内容。每周CI报告治理文档与自有代码行数及比例，仅作观察，不设比例阈值、不据此告警或裁剪；上游资产与产品文章不计入。裁剪依据是重复、过期、时态混杂和无法导航，不以代码数量决定文档价值。
 
+当前文档合并或重命名时，可用legacy-feature-ids接续旧功能编号；编号只能唯一对应真实当前文档，不允许与当前文件编号冲突。历史规格的feature-ids经该映射查找现状，shaped-by来源校验与冻结保护保留，不因整理目录而改写历史。
+
 specs/README与docs/features/README必须双向对应真实目录和状态。docs:check检查标签、白名单、索引、关系、冻结正文等正确性规则，纳入check、verify和CI；错误不能绕过。索引是导航入口；发现导航缺陷及时修正，不限制排查读取次数。自然语言时态由审阅判断，不以词语黑名单拒绝文档。
 
 ## Governance
@@ -65,4 +67,4 @@ AGENTS是执行入口，本宪章维护长期规则，docs维护现状，specs�
 
 原则重大变更在LESSONS添加不可改写的决策条目；不记录工作流水账。版本按不兼容原则变更升主版本、新增原则升次版本、澄清升修订版本。模板、规则和检查必须一致，验收证据不得虚构；网站资源体积预算仍为硬性检查。
 
-**Version**: 3.0.1 | **Ratified**: 2026-09-05 | **Last Amended**: 2026-09-06
+**Version**: 3.1.0 | **Ratified**: 2026-09-05 | **Last Amended**: 2026-09-06

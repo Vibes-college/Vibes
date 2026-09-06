@@ -11,7 +11,7 @@ shaped-by: ['001']
 
 ## 当前环境
 
-开发流程工具为 Spec Kit 1.0.4，通过 `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v1.0.4` 安装到本机工具环境，不是 npm 或网站运行依赖。版本与初始化参数见 `.specify/init-options.json`；Codex skills 位于 `.agents/skills/`。升级需明确版本并审查生成文件差异，不能在初始化时覆盖项目决定。`.prettierignore` 排除上游受管理的技能、模板、清单与工作流，以保持安装清单哈希；项目自己维护的宪章和文档仍接受格式检查。使用与验收边界见 [Spec Kit 工作流](../features/spec-kit-workflow.md)。
+开发流程工具为 Spec Kit 1.0.4，通过 `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v1.0.4` 安装到本机工具环境，不是 npm 或网站运行依赖。版本与初始化参数见 `.specify/init-options.json`；Codex skills 位于 `.agents/skills/`。升级需明确版本并审查生成文件差异，不能在初始化时覆盖项目决定。`.prettierignore` 排除上游受管理的技能、模板、清单与工作流，以保持安装清单哈希；项目自己维护的宪章和文档仍接受格式检查。使用与验收边界见 [Spec Kit 工作流](../features/document-governance.md)。
 
 | 项目                | 当前配置                                 | 用途 / 修改位置                                              |
 | ------------------- | ---------------------------------------- | ------------------------------------------------------------ |

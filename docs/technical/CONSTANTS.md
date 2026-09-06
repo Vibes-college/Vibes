@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001']
+shaped-by: ['001', '003']
 ---
 
 # 常量、规则表与正则
@@ -84,6 +84,8 @@ scripts/docs-policy.ts定义白名单与篇幅指南：功能说明120行、宪�
 CI范围路径白名单在scripts/check-scope.ts，默认未知路径full；tests/unit/check-scope.test.ts覆盖删除/改名/新增。元数据只检查确定性规则，自然语言不设禁词，任务不要求固定位置和措辞；research-trigger接受非空的技术未知或重要取舍理由。frozen-at可省略，提供时校验有效日期，冻结后仅允许首次补记。
 
 开发阶段允许暂缺plan/tasks与未来功能文档；合并状态才要求文件完整及功能来源同步。
+
+scripts/docs-index.ts读取当前功能说明的可选legacy-feature-ids数组，允许合并/重命名后接续历史编号。编号须匹配`^[a-z][a-z0-9-]*$`，不得重复归属、与当前编号冲突或形成跳转链；已合并规格仍须找到真实现状且shaped-by包含来源。测试见tests/unit/docs-policy.test.ts。
 
 ## 搜索资源与托管容量
 

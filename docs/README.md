@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '仓库地图'
 status: 'current'
-shaped-by: ['002']
+shaped-by: ['002', '003']
 ---
 
 # 仓库地图
@@ -17,7 +17,7 @@ shaped-by: ['002']
 ## 当前系统说明
 
 - [产品定位](PRODUCT_OVERVIEW.md)、[架构](ARCHITECTURE.md)。
-- [功能索引](features/README.md)：当前行为、入口、验收标准、自动测试及shaped-by。
+- [功能索引](features/README.md)：按访客和维护者的操作路径查找五项能力，每篇提供步骤、响应流程、文件、验收、测试、依赖和限制。
 - technical/：[配置](technical/CONFIG.md)、[数据库](technical/DATABASE.md)、[规则](technical/CONSTANTS.md)、[集成](technical/INTEGRATIONS.md)。
 - operations/：[命令](operations/CLI.md)、[CI与发布](operations/CI.md)、[资产名称](operations/SECRETS_CHECKLIST.md)。
 - design-assets/：用户设计参考图片；[LESSONS](LESSONS.md)：不可改写的原则决策条目。

@@ -277,3 +277,46 @@ test('draft specs do not require placeholder plans, tasks or unimplemented featu
   );
   assert.throws(() => validateIndexes(docs), /缺少plan\/tasks/);
 });
+
+// 归并旧文档后历史编号仍须落到唯一现状，不能用别名掩盖来源或缺失。
+test('legacy feature ids resolve merged history and reject ambiguous ownership', () => {
+  const docs = catalog();
+  for (const [path, doc] of docs) {
+    if (path.startsWith('specs/001-example/'))
+      docs.set(
+        path,
+        document(path, { ...doc.meta, status: 'merged' }, doc.body.replace('- [ ]', '- [x]')),
+      );
+  }
+  const index = docs.get('specs/README.md')!;
+  docs.set(
+    index.path,
+    document(index.path, index.meta, '| [001](001-example/spec.md) | merged | example |\n'),
+  );
+  const original = docs.get('docs/features/example.md')!;
+  docs.delete(original.path);
+  const merged = document('docs/features/journey.md', {
+    ...original.meta,
+    'shaped-by': ['001'],
+    'legacy-feature-ids': ['example'],
+  });
+  docs.set(merged.path, merged);
+  const fi = docs.get('docs/features/README.md')!;
+  docs.set(fi.path, document(fi.path, fi.meta, '| [Journey](journey.md) | current | / | 001 |\n'));
+  assert.doesNotThrow(() => validateIndexes(docs));
+  for (const ids of [[], ['journey'], ['example', 'example'], ['../example']]) {
+    docs.set(merged.path, document(merged.path, { ...merged.meta, 'legacy-feature-ids': ids }));
+    assert.throws(() => validateIndexes(docs), /不存在|冲突|重复|无效/);
+  }
+  docs.set(merged.path, document(merged.path, { ...merged.meta, 'legacy-feature-ids': 'example' }));
+  assert.throws(() => validateIndexes(docs), /数组/);
+  docs.set(merged.path, document(merged.path, { ...merged.meta, 'shaped-by': [] }));
+  docs.set(fi.path, document(fi.path, fi.meta, '| [Journey](journey.md) | current | / | — |\n'));
+  assert.throws(() => validateIndexes(docs), /缺少合并规格/);
+  docs.set(merged.path, merged);
+  docs.set('docs/features/another.md', document('docs/features/another.md', { ...merged.meta }));
+  assert.throws(() => validateIndexes(docs), /重复归属/);
+  docs.delete('docs/features/another.md');
+  docs.set(original.path, original);
+  assert.throws(() => validateIndexes(docs), /冲突/);
+});

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002']
+shaped-by: ['002', '003']
 ---
 
 # 自动检查与发布规则
@@ -22,6 +22,8 @@ shaped-by: ['002']
 PR基线为目标分支SHA，push为事件前一提交，新分支回退origin/main；checkout获取完整历史。DOCS_BASE_REF用于冻结检查，CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
 
 每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。
+
+功能文档可按操作路径归并；旧编号通过legacy-feature-ids追溯，缺失对应、重复编号或来源缺失仍失败。历史规格正文与现有冻结检查不变。
 
 ## docs:check红色意味着什么
 
