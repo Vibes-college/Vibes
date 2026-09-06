@@ -1,118 +1,89 @@
-import { spawnSync } from 'node:child_process';
-import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
-import { resolve, join } from 'node:path';
-import { run, wrangler } from './local-tools.ts';
-import { releaseTarget, requireReleaseChecks } from './release-policy.ts';
-import { siteConfig } from '../src/config/site.ts';
-import { assetSizes } from './asset-sizes.ts';
+import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { capture, github, repository } from './release-utils.ts';
+import { releaseTarget } from './release-policy.ts';
 import { assertAssetBudget } from './budget-policy.ts';
+import { assetSizes } from './asset-sizes.ts';
+import { prepareArtifact } from './release-artifact.ts';
+import { smokeRelease } from './release-smoke.ts';
+import { run, wrangler } from './local-tools.ts';
 
-const [action, version, ...extra] = process.argv.slice(2);
-if (
-  !['deploy', 'restore'].includes(action) ||
-  extra.length ||
-  (action === 'deploy' && version) ||
-  (action === 'restore' && !version)
-)
-  throw new Error('Usage: npm run deploy | npm run release:restore -- <recorded-version-id>');
-if (['VIBES_CONTENT_DIR', 'VIBES_TAXONOMY_FILE', 'VIBES_OUT_DIR'].some((name) => process.env[name]))
-  throw new Error('Refusing to deploy isolated fixture content');
-if (process.env.SITE_URL && process.env.SITE_URL !== releaseTarget.origin)
-  throw new Error('SITE_URL differs from the allowed test target');
-siteConfig(releaseTarget.origin, true);
-process.env.SITE_URL = releaseTarget.origin;
-process.env.VIBES_DEPLOY = '1';
-process.env.CLOUDFLARE_ACCOUNT_ID = releaseTarget.accountId;
-const evidence = 'resources/evidence/001-multilingual-explore/releases';
-mkdirSync(evidence, { recursive: true });
-mkdirSync('.scratch', { recursive: true });
-const config = resolve('.scratch/release-config.json');
-writeFileSync(
-  config,
-  JSON.stringify({
-    name: releaseTarget.workerName,
-    account_id: releaseTarget.accountId,
-    compatibility_date: '2026-09-05',
-    workers_dev: true,
-    routes: [],
-    assets: { directory: resolve('dist'), not_found_handling: '404-page' },
-  }),
-);
-
-if (action === 'restore') {
-  if (!/^[a-f0-9-]{36}$/.test(version!)) throw new Error('Invalid version id');
-  const record = join(evidence, `${version}.json`);
-  if (!existsSync(record))
-    throw new Error('Only a locally recorded, verified version can be restored');
-  const saved = JSON.parse(readFileSync(record, 'utf8'));
+// 阶段预览在本机完整验收后上传版本，不切生产域名或提升正式版本。
+async function main(): Promise<void> {
+  const [action, argument, ...extra] = process.argv.slice(2);
+  if (extra.length) throw new Error('Unexpected release arguments');
+  if (action === 'deploy')
+    throw new Error(
+      'Production deploys automatically after main checks; use release:preview for a PR',
+    );
+  if (action === 'restore') {
+    if (!argument || !/^[a-f0-9-]{36}$/.test(argument))
+      throw new Error('A recorded version id is required');
+    const record = JSON.parse(readFileSync(`resources/evidence/releases/${argument}.json`, 'utf8'));
+    if (
+      !record.verified ||
+      record.version !== argument ||
+      record.origin !== releaseTarget.origin ||
+      record.accountId !== releaseTarget.accountId
+    )
+      throw new Error('Rollback requires a verified production version record for this target');
+    run(process.execPath, [wrangler, 'rollback', argument, '--yes']);
+    await smokeRelease(releaseTarget.origin, record.sha);
+    console.log(`Restored and verified ${record.sha}`);
+    return;
+  }
+  if (action !== 'preview' || !argument || !/^[1-9]\d*$/.test(argument))
+    throw new Error('Usage: npm run release:preview -- <PR number>');
   if (
-    saved.origin !== releaseTarget.origin ||
-    saved.accountId !== releaseTarget.accountId ||
-    saved.version !== version
+    ['VIBES_CONTENT_DIR', 'VIBES_TAXONOMY_FILE', 'VIBES_OUT_DIR'].some((name) => process.env[name])
   )
-    throw new Error('Release record target mismatch');
-  run(process.execPath, [wrangler, 'versions', 'view', version!, '--config', config, '--json']);
-  run(process.execPath, [
-    wrangler,
-    'rollback',
-    version!,
-    '--config',
-    config,
-    '--yes',
-    '--message',
-    'Authorized independent test-site recovery exercise',
-  ]);
-  console.log(
-    `Restored recorded version ${version} at ${releaseTarget.origin}; verify visible pages before reporting success.`,
-  );
-} else {
-  clean();
+    throw new Error('Cannot publish fixture content');
+  if (capture('git', ['status', '--porcelain', '--untracked-files=normal']).trim())
+    throw new Error(
+      'Preview requires a clean checkout; preserve user files and use an isolated worktree if needed',
+    );
   const sha = capture('git', ['rev-parse', 'HEAD']).trim();
-  const result = JSON.parse(
-    capture('gh', ['api', `repos/Vibes-college/Vibes/commits/${sha}/check-runs?per_page=100`]),
-  );
-  requireReleaseChecks(sha, result.check_runs);
+  const pr = github(`pulls/${argument}`) as {
+    state: string;
+    head: { sha: string; repo: { full_name: string } };
+  };
+  if (pr.state !== 'open' || pr.head.sha !== sha || pr.head.repo.full_name !== repository)
+    throw new Error('Preview must match the current pushed head of an open repository PR');
+  process.env.SITE_URL = releaseTarget.origin;
+  process.env.VIBES_DEPLOY = '1';
+  process.env.CLOUDFLARE_ACCOUNT_ID = releaseTarget.accountId;
   run('npm', ['run', 'verify']);
   run('npm', ['run', 'budget']);
-  clean();
-  if (capture('git', ['rev-parse', 'HEAD']).trim() !== sha)
-    throw new Error('Source changed during release verification');
-  const assets = assetSizes('dist');
-  assertAssetBudget(assets);
-  const log = capture(process.execPath, [wrangler, 'deploy', '--config', config]);
-  console.log(log);
-  const deployedVersion = log.match(/Current Version ID:\s*([a-f0-9-]{36})/i)?.[1];
-  writeFileSync(join(evidence, `${sha}.log`), log);
-  if (!deployedVersion)
-    throw new Error(
-      'Deployment outcome needs inspection: version id missing; do not redeploy blindly',
-    );
-  writeFileSync(
-    join(evidence, `${deployedVersion}.json`),
-    JSON.stringify(
-      {
-        sha,
-        version: deployedVersion,
-        ...releaseTarget,
-        assets,
-        checkedAt: new Date().toISOString(),
-        checks: ['local verify', 'local budget', 'same-SHA GitHub verify/budget'],
-      },
-      null,
-      2,
-    ),
-  );
+  if (
+    capture('git', ['rev-parse', 'HEAD']).trim() !== sha ||
+    capture('git', ['status', '--porcelain']).trim()
+  )
+    throw new Error('Source changed during preview verification');
+  const latest = github(`pulls/${argument}`) as { head: { sha: string } };
+  if (latest.head.sha !== sha) throw new Error('PR changed before preview upload');
+  appendFileSync('dist/_headers', '\n/*\n  X-Robots-Tag: noindex, nofollow\n');
+  prepareArtifact(sha);
+  assertAssetBudget(assetSizes('dist'));
+  const log = capture(process.execPath, [
+    wrangler,
+    'versions',
+    'upload',
+    '--preview-alias',
+    `pr-${argument}`,
+  ]);
+  mkdirSync('resources/evidence/releases', { recursive: true });
+  writeFileSync(`resources/evidence/releases/preview-${argument}-${sha}.log`, log);
+  const urls = log.match(/https:\/\/[^\s]+\.workers\.dev/g) || [];
+  const url = urls.find((value) => value.includes(`pr-${argument}-`)) || urls.at(-1);
+  if (!url)
+    throw new Error('Preview upload outcome uncertain; inspect log without blindly retrying');
+  await smokeRelease(url, sha);
   console.log(
-    `Deployed ${sha} to ${releaseTarget.origin}; verify visible pages before reporting success.`,
+    `Preview verified: ${url} (SHA ${sha}); update PR description with this stage and its limits.`,
   );
 }
-function capture(command: string, args: string[]): string {
-  const result = spawnSync(command, args, { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 });
-  if (result.error || result.status !== 0)
-    throw new Error(result.stderr || result.stdout || String(result.error));
-  return result.stdout;
-}
-function clean() {
-  if (capture('git', ['status', '--porcelain']).trim())
-    throw new Error('Release requires a clean committed checkout');
-}
+
+// 上传或验收失败直接报告，绝不把版本上传当成生产上线。
+main().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : error);
+  process.exitCode = 1;
+});

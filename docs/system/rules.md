@@ -2,7 +2,24 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001']
+shaped-by: ['001', '003']
+code-sources:
+  [
+    'src/lib/content/',
+    'src/lib/i18n/',
+    'src/scripts/',
+    'src/styles/',
+    'src/config/site.ts',
+    'public/_headers',
+    'scripts/budget-policy.ts',
+    'playwright.config.ts',
+    'scripts/docs-check.ts',
+    'scripts/docs-frontmatter.ts',
+    'scripts/docs-index.ts',
+    'scripts/docs-policy.ts',
+    'scripts/docs-sources.ts',
+  ]
+code-revision: '76ecc749264e35b8a1972c3f30aa279f6d4f276ce5a343ce4685b5bc5f83be3d'
 ---
 
 # 常量、规则表与正则
@@ -16,7 +33,7 @@ shaped-by: ['001']
 - `src/lib/content/revision.ts`对规范化原文与影响理解的字段计算SHA256；排序和其他语言变化不影响摘要。已发布译文摘要不一致时标待复核，不自动撤回或更新。
 - 搜索为Pagefind语言全文索引，与tag分类取交集；构建限定[data-pagefind-body]根，零发布时不生成索引并移除旧索引；不再用卡片文本过滤。q最长160字符、输入延迟150ms、请求15秒超时、每批24项；索引/分片重试释放失败实例；程序下载失败重试刷新页面保留q，清除模块失败缓存；结果序号隔离旧请求。规则在src/scripts/explore.ts与search.ts。
 - 目录路径`/{locale}/`、分类`/{locale}/tags/{tagId}/`、分页`page/{n}/`、详情`/{locale}/works/{id}/`；旧根路径转中文，旧type转分类。UI文案在src/lib/i18n/messages.ts。
-- `src/config/site.ts`统一来源；发布要求独立HTTPS SITE_URL，拒绝localhost、vibes.college和非纯origin地址。canonical去查询，语言替代链接仅含实际版本，sitemap不含搜索或草稿。
+- `src/config/site.ts`统一来源；发布要求HTTPS SITE_URL，拒绝localhost和非纯origin地址，vibes.college已获授权。canonical去查询，语言替代链接仅含实际版本，sitemap不含搜索或草稿。
 - 外部目标HTTPS且新标签noopener noreferrer；事实无有效目标显示纯文本。正文锚点在构建时核对，翻译缺失值显示原文标注。
 - CSP只为Pagefind WebAssembly加入`wasm-unsafe-eval`，普通eval仍禁用；定义public/_headers。
 
@@ -85,6 +102,8 @@ CI范围路径白名单在scripts/check-scope.ts，默认未知路径full；test
 
 开发阶段允许暂缺plan/tasks与未来功能文档；合并状态才要求文件完整及功能来源同步。
 
+scripts/docs-index.ts读取当前功能说明的可选legacy-feature-ids数组，允许合并/重命名后接续历史编号。编号须匹配`^[a-z][a-z0-9-]*$`，不得重复归属、与当前编号冲突或形成跳转链；已合并规格仍须找到真实现状且shaped-by包含来源。测试见tests/unit/docs-policy.test.ts。
+
 ## 搜索资源与托管容量
 
 scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。首屏JS仍保守计入_astro全部自有JS；双语首页取gzip较大者，原预算不变。
@@ -92,3 +111,15 @@ scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全
 scripts/budget-policy.ts及tests/unit/budget.test.ts校验Workers静态资源：Free每版本20,000文件，Paid100,000文件，单文件最多25MiB；默认采用Free，实际账户套餐须发布前核对。依据[Cloudflare官方限制](https://developers.cloudflare.com/workers/platform/limits/)。普通budget报告数量，受控发布按账户容量阻断。
 
 scripts/measure-explore.ts在.scratch隔离生成5000×2语料、构建和系统分配的独立空闲端口验收后清理；scripts/search-performance.ts以390×844、1.6Mbps下行/750Kbps上行/150msRTT/CPU4倍测每语言5次冷/热，目标中位数≤3000/1000ms，失败不放宽。
+
+## 可读代码说明的对应规则
+
+scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序与样式、taxonomy、SQL、静态代码资产、根配置与工作流），作品正文和work.json不重复当作架构说明。code-sources是实际文件或以斜杠结束的目录，禁止越界路径、空列表和无匹配条目；code-revision是路径与字节的SHA256。全体结构代码必须有说明覆盖，当前文档本地链接必须存在。
+
+新规格实现完成状态为complete，保留旧merged兼容；complete进入main后同样冻结，已完成任务不允许继续in-progress。实现/合并/发布是不同事实；测试与完整命令见checks-and-release.md。
+
+## 交付与失败经验
+
+生产origin固定https://vibes.college，worker/account见scripts/release-policy.ts与wrangler.jsonc；ci-policy.ts只允许main push确切SHA和两个成功检查进入生产。release-artifact.ts验证产物SHA与摘要；release-smoke.ts每请求10秒超时、最多6轮、轮间5秒。cleanup-policy.ts拒绝未合并/未部署/合并未进入线上/额外提交/脏文件/占用/其他open PR依赖；具体占用由本机AI核对后显式声明；真实配置与证据等ignored文件受保护，当前目录及其子目录/符号链接不得被移除。
+
+docs/DECISIONS.md只能追加，原LESSONS历史迁移时保留旧正文；新的docs/LESSONS.md为living。docs-lessons.ts要求经验三行、日期有效、现象/原因/证据/措施/状态齐全，不超过30条；已转化另需验证和转化日期。30天后的有效性和是否适合清退由AI审阅，不自动删除。记录条件见经验文档，规则不能证明叙事真实性。

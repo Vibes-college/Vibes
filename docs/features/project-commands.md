@@ -1,28 +1,102 @@
 ---
 tense: 'living'
-describes: '功能名：开发、检查、验收与部署命令'
+describes: '检查与发布网站'
 status: 'current'
-shaped-by: ['001', '002']
+shaped-by: ['001', '002', '003', '004']
+legacy-feature-ids: ['delivery-setup', 'local-database', 'site-metadata']
+code-sources:
+  [
+    'package.json',
+    'scripts/release.ts',
+    'scripts/release-policy.ts',
+    'scripts/release-ci.ts',
+    'scripts/release-utils.ts',
+    'scripts/release-artifact.ts',
+    'scripts/release-smoke.ts',
+    'scripts/ci-policy.ts',
+    'scripts/cleanup-task.ts',
+    'scripts/cleanup-policy.ts',
+    'scripts/build.ts',
+    'scripts/budget.ts',
+    'scripts/budget-policy.ts',
+    'scripts/test-e2e.ts',
+    'scripts/database.ts',
+    'scripts/local-tools.ts',
+    'scripts/check-scope.ts',
+    'playwright.config.ts',
+    '.github/workflows/',
+    'src/config/site.ts',
+    'src/pages/sitemap.xml.ts',
+    'src/pages/robots.txt.ts',
+  ]
+code-revision: '8e042bd0f444cbf42c6196b95d0f52f5fa87ae1b840fc4a28766a7d5e1023147'
 ---
 
-# 开发、检查、验收与部署命令
+# 功能名：检查与发布网站
 
-## 当前行为
+## 一句话说明
 
-npm run dev启动开发，preview构建并启动本地Cloudflare；check依次类型、lint、格式、docs:check和单元测试，失败即停止。verify接check→db:reset→test:e2e；本地与CI均为Playwright Chromium。budget构建并校验体积。
+维护者从Draft PR查看进度与阶段预览，确认合并后由main检查和部署更新正式站，再由AI完成上线验收与清理。
 
-deploy经scripts/release.ts校验干净提交、同SHA云端及本地检查，再向固定独立Worker发布；release:restore恢复已记录版本。dry-run可验证打包而不发布。完整verify会清空本地测试库，需Playwright Chromium及4322端口可用。
+## 用户操作路径
 
-## 文件与依赖
+1. AI在首版spec形成时建立Draft PR，给用户可打开的链接和任务摘要；当前进度、阻塞、下一步、预览范围放PR描述，重要决定和证据放评论。
+2. 本地按[检查规则](../system/checks-and-release.md)验证；Draft云端运行独立check，不把跳过的verify/budget当作完成验收。阶段、交接和暂停前提交推送，不逐commit强制push。
+3. 可体验阶段由AI运行`npm run release:preview -- <PR号>`：干净且已推送的PR head在本机verify/budget通过后上传预览版本，提供实际URL与SHA；不会提升生产。未跟踪的用户文件不删除，必要时用隔离worktree。
+4. 完成后转Ready，按整个PR差异运行verify/budget（文档和工具按范围缩减）；Ready之后再改代码仍重新检查。用户决定合并，AI不自动合并。
+5. 网站变更合并到main后，检查通过才自动发布同SHA验收产物至`https://vibes.college`；纯治理文档不重建网站，最新线上版本需核对。部署复用预算job产物，不重复构建，拒绝过时main版本；main按实际上线版本累计差异，避免后续文档提交掩盖尚未发布的网页改动。
+6. 云端检查线上SHA与中英文首页；AI再核对浏览、搜索、详情、语言与404，PR记录真实结果。失败或不确定状态停止收尾，保留恢复证据；不能将上传成功当作页面验收。
+7. 需要恢复时使用`npm run release:restore -- <已记录生产版本>`，从CI artifact取回记录后核对目标与版本；首次切换前旧Worker保留，具体恢复路径见交付说明。
+8. 上线验收后AI运行`npm run cleanup:task -- <PR号>`查看候选，确认无额外提交、无脏文件或其他任务占用，再执行清理；当前checkout先切main。跨对话等待通过本机跟进完成，未变化保持安静。分支删除不删除Git历史或回滚版本。
 
-package.json、scripts/test-e2e.ts、scripts/docs-check.ts、scripts/check-scope.ts、scripts/build.ts、scripts/validate-content.ts、scripts/release.ts、根目录检查/预览配置与.github/workflows/check.yml。命令详细参数见 [CLI](../operations/CLI.md)；依赖 [数据库](local-database.md)、[搜索](explore-filter.md)、[详情](article-read.md)、[404](not-found.md) 和 [文档治理](document-governance.md)。
+### 操作之后发生什么
 
-## 验收与测试
+```mermaid
+flowchart TD
+  A[首版spec与Draft PR] --> B[本地开发，轻量检查]
+  B --> C[可体验阶段上传预览，更新PR]
+  C --> D[转Ready，检查整个PR]
+  D --> E[用户决定合并]
+  E --> F[main检查成功]
+  F --> G[发布同SHA产物至vibes.college]
+  G --> H[线上版本与页面验收]
+  H --> I[核对干净空闲，清理本任务资源]
+  D -->|失败| B
+  G -->|失败或不确定| J[保留证据与资源，修复或恢复]
+  H -->|失败| J
+```
 
-命令打印实际地址，任一步失败不继续；浏览器缺失/断言失败不冒充通过。文档CLI基线和失败退出由tests/unit/docs-check.test.ts验证，其余完整编排通过实际verify/budget验证。部署与模拟检查结果不能等同上线。
+## 涉及的文件
 
-CI按差异缩减检查；npm run verify本身始终完整运行。范围规则及失败追踪见[CI](../operations/CI.md)。
+- 检查和触发：`.github/workflows/check.yml`、`scripts/check-scope.ts`、`scripts/ci-policy.ts`。
+- 发布：`scripts/release.ts`、`scripts/release-ci.ts`、`scripts/release-policy.ts`、`scripts/release-utils.ts`、`scripts/release-artifact.ts`、`scripts/release-smoke.ts`、`wrangler.jsonc`。
+- 清理：`scripts/cleanup-task.ts`、`scripts/cleanup-policy.ts`；服务占用由本机AI核对。
+- 构建、容量和本地测试：`scripts/build.ts`、`scripts/budget.ts`、`scripts/budget-policy.ts`、`scripts/asset-sizes.ts`、`scripts/test-e2e.ts`、`scripts/database.ts`、`scripts/local-tools.ts`、`playwright.config.ts`、`wrangler.local.jsonc`。
+- 来源与静态元数据：`src/config/site.ts`、`astro.config.mjs`、`src/layouts/Layout.astro`、`src/pages/sitemap.xml.ts`、`src/pages/robots.txt.ts`；测试D1并非网站数据源，见[数据模型](../system/content-model.md)。
 
-## 已验证环境
+## 验收标准
 
-2026-09-05本地与GitHub的verify/budget通过；独立[Cloudflare测试站](https://vibes-explore.topologic-relay.workers.dev/zh/)已部署。中文24件、英文1件，线上中英搜索、语言切换、旧路径、404与元数据核对通过；内容修订与恢复上一版本的页面和索引也已实测。原始证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，发布摘要见PR；旧vibes.college未切换。
+- [x] Draft PR页面可见清单，阶段预览对应真实SHA并可操作。
+- [ ] Draft与Ready触发分离，分支push不重复CI；失败/旧SHA/产物漂移阻断发布。
+- [x] 正式域名构建与来源校验通过，发布前保持明确目标和容量门槛。
+- [ ] main自动发布实际成功，线上版本与页面验收通过，再执行清理。
+- [x] 清理拒绝未合并、未上线、额外提交、脏文件/ignored配置/依赖PR，占用由AI核对声明；保护测试通过，保留恢复版本。
+- [x] 本地D1只用于命令验收，拒绝线上参数；2026-09-05本地verify验证有效，网站不读取此库。
+
+2026-09-06本地verify（52单元、26浏览器通过、2按设计跳过）、budget、Wrangler生产配置dry-run通过；专用worktreecheck再次通过。Draft运行34028631687通过；预览372ced7经ego-browser验证搜索、详情、语言切换及noindex，canonical指向正式域名；Ready的最新verify/budget结果见PR #3。首次生产待用户合并后执行，不沿用旧测试站发布勾选。历史证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，仅说明旧流程当时通过。
+
+## 对应的自动化测试
+
+- `tests/unit/check-scope.test.ts`：整个差异范围、未知路径与删除/改名。
+- `tests/unit/delivery-git.test.ts`：真实Git覆盖累计main差异、ignored配置和目录/符号链接保护。
+- `tests/unit/delivery.test.ts`：触发模式、生产事件与SHA、产物完整性、清理拒绝和经验/决策保护。
+- `tests/unit/site-config.test.ts`、`tests/unit/budget.test.ts`、`tests/unit/database.test.ts`：origin、容量、本地库边界。
+- `tests/explore.spec.ts`：浏览、搜索、详情、语言、404、元数据与响应式。
+
+## 依赖的其他功能
+
+[规划开发与维护文档](document-governance.md)提供规格和handoff；上线验收走[浏览与搜索作品](explore-browse.md)和[阅读作品详情](article-read.md)。
+
+## 已知问题 / 待办
+
+合并、自动发布、线上体验和本机清理是不同状态；未发生的步骤不能提前勾选。GitHub main保护和production仅main准入已于2026-09-06实查配置，发布仍须等用户合并后验证。5000件双语规模样例超过免费档文件数，小目录能上线不代表大目录容量已解决，不自动升级套餐。

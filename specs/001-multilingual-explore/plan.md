@@ -1,7 +1,8 @@
 ---
 tense: 'frozen'
 describes: '多语言Explore实施方案'
-status: 'in-progress'
+status: 'merged'
+frozen-at: '2026-09-06'
 amended-by: []
 ---
 

@@ -1,6 +1,10 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "vibes-explore",
+  "account_id": "d2338644c67dab28bdc257b40d0fa115",
   "compatibility_date": "2026-09-04",
+  "workers_dev": false,
+  "preview_urls": true,
+  "routes": [{ "pattern": "vibes.college", "custom_domain": true }],
   "assets": { "directory": "./dist", "not_found_handling": "404-page" },
 }

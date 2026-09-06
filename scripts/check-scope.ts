@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, readFileSync } from 'node:fs';
+import { checkMode } from './ci-policy.ts';
 import { pathToFileURL } from 'node:url';
 
 export type CheckScope = 'docs' | 'tools' | 'full';
@@ -48,11 +49,41 @@ export function changedScope(base: string, cwd = process.cwd()): CheckScope {
   }
 }
 
+// main按已上线版本累计比较，避免旧代码发布被较新的纯文档提交挤掉后永远漏发。
+export async function productionScope(cwd = process.cwd()): Promise<CheckScope> {
+  try {
+    const response = await fetch('https://vibes.college/__release.json?t=' + Date.now(), {
+      signal: AbortSignal.timeout(10000),
+      cache: 'no-store',
+    });
+    if (!response.ok) return 'full';
+    const { sha } = (await response.json()) as { sha?: string };
+    if (!sha || !/^[a-f0-9]{40}$/.test(sha)) return 'full';
+    execFileSync('git', ['merge-base', '--is-ancestor', sha, 'HEAD'], { cwd, stdio: 'ignore' });
+    return changedScope(sha, cwd);
+  } catch {
+    return 'full';
+  }
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const scope =
     process.env.GITHUB_EVENT_NAME === 'workflow_dispatch'
       ? 'full'
-      : changedScope(process.env.CHECK_BASE_REF || 'origin/main');
+      : process.env.GITHUB_EVENT_NAME === 'push' && process.env.GITHUB_REF === 'refs/heads/main'
+        ? await productionScope()
+        : changedScope(process.env.CHECK_BASE_REF || 'origin/main');
   console.log(`检查范围：${scope}（docs=文档；tools=基础检查；full=完整验收和体积）`);
-  if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `scope=${scope}\n`);
+  if (process.env.GITHUB_OUTPUT) {
+    const event = process.env.GITHUB_EVENT_PATH
+      ? JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'))
+      : {};
+    const mode = checkMode({
+      name: process.env.GITHUB_EVENT_NAME || '',
+      ref: process.env.GITHUB_REF || '',
+      draft: event.pull_request?.draft === true,
+    });
+    if (mode === 'none') throw new Error('Unsupported CI event');
+    appendFileSync(process.env.GITHUB_OUTPUT, `scope=${scope}\nmode=${mode}\n`);
+  }
 }

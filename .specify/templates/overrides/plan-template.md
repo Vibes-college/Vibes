@@ -2,12 +2,12 @@
 tense: 'living'
 describes: '项目文档生成模板'
 status: 'current'
-shaped-by: ['002']
+shaped-by: ['002', '004']
 ---
 
 # Implementation Plan: [功能名]
 
-生成最终文件时替换元数据为tense=frozen、status=draft、describes=技术决定、amended-by=[]，删除shaped-by。与spec状态一致，frozen-at可省略，确认实际合并后才据实补记。
+生成最终文件时替换元数据为tense=frozen、status=draft、describes=技术决定、amended-by=[]，删除shaped-by。与spec状态一致，实现完成用complete；frozen-at可省略，实际合并状态看Git。
 
 ## 技术决定与职责
 
@@ -20,3 +20,7 @@ shaped-by: ['002']
 ## 验证与交付
 
 按CI范围规则选择必要检查，说明运行环境和预期结果。代码与功能现状同PR生效，用户决定合并；不得把待测目标写成已通过。
+
+## PR工作台与经验复核
+
+首版spec形成后即创建Draft PR，给用户可打开链接和任务摘要；详细任务以tasks.md为准，PR描述同步当前进度/阻塞/下一步/预览，阶段与交接前推送。不按commit数拆PR或触发预览。列出与docs/LESSONS.md相关经验的应对措施；无相关项写明无，不强行造条目。实现与合并/部署状态分开，合并后上线验收和清理记录在PR，不为事后勾选修改冻结清单。

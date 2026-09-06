@@ -4,6 +4,7 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { test } from 'node:test';
+import { parseDocument } from '../../scripts/docs-frontmatter.ts';
 
 const checker = resolve('scripts/docs-check.ts');
 
@@ -15,20 +16,20 @@ function markdown(meta: Record<string, unknown>, body: string): string {
 }
 
 // 临时仓库只包含最小规格和两个索引，不访问真实仓库内容或网络。
-function fixture(): { root: string; base: string } {
+function fixture(status = 'merged'): { root: string; base: string } {
   const root = mkdtempSync(join(tmpdir(), 'vibes-docs-'));
   const living = { tense: 'living', describes: 'Current', status: 'current', 'shaped-by': ['001'] };
   const frozen = {
     tense: 'frozen',
     describes: 'Decision',
-    status: 'merged',
+    status,
     'frozen-at': '2026-09-05',
     'amended-by': [],
   };
   const files = {
     'docs/features/example.md': markdown(living, '# Current\n'),
     'docs/features/README.md': markdown(living, '| [Example](example.md) | current | / | 001 |\n'),
-    'specs/README.md': markdown(living, '| [001](001-example/spec.md) | merged | example |\n'),
+    'specs/README.md': markdown(living, `| [001](001-example/spec.md) | ${status} | example |\n`),
     'specs/001-example/spec.md': markdown(
       { ...frozen, 'feature-ids': ['example'], amends: [], 'approved-artifacts': [] },
       '# Original intent\n',
@@ -63,8 +64,12 @@ function fixture(): { root: string; base: string } {
 }
 
 // 真正启动CLI并检查退出码，验证保护没有停留在纯函数测试。
-function run(root: string, base: string): { status: number | null; output: string } {
-  const result = spawnSync(process.execPath, ['--experimental-strip-types', checker], {
+function run(
+  root: string,
+  base: string,
+  args: string[] = [],
+): { status: number | null; output: string } {
+  const result = spawnSync(process.execPath, ['--experimental-strip-types', checker, ...args], {
     cwd: root,
     env: { ...process.env, DOCS_BASE_REF: base },
     encoding: 'utf8',
@@ -114,6 +119,87 @@ test('docs CLI rejects missing metadata in untracked files and an unavailable ba
     const invalid = run(root, 'does-not-exist');
     assert.notEqual(invalid.status, 0);
     assert.match(invalid.output, /基线不可读取/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+// complete进入可信基线后与历史merged一样冻结，无需合并后再补状态提交。
+test('docs CLI freezes complete specs in the real main baseline', () => {
+  const { root, base } = fixture('complete');
+  try {
+    assert.equal(run(root, base).status, 0);
+    const path = join(root, 'specs/001-example/plan.md');
+    writeFileSync(path, readFileSync(path, 'utf8') + '\nChanged frozen intent.\n');
+    assert.match(run(root, base).output, /冻结正文/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+// 实际CLI必须抓住源码更新而文档未复核，不能只在纯函数样例中成立。
+test('docs CLI catches source drift and uncovered additions in a real checkout', () => {
+  const { root, base } = fixture();
+  try {
+    mkdirSync(join(root, 'src'));
+    const source = join(root, 'src/a.ts');
+    writeFileSync(source, 'export const answer = 1;\n');
+    const path = join(root, 'docs/features/example.md');
+    const page = parseDocument('docs/features/example.md', readFileSync(path, 'utf8'));
+    const meta = { ...page.meta, 'code-sources': ['src/a.ts'], 'code-revision': 'pending' };
+    writeFileSync(path, markdown(meta, page.body));
+    assert.notEqual(run(root, base).status, 0);
+    const printed = run(root, base, ['--revisions']);
+    assert.equal(printed.status, 0);
+    assert.match(readFileSync(path, 'utf8'), /pending/);
+    const revision = JSON.parse(printed.output)['docs/features/example.md'];
+    writeFileSync(path, markdown({ ...meta, 'code-revision': revision }, page.body));
+    assert.equal(run(root, base).status, 0);
+    writeFileSync(source, 'export const answer = 2;\n');
+    const drift = run(root, base);
+    assert.notEqual(drift.status, 0);
+    assert.match(drift.output, /源码已变化/);
+    writeFileSync(join(root, 'src/new.ts'), 'export {};\n');
+    assert.match(run(root, base).output, /缺少对应说明/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+// 分支上的complete仅表示实现就绪，进入main后才冻结，允许审阅时继续修订。
+test('a complete branch remains editable until its commit reaches main', () => {
+  const { root } = fixture('draft');
+  const git = (args: string[]) =>
+    execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    git(['checkout', '-b', 'work']);
+    for (const name of ['spec', 'plan', 'tasks']) {
+      const path = join(root, `specs/001-example/${name}.md`);
+      const parsed = parseDocument(path, readFileSync(path, 'utf8'));
+      writeFileSync(path, markdown({ ...parsed.meta, status: 'complete' }, parsed.body));
+    }
+    const index = join(root, 'specs/README.md');
+    writeFileSync(index, readFileSync(index, 'utf8').replace('| draft |', '| complete |'));
+    git(['add', '.']);
+    git([
+      '-c',
+      'user.name=Docs Test',
+      '-c',
+      'user.email=docs@example.invalid',
+      'commit',
+      '-m',
+      'ready',
+    ]);
+    const ready = git(['rev-parse', 'HEAD']).trim();
+    const plan = join(root, 'specs/001-example/plan.md');
+    const original = readFileSync(plan, 'utf8');
+    writeFileSync(plan, original + '\nReview adjustment.\n');
+    assert.equal(run(root, ready).status, 0);
+    writeFileSync(plan, original);
+    git(['checkout', 'main']);
+    git(['merge', '--ff-only', 'work']);
+    writeFileSync(plan, original + '\nFrozen change.\n');
+    assert.match(run(root, ready).output, /冻结正文/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

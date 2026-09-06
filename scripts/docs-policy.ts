@@ -12,17 +12,16 @@ const livingFiles = new Set([
   'README.md',
   '.specify/memory/constitution.md',
   'docs/README.md',
-  'docs/PRODUCT_OVERVIEW.md',
-  'docs/ARCHITECTURE.md',
+  'docs/LESSONS.md',
+  '.github/pull_request_template.md',
+  'docs/PROJECT_ANALYSIS.md',
   'specs/README.md',
   'resources/README.md',
-  'docs/technical/CONFIG.md',
-  'docs/technical/DATABASE.md',
-  'docs/technical/CONSTANTS.md',
-  'docs/technical/INTEGRATIONS.md',
-  'docs/operations/CLI.md',
-  'docs/operations/CI.md',
-  'docs/operations/SECRETS_CHECKLIST.md',
+  'docs/system/configuration.md',
+  'docs/system/content-model.md',
+  'docs/system/rules.md',
+  'docs/system/interfaces.md',
+  'docs/system/checks-and-release.md',
 ]);
 export const featurePattern = /^docs\/features\/([a-z][a-z0-9-]*)\.md$/;
 export const specPattern = /^specs\/(\d{3}-[a-z0-9-]+)\//;
@@ -55,7 +54,7 @@ export function expectedTense(path: string, documents: Map<string, Document>): s
     /^\.specify\/templates\/overrides\/[a-z-]+-template\.md$/.test(path)
   )
     return 'living';
-  if (path === 'docs/LESSONS.md') return 'frozen';
+  if (path === 'docs/DECISIONS.md') return 'frozen';
   const folder = path.match(specPattern)?.[1];
   if (!folder) return undefined;
   const relative = path.slice(`specs/${folder}/`.length);
@@ -84,7 +83,9 @@ export function validateDocument(doc: Document, documents: Map<string, Document>
     throw new Error(`${doc.path}: tense/describes无效，应为${expected}`);
   }
   const statuses =
-    expected === 'living' ? ['current', 'stale'] : ['draft', 'in-progress', 'merged', 'superseded'];
+    expected === 'living'
+      ? ['current', 'stale']
+      : ['draft', 'in-progress', 'complete', 'merged', 'superseded'];
   if (!statuses.includes(String(doc.meta.status))) throw new Error(`${doc.path}: status无效`);
   listField(doc, expected === 'living' ? 'shaped-by' : 'amended-by');
   if (
@@ -112,7 +113,7 @@ export function reviewDocumentSize(doc: Document): string | undefined {
   if (limit && lines > limit)
     return `${doc.path}: ${lines}行，建议审阅职责、重复及导航，不机械裁剪`;
   if (
-    doc.path === 'docs/LESSONS.md' &&
+    doc.path === 'docs/DECISIONS.md' &&
     (doc.body.match(/^## L-\d{3}\b/gm)?.length ?? 0) > documentReviewGuides.lessons
   ) {
     return `${doc.path}: 条目较多，审阅索引；禁止删除或改写冻结记录凑数量`;

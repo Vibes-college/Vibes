@@ -31,15 +31,33 @@ function assertIndex(
     }
     if (spec) {
       const source = documents.get(`specs/${id}/spec.md`)!;
-      const names = listField(source, 'feature-ids').sort().join(', ');
+      const names = [...listField(source, 'feature-ids')].sort().join(', ');
       if (!row.split('|').some((cell) => cell.trim() === names))
         throw new Error(`${path}: ${id}影响功能不一致`);
     }
   }
 }
 
+// 当前说明可归并旧功能；每个编号只能归属一份真实文档，避免历史指向歧义。
+function featureDocuments(documents: Map<string, Document>): Map<string, Document> {
+  const result = new Map<string, Document>();
+  for (const doc of documents.values()) {
+    const id = doc.path.match(featurePattern)?.[1];
+    if (!id) continue;
+    const legacy =
+      doc.meta['legacy-feature-ids'] === undefined ? [] : listField(doc, 'legacy-feature-ids');
+    for (const key of [id, ...legacy]) {
+      if (!/^[a-z][a-z0-9-]*$/.test(key)) throw new Error(`${doc.path}: 无效旧功能编号${key}`);
+      if (result.has(key)) throw new Error(`${doc.path}: 功能编号${key}重复归属或与当前编号冲突`);
+      result.set(key, doc);
+    }
+  }
+  return result;
+}
+
 // 验证规格编号、互相修订关系、功能来源、合并清单及目录完整性。
 export function validateIndexes(documents: Map<string, Document>): void {
+  const resolvedFeatures = featureDocuments(documents);
   const features = new Map<string, string>();
   const specs = new Map<string, string>();
   const ids = new Map<string, Document>();
@@ -83,9 +101,15 @@ export function validateIndexes(documents: Map<string, Document>): void {
     }
 
     const tasks = documents.get(`${folder}tasks.md`);
-    const closed = ['merged', 'superseded'].includes(String(spec.meta.status));
+    const closed = ['complete', 'merged', 'superseded'].includes(String(spec.meta.status));
     if (closed && (!tasks || !documents.has(`${folder}plan.md`)))
       throw new Error(`${folder}: 合并规格缺少plan/tasks`);
+    if (
+      spec.meta.status === 'in-progress' &&
+      tasks?.body.match(/^- \[x\]/m) &&
+      !tasks.body.match(/^- \[ \]/m)
+    )
+      throw new Error(`${spec.path}: 全部任务已完成，须将实现状态更新为complete`);
     if (closed && tasks?.body.match(/^- \[ \]/m))
       throw new Error(`${tasks.path}: 合并清单仍有未完成项`);
     for (const doc of documents.values()) {
@@ -93,7 +117,7 @@ export function validateIndexes(documents: Map<string, Document>): void {
         throw new Error(`${doc.path}: 状态与spec不一致`);
     }
     for (const feature of listField(spec, 'feature-ids')) {
-      const doc = documents.get(`docs/features/${feature}.md`);
+      const doc = resolvedFeatures.get(feature);
       if (closed && !doc) throw new Error(`${spec.path}: 合并时影响功能${feature}不存在`);
       if (closed && doc && !listField(doc, 'shaped-by').includes(id))
         throw new Error(`${doc.path}: 缺少合并规格${id}的shaped-by`);

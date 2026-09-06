@@ -1,27 +1,29 @@
 ---
 tense: 'living'
-describes: '功能现状索引'
+describes: '按用户操作路径查找功能'
 status: 'current'
-shaped-by: ['002']
+shaped-by: ['002', '003']
 ---
 
-# 功能现状索引
+# 功能索引
 
-这里描述当前行为；当初为什么这样设计，从各页shaped-by找到 [specs索引](../../specs/README.md)。未列来源编号的功能属于规格化之前的现有实现，不伪造编号。current表示文档描述现状，不代表功能全部上线；限制在对应页说明。
+先选你要完成的事情，再打开对应文档。每篇从一条完整操作路径出发，说明结果、文件、验收、测试、依赖和限制；手机、语言与异常情况写在对应路径里。
 
-| 功能                                              | status  | 入口           | shaped-by |
-| ------------------------------------------------- | ------- | -------------- | --------- |
-| [两段式详情与来源阅读](article-read.md)           | current | 见功能操作路径 | 001       |
-| [精选内容维护](content-maintenance.md)            | current | 见功能操作路径 | 001       |
-| [GitHub 自动验收与新站接入](delivery-setup.md)    | current | 见功能操作路径 | 001, 002  |
-| [文档时态与冻结检查](document-governance.md)      | current | 见功能操作路径 | 002       |
-| [精选目录浏览](explore-browse.md)                 | current | 见功能操作路径 | 001       |
-| [搜索与分类筛选](explore-filter.md)               | current | 见功能操作路径 | 001       |
-| [本地测试库重建与迁移](local-database.md)         | current | 见功能操作路径 | —         |
-| [找不到页面的提示](not-found.md)                  | current | 见功能操作路径 | 001       |
-| [开发、检查、验收与部署命令](project-commands.md) | current | 见功能操作路径 | 001, 002  |
-| [手机阅读与基础键盘操作](responsive-access.md)    | current | 见功能操作路径 | 001       |
-| [页面标题与搜索引擎地址清单](site-metadata.md)    | current | 见功能操作路径 | 001       |
-| [Spec Kit开发工作流](spec-kit-workflow.md)        | current | 见功能操作路径 | 002       |
+## 访客使用网站
 
-运行方法见 [CLI](../operations/CLI.md)，全仓位置见 [仓库地图](../README.md)。功能文件与本表一一对应；新增/删除功能必须同PR同步，规格合并后正文描述最终行为。模板为_TEMPLATE.md，不是产品功能。
+| 要完成的事情                        | 入口                                     | status  | shaped-by |
+| ----------------------------------- | ---------------------------------------- | ------- | --------- |
+| [浏览与搜索作品](explore-browse.md) | /zh/ 或 /en/：浏览、分类、搜索，再点卡片 | current | 001, 003  |
+| [阅读作品详情](article-read.md)     | 作品卡片或 /{locale}/works/{id}/         | current | 001, 003  |
+
+## 维护者维护网站
+
+| 要完成的事情                                 | 入口                               | status  | shaped-by          |
+| -------------------------------------------- | ---------------------------------- | ------- | ------------------ |
+| [维护作品内容](content-maintenance.md)       | 让AI编辑作品文件，再校验原文与译文 | current | 001, 003           |
+| [检查与发布网站](project-commands.md)        | 检查改动、提交审阅、获准发布与恢复 | current | 001, 002, 003, 004 |
+| [规划开发与维护文档](document-governance.md) | 明确需求、读取现状、计划与维护说明 | current | 002, 003, 004      |
+
+current表示描述当前实现，不代表所有验收项都已通过。复选框保留最近一次仍有效的验收及日期，不按对话轮次重置；未勾选表示缺少该项有效验收，不等于未实现。模板为docs/features/_TEMPLATE.md。
+
+完整命令见[CLI](../system/checks-and-release.md)，运行配置见[仓库地图](../README.md)，历史理由见[规格索引](../../specs/README.md)。历史规格中的旧功能编号由当前文档legacy-feature-ids接续，旧规格正文不改写；不为旧编号保留空壳文档。
