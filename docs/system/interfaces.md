@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '接口与外部服务'
 status: 'current'
-shaped-by: ['001', '003', '004']
+shaped-by: ['001', '003', '004', '005']
 code-sources:
   [
     'src/scripts/search.ts',
@@ -13,7 +13,7 @@ code-sources:
     'scripts/release-policy.ts',
     'src/components/WorkDetail.astro',
   ]
-code-revision: '87de69387a169b139604482b0cbb37ee7e70c5db565d8d95128f2001ac3a8e62'
+code-revision: '5e3a300d4898f4c4233c771cae157c857582d8e8feaa2fe2fbac9fc246424263'
 ---
 
 # 接口与外部服务
@@ -63,7 +63,7 @@ code-revision: '87de69387a169b139604482b0cbb37ee7e70c5db565d8d95128f2001ac3a8e62
 - 前端会检查结果必须属于本站、当前语言和合法作品 ID，并转义文本后才生成卡片。
 - Pagefind 加载或分片失败时，页面显示错误并允许重试；单次操作超过约 15 秒会被视为失败。
 
-实现：`src/scripts/search.ts`、`src/scripts/explore.ts`。Pagefind 的 `init`、`destroy` 和 `search` 是依赖库的浏览器接口，不是 VIBES 对外承诺的 API。
+实现：`src/scripts/search.ts`、`src/scripts/explore.ts`。Pagefind 的 `createInstance`、`init`、`destroy` 和 `search` 是依赖库的浏览器接口，不是 VIBES 对外承诺的 API。
 
 ## 4 维护和发布命令接口
 
@@ -89,3 +89,5 @@ release-utils.ts通过gh api GET读取固定仓库Vibes-college/Vibes的pulls/{n
 ## 新增服务时需要说明
 
 用途、调用文件、方法与地址、输入/返回、认证变量名、超时/重试/限流、失败时的反馈和对应测试。只列名字，不保存秘密值。作品的外链不等于平台集成。
+
+站内导航和提前准备使用同站详情HTML GET，没有新增业务API。Astro公共`navigate`与`prefetch`接口分别处理导航和HTTP预取；搜索加载器按zh/en返回独立Pagefind实例，创建时核对当前文档语言，过时加载以AbortError终止。

@@ -133,10 +133,21 @@ test('detail overview, disclosure, and adjacent navigation', async ({ page }) =>
 test('touch swipe navigates to the next work and the previous button returns', async ({
   page,
   context,
+  browserName,
   isMobile,
 }) => {
   test.skip(!isMobile, '触摸路径只在手机模拟项目执行');
   await page.goto('/works/transformers-js/');
+  if (browserName === 'webkit') {
+    // Playwright没有WebKit原生滑动API，使用同一DOM触摸事件验证处理逻辑。
+    const detail = page.locator('[data-work-detail]');
+    await detail.dispatchEvent('touchstart', { touches: [{ clientX: 270, clientY: 430 }] });
+    await detail.dispatchEvent('touchend', { changedTouches: [{ clientX: 80, clientY: 432 }] });
+    await expect(page).toHaveURL(/works\/neural-networks\//);
+    await page.locator('[data-direction="previous"]').click();
+    await expect(page).toHaveURL(/works\/transformers-js\//);
+    return;
+  }
   const session = await context.newCDPSession(page);
   try {
     await session.send('Input.dispatchTouchEvent', {

@@ -16,7 +16,7 @@ Explore帮助访客发现AI作品与应用、理解能力边界。网站使用As
 Node22.20+，首次npm ci，开发npm run dev，本地Cloudflare预览npm run preview。
 
 - npm run check：类型、lint、格式、文档治理、单元测试。
-- npm run verify：check、本地测试D1重建、浏览器验收；本地与CI均为Playwright Chromium。
+- npm run verify：check、本地测试D1重建、浏览器验收；本地与CI均为Playwright Chromium和WebKit。
 - npm run budget：网站构建和体积预算。
 - npm run docs:check：源码对应、有效链接、时态、索引与冻结保护。
 

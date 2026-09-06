@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '给维护者阅读的项目总览与代码导航'
 status: 'current'
-shaped-by: ['001', '002', '003']
+shaped-by: ['001', '002', '003', '005']
 code-sources:
   [
     'package.json',
@@ -14,7 +14,7 @@ code-sources:
     'src/scripts/search.ts',
     'scripts/build.ts',
   ]
-code-revision: '7719f865d23d9c8d624ddedab7259a2d145005b6f777d6fffb6fef73b3922847'
+code-revision: 'dd47c7de3075753fbdd9521a9d77ea02c3a043aa964ebf8cdb57571143eb4365'
 ---
 
 # VIBES项目总览
@@ -62,7 +62,7 @@ flowchart TD
   F --> H[点击卡片进入完整详情，展开已有正文]
 ```
 
-构建框架是Astro，语言是TypeScript，样式是普通CSS。没有React、Tailwind或线上业务数据库；Node与依赖版本以[运行配置](system/configuration.md)所链接的package.json/锁文件为准。
+构建框架是Astro，语言是TypeScript，样式是普通CSS。站内阅读使用Astro ClientRouter连续切换并有限预取详情，搜索仍按需加载；规则和缓存边界见[系统规则](system/rules.md)。没有React、Tailwind或线上业务数据库；Node与依赖版本以[运行配置](system/configuration.md)所链接的package.json/锁文件为准。
 
 访客请求不会触发登录、订单或内容提交服务。robots.txt和sitemap.xml也在构建时生成，并非动态业务接口；说明见[接口与外部服务](system/interfaces.md)。
 

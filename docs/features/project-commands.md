@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '检查与发布网站'
 status: 'current'
-shaped-by: ['001', '002', '003', '004']
+shaped-by: ['001', '002', '003', '004', '005']
 legacy-feature-ids: ['delivery-setup', 'local-database', 'site-metadata']
 code-sources:
   [
@@ -29,7 +29,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '8e042bd0f444cbf42c6196b95d0f52f5fa87ae1b840fc4a28766a7d5e1023147'
+code-revision: '3330e5bad8b30fe3cfdf1c3f6cb6cd045008780bcedd886cb50e534c30710476'
 ---
 
 # 功能名：检查与发布网站
@@ -41,7 +41,7 @@ code-revision: '8e042bd0f444cbf42c6196b95d0f52f5fa87ae1b840fc4a28766a7d5e1023147
 ## 用户操作路径
 
 1. AI在首版spec形成时建立Draft PR，给用户可打开的链接和任务摘要；当前进度、阻塞、下一步、预览范围放PR描述，重要决定和证据放评论。
-2. 本地按[检查规则](../system/checks-and-release.md)验证；Draft云端运行独立check，不把跳过的verify/budget当作完成验收。阶段、交接和暂停前提交推送，不逐commit强制push。
+2. 浏览器验收包含桌面Chromium与手机Chromium/WebKit模拟，真实iPhone另验；本地按[检查规则](../system/checks-and-release.md)验证；Draft云端运行独立check，不把跳过的verify/budget当作完成验收。阶段、交接和暂停前提交推送，不逐commit强制push。
 3. 可体验阶段由AI运行`npm run release:preview -- <PR号>`：干净且已推送的PR head在本机verify/budget通过后上传预览版本，提供实际URL与SHA；不会提升生产。未跟踪的用户文件不删除，必要时用隔离worktree。
 4. 完成后转Ready，按整个PR差异运行verify/budget（文档和工具按范围缩减）；Ready之后再改代码仍重新检查。用户决定合并，AI不自动合并。
 5. 网站变更合并到main后，检查通过才自动发布同SHA验收产物至`https://vibes.college`；纯治理文档不重建网站，最新线上版本需核对。部署复用预算job产物，不重复构建，拒绝过时main版本；main按实际上线版本累计差异，避免后续文档提交掩盖尚未发布的网页改动。

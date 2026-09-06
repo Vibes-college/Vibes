@@ -4,6 +4,15 @@ import { navigate } from 'astro:transitions/client';
 import { onPageLoad } from './page-lifecycle';
 import { watchReadingLinks } from './reading-prefetch';
 
+let traversalPosition: { left: number; top: number } | undefined;
+document.addEventListener('astro:before-preparation', (event) => {
+  // 在旧DOM被替换前保存目标历史位置，避免短暂变矮的结果页触发scrollend覆盖它。
+  traversalPosition =
+    event.navigationType === 'traverse'
+      ? { left: history.state?.scrollX || 0, top: history.state?.scrollY || 0 }
+      : undefined;
+});
+
 onPageLoad((signal) => {
   const element = document.querySelector<HTMLElement>('.explore-main');
   if (!element) return;
@@ -189,7 +198,10 @@ onPageLoad((signal) => {
     updateLinks();
     // A bookmarked search is itself search intent; a normal homepage still loads no search resources.
     if (search.value.trim()) {
-      const position = { left: history.state?.scrollX || 0, top: history.state?.scrollY || 0 };
+      const position = traversalPosition || {
+        left: history.state?.scrollX || 0,
+        top: history.state?.scrollY || 0,
+      };
       search.focus({ preventScroll: true });
       const pending = runSearch();
       const ticket = sequence;

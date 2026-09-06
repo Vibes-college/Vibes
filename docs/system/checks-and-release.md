@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003', '004']
+shaped-by: ['002', '003', '004', '005']
 code-sources:
   [
     'package.json',
@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'b5c2d406104049070eaad9d8fe1ac1d6c7a32956ad443810c3273fb5c52671d2'
+code-revision: '7baaf635ec76f7e6cedafe96efdf6ea08d7ff9d116b3b3fca147c203f6c8adb7'
 ---
 
 # 检查与发布
@@ -87,24 +87,24 @@ AI在用户合并后继续收尾；跨对话等待时建立本机跟进，状态
 
 ## 完整命令与操作说明
 
-需要Node22.20或兼容更新版本。首次或依赖变化后运行`npm ci`；首次运行E2E时执行`npx playwright install chromium`，Linux CI使用`--with-deps`。Playwright已在锁文件中，不新增npm依赖。
+需要Node22.20或兼容更新版本。首次或依赖变化后运行`npm ci`；首次运行E2E时执行`npx playwright install chromium webkit`，Linux CI使用`--with-deps`。Playwright已在锁文件中，不新增npm依赖。
 
-| 命令                                | 行为与使用场景                                                   |
-| ----------------------------------- | ---------------------------------------------------------------- |
-| `npm run dev`                       | Astro开发服务，地址以终端为准，通常为127.0.0.1:4321              |
-| `npm run preview`                   | 构建后以wrangler.local.jsonc启动本地4322预览，Ctrl+C停止         |
-| `npm run docs:check`                | 治理文档标签、目录/索引、关系、冻结保护；篇幅仅提示              |
-| `npm run format:check`              | 检查格式，不修改文件                                             |
-| `npm run check`                     | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                 |
-| `npm run test:e2e`                  | 构建→Playwright启动专用本地Worker→桌面/手机Chromium测试→清理服务 |
-| `npm run verify`                    | check→db:reset→test:e2e，完整验收，失败停止；不部署              |
-| `npm run budget`                    | 构建并检查脚本和首页体积；限值见[常量](../system/rules.md)       |
-| `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/full，不执行检查   |
-| `npm run db:reset`                  | 删除本项目本机测试D1数据，迁移并填入固定样例                     |
-| `npm run db:migrate`                | 只应用本地未执行迁移；不接受线上参数                             |
-| `npm run deploy`                    | 拒绝本地直接生产部署，main检查成功后自动发布                     |
-| `npm run release:preview -- <PR号>` | 本地完整验收后上传PR预览版本，不提升生产                         |
-| `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle        |
+| 命令                                | 行为与使用场景                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------- |
+| `npm run dev`                       | Astro开发服务，地址以终端为准，通常为127.0.0.1:4321                              |
+| `npm run preview`                   | 构建后以wrangler.local.jsonc启动本地4322预览，Ctrl+C停止                         |
+| `npm run docs:check`                | 治理文档标签、目录/索引、关系、冻结保护；篇幅仅提示                              |
+| `npm run format:check`              | 检查格式，不修改文件                                                             |
+| `npm run check`                     | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                                 |
+| `npm run test:e2e`                  | 构建→Playwright启动专用本地Worker→桌面Chromium及手机Chromium/WebKit测试→清理服务 |
+| `npm run verify`                    | check→db:reset→test:e2e，完整验收，失败停止；不部署                              |
+| `npm run budget`                    | 构建并检查脚本和首页体积；限值见[常量](../system/rules.md)                       |
+| `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/full，不执行检查                   |
+| `npm run db:reset`                  | 删除本项目本机测试D1数据，迁移并填入固定样例                                     |
+| `npm run db:migrate`                | 只应用本地未执行迁移；不接受线上参数                                             |
+| `npm run deploy`                    | 拒绝本地直接生产部署，main检查成功后自动发布                                     |
+| `npm run release:preview -- <PR号>` | 本地完整验收后上传PR预览版本，不提升生产                                         |
+| `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                        |
 
 按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`verify`始终表示完整验收，不会按路径悄悄缩减。日常工具修改运行check；页面和测试基础设施修改运行verify与budget。
 
@@ -112,7 +112,7 @@ AI在用户合并后继续收尾；跨对话等待时建立本机跟进，状态
 
 本地与CI使用同一配置和测试文件，无需ego lite。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
 
-手机项目是Chromium设备模拟，包含触摸横滑和320px列表/详情检查，不代表真实iPhone或Safari通过。ego-browser仅在有视觉或体验验收目的时按需使用，不是自动化E2E前提。`npx playwright test --headed`可查看测试过程，运行前先构建。
+手机项目包含Chromium与WebKit设备模拟，包含触摸横滑和320px列表/详情检查，不代表真实iPhone Safari通过。导航缓存测试使用隔离空持久profile验证缓存复用，桌面项目另等待真实60秒TTL验证过期后读取。ego-browser仅在有视觉或体验验收目的时按需使用，不是自动化E2E前提。`npx playwright test --headed`可查看测试过程，运行前先构建。
 
 ## 数据库和部署边界
 

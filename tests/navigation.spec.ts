@@ -181,6 +181,7 @@ test('completed prefetch is reused in a persistent browser context', async ({
   playwright,
   browserName,
 }, testInfo) => {
+  test.setTimeout(90_000);
   // WebKit临时context没有磁盘缓存；用独立空profile验证普通浏览模式，不读取用户数据。
   const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = testInfo.project.use;
   const context = await playwright[browserName].launchPersistentContext(
@@ -215,7 +216,7 @@ test('completed prefetch is reused in a persistent browser context', async ({
       first,
     );
     await page.locator(`.card-link[href="${first}"]`).click();
-    await expect(page.locator('h1')).toHaveText('Attention Is All You Need');
+    await expect(page.locator('h1')).toHaveText('Attention Is All You Need', { timeout: 1000 });
     expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
     const cached = await page.evaluate(
       ({ path, count }) => {
@@ -232,7 +233,61 @@ test('completed prefetch is reused in a persistent browser context', async ({
       { path: first, count },
     );
     expect(cached).toBe(true);
+    if (testInfo.project.name === 'desktop-chromium') {
+      // 经过真实60秒TTL后再访问，浏览器应重新向服务器读取或验证，仍保持连续导航。
+      await page.waitForTimeout(61_000);
+      await page.goBack();
+      await page.locator(`.card-link[href="${first}"]`).click();
+      await expect(page.locator('h1')).toHaveText('Attention Is All You Need');
+      expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+      expect(
+        await page.evaluate((path) => {
+          const entries = performance
+            .getEntriesByType('resource')
+            .filter((r) => new URL(r.name).pathname === path) as PerformanceResourceTiming[];
+          return entries.at(-1)!.transferSize;
+        }, first),
+      ).toBeGreaterThan(0);
+    }
   } finally {
     await context.close();
   }
+});
+
+test('new-tab and external links preserve native navigation semantics', async ({
+  page,
+  context,
+}) => {
+  await page.goto(first);
+  const origin = await page.evaluate(() => performance.timeOrigin);
+  const external = page.locator('a[target="_blank"]').first();
+  const destination = await external.getAttribute('href');
+  expect(new URL(destination!).origin).not.toBe(new URL(page.url()).origin);
+  // 截断外站加载，不依赖外部服务可用性；仍由真实链接打开新标签页。
+  await context.route(destination!, (route) => route.fulfill({ body: 'External destination' }));
+  const popupPromise = page.waitForEvent('popup');
+  await external.click();
+  const popup = await popupPromise;
+  await expect(popup).toHaveURL(destination!);
+  await popup.close();
+  // 无头浏览器不提供系统快捷键开标签行为；检查路由器不会取消修饰键点击。
+  const uncancelled = await page.locator('[data-direction="next"]').evaluate((link) =>
+    ['ctrlKey', 'metaKey'].map((key) => {
+      const event = new MouseEvent('click', { bubbles: true, cancelable: true, [key]: true });
+      let native = false;
+      window.addEventListener(
+        'click',
+        (observed) => {
+          native = !observed.defaultPrevented;
+          observed.preventDefault(); // 路由器处理之后阻止浏览器默认动作，只检查事件归属。
+        },
+        { once: true },
+      );
+      link.dispatchEvent(event);
+      return native;
+    }),
+  );
+  expect(uncancelled).toEqual([true, true]);
+  await expect(page).toHaveURL(new RegExp(first));
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
 });

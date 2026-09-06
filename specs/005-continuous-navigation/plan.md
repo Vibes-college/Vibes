@@ -15,7 +15,7 @@ src/scripts/page-lifecycle.ts提供每次astro:page-load初始化和before-swap�
 
 src/scripts/reading-prefetch.ts使用公开astro:prefetch API，自动观察每个列表前6个链接（可见300ms后才预取），不自动扩散到整个目录。其余链接按悬停/聚焦/触摸意图准备，搜索动态结果同样适用。每批自动候选最多6个而非承诺网络并发队列。目标仅本站作品详情，无外站或Pagefind资源；连接信息可用时遵守saveData/2g。框架与浏览器负责重复预取去重、HTTP缓存和失败后的普通导航。
 
-public/_headers对zh/en公开页面设max-age=60,must-revalidate，使Safari fetch预取的已完成响应短暂可复用；不更改CDN长期策略或哈希资源immutable。原生prefetch曾失败或过期后不再次主动预取，实际点击正常加载，不承诺在途请求合并。
+public/_headers对zh/en公开页面设max-age=60,must-revalidate，使Safari fetch预取的已完成响应短暂可复用；哈希资源继续使用immutable长期缓存。原生prefetch曾失败或过期后不再次主动预取，实际点击正常加载，不承诺在途请求合并。
 
 ## 宪章检查与预算
 

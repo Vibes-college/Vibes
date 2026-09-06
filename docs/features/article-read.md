@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '阅读作品详情'
 status: 'current'
-shaped-by: ['001', '003']
+shaped-by: ['001', '003', '005']
 code-sources:
   [
     'src/components/WorkDetail.astro',
@@ -10,6 +10,9 @@ code-sources:
     'src/data/article-sections.ts',
     'src/data/work-facts.ts',
     'src/scripts/detail.ts',
+    'src/scripts/page-lifecycle.ts',
+    'src/scripts/reading-prefetch.ts',
+    'tests/navigation.spec.ts',
     'src/styles/detail.css',
     'src/styles/article.css',
     'src/lib/content/relations.ts',
@@ -17,7 +20,7 @@ code-sources:
     'src/pages/[locale]/works/[id].astro',
     'tests/explore.spec.ts',
   ]
-code-revision: '2c295475d5868fa1a9bfd065d964f0964d551ceba223fd76f7bab36b3a6ce2dd'
+code-revision: 'e2dc7194fd7684145e8a8af3e132d8f99be523ce8f2d492fddee1253aa045f88'
 ---
 
 # 功能名：阅读作品详情
@@ -40,9 +43,9 @@ code-revision: '2c295475d5868fa1a9bfd065d964f0964d551ceba223fd76f7bab36b3a6ce2dd
 
 ```mermaid
 flowchart TD
-  A[点击卡片或打开作品网址] --> B[浏览器请求完整详情HTML]
+  A[点击卡片或打开作品网址] --> B[读取目标详情HTML，优先复用新鲜缓存]
   B --> C{该语言版本是否已发布}
-  C -->|是| D[显示概览与折叠正文]
+  C -->|是| D[站内切换更新页面，直接访问加载文档，显示概览与折叠正文]
   C -->|否| E[返回404和目录入口]
   D --> F[点击章节标题]
   F --> G[展开页面里已经存在的正文]
@@ -52,7 +55,7 @@ flowchart TD
   J --> K[打开同语言相邻作品，首尾不循环]
 ```
 
-正文在构建时已转为HTML，展开章节不再向服务器请求正文；原生折叠控件不依赖JavaScript。语言和相邻作品切换是完整页面导航。对应`src/components/WorkDetail.astro`、`src/data/article-sections.ts`和`src/scripts/detail.ts`。
+正文在构建时已转为HTML，展开章节不再向服务器请求正文；原生折叠控件不依赖JavaScript。启用脚本时，站内链接、语言和相邻作品通过Astro ClientRouter保留文档运行环境并更新页面、标题与网址；导航失败回退普通打开，无脚本仍使用真实链接。详情的可见相邻链接会提前准备；规则见[预取与缓存](../system/rules.md)。对应`src/components/WorkDetail.astro`、`src/data/article-sections.ts`和`src/scripts/detail.ts`。
 
 ## 涉及的文件
 
@@ -72,7 +75,9 @@ flowchart TD
 - [x] 旧译文待复核、事实没有译文时有明确提示。
 - [x] 320px宽度无整页横向溢出，宽表格在自身区域滚动。
 
-最近有效验收：2026-09-05本地Playwright桌面/手机模拟验证阅读、切换和语言边界；2026-09-06 ego-browser验证实际正文展开和中英切换。键盘完整路径、读屏和所有手势排除区域没有完整专项验收，未覆盖项保持未勾选；相关产品代码未变，已有证据保留，不表示今天重新测试。
+连续阅读的历史滚动、反复搜索与语言切换由`tests/navigation.spec.ts`覆盖；旧页面监听与未完成搜索在切换时失效。
+
+最近有效验收：2026-09-06 Playwright桌面Chromium、手机Chromium/WebKit覆盖阅读、相邻切换、语言和历史；ego-browser验证目录进入、相邻往返与中英切换，文档身份保持一致。手机Chromium使用原生触摸输入，WebKit横滑为DOM事件模拟。完整键盘路径、读屏和所有手势排除区域尚无专项验收，未覆盖项保持未勾选。证据在`resources/evidence/005-continuous-navigation/`。
 
 ## 对应的自动化测试
 
@@ -93,4 +98,4 @@ flowchart TD
 
 ## 已知问题 / 待办
 
-手机触摸测试使用Chromium模拟；真机Safari和读屏尚未完成专项验收。未提供的事实不会自动补全；来源与内容质量仍需编辑判断。
+手机触摸测试使用Chromium和WebKit模拟；真机Safari和读屏尚未完成专项验收。未提供的事实不会自动补全；来源与内容质量仍需编辑判断。
