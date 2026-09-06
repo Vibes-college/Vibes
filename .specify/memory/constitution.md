@@ -23,7 +23,7 @@ shaped-by: ['002', '003']
 
 ### IV. 验收与发布
 
-验证按影响：治理文档检查标签/链接/格式，工具代码运行check，网页及测试/构建基础设施运行verify与budget；不确定时完整验证，必需检查失败不得跳过。自动化E2E本地与CI统一Playwright；ego-browser按需用于体验和视觉审阅；实现、测试、部署分别据实报告。使用分支与PR，以完整且相关的工作为审阅单位，不按对话轮次或commit数量拆PR；允许多次提交和小修正批量交付。必要功能说明、源码对应和实现完成状态随代码交付；只有可选日期或纯措辞可批量补记，不能延后现状同步。未经用户明确指令不得合并或直接推main。发布核对同一SHA的检查和实际目标；新Cloudflare测试站不切换旧vibes.college。
+验证按影响：治理文档检查标签/链接/格式，工具代码运行check，网页及测试/构建基础设施运行verify与budget；不确定时完整验证，必需检查失败不得跳过。自动化E2E本地与CI统一Playwright；ego-browser按需用于体验和视觉审阅；实现、测试、部署分别据实报告。使用分支与PR，以完整且相关的工作为审阅单位，不按对话轮次或commit数量拆PR；允许多次提交和小修正批量交付。必要功能说明、源码对应和实现完成状态随代码交付；只有可选日期或纯措辞可批量补记，不能延后现状同步。未经用户明确指令不得合并或直接推main。发布核对同一SHA的检查和实际目标；用户于2026-09-06授权vibes.college为正式目标；main必要检查成功后自动发布并验收，之后才清理本目标资源。
 
 ### V. 可维护性与异议义务
 
@@ -45,9 +45,9 @@ shaped-by: ['002', '003']
 
 ### 位置与模板
 
-living白名单：AGENTS.md、README.md、宪章、docs/README.md、PROJECT_ANALYSIS.md、`docs/features/*.md`、`docs/system/*.md`、specs/README.md、resources/README.md和项目模板覆盖层。详细名单由scripts/docs-policy.ts锁定。
+living白名单：AGENTS.md、README.md、宪章、docs/README.md、PROJECT_ANALYSIS.md、docs/LESSONS.md、.github/pull_request_template.md、`docs/features/*.md`、`docs/system/*.md`、specs/README.md、resources/README.md和项目模板覆盖层。详细名单由scripts/docs-policy.ts锁定。
 
-frozen白名单：specs/NNN-_/spec.md、plan.md、tasks.md、research.md、checklists/_.md；docs/LESSONS.md只存冻结决策条目，不混入活清单，条目数30仅提示检查导航，不限制追加且不删冻结记录。research即ADR，仅在技术未知或重要取舍需要长期解释时生成，research-trigger说明理由，不另建decisions目录。
+frozen白名单：specs/NNN-_/spec.md、plan.md、tasks.md、research.md、checklists/_.md；docs/DECISIONS.md保存原LESSONS中的冻结决策，迁移时完整保留旧正文，之后只能追加。docs/LESSONS.md为living失败经验，最多30条、固定三行；达到重复两次/回滚/耗时超一小时/用户同问题抱怨两次之一才记录，已转化项有验证和转化日期，满30天且仍有效时复核清退。research即ADR，仅在技术未知或重要取舍需要长期解释时生成，research-trigger说明理由，不另建decisions目录。
 
 data-model.md、contracts/*.md、quickstart.md默认不生成；Agent仅在必要时于spec的approved-artifacts列出并在正文说明用途（字段表示规格采纳，不等同用户授权）；不逐文件请求批准。项目模板通过.specify/templates/overrides裁剪；上游安装资产不改写。产品文章使用内容schema，第三方/上游Markdown使用其自身格式，显式排除治理检查；不能把自有治理文档放进排除目录规避规则。
 
@@ -65,10 +65,16 @@ spec目录不设总行数上限，只在确有独立用户价值和验收边界�
 
 specs/README与docs/features/README必须双向对应真实目录和状态。docs:check检查标签、白名单、索引、关系、冻结正文等正确性规则，纳入check、verify和CI；错误不能绕过。索引是导航入口；发现导航缺陷及时修正，不限制排查读取次数。自然语言时态由审阅判断，不以词语黑名单拒绝文档。
 
+## PR交付工作台
+
+首版spec形成即建Draft PR，提供可打开链接和任务摘要；PR描述是当前handoff，评论留重要阶段证据，tasks为详细清单。阶段、交接、暂停或结束前提交并推送有效进度，不逐commit强制push。Draft独立轻量检查，Ready及其后更新按整个PR影响验收，分支push不再重复运行PR检查。main同次运行检查通过后发布确切SHA的产物，生产串行并拒绝过时版本；阶段预览不提升生产。部署失败不清理，成功验收后只清理本任务无额外提交、干净且无占用的分支/worktree，必要时设置本机收尾跟进。
+
+AI负责配置真实环境值，缺信息向用户询问；本人操作需明确步骤。经验尽量转化为可检验约束，不机械逐层升级，也不虚构教训。
+
 ## Governance
 
 AGENTS是执行入口，本宪章维护长期规则，docs维护现状，specs维护变更依据。新功能、跨模块改造或重要规则变更按需执行specify→clarify→plan→tasks→analyze→implement→converge；已明确事项不重复澄清，小修复与文档修正不强制创建规格或完整流程；本项目文档纪律覆盖上游默认大量产物的示例。用户最新明确指令优先。
 
-原则重大变更在LESSONS添加不可改写的决策条目；不记录工作流水账。版本按不兼容原则变更升主版本、新增原则升次版本、澄清升修订版本。模板、规则和检查必须一致，验收证据不得虚构；网站资源体积预算仍为硬性检查。
+原则重大变更在DECISIONS添加不可改写的决策条目；不记录工作流水账。版本按不兼容原则变更升主版本、新增原则升次版本、澄清升修订版本。模板、规则和检查必须一致，验收证据不得虚构；网站资源体积预算仍为硬性检查。
 
-**Version**: 3.2.0 | **Ratified**: 2026-09-05 | **Last Amended**: 2026-09-06
+**Version**: 4.0.0 | **Ratified**: 2026-09-05 | **Last Amended**: 2026-09-06

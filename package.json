@@ -27,7 +27,9 @@
     "ci:scope": "node --experimental-strip-types scripts/check-scope.ts",
     "content:validate": "node --experimental-strip-types scripts/validate-content.ts",
     "content:revision": "node --experimental-strip-types scripts/validate-content.ts revision",
-    "release:restore": "node --experimental-strip-types scripts/release.ts restore"
+    "release:restore": "node --experimental-strip-types scripts/release.ts restore",
+    "release:preview": "node --experimental-strip-types scripts/release.ts preview",
+    "cleanup:task": "node --experimental-strip-types scripts/cleanup-task.ts"
   },
   "dependencies": {
     "astro": "7.3.1"

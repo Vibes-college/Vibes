@@ -8,6 +8,7 @@ import {
   reviewDocumentSize,
   validateDocument,
 } from './docs-policy.ts';
+import { validateLessons } from './docs-lessons.ts';
 import { validateIndexes } from './docs-index.ts';
 import { isImplementation, sourceRevisions, validateLivingLinks } from './docs-sources.ts';
 
@@ -50,6 +51,8 @@ function main(): void {
   }
   for (const doc of documents.values()) validateDocument(doc, documents);
   validateIndexes(documents);
+  const lessons = documents.get('docs/LESSONS.md');
+  if (lessons?.meta.tense === 'living') validateLessons(lessons);
   validateLivingLinks(documents, files);
   const sources = new Map(files.filter(isImplementation).map((path) => [path, readFileSync(path)]));
   const printRevisions = process.argv.length === 3 && process.argv[2] === '--revisions';
@@ -69,9 +72,10 @@ function main(): void {
     const old = parseDocument(path, source);
     if (
       old.meta.tense === 'frozen' &&
-      ['complete', 'merged', 'superseded'].includes(String(old.meta.status))
+      (['complete', 'merged', 'superseded'].includes(String(old.meta.status)) ||
+        path === 'docs/LESSONS.md')
     ) {
-      assertFrozen(old, documents.get(path));
+      assertFrozen(old, documents.get(path === 'docs/LESSONS.md' ? 'docs/DECISIONS.md' : path));
     }
   }
   const lines = [...documents.values()].reduce((sum, doc) => sum + countLines(doc.source), 0);

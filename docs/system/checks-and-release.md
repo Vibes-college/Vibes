@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003']
+shaped-by: ['002', '003', '004']
 code-sources:
   [
     'package.json',
@@ -12,14 +12,16 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'ba817300b4957697be0956c03d0176379201d22e0d0c30dd6cd2b65a79d868db'
+code-revision: 'b5c2d406104049070eaad9d8fe1ac1d6c7a32956ad443810c3273fb5c52671d2'
 ---
 
 # 检查与发布
 
 ## 检查入口
 
-.github/workflows/check.yml在PR、push、手动触发时保留verify与budget两个检查名称；Node22.20，contents:read。scope任务使用scripts/check-scope.ts分类，verify/budget按结果执行，不能只在工作流顶层用paths过滤导致必需检查一直等待。scope失败/输出无效时，两个必需检查显式失败；同一事件分支的新运行取消旧运行以减少重复等待。
+工作流.github/workflows/check.yml只监听PR活动与main push，保留手动检查和每周文档体检。PR活动为opened/synchronize/reopened/ready_for_review/converted_to_draft；描述/评论编辑不触发。分支push不再重复运行。scope通过scripts/check-scope.ts与ci-policy.ts输出范围与模式，失败或非法输出使正式检查失败。
+
+Draft仅运行独立的Draft progress（npm run check，不启动浏览器或预算构建）；verify/budget跳过，不能视为已验收。Ready及后续修改按整个PR差异执行下表。PR较新运行取消旧检查；main运行不在上传途中取消，正式发布单独串行并拒绝旧SHA。Node22.20，普通检查contents:read，只有发布job持有Cloudflare secret；阶段预览在本机按需运行，不产生额外GitHub CI。
 
 | 差异范围                                                      | verify任务                                | budget任务         |
 | ------------------------------------------------------------- | ----------------------------------------- | ------------------ |
@@ -29,7 +31,7 @@ code-revision: 'ba817300b4957697be0956c03d0176379201d22e0d0c30dd6cd2b65a79d868db
 
 手动触发、空差异或范围基线不可读均选择full。分类包含删除、改名前后路径和本地未跟踪文件；src中的文章也属于网站变化。路径白名单由脚本与tests/unit/check-scope.test.ts维护。分类不取代测试：需要缩减新的工具范围时先证明它不影响网站。
 
-PR基线为目标分支SHA，push为事件前一提交，新分支回退origin/main；checkout获取完整历史。DOCS_BASE_REF提供比较提交；冻结检查取它与origin/main的共同祖先，仅冻结已进入main的历史，不把未合并分支的complete稿提前冻结。无远端main的本地测试仓库可使用本地main，找不到有效基线仍失败。CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
+PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA累计比较到当前源码，无法读取/非法/非当前历史时完整检查，防止旧网页提交被后续文档提交挤掉而漏发；checkout获取完整历史。冻结检查仍以事件比较提交和main共同祖先为准。DOCS_BASE_REF提供比较提交；冻结检查取它与origin/main的共同祖先，仅冻结已进入main的历史，不把未合并分支的complete稿提前冻结。无远端main的本地测试仓库可使用本地main，找不到有效基线仍失败。CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
 
 每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。
 
@@ -55,7 +57,7 @@ PR基线为目标分支SHA，push为事件前一提交，新分支回退origin/m
 
 一个完整功能、修复或一批相关维护使用一个工作分支，默认codex/前缀；同一工作继续使用未合并分支及已有PR，不按对话轮次、commit或文件数拆分。新工作从同步后的main开始；已有待合并的小收尾可以纳入下一次相关维护，先核对差异与范围，不夹带无关功能。已合并分支不继续承载新工作。
 
-commit是保存进度，推送是备份或触发CI，PR是提交一批变化供审阅，合并才是进入main；它们不必同时发生。达到完整、可审阅状态再创建PR；需要提前讨论时可以开草稿。一个PR可包含多个commit；修改当前PR时直接继续提交，不另开修正PR。批量组织不等于无限累积，出现独立交付目的或需要单独回滚的变化时分开。
+commit是保存进度，推送是备份或触发CI，PR是提交一批变化供审阅，合并才是进入main；它们不必同时发生。首版spec形成即创建Draft PR，AI给用户可打开的链接；描述维护目标、范围、任务摘要、当前进度、阻塞、下一步和阶段预览，详细清单以tasks.md为准。到可体验阶段、交接、暂停或结束前提交并推送有效进度、更新PR；不强制每commit立即push，也不限制领先commit数量。一个PR可包含多个commit；修改当前PR时直接继续提交，不另开修正PR。批量组织不等于无限累积，出现独立交付目的或需要单独回滚的变化时分开。
 
 纯措辞和可选日期补记可以随相关工作一起提交；实现完成状态、当前行为与源码对应必须随同一批代码更新，不延后；不为每次小收尾创建PR或催用户合并。必要功能说明仍随代码交付；影响使用、发布或安全的错误及时修正，不为减少PR而延误。检查按实际改动范围选择，不能用批量提交规避检查。
 
@@ -63,46 +65,46 @@ commit是保存进度，推送是备份或触发CI，PR是提交一批变化供�
 
 代码与功能文档在同一PR准备好；合并操作者核对清单全部完成、功能及spec索引、shaped-by和amends关系，实现完成时把该规格与plan/tasks、索引统一设为complete并通过检查，再执行用户明确授权的合并。未进入main的稿件尚未冻结；main中的complete/历史merged记录冻结，允许状态前进、追加amended-by及首次据实补记frozen-at；日期可省略，实际合并时间以GitHub PR记录为准，不提前虚构。合并后的核对不要求立即创建补丁PR；仅可选日期可延后；实现状态应在代码交付前完成，PR是否合并由Git记录。
 
-最终行为随代码合并生效，合并后核对docs/features。不得另等文档补丁才能称交付完成。GitHub分支保护实际状态需在平台核对，不能从CI文件存在推断保护生效。
+最终行为随代码合并生效，合并后核对docs/features。不得另等文档补丁才能称交付完成。2026-09-06已通过GitHub API启用main保护：必须经PR、verify/budget成功且分支更新到最新main，管理员同样受限，禁止force push和删除main；未设置必须他人批准，因此用户仍可自行决定合并。
 
-## 合并后本地收尾
+## 合并后上线与收尾
 
-fetch并prune远端引用，核对PR确已合并及本地未提交改动，再切回main并快进同步。只有确认所有提交已包含在main且未被其他worktree使用时，才删除本地工作分支。squash/rebase合并可能没有相同提交编号，需核对PR和实际差异；存在独有改动或无法确认时保留并说明，不强制删除。用户自行创建的未跟踪文件原样保留。
+网站影响的main push在同一工作流中通过verify与budget后，deploy下载budget产物（含隐藏文件），核对SHA和内容摘要，再使用Wrangler发布至用户已授权的https://vibes.college。纯治理文档或文档工具无网站影响时不重建/发布，保留之前线上版本。生产job串行不强制取消，上传前确认仍是当前main，拒绝旧运行覆盖新版本。发布不再重复构建或跑verify。
 
-删除分支不会删除main中的commit历史，不为整洁重写或清空历史。任务结束关闭不用的本次临时服务；保留服务记录用途、地址与启动方式，下次先核对后复用。
+首次切换前实查：2026-09-06，vibes.college绑定旧Worker vibecoding-college，无普通Worker路由；wrangler.jsonc仅将这个Custom Domain转给vibes-explore。旧Worker保留，不删除业务资源。回退首次切换可将该域名绑定恢复到vibecoding-college；后续恢复使用已验证的生产版本记录。正式域名授权不等于已上线，实际结果以main部署job、版本记录与页面验收为准。
 
-## 部署
+scripts/release-ci.ts保存发布前版本和结果于resources/evidence/releases/；CI artifact保留90天。只有线上/__release.json匹配SHA且zh/en页有效才记录verified:true；失败不清理，上传结果不确定先核对远端再重试。实际交互另由AI用ego-browser核对搜索、详情、语言与404，结果写PR评论。完整上线前不宣称发布成功。
 
-npm run deploy构建后使用Wrangler发布静态Worker；必须核对已通过检查的SHA、账户与独立测试地址。当前工作流不自动发布。不得自动合并main或修改旧vibes.college的DNS/路由；切正式域名需单独授权。平台凭据不写进文档。
+AI在用户合并后继续收尾；跨对话等待时建立本机跟进，状态未变化不打扰。先核对PR已合并、线上版本包含该合并、对应main工作流部署成功，纯文档维护若不影响已上线网站，要求对应main检查成功才可收尾，不虚构重新部署。再检查本地脏文件/额外提交/其他任务占用；被忽略的.dev.vars、证据和未知文件仍受保护，仅node_modules/dist/.astro/test-results等明确缓存可随worktree清理。运行cleanup:task查看候选，切主checkout至main后再传--execute-idle；命令以PR head与GitHub合并证明兼容squash，删除采用预期SHA比对，竞态或未知状态保留。仍被其他open PR作为base使用的分支保留；仅删除本目标分支与空闲干净worktree；用户未跟踪文件原样保留，main和其他任务不清理。
 
-## 独立测试站受控发布
+远端分支也要等上线验收后删除，不开启GitHub合并即删分支。临时服务由本机AI按自己启动记录核对PID/用途并关闭，不能扫描后盲杀进程；保留的服务记用途/地址/启动方式，下次先核对再复用。发布版本、旧Worker和必要恢复证据不属于临时垃圾。
 
-`npm run deploy`通过scripts/release.ts，只接受干净已提交源码，并检查同一SHA的GitHub check-runs中verify与budget全部成功；接着以测试SITE_URL运行完整本地verify和budget，确认HEAD和工作区未变化后发布。隔离内容环境变量禁止进入发布；容量默认免费档，不能因未知套餐假定付费额度。
+## 阶段预览与恢复
 
-目标在scripts/release-policy.ts固定为vibes-explore.topologic-relay.workers.dev与已核对账户；生成临时Wrangler配置只含workers.dev，没有自定义域名、路由或线上数据库。沿用本机Wrangler OAuth，不读取或迁移旧项目业务密钥，没有新增GitHub部署凭据。
+`npm run release:preview -- <PR号>`要求干净、已推送且对应本仓库open PR head的源码；完整本地verify/budget后复核源码和远端PR未变，以生产canonical构建并添加noindex响应头，使用versions upload --preview-alias pr-N。它不会提升生产版本或修改域名，返回实际URL后核对SHA与页面，AI更新PR的链接、对应SHA及可体验范围。源码dirty时保留用户文件，使用干净隔离worktree；不忽略脏状态强行发布。
 
-每次成功保存版本ID、SHA、来源、体积与检查记录于resources/evidence/001-multilingual-explore/releases/。`npm run release:restore -- <version-id>`只接受此处已记录且目标匹配的版本，核对远端版本后执行rollback。回滚后仍需实际检查页面；不能把命令成功当视觉验收。
-
-部署后核对中文/英文目录、正文搜索、旧URL、404、canonical/sitemap/robots和恢复前后页面，记录实际版本。独立测试站已完成同SHA检查、首次发布、内容修订和上一版本恢复；摘要在PR，原始记录在resources/evidence/001-multilingual-explore/cloudflare-release.md。现有.github/workflows/check.yml继续提供同名verify/budget；不新增无人值守部署工作流。
+`npm run deploy`拒绝本地直接生产发布并指向main自动流程。`npm run release:restore -- <version-id>`仅接受resources/evidence/releases中已验证、账户/域名/版本匹配的生产记录，恢复后重新检查线上SHA与页面；先从CI artifact取回所需记录。旧测试站记录仅为历史证据，不直接作为新生产恢复记录。
 
 ## 完整命令与操作说明
 
 需要Node22.20或兼容更新版本。首次或依赖变化后运行`npm ci`；首次运行E2E时执行`npx playwright install chromium`，Linux CI使用`--with-deps`。Playwright已在锁文件中，不新增npm依赖。
 
-| 命令                   | 行为与使用场景                                                   |
-| ---------------------- | ---------------------------------------------------------------- |
-| `npm run dev`          | Astro开发服务，地址以终端为准，通常为127.0.0.1:4321              |
-| `npm run preview`      | 构建后以wrangler.local.jsonc启动本地4322预览，Ctrl+C停止         |
-| `npm run docs:check`   | 治理文档标签、目录/索引、关系、冻结保护；篇幅仅提示              |
-| `npm run format:check` | 检查格式，不修改文件                                             |
-| `npm run check`        | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                 |
-| `npm run test:e2e`     | 构建→Playwright启动专用本地Worker→桌面/手机Chromium测试→清理服务 |
-| `npm run verify`       | check→db:reset→test:e2e，完整验收，失败停止；不部署              |
-| `npm run budget`       | 构建并检查脚本和首页体积；限值见[常量](../system/rules.md)       |
-| `npm run ci:scope`     | 根据CHECK_BASE_REF或origin/main计算docs/tools/full，不执行检查   |
-| `npm run db:reset`     | 删除本项目本机测试D1数据，迁移并填入固定样例                     |
-| `npm run db:migrate`   | 只应用本地未执行迁移；不接受线上参数                             |
-| `npm run deploy`       | 校验同SHA云端/本地检查后发布固定独立测试Worker，需已有授权       |
+| 命令                                | 行为与使用场景                                                   |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| `npm run dev`                       | Astro开发服务，地址以终端为准，通常为127.0.0.1:4321              |
+| `npm run preview`                   | 构建后以wrangler.local.jsonc启动本地4322预览，Ctrl+C停止         |
+| `npm run docs:check`                | 治理文档标签、目录/索引、关系、冻结保护；篇幅仅提示              |
+| `npm run format:check`              | 检查格式，不修改文件                                             |
+| `npm run check`                     | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                 |
+| `npm run test:e2e`                  | 构建→Playwright启动专用本地Worker→桌面/手机Chromium测试→清理服务 |
+| `npm run verify`                    | check→db:reset→test:e2e，完整验收，失败停止；不部署              |
+| `npm run budget`                    | 构建并检查脚本和首页体积；限值见[常量](../system/rules.md)       |
+| `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/full，不执行检查   |
+| `npm run db:reset`                  | 删除本项目本机测试D1数据，迁移并填入固定样例                     |
+| `npm run db:migrate`                | 只应用本地未执行迁移；不接受线上参数                             |
+| `npm run deploy`                    | 拒绝本地直接生产部署，main检查成功后自动发布                     |
+| `npm run release:preview -- <PR号>` | 本地完整验收后上传PR预览版本，不提升生产                         |
+| `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle        |
 
 按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`verify`始终表示完整验收，不会按路径悄悄缩减。日常工具修改运行check；页面和测试基础设施修改运行verify与budget。
 
@@ -116,7 +118,7 @@ npm run deploy构建后使用Wrangler发布静态Worker；必须核对已通过�
 
 本地配置与数据位置固定为wrangler.local.jsonc和.wrangler/project-local；db:reset仅删除其中v3/d1。数据库仅有命令测试表，网站读取src/content/works/及src/data/taxonomy.json；不配置或操作线上数据库。单独test:e2e不清库。已应用的迁移不改写，用新迁移表达变更。
 
-Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不代表已发布；不切换旧vibes.college。缺失origin/main时docs:check会失败，可fetch或指定可信DOCS_BASE_REF。
+Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不代表已发布；vibes.college为已授权的生产目标。缺失origin/main时docs:check会失败，可fetch或指定可信DOCS_BASE_REF。
 
 ## 检查失败
 
@@ -131,7 +133,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 英文发布前须核对全文再记录sourceRevision；原文修改使旧译文标待复核，更新摘要前必须再次审核。详细字段见[内容维护](../features/content-maintenance.md)。
 
-`npm run release:restore -- <version-id>`恢复本地已记录的测试站版本；记录和门槛见[CI](checks-and-release.md)。不能传任意域名、账户或合成内容。
+`npm run release:restore -- <version-id>`恢复本地已记录的生产版本；记录和门槛见[CI](checks-and-release.md)。不能传任意域名、账户或合成内容。
 
 ## 源码与说明同步检查
 

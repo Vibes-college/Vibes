@@ -88,10 +88,10 @@ export function assertFrozen(previous: Document, current?: Document): void {
     throw new Error(`${previous.path}: 冻结状态不可回退`);
   if (previous.meta.status === 'superseded' && current.meta.status !== 'superseded')
     throw new Error(`${previous.path}: superseded不可恢复`);
-  const lessons = previous.path === 'docs/LESSONS.md';
+  const lessons = ['docs/LESSONS.md', 'docs/DECISIONS.md'].includes(previous.path);
   if (lessons ? !current.body.startsWith(previous.body) : previous.body !== current.body) {
     throw new Error(
-      `${previous.path}: 冻结正文不可修改${lessons ? '，LESSONS仅可末尾追加条目' : ''}`,
+      `${previous.path}: 冻结正文不可修改${lessons ? '，决策历史仅可末尾追加条目' : ''}`,
     );
   }
   const oldLinks = listField(previous, 'amended-by');

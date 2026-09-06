@@ -12,6 +12,8 @@ const livingFiles = new Set([
   'README.md',
   '.specify/memory/constitution.md',
   'docs/README.md',
+  'docs/LESSONS.md',
+  '.github/pull_request_template.md',
   'docs/PROJECT_ANALYSIS.md',
   'specs/README.md',
   'resources/README.md',
@@ -52,7 +54,7 @@ export function expectedTense(path: string, documents: Map<string, Document>): s
     /^\.specify\/templates\/overrides\/[a-z-]+-template\.md$/.test(path)
   )
     return 'living';
-  if (path === 'docs/LESSONS.md') return 'frozen';
+  if (path === 'docs/DECISIONS.md') return 'frozen';
   const folder = path.match(specPattern)?.[1];
   if (!folder) return undefined;
   const relative = path.slice(`specs/${folder}/`.length);
@@ -111,7 +113,7 @@ export function reviewDocumentSize(doc: Document): string | undefined {
   if (limit && lines > limit)
     return `${doc.path}: ${lines}行，建议审阅职责、重复及导航，不机械裁剪`;
   if (
-    doc.path === 'docs/LESSONS.md' &&
+    doc.path === 'docs/DECISIONS.md' &&
     (doc.body.match(/^## L-\d{3}\b/gm)?.length ?? 0) > documentReviewGuides.lessons
   ) {
     return `${doc.path}: 条目较多，审阅索引；禁止删除或改写冻结记录凑数量`;

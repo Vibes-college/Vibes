@@ -1,13 +1,15 @@
 name: Project checks
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
   push:
+    branches: [main]
   workflow_dispatch:
   schedule:
     - cron: '0 9 * * 1'
 concurrency:
   group: checks-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 permissions:
   contents: read
 jobs:
@@ -17,6 +19,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       scope: ${{ steps.scope.outputs.scope }}
+      mode: ${{ steps.scope.outputs.mode }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,16 +34,18 @@ jobs:
   verify:
     needs: scope
     name: verify
-    if: always() && github.event_name != 'schedule'
+    if: always() && github.event_name != 'schedule' && needs.scope.outputs.mode != 'draft'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Require a successful scope classification
         run: |
           test "$SCOPE_RESULT" = success
+          test "$CHECK_MODE" = required
           case "$CHECK_SCOPE" in docs|tools|full) ;; *) exit 1 ;; esac
         env:
           SCOPE_RESULT: ${{ needs.scope.result }}
+          CHECK_MODE: ${{ needs.scope.outputs.mode }}
           CHECK_SCOPE: ${{ needs.scope.outputs.scope }}
       - uses: actions/checkout@v4
         with:
@@ -63,6 +68,8 @@ jobs:
       - if: needs.scope.outputs.scope == 'full'
         run: npm run verify
         env:
+          SITE_URL: https://vibes.college
+          VIBES_DEPLOY: '1'
           DOCS_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
       - uses: actions/upload-artifact@v4
         if: failure() && needs.scope.outputs.scope == 'full'
@@ -74,16 +81,18 @@ jobs:
   budget:
     needs: scope
     name: budget
-    if: always() && github.event_name != 'schedule'
+    if: always() && github.event_name != 'schedule' && needs.scope.outputs.mode != 'draft'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Require a successful scope classification
         run: |
           test "$SCOPE_RESULT" = success
+          test "$CHECK_MODE" = required
           case "$CHECK_SCOPE" in docs|tools|full) ;; *) exit 1 ;; esac
         env:
           SCOPE_RESULT: ${{ needs.scope.result }}
+          CHECK_MODE: ${{ needs.scope.outputs.mode }}
           CHECK_SCOPE: ${{ needs.scope.outputs.scope }}
       - uses: actions/checkout@v4
         with:
@@ -96,8 +105,78 @@ jobs:
         run: npm ci
       - if: needs.scope.outputs.scope == 'full'
         run: npm run budget
+        env:
+          SITE_URL: https://vibes.college
+          VIBES_DEPLOY: '1'
+      - if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.scope.outputs.scope == 'full'
+        run: node --experimental-strip-types scripts/release-artifact.ts
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.scope.outputs.scope == 'full'
+        with:
+          name: production-${{ github.sha }}
+          path: dist/
+          include-hidden-files: true
+          retention-days: 7
       - if: needs.scope.outputs.scope != 'full'
         run: echo "No website output changed; resource budget is not applicable."
+  draft-check:
+    name: Draft progress (not release acceptance)
+    needs: scope
+    if: needs.scope.outputs.mode == 'draft'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.20.0
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+        env:
+          DOCS_BASE_REF: ${{ github.event.pull_request.base.sha }}
+  deploy:
+    name: Deploy and verify production
+    needs: [scope, verify, budget]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.scope.outputs.scope == 'full'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: production-vibes-college
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      deployments: write
+    environment:
+      name: production
+      url: https://vibes.college
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.20.0
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-${{ github.sha }}
+          path: dist/
+      - run: node --experimental-strip-types scripts/release-ci.ts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VERIFY_RESULT: ${{ needs.verify.result }}
+          BUDGET_RESULT: ${{ needs.budget.result }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deployment-${{ github.sha }}
+          path: resources/evidence/releases/
+          retention-days: 90
   document-health:
     name: Weekly document health
     if: github.event_name == 'schedule'

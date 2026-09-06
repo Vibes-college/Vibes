@@ -2,13 +2,20 @@
 tense: 'living'
 describes: '检查与发布网站'
 status: 'current'
-shaped-by: ['001', '002', '003']
+shaped-by: ['001', '002', '003', '004']
 legacy-feature-ids: ['delivery-setup', 'local-database', 'site-metadata']
 code-sources:
   [
     'package.json',
     'scripts/release.ts',
     'scripts/release-policy.ts',
+    'scripts/release-ci.ts',
+    'scripts/release-utils.ts',
+    'scripts/release-artifact.ts',
+    'scripts/release-smoke.ts',
+    'scripts/ci-policy.ts',
+    'scripts/cleanup-task.ts',
+    'scripts/cleanup-policy.ts',
     'scripts/build.ts',
     'scripts/budget.ts',
     'scripts/budget-policy.ts',
@@ -22,84 +29,74 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: 'e5067270ca06344ac9523da7fabd787741bb750964542b08ddb9a0ac7648a2f5'
+code-revision: '8e042bd0f444cbf42c6196b95d0f52f5fa87ae1b840fc4a28766a7d5e1023147'
 ---
 
 # 功能名：检查与发布网站
 
 ## 一句话说明
 
-维护者检查一批网站改动，在获准后发布到独立测试站，发现问题时恢复已验证的版本。
+维护者从Draft PR查看进度与阶段预览，确认合并后由main检查和部署更新正式站，再由AI完成上线验收与清理。
 
 ## 用户操作路径
 
-1. 在工作分支完成相关改动，按[CI规则](../system/checks-and-release.md)选择检查；纯文档运行文档与格式检查，检查工具运行`npm run check`，网站变化运行`npm run verify`和`npm run budget`。
-2. `verify`依次检查代码、重建本地测试库、运行浏览器测试；失败时看错误并修复，任何一步失败都不算通过。完整命令见[CLI](../system/checks-and-release.md)。
-3. 必要时运行`npm run preview`人工查看，结束后关闭；测试专用4322端口必须空闲，不能复用可能来自另一任务的服务。
-4. 一批相关工作准备好再提PR，查看verify/budget结果，由用户决定合并。commit、PR、合并和发布是不同动作。
-5. 获得测试站发布授权后，确认提交、账户和地址；运行`npm run deploy`。它要求干净提交、同一SHA的GitHub检查成功，再执行完整本地检查和容量校验，通过后才部署。
-6. 打开返回的测试地址，检查目录、搜索、详情、语言、旧链接、404和页面地址信息；命令成功不等于页面已验收。
-7. 需要恢复时，运行`npm run release:restore -- <已记录版本ID>`，再核对页面与搜索；工具只接受目标匹配的本地已记录版本。
-8. 收尾时核对并清理已合并分支和临时服务，保留commit历史；不会自动切换旧`vibes.college`域名。
+1. AI在首版spec形成时建立Draft PR，给用户可打开的链接和任务摘要；当前进度、阻塞、下一步、预览范围放PR描述，重要决定和证据放评论。
+2. 本地按[检查规则](../system/checks-and-release.md)验证；Draft云端运行独立check，不把跳过的verify/budget当作完成验收。阶段、交接和暂停前提交推送，不逐commit强制push。
+3. 可体验阶段由AI运行`npm run release:preview -- <PR号>`：干净且已推送的PR head在本机verify/budget通过后上传预览版本，提供实际URL与SHA；不会提升生产。未跟踪的用户文件不删除，必要时用隔离worktree。
+4. 完成后转Ready，按整个PR差异运行verify/budget（文档和工具按范围缩减）；Ready之后再改代码仍重新检查。用户决定合并，AI不自动合并。
+5. 网站变更合并到main后，检查通过才自动发布同SHA验收产物至`https://vibes.college`；纯治理文档不重建网站，最新线上版本需核对。部署复用预算job产物，不重复构建，拒绝过时main版本；main按实际上线版本累计差异，避免后续文档提交掩盖尚未发布的网页改动。
+6. 云端检查线上SHA与中英文首页；AI再核对浏览、搜索、详情、语言与404，PR记录真实结果。失败或不确定状态停止收尾，保留恢复证据；不能将上传成功当作页面验收。
+7. 需要恢复时使用`npm run release:restore -- <已记录生产版本>`，从CI artifact取回记录后核对目标与版本；首次切换前旧Worker保留，具体恢复路径见交付说明。
+8. 上线验收后AI运行`npm run cleanup:task -- <PR号>`查看候选，确认无额外提交、无脏文件或其他任务占用，再执行清理；当前checkout先切main。跨对话等待通过本机跟进完成，未变化保持安静。分支删除不删除Git历史或回滚版本。
 
 ### 操作之后发生什么
 
 ```mermaid
 flowchart TD
-  A[获准发布，运行deploy] --> B[核对固定目标、干净提交和同SHA云端检查]
-  B --> C[运行完整本地verify与budget]
-  C --> D[再次确认源码未变，并检查托管容量]
-  D --> E[Wrangler上传到独立测试站]
-  E --> F[记录提交与版本ID]
-  F --> G[实际检查页面、搜索与地址信息]
-  B -->|失败| X[停止并报告，不继续发布]
-  C -->|失败| X
-  D -->|失败| X
-  G -->|需要恢复| H[选择已记录且目标匹配的版本]
-  H --> I[执行恢复，再核对页面和搜索]
+  A[首版spec与Draft PR] --> B[本地开发，轻量检查]
+  B --> C[可体验阶段上传预览，更新PR]
+  C --> D[转Ready，检查整个PR]
+  D --> E[用户决定合并]
+  E --> F[main检查成功]
+  F --> G[发布同SHA产物至vibes.college]
+  G --> H[线上版本与页面验收]
+  H --> I[核对干净空闲，清理本任务资源]
+  D -->|失败| B
+  G -->|失败或不确定| J[保留证据与资源，修复或恢复]
+  H -->|失败| J
 ```
-
-PR合并不会触发这条发布链路。恢复走单独命令，不重新构建当前源码；上传出现不确定结果时要先检查远端，不盲目重复发布。对应`scripts/release.ts`和`scripts/release-policy.ts`。
 
 ## 涉及的文件
 
-- 命令和浏览器验收：`package.json`、`scripts/test-e2e.ts`、`playwright.config.ts`、`wrangler.local.jsonc`。
-- 本地测试库：`scripts/database.ts`、`scripts/local-tools.ts`、`db/migrations/0001_local_test_records.sql`、`db/seed.sql`；表结构见[数据库](../system/content-model.md)。网站不读取这个测试库。
-- CI与发布：`.github/workflows/check.yml`、`scripts/check-scope.ts`、`scripts/release.ts`、`scripts/release-policy.ts`、`wrangler.jsonc`。
-- 构建与容量：`scripts/build.ts`、`scripts/budget.ts`、`scripts/budget-policy.ts`、`scripts/asset-sizes.ts`。
-- 地址与搜索引擎信息：`src/config/site.ts`、`astro.config.mjs`、`src/layouts/Layout.astro`、`src/pages/sitemap.xml.ts`、`src/pages/robots.txt.ts`。站点来源统一，canonical不含搜索参数，sitemap只列已发布路由，404禁止收录；不保证搜索引擎收录。
+- 检查和触发：`.github/workflows/check.yml`、`scripts/check-scope.ts`、`scripts/ci-policy.ts`。
+- 发布：`scripts/release.ts`、`scripts/release-ci.ts`、`scripts/release-policy.ts`、`scripts/release-utils.ts`、`scripts/release-artifact.ts`、`scripts/release-smoke.ts`、`wrangler.jsonc`。
+- 清理：`scripts/cleanup-task.ts`、`scripts/cleanup-policy.ts`；服务占用由本机AI核对。
+- 构建、容量和本地测试：`scripts/build.ts`、`scripts/budget.ts`、`scripts/budget-policy.ts`、`scripts/asset-sizes.ts`、`scripts/test-e2e.ts`、`scripts/database.ts`、`scripts/local-tools.ts`、`playwright.config.ts`、`wrangler.local.jsonc`。
+- 来源与静态元数据：`src/config/site.ts`、`astro.config.mjs`、`src/layouts/Layout.astro`、`src/pages/sitemap.xml.ts`、`src/pages/robots.txt.ts`；测试D1并非网站数据源，见[数据模型](../system/content-model.md)。
 
 ## 验收标准
 
-- [x] 所需检查全通过；类型、测试或构建失败时不继续发布。
-- [x] 本地库重建后样例正确；远程参数和额外参数被拒绝，不操作线上D1。
-- [x] 干净提交和同SHA检查门槛生效，发布只到指定独立测试地址。
-- [x] 页面、canonical、语言链接、sitemap和robots使用正确来源，不列草稿与不存在译文。
-- [x] 超出托管容量时阻断发布，不自动升级套餐。
-- [x] 恢复已记录版本后，页面与搜索都与该版本一致。
-- [ ] 测试与预览结束后不留下无用服务。
+- [x] Draft PR页面可见清单，阶段预览对应真实SHA并可操作。
+- [ ] Draft与Ready触发分离，分支push不重复CI；失败/旧SHA/产物漂移阻断发布。
+- [x] 正式域名构建与来源校验通过，发布前保持明确目标和容量门槛。
+- [ ] main自动发布实际成功，线上版本与页面验收通过，再执行清理。
+- [x] 清理拒绝未合并、未上线、额外提交、脏文件/ignored配置/依赖PR，占用由AI核对声明；保护测试通过，保留恢复版本。
+- [x] 本地D1只用于命令验收，拒绝线上参数；2026-09-05本地verify验证有效，网站不读取此库。
 
-最近有效验收：2026-09-05本地、GitHub与独立Cloudflare站发布及恢复演练通过，记录在`resources/evidence/001-multilingual-explore/cloudflare-release.md`。容量阻断由单元测试证明，没有为了验收向超容量目标上传；重复迁移命令与所有失败路径不因旧记录而自动视作通过。相关发布代码未变，保留证据；本次未重新发布或恢复。
+2026-09-06本地verify（52单元、26浏览器通过、2按设计跳过）、budget、Wrangler生产配置dry-run通过；专用worktreecheck再次通过。Draft运行34028631687通过；预览372ced7经ego-browser验证搜索、详情、语言切换及noindex，canonical指向正式域名；Ready的最新verify/budget结果见PR #3。首次生产待用户合并后执行，不沿用旧测试站发布勾选。历史证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，仅说明旧流程当时通过。
 
 ## 对应的自动化测试
 
-- `tests/unit/check-scope.test.ts`：检查范围分类。
-- `tests/unit/release-policy.test.ts`：同SHA发布门槛。
-- `tests/unit/budget.test.ts`：体积和托管容量。
-- `tests/unit/database.test.ts`：本地数据库规则和参数限制。
-- `tests/unit/site-config.test.ts`：来源地址边界。
-- `tests/explore.spec.ts`中的`metadata uses one origin and indexes only published language routes`：页面和搜索引擎元数据。
-
-真实部署和恢复另做人工页面核对；测试工具不自动发布。
+- `tests/unit/check-scope.test.ts`：整个差异范围、未知路径与删除/改名。
+- `tests/unit/delivery-git.test.ts`：真实Git覆盖累计main差异、ignored配置和目录/符号链接保护。
+- `tests/unit/delivery.test.ts`：触发模式、生产事件与SHA、产物完整性、清理拒绝和经验/决策保护。
+- `tests/unit/site-config.test.ts`、`tests/unit/budget.test.ts`、`tests/unit/database.test.ts`：origin、容量、本地库边界。
+- `tests/explore.spec.ts`：浏览、搜索、详情、语言、404、元数据与响应式。
 
 ## 依赖的其他功能
 
-- [规划开发与维护文档](document-governance.md)：维护检查需要的文档、规格与索引。
-- [浏览与搜索作品](explore-browse.md)、[阅读作品详情](article-read.md)：发布后的验收路径。
+[规划开发与维护文档](document-governance.md)提供规格和handoff；上线验收走[浏览与搜索作品](explore-browse.md)和[阅读作品详情](article-read.md)。
 
 ## 已知问题 / 待办
 
-- 当前没有CI自动发布，合并不会自动更新测试站。
-- 5000件双语样例构建超过Workers免费档文件数上限；小样例站已部署不代表大目录容量已解决，见[容量规则](../system/rules.md)。
-- GitHub分支保护状态需要平台核对，不能从CI通过推断已启用。
-- `verify`会重建本项目的本地测试库；线上版本与最新main是否一致需发布时核对。
+合并、自动发布、线上体验和本机清理是不同状态；未发生的步骤不能提前勾选。GitHub main保护和production仅main准入已于2026-09-06实查配置，发布仍须等用户合并后验证。5000件双语规模样例超过免费档文件数，小目录能上线不代表大目录容量已解决，不自动升级套餐。
