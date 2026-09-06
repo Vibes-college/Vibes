@@ -1,7 +1,8 @@
 ---
 tense: 'frozen'
 describes: '多语言Explore内容基础'
-status: 'in-progress'
+status: 'merged'
+frozen-at: '2026-09-06'
 feature-ids:
   [
     'explore-browse',

@@ -1,7 +1,8 @@
 ---
 tense: 'frozen'
 describes: 'Tasks: 多语言 Explore 内容基础'
-status: 'in-progress'
+status: 'merged'
+frozen-at: '2026-09-06'
 amended-by: []
 ---
 

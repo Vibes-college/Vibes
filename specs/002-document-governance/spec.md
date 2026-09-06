@@ -1,7 +1,8 @@
 ---
 tense: 'frozen'
 describes: '文档时态与冻结治理'
-status: 'in-progress'
+status: 'merged'
+frozen-at: '2026-09-06'
 amended-by: []
 feature-ids: ['delivery-setup', 'document-governance', 'project-commands', 'spec-kit-workflow']
 amends: []
