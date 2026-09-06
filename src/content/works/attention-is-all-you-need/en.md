@@ -3,7 +3,7 @@ locale: 'en'
 status: 'published'
 sourceRevision: '998b040aaf47d919fc132f7e9abbb64dd708a302f9f75b368cada15de4de2982'
 title: 'Attention Is All You Need'
-summary: 'Attention Is All You Need — understand where the Transformer began through one paper.'
+summary: 'Explore the paper that introduced the Transformer.'
 description: 'This 2017 paper introduced the Transformer architecture. It uses attention to process sequences and offers an important starting point for understanding today’s language models. Start with the abstract and architecture diagram, then explore at your own pace.'
 previewText:
   {

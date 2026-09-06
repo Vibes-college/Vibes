@@ -1,12 +1,4 @@
-import {
-  mkdirSync,
-  mkdtempSync,
-  writeFileSync,
-  readFileSync,
-  readdirSync,
-  statSync,
-  rmSync,
-} from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { gzipSync } from 'node:zlib';
@@ -14,6 +6,7 @@ import { readCatalog } from '../src/lib/content/catalog.ts';
 import { sourceRevision } from '../src/lib/content/revision.ts';
 import { measurePreview } from './scale-preview.ts';
 import { scaleMarker } from './scale-marker.ts';
+import { assetSizes } from './asset-sizes.ts';
 
 const evidence = 'resources/evidence/001-multilingual-explore';
 mkdirSync('.scratch', { recursive: true });
@@ -67,36 +60,20 @@ try {
   writeFileSync(join(evidence, 'scale-build.log'), build.stdout + build.stderr);
   if (build.status !== 0) throw new Error('Scale build failed; inspect scale-build.log');
   const buildMs = Math.round(performance.now() - started);
-  const assets = listFiles(output);
-  const searchFiles = listFiles(join(output, 'pagefind'));
   const sizes = {
     buildMs,
-    fileCount: assets.length,
-    largestFile: Math.max(...assets.map((file) => statSync(file).size)),
-    searchBytes: searchFiles.reduce((sum, file) => sum + statSync(file).size, 0),
-    searchGzipBytes: searchFiles.reduce(
-      (sum, file) => sum + gzipSync(readFileSync(file)).length,
-      0,
-    ),
+    ...assetSizes(output),
     homepageGzip: gzipSync(readFileSync(join(output, 'zh/index.html'))).length,
   };
   writeFileSync(join(evidence, 'scale-sizes.json'), JSON.stringify(sizes, null, 2));
   const performanceResults = await measurePreview(fixture, output);
   writeFileSync(
     join(evidence, 'explore-scale.md'),
-    `# Explore规模验收\n\n${new Date().toISOString()}；5000件×2语言，隔离合成语料，不部署。复用真实页面、24种中文正文和一篇英文正文，以独有正文标记检索；语料词汇多样性低于真实一万篇文章。\n\n首中末双语正文搜索、打开详情、无JS第二页与末页通过。\n\n390×844；下行1.6Mbps，上行750Kbps，RTT150ms，CPU4倍；每语言5次冷上下文和5次同查询热缓存。\n\n\
-\
-\
-${JSON.stringify({ sizes, performanceResults }, null, 2)}\n\n全部索引总量不等于单次查询传输量；首屏无搜索请求。测量采用Node静态gzip服务和真实构建产物，不是Cloudflare边缘速度；Cloudflare账户上限另见发布实录。\n`,
+    `# Explore规模验收\n\n${new Date().toISOString()}；5000件×2语言，隔离合成语料，不部署。复用真实页面、24种中文正文和一篇英文正文，以独有正文标记检索；语料词汇多样性低于真实一万篇文章。\n\n首中末双语正文搜索、打开详情、无JS第二页与末页通过。\n\n390×844；下行1.6Mbps，上行750Kbps，RTT150ms，CPU4倍；每语言5次冷上下文和5次同查询热缓存。\n\n${JSON.stringify({ sizes, performanceResults }, null, 2)}\n\n全部索引总量不等于单次查询传输量；首屏无搜索请求。测量采用Node静态gzip服务和真实构建产物，不是Cloudflare边缘速度；Cloudflare账户上限另见发布实录。\n`,
   );
   console.log(JSON.stringify({ sizes, performanceResults }, null, 2));
   if (performanceResults.some((row) => !row.pass))
     throw new Error('Search performance target missed; evidence saved, targets unchanged');
 } finally {
   rmSync(fixture, { recursive: true, force: true });
-}
-function listFiles(directory: string): string[] {
-  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) =>
-    entry.isDirectory() ? listFiles(join(directory, entry.name)) : [join(directory, entry.name)],
-  );
 }
