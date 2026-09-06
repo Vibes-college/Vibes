@@ -7,7 +7,7 @@ shaped-by: ['002']
 
 # Implementation Plan: [功能名]
 
-生成最终文件时替换元数据为tense=frozen、status=draft、describes=技术决定、amended-by=[]，删除shaped-by。与spec状态一致，frozen-at可省略，确认实际合并后才据实补记。
+生成最终文件时替换元数据为tense=frozen、status=draft、describes=技术决定、amended-by=[]，删除shaped-by。与spec状态一致，实现完成用complete；frozen-at可省略，实际合并状态看Git。
 
 ## 技术决定与职责
 

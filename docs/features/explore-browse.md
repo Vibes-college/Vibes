@@ -4,6 +4,26 @@ describes: '浏览与搜索作品'
 status: 'current'
 shaped-by: ['001', '003']
 legacy-feature-ids: ['explore-filter', 'not-found', 'responsive-access']
+code-sources:
+  [
+    'src/components/Explore.astro',
+    'src/components/Preview.astro',
+    'src/components/LegacyRedirect.astro',
+    'src/layouts/Layout.astro',
+    'src/pages/',
+    'src/scripts/explore.ts',
+    'src/scripts/search.ts',
+    'src/lib/i18n/',
+    'src/lib/preview.ts',
+    'src/lib/content/views.ts',
+    'src/data/works.ts',
+    'src/styles/',
+    'public/_redirects',
+    'public/favicon.svg',
+    'public/icons/',
+    'tests/explore.spec.ts',
+  ]
+code-revision: '6b896cd0f98a53b7ed8221e6e1a6fbfd47d2a797f501efd1e499aac34768e56c'
 ---
 
 # 功能名：浏览与搜索作品
@@ -48,20 +68,20 @@ flowchart TD
 - 列表与外框：`src/components/Explore.astro`、`src/components/Preview.astro`、`src/layouts/Layout.astro`。
 - 搜索与语言：`src/scripts/explore.ts`、`src/scripts/search.ts`、`src/lib/i18n/routes.ts`、`src/lib/i18n/messages.ts`。
 - 数据：`src/data/works.ts`、`src/lib/content/views.ts`、`src/data/taxonomy.json`；由[内容维护](content-maintenance.md)提供作品。
-- 手机样式：`src/styles/cards.css`、`src/styles/responsive.css`；检索限制与分页参数见[规则](../technical/CONSTANTS.md)。
+- 手机样式：`src/styles/cards.css`、`src/styles/responsive.css`；检索限制与分页参数见[规则](../system/rules.md)。
 
 ## 验收标准
 
-- [ ] 首页只显示当前语言的已发布作品，卡片能进入正确详情。
-- [ ] 分类与关键词同时生效；刷新、进入详情再返回后条件保留。
-- [ ] 能通过正文中的词找到作品，不只匹配卡片上的文字。
-- [ ] 清空关键词保留分类；空结果中的重置恢复全部目录。
-- [ ] 下载失败有重试入口，清空搜索后旧请求不覆盖当前列表。
-- [ ] 多页目录可翻页，搜索结果可加载更多；无JavaScript仍能浏览与翻页。
-- [ ] 320px宽度无整页横向溢出；不存在地址返回404并有回首页入口。
-- [ ] 普通浏览不下载搜索索引，开始搜索后才加载。
+- [x] 首页只显示当前语言的已发布作品，卡片能进入正确详情。
+- [x] 分类与关键词同时生效；刷新、进入详情再返回后条件保留。
+- [x] 能通过正文中的词找到作品，不只匹配卡片上的文字。
+- [x] 清空关键词保留分类；空结果中的重置恢复全部目录。
+- [x] 下载失败有重试入口，清空搜索后旧请求不覆盖当前列表。
+- [x] 多页目录可翻页，搜索结果可加载更多；无JavaScript仍能浏览与翻页。
+- [x] 320px宽度无整页横向溢出；不存在地址返回404并有回首页入口。
+- [x] 普通浏览不下载搜索索引，开始搜索后才加载。
 
-本次仅重写文档，以上未重新验收。历史证据：2026-09-05 Playwright桌面/手机模拟及5000×2隔离目录验收通过；2026-09-06 ego-browser实际检查中文目录、搜索和进入详情。原始记录在`resources/evidence/001-multilingual-explore/`，不是本次全项通过。
+最近有效验收：2026-09-05 Playwright桌面/手机模拟及5000×2隔离目录验收通过；2026-09-06 ego-browser实际检查中文目录、搜索和进入详情。原始记录在`resources/evidence/001-multilingual-explore/`，相关产品代码未变，保留结果，不将文档修订日期当作重新测试日期。
 
 ## 对应的自动化测试
 
@@ -86,6 +106,6 @@ flowchart TD
 ## 已知问题 / 待办
 
 - 搜索需要JavaScript；中文搜索不做词干还原。
-- 当前英文只有一件已发布样例，无法展示与中文等量的内容。
+- 英文只展示已发布译文，不能把缺少译文当作搜索漏项；实际数量由content:validate读取。
 - 真机Safari、完整键盘路径与读屏尚无完整验收；模拟手机通过不代表所有设备通过。
 - 大目录本地性能通过不代表当前免费托管容量足够，容量限制见[检查与发布](project-commands.md)。

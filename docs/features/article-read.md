@@ -3,6 +3,21 @@ tense: 'living'
 describes: '阅读作品详情'
 status: 'current'
 shaped-by: ['001', '003']
+code-sources:
+  [
+    'src/components/WorkDetail.astro',
+    'src/components/LanguageSwitch.astro',
+    'src/data/article-sections.ts',
+    'src/data/work-facts.ts',
+    'src/scripts/detail.ts',
+    'src/styles/detail.css',
+    'src/styles/article.css',
+    'src/lib/content/relations.ts',
+    'src/lib/content/revision.ts',
+    'src/pages/[locale]/works/[id].astro',
+    'tests/explore.spec.ts',
+  ]
+code-revision: '2c295475d5868fa1a9bfd065d964f0964d551ceba223fd76f7bab36b3a6ce2dd'
 ---
 
 # 功能名：阅读作品详情
@@ -48,16 +63,16 @@ flowchart TD
 
 ## 验收标准
 
-- [ ] 卡片和直接网址都能打开完整详情，原站链接在新标签页打开。
-- [ ] 章节可展开收起，表格、三级标题、来源和正文锚点保留。
-- [ ] 无JavaScript时仍可阅读正文、展开章节和用按钮切换作品。
-- [ ] 按钮、左右键和手机横滑能切换同语言的相邻作品，首尾不循环。
-- [ ] 表格、代码和输入区域的操作不误触作品切换。
-- [ ] 语言切换保持作品身份；缺失译文不生成假页面。
-- [ ] 旧译文待复核、事实没有译文时有明确提示。
-- [ ] 320px宽度无整页横向溢出，宽表格在自身区域滚动。
+- [x] 卡片和直接网址都能打开完整详情，原站链接在新标签页打开。
+- [x] 章节可展开收起，表格、三级标题、来源和正文锚点保留。
+- [x] 无JavaScript时仍可阅读正文、展开章节和用按钮切换作品。
+- [x] 按钮、左右键和手机横滑能切换同语言的相邻作品，首尾不循环。
+- [ ] 表格、代码和输入区域的操作不误触作品切换（已实现排除规则，缺完整专项验收）。
+- [x] 语言切换保持作品身份；缺失译文不生成假页面。
+- [x] 旧译文待复核、事实没有译文时有明确提示。
+- [x] 320px宽度无整页横向溢出，宽表格在自身区域滚动。
 
-本次未重新执行网页验收。历史证据：2026-09-05本地Playwright桌面/手机模拟验证阅读、切换和语言边界；2026-09-06 ego-browser验证实际正文展开和中英切换。键盘完整路径、读屏和所有手势排除区域没有完整专项验收，不据此勾选。
+最近有效验收：2026-09-05本地Playwright桌面/手机模拟验证阅读、切换和语言边界；2026-09-06 ego-browser验证实际正文展开和中英切换。键盘完整路径、读屏和所有手势排除区域没有完整专项验收，未覆盖项保持未勾选；相关产品代码未变，已有证据保留，不表示今天重新测试。
 
 ## 对应的自动化测试
 

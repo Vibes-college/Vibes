@@ -3,11 +3,32 @@ tense: 'living'
 describes: '配置和环境变量'
 status: 'current'
 shaped-by: ['001']
+code-sources:
+  [
+    'package.json',
+    'package-lock.json',
+    'astro.config.mjs',
+    'wrangler.jsonc',
+    'wrangler.local.jsonc',
+    'tsconfig.json',
+    'tsconfig.tools.json',
+    'eslint.config.mjs',
+    'playwright.config.ts',
+    '.prettierrc.json',
+    '.prettierignore',
+    '.gitignore',
+    '.dev.vars.example',
+    '.openai/hosting.json',
+    'src/config/site.ts',
+    'public/_headers',
+    'public/_redirects',
+  ]
+code-revision: 'e8fb58dc4b87585983e939a91a5d5346d7076b1eff7576031c6c77a072e733e1'
 ---
 
 # 配置和环境变量
 
-本文件说明当前新项目的实际配置；旧项目的配置名称仅保存在 [SECRETS_CHECKLIST.md](../operations/SECRETS_CHECKLIST.md)，没有自动迁入新项目。
+说明当前代码实际读取的配置，只保存名称、用途与源码位置，不保存密钥值。旧项目服务没有自动迁入。
 
 ## 当前环境
 
@@ -32,13 +53,13 @@ shaped-by: ['001']
 
 发布构建必须设置SITE_URL；当前网站没有必填业务密钥，没有登录、支付、邮件或 AI API 密钥。因此 `.dev.vars.example` 仅有说明，没有为了凑模板而增加无用变量。
 
-| 名称                                            | 谁提供 / 放哪里                             | 用途                                                                     |
-| ----------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------ |
-| `CI`                                            | GitHub Actions 自动提供                     | 云端禁止test.only；本地与CI均不复用服务                                  |
-| `GITHUB_ACTIONS`                                | GitHub Actions 自动提供                     | 平台身份标志，不参与浏览器选择                                           |
-| `NODE_VERSION`                                  | Cloudflare Pages 构建设置，建议填 `22.20.0` | 固定构建用的 Node 版本，不是秘密                                         |
-| `GITHUB_TOKEN`                                  | GitHub Actions 临时提供                     | CI 读取代码所需的平台身份；工作流只授予 `contents: read`，无需手填       |
-| `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | 可选的 Wrangler 自动部署身份                | 当前未配置自动部署，不需要填；本机已有 Wrangler OAuth 登录可用于人工操作 |
+| 名称                                            | 谁提供 / 放哪里              | 用途                                                                     |
+| ----------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------ |
+| `CI`                                            | GitHub Actions 自动提供      | 云端禁止test.only；本地与CI均不复用服务                                  |
+| `GITHUB_ACTIONS`                                | GitHub Actions 自动提供      | 平台身份标志，不参与浏览器选择                                           |
+| `NODE_VERSION`                                  | 当前脚本不读取此变量         | 平台可能使用的名称；当前CI由setup-node固定版本                           |
+| `GITHUB_TOKEN`                                  | GitHub Actions 临时提供      | CI 读取代码所需的平台身份；工作流只授予 `contents: read`，无需手填       |
+| `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | 可选的 Wrangler 自动部署身份 | 当前未配置自动部署，不需要填；本机已有 Wrangler OAuth 登录可用于人工操作 |
 
 本地与CI均运行Playwright；按实际环境报告结果。Cloudflare Git 集成本身不需要把部署 Token 放入业务环境变量。
 
@@ -54,7 +75,7 @@ shaped-by: ['001']
 
 外部快照在 `resources/references/`，本地证据在 `resources/evidence/`；`.gitignore`、`.prettierignore`、`eslint.config.mjs` 同步排除这两项，`tsconfig.json` 排除resources。它们不属于网站构建输入。完整文件职责见 [仓库地图](../README.md)。
 
-CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GITHUB_OUTPUT用于传递范围。冻结检查独立使用DOCS_BASE_REF，缺失基线失败。详见[CI](../operations/CI.md)。
+CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GITHUB_OUTPUT用于传递范围。冻结检查独立使用DOCS_BASE_REF，缺失基线失败。详见[CI](../system/checks-and-release.md)。
 
 ## 内容构建与隔离测试
 

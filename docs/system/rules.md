@@ -3,6 +3,23 @@ tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
 shaped-by: ['001', '003']
+code-sources:
+  [
+    'src/lib/content/',
+    'src/lib/i18n/',
+    'src/scripts/',
+    'src/styles/',
+    'src/config/site.ts',
+    'public/_headers',
+    'scripts/budget-policy.ts',
+    'playwright.config.ts',
+    'scripts/docs-check.ts',
+    'scripts/docs-frontmatter.ts',
+    'scripts/docs-index.ts',
+    'scripts/docs-policy.ts',
+    'scripts/docs-sources.ts',
+  ]
+code-revision: '42bbbf42aa071f7252455c68fc65127f3c0ed5688389f29602b88a872bad9191'
 ---
 
 # 常量、规则表与正则
@@ -94,3 +111,9 @@ scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全
 scripts/budget-policy.ts及tests/unit/budget.test.ts校验Workers静态资源：Free每版本20,000文件，Paid100,000文件，单文件最多25MiB；默认采用Free，实际账户套餐须发布前核对。依据[Cloudflare官方限制](https://developers.cloudflare.com/workers/platform/limits/)。普通budget报告数量，受控发布按账户容量阻断。
 
 scripts/measure-explore.ts在.scratch隔离生成5000×2语料、构建和系统分配的独立空闲端口验收后清理；scripts/search-performance.ts以390×844、1.6Mbps下行/750Kbps上行/150msRTT/CPU4倍测每语言5次冷/热，目标中位数≤3000/1000ms，失败不放宽。
+
+## 可读代码说明的对应规则
+
+scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序与样式、taxonomy、SQL、静态代码资产、根配置与工作流），作品正文和work.json不重复当作架构说明。code-sources是实际文件或以斜杠结束的目录，禁止越界路径、空列表和无匹配条目；code-revision是路径与字节的SHA256。全体结构代码必须有说明覆盖，当前文档本地链接必须存在。
+
+新规格实现完成状态为complete，保留旧merged兼容；complete进入main后同样冻结，已完成任务不允许继续in-progress。实现/合并/发布是不同事实；测试与完整命令见checks-and-release.md。

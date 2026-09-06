@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '功能文档归并和历史编号映射'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -20,3 +20,11 @@ scripts/docs-index.ts解析当前功能文档可选legacy-feature-ids数组，�
 ## 验证与交付
 
 先覆盖合并/重命名映射与缺失、重复、无效编号失败，再运行npm run check。核对所有文档链接和涉及的文件/测试名称；将旧网页验收作为历史证据，不新勾选未执行项。复用当前维护分支，不单独创建PR。
+
+## 现状说明与源码对应
+
+PROJECT_ANALYSIS保留定位与总览，具体产品路径留features，数据/配置/接口/规则/检查发布集中system。删除重复ARCHITECTURE入口及用户指定旧文件，修正静态资源与动态API、搜索清空动作、关联数据可见性等错误。历史spec正文不重写。
+
+scripts/docs-sources.ts把code-sources精确文件或目录映射到Git管理范围的实现文件，以路径和内容字节计算SHA256；docs:check比对code-revision并检查所有实现文件有对应说明。内容正文和作品数据不参与架构摘要，数量通过内容命令读取。只读--revisions输出候选摘要，维护者核对实际说明后再记录，不能作为自动文案审阅。
+
+新增complete状态表示实现完成，保留merged兼容；main中的complete同样冻结，状态不依赖合并后再次改文档。测试使用Node内置测试与临时Git基线，不新增依赖。

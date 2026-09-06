@@ -101,9 +101,15 @@ export function validateIndexes(documents: Map<string, Document>): void {
     }
 
     const tasks = documents.get(`${folder}tasks.md`);
-    const closed = ['merged', 'superseded'].includes(String(spec.meta.status));
+    const closed = ['complete', 'merged', 'superseded'].includes(String(spec.meta.status));
     if (closed && (!tasks || !documents.has(`${folder}plan.md`)))
       throw new Error(`${folder}: 合并规格缺少plan/tasks`);
+    if (
+      spec.meta.status === 'in-progress' &&
+      tasks?.body.match(/^- \[x\]/m) &&
+      !tasks.body.match(/^- \[ \]/m)
+    )
+      throw new Error(`${spec.path}: 全部任务已完成，须将实现状态更新为complete`);
     if (closed && tasks?.body.match(/^- \[ \]/m))
       throw new Error(`${tasks.path}: 合并清单仍有未完成项`);
     for (const doc of documents.values()) {

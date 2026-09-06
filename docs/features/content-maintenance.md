@@ -3,6 +3,17 @@ tense: 'living'
 describes: '维护作品内容'
 status: 'current'
 shaped-by: ['001', '003']
+code-sources:
+  [
+    'src/lib/content/',
+    'src/data/taxonomy.json',
+    'src/content.config.ts',
+    'scripts/validate-content.ts',
+    'scripts/build.ts',
+    'scripts/migrate-content.ts',
+    'tests/content-lifecycle.spec.ts',
+  ]
+code-revision: '91b5bfef3da97fe6d15c3f7b470f576d7cea8da1624e98f2dd674e2a69eeddab'
 ---
 
 # 功能名：维护作品内容
@@ -16,7 +27,7 @@ shaped-by: ['001', '003']
 1. 明确要新增或修改的作品、可靠来源和原文语言，让AI编辑`src/content/works/{id}/work.json`与`zh.md`或`en.md`；网站没有编辑后台。
 2. 填写稳定ID、顺序、来源、预览和实际可提供的信息；标签使用`src/data/taxonomy.json`，不要把同一作品改名成另一个身份。
 3. 保存正文并设置`draft`或`published`；草稿不生成页面或搜索结果，原文可先于译文发布。
-4. 如需关联作品，只记录一次相似/归组/比较关系，双方都可读；不表达继承或业务依赖。
+4. 如需关联作品，只记录一次相似/归组/比较关系，程序可从任意一方读取关系；当前详情没有关联作品区域，不表达继承或业务依赖。
 5. 运行`npm run content:validate`。成功会报告目录状态；有错误则根据提示修复，不进入构建发布。
 6. 发布译文前核对全文，运行`npm run content:revision -- <id>`取得原文摘要，再填写`sourceRevision`和发布状态；命令不会替你审核或自动修改文件。
 7. 原文更新后，旧译文继续可读但提示待复核；重新核对译文并更新摘要后解除提示。
@@ -48,18 +59,18 @@ flowchart TD
 - 分类：`src/data/taxonomy.json`。
 - 内容规则：`src/lib/content/schema.ts`、`src/lib/content/catalog.ts`、`src/lib/content/validate.ts`、`src/lib/content/revision.ts`、`src/lib/content/relations.ts`、`src/lib/content/views.ts`。
 - 读取和校验：`src/content.config.ts`、`scripts/validate-content.ts`、`scripts/build.ts`。
-- 字段与命令边界见[规则](../technical/CONSTANTS.md)和[CLI](../operations/CLI.md)。网站内容不存入D1。
+- 字段与命令边界见[规则](../system/rules.md)和[CLI](../system/checks-and-release.md)。网站内容不存入D1。
 
 ## 验收标准
 
-- [ ] 合法原文可独立发布；草稿与缺失译文不出现在页面和索引中。
-- [ ] 重复ID/顺序、目录身份错误、缺失原文或无效来源/标签得到明确错误。
-- [ ] 自关联、反向重复关联和无效事实目标被拒绝；有效关联双方可读。
-- [ ] 原文正文与可翻译信息更新触发译文待复核，单纯排序变化不触发。
-- [ ] 核对译文并更新摘要后解除待复核提示，命令本身不自动批准发布。
-- [ ] 全部草稿或空目录可以构建，且不残留旧搜索索引。
+- [x] 合法原文可独立发布；草稿与缺失译文不出现在页面和索引中。
+- [x] 重复ID/顺序、目录身份错误、缺失原文或无效来源/标签得到明确错误。
+- [x] 自关联、反向重复关联和无效事实目标被拒绝；有效关联可从双方数据读取（不代表详情已展示）。
+- [x] 原文正文与可翻译信息更新触发译文待复核，单纯排序变化不触发。
+- [x] 核对译文并更新摘要后解除待复核提示，命令本身不自动批准发布。
+- [x] 全部草稿或空目录可以构建，且不残留旧搜索索引。
 
-本次未重新执行内容发布验收。历史证据：2026-09-05单元测试、七阶段隔离构建及独立测试站内容修订/恢复通过；记录在`resources/evidence/001-multilingual-explore/`。
+最近有效验收：2026-09-05单元测试、七阶段隔离构建及独立测试站内容修订/恢复通过；记录在`resources/evidence/001-multilingual-explore/`。相关产品实现未变，保留结果；这次文档修订不声称重新执行发布。
 
 ## 对应的自动化测试
 
@@ -76,4 +87,4 @@ flowchart TD
 
 ## 已知问题 / 待办
 
-来源真实性、使用授权和翻译质量必须由编辑核对，自动校验无法证明。当前中文24件，英文仅一件AI逐段审核样例，不代表全部翻译完成或人工审核。没有公众投稿、在线编辑或自动发布译文功能。
+来源真实性、使用授权和翻译质量必须由编辑核对，自动校验无法证明。英文是否发布取决于各作品文件，AI审核不等于人工审核；当前数量运行content:validate查看。没有公众投稿、在线编辑或自动发布译文功能。

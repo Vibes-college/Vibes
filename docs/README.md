@@ -1,41 +1,47 @@
 ---
 tense: 'living'
-describes: '仓库地图'
+describes: '给维护者阅读的代码说明地图'
 status: 'current'
 shaped-by: ['002', '003']
 ---
 
-# 仓库地图
+# 文档地图
 
-| 板块     | 位置                                 | 用途                                |
-| -------- | ------------------------------------ | ----------------------------------- |
-| 实现     | src/、public/、db/、scripts/、tests/ | 网站、产品内容、素材、工具与测试    |
-| 协作     | AGENTS.md、.agents/、.specify/       | Agent入口、宪章、固定版本技能与模板 |
-| 当前系统 | docs/                                | 功能现状、配置和操作说明            |
-| 变更记录 | specs/                               | 编号规格、计划与任务；合并后冻结    |
+Markdown是给你看的代码说明，不是另一套可以晚些更新的报告。先理解项目，再沿用户操作路径找到功能，遇到数据或配置细节时进入系统说明。
 
-## 当前系统说明
+## 从哪里读
 
-- [产品定位](PRODUCT_OVERVIEW.md)、[架构](ARCHITECTURE.md)。
-- [功能索引](features/README.md)：按访客和维护者的操作路径查找五项能力，每篇提供步骤、响应流程、文件、验收、测试、依赖和限制。
-- technical/：[配置](technical/CONFIG.md)、[数据库](technical/DATABASE.md)、[规则](technical/CONSTANTS.md)、[集成](technical/INTEGRATIONS.md)。
-- operations/：[命令](operations/CLI.md)、[CI与发布](operations/CI.md)、[资产名称](operations/SECRETS_CHECKLIST.md)。
-- design-assets/：用户设计参考图片；[LESSONS](LESSONS.md)：不可改写的原则决策条目。
+| 想知道什么                               | 唯一维护入口                               |
+| ---------------------------------------- | ------------------------------------------ |
+| 项目是什么、已经实现什么、明确不做什么   | [项目总览](PROJECT_ANALYSIS.md)            |
+| 用户与维护者怎样完成一件事               | [功能索引](features/README.md)             |
+| 作品资料、译文、关系与本地测试表怎么保存 | [数据结构](system/content-model.md)        |
+| 框架、域名、环境变量和工具配置在哪里     | [运行配置](system/configuration.md)        |
+| 页面提供什么资源、调用了哪些外部服务     | [接口与服务](system/interfaces.md)         |
+| 数值限制、样式约束和校验规则是什么       | [系统规则](system/rules.md)                |
+| 怎样检查、审阅、发布与恢复               | [检查与发布](system/checks-and-release.md) |
 
-## 实现文件
+## 目录只按阅读目的划分
 
-src/pages是网址，components/layouts是页面零件与外框，styles/scripts是样式与交互，data提供内容视图及标签，content/works按作品保存元数据与中英正文，lib/content和lib/i18n提供共用规则。产品文章使用自己的内容字段，不是治理文档。
+```text
+docs/
+├── PROJECT_ANALYSIS.md  项目全貌与导航
+├── README.md            文档地图
+├── features/            一条用户操作路径一篇说明
+├── system/              数据、配置、接口、规则与交付的源码说明
+└── LESSONS.md           已冻结的历史原则决定
+```
 
-public保存静态文件，scripts提供检查工具，tests验证行为，db仅保存本地测试库结构与样例。没有必要再套一层code目录改变导入和工具路径。
+同一事实只在一个地方解释清楚，其他页面链接过去；总览不再复制整张数据表或命令表。篇幅取决于需要解释的内容，不为减少文件或行数丢掉关键边界。
 
-## 工具配置与生成数据
+## 文档与代码如何对应
 
-package.json/lock管理命令和依赖；astro、tsconfig、eslint、prettier、playwright、wrangler配置分别管理构建、类型、代码格式、测试和部署。.github是CI，.git是版本历史，.openai是Sites绑定，.dev.vars.example是无秘密值示例，.gitignore控制提交范围。这些交由AI按功能维护，保留工具稳定路径。
+功能和系统说明头部的code-sources列出对应源码文件或目录，code-revision记录上次复核的源码摘要。源码改变后检查会指出哪些说明必须复核；新增源码未被任何说明覆盖、引用路径不存在、当前文档链接失效也会失败。摘要只能证明看的是同一份代码，不能证明解释质量，仍需对照代码和测试审阅。
 
-node_modules、dist、.astro、.wrangler、test-results和playwright-report是安装/构建/运行结果，不手改。.DS_Store由macOS生成。清理运行数据前确认影响。
+作品正文是内容本身，日常修改正文不意味着要重写架构；当前数量用内容校验命令读取。产品行为、schema、工具与配置变化才沿对应说明维护。完整流程见[维护文档](features/document-governance.md)。
 
-## 变更、参考与临时材料
+## 现状与历史分开
 
-[specs索引](../specs/README.md)指向当前任务；每目录默认spec/plan/tasks，research按需记录技术未知或重要取舍。额外数据模型/契约/验证指南由Agent在spec列明必要性与用途。规格目录不设总行数上限，保留必要需求与决定。
+AGENTS和宪章指导AI执行；[specs](../specs/README.md)记录需求、计划和完成度，进入main后冻结。合并状态由Git与PR提供，部署状态由发布版本和实际站点提供，不把这些易变状态复制到每篇现状说明。
 
-[resources](../resources/README.md)保存被忽略的外部快照和原始本地证据；另一台电脑不一定有这些文件。.scratch只保存不提交的临时材料。工作流水账放PR/git，根目录不堆研究报告。每份治理文档顶部标签标明是否为现状、是否冻结；规则由docs:check校验。
+resources保存被忽略的本地原始证据；.scratch是临时产物，不提交。node_modules、dist、.astro、.wrangler与test-results是运行生成数据，不是手工维护文档。

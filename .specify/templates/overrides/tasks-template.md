@@ -7,7 +7,7 @@ shaped-by: ['002']
 
 # Tasks: [功能名]
 
-生成最终文件时替换元数据为tense=frozen、status=draft、describes=执行清单、amended-by=[]，删除shaped-by。开发中随Git保存进度；真实完成后才勾选，合并后冻结。
+生成最终文件时替换元数据为tense=frozen、status=draft、describes=执行清单、amended-by=[]，删除shaped-by。开发中随Git保存进度；真实完成后才勾选，全部完成后同步spec/plan/tasks与索引为complete，进入main后冻结。
 
 ## 基础与用户故事
 

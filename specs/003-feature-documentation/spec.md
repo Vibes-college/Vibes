@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '按用户操作路径组织功能文档'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 feature-ids:
   [
@@ -31,6 +31,12 @@ approved-artifacts: []
 - FR-006：按用户参考图，以简短Mermaid图展示用户动作、实际系统处理、可见结果及失败分支，源码可追溯；不照搬参考系统实现。
 - SC-001：功能索引恰有五个当前文档且按两种使用者分组；全部采用新模板栏目，路径和自动测试名称可核对。
 - SC-002：新增旧编号映射的成功与失败测试，并通过npm run check；原冻结与缺失文档保护仍有效。
+
+- FR-007：Markdown是对应代码、供非技术维护者阅读的实现说明；项目总览、用户路径与系统说明各有唯一职责，吸收产品定位后删除PRODUCT_OVERVIEW、SECRETS_CHECKLIST和design-assets，PROJECT_ANALYSIS进入白名单。
+- FR-008：现状说明以code-sources与code-revision绑定源码；新增未映射源码、引用不存在、摘要变化和本地链接失效均失败。只读摘要命令不自动认可文字，不访问外部站点。
+- FR-009：新规格用complete表示实现完成，进入main后冻结；不依赖合并后补merged才能正确表达完成。保留历史merged兼容；已勾完tasks却仍in-progress必须失败。
+- FR-010：验收项表示最近一次仍有效的证据，不按对话轮次重置；来源/环境/方法有记录，影响结论的代码改动后重新验证。合并与发布状态以各自平台为准，不在现状说明重复手记。
+- SC-003：实际工作区check通过，源码对应、失效链接与状态遗漏的成功和失败测试通过；用户指定文件移除且当前链接无残留。
 
 ## 明确不做
 

@@ -12,8 +12,6 @@ shaped-by: ['002']
 | [001 多语言Explore](001-multilingual-explore/spec.md) | merged | article-read, content-maintenance, delivery-setup, explore-browse, explore-filter, not-found, project-commands, responsive-access, site-metadata |
 | [002 文档治理](002-document-governance/spec.md)       | merged | delivery-setup, document-governance, project-commands, spec-kit-workflow                                                                         |
 
-| [003 按操作路径组织功能文档](003-feature-documentation/spec.md) | in-progress | article-read, content-maintenance, document-governance, explore-browse, project-commands |
+| [003 按操作路径组织功能文档](003-feature-documentation/spec.md) | complete | article-read, content-maintenance, document-governance, explore-browse, project-commands |
 
-当前任务看in-progress；draft仍需审阅。每目录按spec→plan→tasks阅读，research记录技术未知与决定。待合并稿准备merged，进入main后冻结；frozen-at可省略，实际日期以PR合并记录为准，后续修订通过amends/amended-by追溯。当前功能看 [功能索引](../docs/features/README.md)，工作过程看PR/git。
-
-001与002均已随 [PR #2](https://github.com/Vibes-college/Vibes/pull/2) 合并并冻结，003已完成操作路径文档整理与隔离验证，仍在维护分支等待批量审阅。001已完成独立测试站发布及恢复演练；线上版本与最新main是否一致需发布时单独核对。当前工具定位见.specify/feature.json，保留001作为最近完成的工作上下文，不代表仍在开发。
+当前任务看in-progress；draft仍需审阅。新规格complete表示实现完成，进入main后冻结；历史merged状态保留兼容。这里不记录PR是否已经合并或线上部署到哪个版本，分别以Git/PR及发布记录为准。当前行为看[功能索引](../docs/features/README.md)，历史feature-ids通过当前说明legacy-feature-ids追溯。

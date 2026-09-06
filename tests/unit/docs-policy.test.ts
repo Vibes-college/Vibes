@@ -320,3 +320,40 @@ test('legacy feature ids resolve merged history and reject ambiguous ownership',
   docs.set(original.path, original);
   assert.throws(() => validateIndexes(docs), /冲突/);
 });
+
+// 实现完成独立于是否合并；已完成清单不应永久停留在进行中。
+test('complete describes implementation readiness and completed tasks cannot remain in progress', () => {
+  const docs = catalog();
+  for (const [path, item] of docs) {
+    if (path.startsWith('specs/001-example/'))
+      docs.set(
+        path,
+        document(path, { ...item.meta, status: 'complete' }, item.body.replace('- [ ]', '- [x]')),
+      );
+  }
+  const feature = docs.get('docs/features/example.md')!;
+  docs.set(feature.path, document(feature.path, { ...feature.meta, 'shaped-by': ['001'] }));
+  const fi = docs.get('docs/features/README.md')!;
+  docs.set(fi.path, document(fi.path, fi.meta, '| [Example](example.md) | current | / | 001 |\n'));
+  const index = docs.get('specs/README.md')!;
+  docs.set(
+    index.path,
+    document(index.path, index.meta, '| [001](001-example/spec.md) | complete | example |\n'),
+  );
+  assert.doesNotThrow(() => validateIndexes(docs));
+  const spec = docs.get('specs/001-example/spec.md')!;
+  assert.doesNotThrow(() => validateDocument(spec, docs));
+  assert.throws(() => assertFrozen(spec, document(spec.path, spec.meta, '# Tampered\n')), /正文/);
+  for (const [path, item] of docs) {
+    if (path.startsWith('specs/001-example/'))
+      docs.set(
+        path,
+        document(path, { ...item.meta, status: 'in-progress' }, item.body.trimStart()),
+      );
+  }
+  docs.set(
+    index.path,
+    document(index.path, index.meta, '| [001](001-example/spec.md) | in-progress | example |\n'),
+  );
+  assert.throws(() => validateIndexes(docs), /全部任务已完成/);
+});

@@ -9,6 +9,7 @@ import {
   validateDocument,
 } from './docs-policy.ts';
 import { validateIndexes } from './docs-index.ts';
+import { isImplementation, sourceRevisions, validateLivingLinks } from './docs-sources.ts';
 
 // 使用参数数组调用Git，不将路径或环境值拼接成shell代码。
 function git(args: string[]): string {
@@ -41,6 +42,16 @@ function main(): void {
   }
   for (const doc of documents.values()) validateDocument(doc, documents);
   validateIndexes(documents);
+  validateLivingLinks(documents, files);
+  const sources = new Map(files.filter(isImplementation).map((path) => [path, readFileSync(path)]));
+  const printRevisions = process.argv.length === 3 && process.argv[2] === '--revisions';
+  if (process.argv.length > 2 && !printRevisions)
+    throw new Error('Usage: docs:check [--revisions]');
+  const revisions = sourceRevisions(documents, sources, !printRevisions);
+  if (printRevisions) {
+    console.log(JSON.stringify(Object.fromEntries(revisions), null, 2));
+    return;
+  }
   const base = baseline();
   for (const path of git(['ls-tree', '-r', '--name-only', '-z', base]).split('\0')) {
     if (!path.toLowerCase().endsWith('.md') || isExempt(path)) continue;
@@ -48,7 +59,10 @@ function main(): void {
     // 允许一次性迁移没有时态标签的既有文档，不把它们伪装为冻结记录。
     if (!source.startsWith('---\n') && !source.startsWith('---\r\n')) continue;
     const old = parseDocument(path, source);
-    if (old.meta.tense === 'frozen' && ['merged', 'superseded'].includes(String(old.meta.status))) {
+    if (
+      old.meta.tense === 'frozen' &&
+      ['complete', 'merged', 'superseded'].includes(String(old.meta.status))
+    ) {
       assertFrozen(old, documents.get(path));
     }
   }

@@ -24,6 +24,6 @@ shaped-by: ['002', '003']
 | [检查与发布网站](project-commands.md)        | 检查改动、提交审阅、获准发布与恢复 | current | 001, 002, 003 |
 | [规划开发与维护文档](document-governance.md) | 明确需求、读取现状、计划与维护说明 | current | 002, 003      |
 
-current表示描述当前实现，不代表所有验收项都已通过。每篇说明中的复选框标明本次验收，旧证据注明日期；未勾选不等于未实现。模板为docs/features/_TEMPLATE.md。
+current表示描述当前实现，不代表所有验收项都已通过。复选框保留最近一次仍有效的验收及日期，不按对话轮次重置；未勾选表示缺少该项有效验收，不等于未实现。模板为docs/features/_TEMPLATE.md。
 
-完整命令见[CLI](../operations/CLI.md)，运行配置见[仓库地图](../README.md)，历史理由见[规格索引](../../specs/README.md)。历史规格中的旧功能编号由当前文档legacy-feature-ids接续，旧规格正文不改写；不为旧编号保留空壳文档。
+完整命令见[CLI](../system/checks-and-release.md)，运行配置见[仓库地图](../README.md)，历史理由见[规格索引](../../specs/README.md)。历史规格中的旧功能编号由当前文档legacy-feature-ids接续，旧规格正文不改写；不为旧编号保留空壳文档。

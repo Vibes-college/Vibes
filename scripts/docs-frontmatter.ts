@@ -84,7 +84,7 @@ export function assertFrozen(previous: Document, current?: Document): void {
   ) {
     throw new Error(`${previous.path}: 冻结后仅可改status/amended-by或首次补记真实frozen-at`);
   }
-  if (!['merged', 'superseded'].includes(String(current.meta.status)))
+  if (!['complete', 'merged', 'superseded'].includes(String(current.meta.status)))
     throw new Error(`${previous.path}: 冻结状态不可回退`);
   if (previous.meta.status === 'superseded' && current.meta.status !== 'superseded')
     throw new Error(`${previous.path}: superseded不可恢复`);
