@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '连续阅读实施清单'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -38,6 +38,6 @@ amended-by: []
 - [x] T009 按最终gzip实测修改scripts/budget-policy.ts门槛及docs/system/rules.md说明，运行verify与budget。
 - [x] T010 更新docs/features/article-read.md、explore-browse.md及对应系统说明、功能和spec索引、源码摘要。
 - [x] T011 Playwright Chromium/手机/WebKit及ego-browser体验，证据存resources/evidence/005-continuous-navigation；不把模拟写成真机。
-- [ ] T012 保存推送进度，更新PR #4清单/验证/预览，spec/plan/tasks据实同步完成状态。
+- [x] T012 保存推送进度，更新PR #4清单/验证/预览，spec/plan/tasks据实同步完成状态。
 
 本任务单写者依依赖顺序执行；独立研究已完成，实施不并行改同一文件。滚动恢复的重复失败已转化为生命周期处理与专项测试，记录于docs/LESSONS.md。

@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '路由与Safari缓存取舍'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '连续导航实现方案'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -27,4 +27,4 @@ public/_headers对zh/en公开页面设max-age=60,must-revalidate，使Safari fet
 
 ## PR工作台与经验复核
 
-PR #4已建立，tasks.md为执行清单，更新PR进度和可体验预览。未发现直接相关失败经验，不追加条目。
+PR #4已建立，tasks.md为执行清单，更新PR进度和可体验预览。滚动恢复的重复失败已转化为处理逻辑和测试，记录于docs/LESSONS.md。
