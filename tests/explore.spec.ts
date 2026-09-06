@@ -253,3 +253,15 @@ test('failed result fragments recover after explicit retry', async ({ page }) =>
     timeout: 20000,
   });
 });
+
+test('failed lazy search client can recover without losing the query', async ({ page }) => {
+  await page.route('**/_astro/search.*.js', (route) => route.abort());
+  await page.goto('/zh/?q=LoRA');
+  await expect(page.locator('[data-retry]')).toBeVisible({ timeout: 20000 });
+  await page.unroute('**/_astro/search.*.js');
+  await page.locator('[data-retry]').click();
+  await expect(page.locator('[data-search-grid] [data-work="lora"]')).toBeVisible({
+    timeout: 20000,
+  });
+  await expect(page.getByRole('searchbox')).toHaveValue('LoRA');
+});

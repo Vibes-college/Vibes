@@ -27,10 +27,12 @@ let timer: ReturnType<typeof setTimeout> | undefined;
 let results: SearchResult[] = [];
 let shown = 0;
 let client: Promise<typeof import('./search')> | undefined;
+let clientFailed = false;
 
 function loadClient() {
   return (client ||= import('./search').catch((error: unknown) => {
     client = undefined;
+    clientFailed = true;
     throw error;
   }));
 }
@@ -194,6 +196,11 @@ root.querySelector('#reset-filters')!.addEventListener('click', () => {
   }
 });
 retry.addEventListener('click', () => {
+  // 浏览器模块映射会缓存脚本下载失败；刷新重建映射，q已保存在URL中。
+  if (clientFailed) {
+    location.reload();
+    return;
+  }
   const ticket = ++sequence;
   showState(t.loading);
   void bounded(loadClient().then((module) => module.resetSearch()))

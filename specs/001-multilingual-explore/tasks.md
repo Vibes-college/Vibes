@@ -69,3 +69,7 @@ amended-by: []
 5000×2隔离测试：首中末正文搜索、详情、无JS第二页/末页、中文/英文24→48条结果均通过；限速条件下中英文冷中位数2358/2872ms，热192/196ms。Node静态gzip服务测真实产物，不是Cloudflare边缘实测；26676文件超出Free20000容量，未自动升级。详见本地explore-scale.md。
 
 优化后5000×2构建41.7秒（先前210.4秒），通过避免事实链接判定重复生成全目录译文视图实现；最终速度与尺寸以本地explore-scale.md为准。当前样例站142文件，_astro业务JS gzip4901B、首页9035B、交互源码7303B，budget通过。
+
+## Phase 6: Convergence
+
+- [ ] T033 完成同SHA GitHub verify/budget、独立Cloudflare测试站首次发布、真实内容修订和上一成功版本恢复；核对恢复后的页面/索引/canonical并在resources/evidence/001-multilingual-explore/cloudflare-release.md及PR记录SHA、版本、URL和时间，补齐T029/T030的未执行证据 per FR-007、SC-005（partial，HIGH）。
