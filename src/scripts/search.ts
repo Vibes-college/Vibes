@@ -1,5 +1,5 @@
 import { previewHtml, escapeHtml, type PreviewData } from '../lib/preview';
-import { workPath, type Locale } from '../lib/i18n/routes';
+import { workPath, htmlLanguages, type Locale } from '../lib/i18n/routes';
 
 interface ResultData {
   url: string;
@@ -17,36 +17,49 @@ interface Pagefind {
     options?: { filters: { tag: string } },
   ) => Promise<{ results: SearchResult[] }>;
 }
-let library: Promise<Pagefind> | undefined;
+const libraries = new Map<Locale, Promise<Pagefind>>();
 let attempt = 0;
 
-// 重建索引实例，释放失败的分片请求缓存；旧请求仍由界面的序号隔离。
-export async function resetSearch(): Promise<void> {
-  const previous = library;
-  library = undefined;
+// 各语言独立实例；重试只销毁失败语言，不影响仍在结束的另一语言请求。
+export async function resetSearch(locale: Locale): Promise<void> {
+  const previous = libraries.get(locale);
+  libraries.delete(locale);
   attempt++;
-  if (previous) await previous.then((module) => module.destroy()).catch(() => {});
+  if (previous) await previous.then((instance) => instance.destroy()).catch(() => {});
 }
 
-// 只有搜索意图才加载；失败后允许显式重试，不保留永久失败的初始化Promise。
-export function prepareSearch(): Promise<Pagefind> {
-  if (!library) {
-    const url = `/pagefind/pagefind.js${attempt ? `?retry=${attempt}` : ''}`;
-    library = import(/* @vite-ignore */ url)
-      .then(async (module: Pagefind) => {
-        await module.init();
-        return module;
-      })
-      .catch((error: unknown) => {
-        library = undefined;
-        attempt++;
+export function prepareSearch(locale: Locale): Promise<Pagefind> {
+  const existing = libraries.get(locale);
+  if (existing) return existing;
+  const url = `/pagefind/pagefind.js${attempt ? `?retry=${attempt}` : ''}`;
+  const pending = import(/* @vite-ignore */ url)
+    .then(async (module: { createInstance: () => Pagefind }) => {
+      // Pagefind在实例创建时读取html.lang；离开页面后的迟到import不能选错语言。
+      if (document.documentElement.lang !== htmlLanguages[locale])
+        throw new DOMException('Search page changed', 'AbortError');
+      const instance = module.createInstance();
+      try {
+        await instance.init();
+        return instance;
+      } catch (error) {
+        await instance.destroy();
         throw error;
-      });
-  }
-  return library;
+      }
+    })
+    .catch((error: unknown) => {
+      if (libraries.get(locale) === pending) libraries.delete(locale);
+      if (!(error instanceof DOMException && error.name === 'AbortError')) attempt++;
+      throw error;
+    });
+  libraries.set(locale, pending);
+  return pending;
 }
-export async function searchWorks(query: string, tag: string): Promise<SearchResult[]> {
-  const pagefind = await prepareSearch();
+export async function searchWorks(
+  query: string,
+  tag: string,
+  locale: Locale,
+): Promise<SearchResult[]> {
+  const pagefind = await prepareSearch(locale);
   return (await pagefind.search(query, tag ? { filters: { tag } } : undefined)).results;
 }
 // 对索引返回值也验证站内语言和身份；所有内容字符串统一转义后才组成卡片。

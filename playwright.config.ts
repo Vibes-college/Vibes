@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
-  testMatch: ['explore.spec.ts', 'content-lifecycle.spec.ts'],
+  testMatch: ['explore.spec.ts', 'content-lifecycle.spec.ts', 'navigation.spec.ts'],
   fullyParallel: true,
   workers: 2,
   forbidOnly: Boolean(process.env.CI),
@@ -9,6 +9,7 @@ export default defineConfig({
   projects: [
     { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'mobile-chromium', use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
+    { name: 'mobile-webkit', use: { ...devices['iPhone 13'] } },
   ],
   webServer: {
     command:
