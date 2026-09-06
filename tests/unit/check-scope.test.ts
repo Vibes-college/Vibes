@@ -16,7 +16,7 @@ test('check scope limits only known documentation and document tools', () => {
     'tools',
   );
   for (const path of [
-    'src/content/articles/a.md',
+    'src/content/works/a/zh.md',
     'src/pages/index.astro',
     'db/seed.sql',
     'package-lock.json',

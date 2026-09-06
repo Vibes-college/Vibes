@@ -1,0 +1,62 @@
+{
+  "id": "dwarkesh",
+  "originalLocale": "zh",
+  "order": 13,
+  "sourceUrl": "https://www.dwarkesh.com/",
+  "typeId": "audio",
+  "tagIds": ["creator-fcdf040bc9b159f0"],
+  "preview": {
+    "kind": "audio",
+    "color": "#e7e5dc"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Dwarkesh Patel",
+        "en": "Dwarkesh Patel"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-fcdf040bc9b159f0"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "音频",
+        "en": "Audio"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "audio"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Ideas worth staying with."
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

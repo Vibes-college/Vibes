@@ -1,0 +1,62 @@
+{
+  "id": "khan-academy",
+  "originalLocale": "zh",
+  "order": 23,
+  "sourceUrl": "https://www.khanacademy.org/",
+  "typeId": "website",
+  "tagIds": ["creator-5c11a47a040d1ef7"],
+  "preview": {
+    "kind": "shapes",
+    "color": "#e6eee7"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Khan Academy",
+        "en": "Khan Academy"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-5c11a47a040d1ef7"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "网站",
+        "en": "Websites"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "website"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "A place to keep learning"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

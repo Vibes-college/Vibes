@@ -1,0 +1,62 @@
+{
+  "id": "transformers-js",
+  "originalLocale": "zh",
+  "order": 1,
+  "sourceUrl": "https://huggingface.co/docs/transformers.js/en/index",
+  "typeId": "code",
+  "tagIds": ["creator-1b817f9efc97800a"],
+  "preview": {
+    "kind": "code",
+    "color": "#f5eecb"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Hugging Face",
+        "en": "Hugging Face"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-1b817f9efc97800a"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "代码",
+        "en": "Code"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "code"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "pipeline('sentiment-analysis')"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

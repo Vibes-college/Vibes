@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://vibes-explore.jachi2.chatgpt.site/sitemap.xml

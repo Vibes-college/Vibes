@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: []
+shaped-by: ['001']
 ---
 
 # 常量、规则表与正则
@@ -11,23 +11,14 @@ shaped-by: []
 
 ## 产品规则
 
-| 名称 / 规则       | 当前含义                                                                                       | 定义位置                                                                    |
-| ----------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| formats 分类表    | all All；code Code；paper Papers；website Websites；video Video；audio Audio；article Articles | src/data/works.ts                                                           |
-| slug 格式与唯一性 | 仅小写英文字母、数字和单个短横线分段；不能重复                                                 | src/data/works.ts；tests/unit/content.test.ts                               |
-| 内容完整性        | 标题、summary、description 非空；分类存在且不是 all；来源必须 HTTPS                            | src/data/works.ts                                                           |
-| 同名 Markdown     | 每条作品必须有同 slug 的文章文件，缺失则构建失败                                               | src/pages/works/[slug].astro                                                |
-| 搜索长度          | 输入与从 URL 恢复时均限制为 160 字符                                                           | src/layouts/Layout.astro；src/scripts/explore.ts                            |
-| 搜索范围          | 标题、作者、summary、description 合并后搜索；不包含文章全文                                    | src/components/Explore.astro                                                |
-| 搜索方式          | 去首尾空格、忽略大小写、按空白分词；所有词必须同时命中                                         | src/scripts/explore.ts                                                      |
-| 分类与查询参数    | format 单选分类；URL 的 q、type 记录条件；无效分类回到 all                                     | src/scripts/explore.ts                                                      |
-| 清空规则          | 搜索框 × 只清词；空结果按钮同时清词与分类                                                      | src/scripts/explore.ts                                                      |
-| 默认内容数量      | 当前 24 条，其中论文 4 条，LoRA 搜索结果 1 条                                                  | src/data/works.json；tests/explore.spec.ts                                  |
-| 内容顺序          | 数组顺序决定显示顺序；没有自动排序                                                             | src/data/works.json；src/components/Explore.astro                           |
-| 详情路径          | /works/{slug}/；所有静态路径尾斜杠                                                             | src/data/works.ts；astro.config.mjs                                         |
-| 标准 URL          | /explore/ 标准地址为 /；站点地图使用既有 Sites 域名                                            | src/layouts/Layout.astro；src/pages/sitemap.xml.ts；public/robots.txt       |
-| 默认文字          | 页面默认标题、description、页头、页脚和错误提示                                                | src/layouts/Layout.astro；src/pages/404.astro；src/components/Explore.astro |
-| 外部链接规则      | HTTPS 来源，新标签打开且 noopener noreferrer                                                   | src/data/works.ts；src/components/WorkDetail.astro                          |
+- `src/lib/content/schema.ts`限定zh/en、稳定小写ID、非空语言字段、无凭据HTTPS来源、预览枚举/颜色、可选事实及单一关联；`validate.ts`校验目录身份、ID/顺序唯一、引用与发布关系。
+- `src/data/taxonomy.json`是类型/标签名称及别名唯一源；原文语言、排序、事实顺序和关系属于各作品work.json。目录只包含当前语言published版本，每页24件；路径函数在`src/lib/i18n/routes.ts`。
+- `src/lib/content/revision.ts`对规范化原文与影响理解的字段计算SHA256；排序和其他语言变化不影响摘要。已发布译文摘要不一致时标待复核，不自动撤回或更新。
+- 搜索为Pagefind语言全文索引，与tag分类取交集；不再用卡片文本过滤。q最长160字符、输入延迟150ms、请求15秒超时、每批24项；显式重试释放失败实例，结果序号隔离旧请求。规则在src/scripts/explore.ts与search.ts。
+- 目录路径`/{locale}/`、分类`/{locale}/tags/{tagId}/`、分页`page/{n}/`、详情`/{locale}/works/{id}/`；旧根路径转中文，旧type转分类。UI文案在src/lib/i18n/messages.ts。
+- `src/config/site.ts`统一来源；发布要求独立HTTPS SITE_URL，拒绝localhost、vibes.college和非纯origin地址。canonical去查询，语言替代链接仅含实际版本，sitemap不含搜索或草稿。
+- 外部目标HTTPS且新标签noopener noreferrer；事实无有效目标显示纯文本。正文锚点在构建时核对，翻译缺失值显示原文标注。
+- CSP只为Pagefind WebAssembly加入`wasm-unsafe-eval`，普通eval仍禁用；定义public/_headers。
 
 ## 检查与运行规则
 
@@ -93,3 +84,11 @@ scripts/docs-policy.ts定义白名单与篇幅指南：功能说明120行、宪�
 CI范围路径白名单在scripts/check-scope.ts，默认未知路径full；tests/unit/check-scope.test.ts覆盖删除/改名/新增。元数据只检查确定性规则，自然语言不设禁词，任务不要求固定位置和措辞；research-trigger接受非空的技术未知或重要取舍理由。frozen-at可省略，提供时校验有效日期，冻结后仅允许首次补记。
 
 开发阶段允许暂缺plan/tasks与未来功能文档；合并状态才要求文件完整及功能来源同步。
+
+## 搜索资源与托管容量
+
+scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。首屏JS仍保守计入_astro全部自有JS；双语首页取gzip较大者，原预算不变。
+
+scripts/budget-policy.ts及tests/unit/budget.test.ts校验Workers静态资源：Free每版本20,000文件，Paid100,000文件，单文件最多25MiB；默认采用Free，实际账户套餐须发布前核对。依据[Cloudflare官方限制](https://developers.cloudflare.com/workers/platform/limits/)。普通budget报告数量，受控发布按账户容量阻断。
+
+scripts/measure-explore.ts在.scratch隔离生成5000×2语料、构建和系统分配的独立空闲端口验收后清理；scripts/search-performance.ts以390×844、1.6Mbps下行/750Kbps上行/150msRTT/CPU4倍测每语言5次冷/热，目标中位数≤3000/1000ms，失败不放宽。

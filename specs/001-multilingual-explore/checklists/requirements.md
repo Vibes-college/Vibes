@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '规格质量清单'
-status: 'draft'
+status: 'in-progress'
 amended-by: []
 ---
 

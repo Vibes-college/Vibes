@@ -1,20 +1,24 @@
 ---
 tense: 'living'
-describes: '功能名：精选内容维护'
+describes: '精选内容维护'
 status: 'current'
-shaped-by: []
+shaped-by: ['001']
 ---
 
 # 精选内容维护
 
 ## 当前行为
 
-维护者让AI修改src/data/works.json和同slug的src/content/articles/*.md，再check/test:e2e、查看详情；发布另行执行，本地修改不自动上线。无可视化编辑后台，不从D1读取内容。
+维护者让AI编辑`src/content/works/{id}/work.json`和`zh.md`/`en.md`；标签统一在src/data/taxonomy.json。work.json保存稳定ID、原文语言、排序、来源、预览、事实和单一无向关联；Markdown保存语言字段与正文。网站不读D1，无公众或Agent编辑入口。
 
-slug唯一且为小写字母/数字/连接号，卡片有标题、简介、HTTPS来源和同名文章；数组顺序即目录顺序，缺正文阻断构建。增删内容同步固定数量测试；质量、版权与来源有效性需人工核对。
+先运行`npm run content:validate`；每次build也先校验。重复ID/顺序、文件身份错误、缺失原文、无效来源/标签/事实目标、自关联及反向重复关系会失败。原文和译文各有draft/published状态；只有published生成路由和索引，原文可先独立发布。
 
-src/data/work-facts.ts从已有作者/类型/note生成信息，作者与类型指向筛选，主题指向正文；不伪造prompt、授权或价格。Markdown二级标题作为折叠章节，三级标题/表格/来源保留；预览复用Preview.astro。
+人工或明确的编辑审核后发布译文：查询`npm run content:revision -- <id>`，核对完整译文，再填写sourceRevision及published。命令只报告摘要，不写文件或自动发布。原文正文、可翻译字段、事实等改变会让已发布译文派生待复核；排序改变不触发。旧译文仍可读，复核并更新摘要才解除提示。
 
-## 文件与验收
+关联只记录一次，双方可读；用途是相似/归组/比较，不表达继承依赖。可选事实按作品顺序展示，链接/标签/锚点必须有效；未翻译事实明确标注回退。当前中文24件；英文仅一件AI逐段编辑审核样例，不代表人工审核或全部翻译完成。
 
-src/data/works.ts校验内容，src/pages/works/[slug].astro检查文章存在；tests/unit/content.test.ts检查唯一地址、文章和HTTPS来源。npm run build执行构建约束；tests/explore.spec.ts检查产物，命令见 [CLI](../operations/CLI.md)。
+## 文件与验证
+
+src/lib/content/{schema,catalog,validate,revision,relations,views}.ts；src/content.config.ts接Astro集合；scripts/validate-content.ts与build.ts；src/data/work-facts.ts渲染事实。
+
+2026-09-05本地单元测试通过schema/身份/迁移、发布规则、修订摘要与无向关联；tests/unit/content-validation.test.ts、content-revision.test.ts、content-relations.test.ts、i18n.test.ts。来源真实性、授权和翻译质量仍需编辑核对，类型检查不证明这些事项。

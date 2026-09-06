@@ -1,53 +1,112 @@
 ---
 import Preview from './Preview.astro';
-import { works, workPath, type Work } from '../data/works';
+import LanguageSwitch from './LanguageSwitch.astro';
+import { catalog, getWorks, type Work } from '../data/works';
 import { workFacts } from '../data/work-facts';
+import { adjacentWorks } from '../lib/content/views';
+import { messages } from '../lib/i18n/messages';
+import { browsePath, workPath, htmlLanguages } from '../lib/i18n/routes';
 interface Props {
   work: Work;
 }
 const { work } = Astro.props;
-const index = works.findIndex((entry) => entry.slug === work.slug);
-const previous = works[index - 1];
-const next = works[index + 1];
+const { previous, next } = adjacentWorks(getWorks(work.locale), work.slug);
 const source = new URL(work.url);
+const t = messages[work.locale];
+const meta = {
+  id: work.slug,
+  type: work.type,
+  title: work.title,
+  summary: work.summary,
+  preview: work.preview,
+  color: work.color,
+  eyebrow: work.eyebrow,
+  display: work.display,
+  note: work.note,
+};
 ---
 
-<section class="detail-cover" aria-label="作品概览" data-work-detail>
-  <a class="original-site" href={work.url} target="_blank" rel="noopener noreferrer">
-    <span>{source.hostname}</span>
-    <img src="/icons/external-link.svg" width="18" height="18" alt="" />
-    <span class="sr-only">前往原始作品（在新标签页打开）</span>
-  </a>
+{
+  Object.entries(meta).map(([key, value]) => (
+    <meta data-pagefind-meta={`${key}[content]`} content={value} />
+  ))
+}
+{
+  [work.meta.typeId, ...work.meta.tagIds].map((tag) => (
+    <meta data-pagefind-filter="tag[content]" content={tag} />
+  ))
+}
+<section class="detail-cover" aria-label={t.overview} data-work-detail>
+  <div class="detail-source-row" data-pagefind-ignore>
+    <a class="original-site" href={work.url} target="_blank" rel="noopener noreferrer"
+      ><span>{source.hostname}</span><img
+        src="/icons/external-link.svg"
+        width="18"
+        height="18"
+        alt=""
+      /><span class="sr-only">{t.source}（{t.external}）</span></a
+    >
+    <LanguageSwitch locale={work.locale} id={work.slug} />
+  </div>
   <a
     class="detail-preview"
     href={work.url}
     target="_blank"
     rel="noopener noreferrer"
-    aria-label={`打开原站体验：${work.title}（新标签页）`}
+    aria-label={`${t.experience}：${work.title}（${t.external}）`}
+    data-pagefind-ignore><Preview work={work} /></a
   >
-    <Preview work={work} />
-  </a>
   <header class="article-header">
-    <h1>{work.title}</h1>
+    <h1 data-pagefind-meta="title">{work.title}</h1>
     <p class="detail-description">{work.description}</p>
+    {
+      work.needsReview && (
+        <p class="translation-notice" data-pagefind-ignore>
+          {t.stale} <a href={workPath(work.originalLocale, work.slug)}>{t.original} →</a>
+        </p>
+      )
+    }
     <dl class="work-facts">
       {
-        workFacts(work).map((fact) => (
+        workFacts(work, catalog).map((fact) => (
           <div>
             <>
               <dt>{fact.label}</dt>
               <dd>
-                <a href={fact.href}>{fact.value}</a>
+                {fact.href ? (
+                  <a
+                    href={fact.href}
+                    target={fact.external ? '_blank' : undefined}
+                    rel={fact.external ? 'noopener noreferrer' : undefined}
+                  >
+                    {fact.value}
+                  </a>
+                ) : (
+                  <span>{fact.value}</span>
+                )}
+                {fact.fallbackLocale && (
+                  <small class="fact-fallback" lang={htmlLanguages[work.locale]}>
+                    （{t.originalFact}）
+                  </small>
+                )}
               </dd>
             </>
           </div>
         ))
       }
     </dl>
+    <span class="sr-only"
+      >{
+        catalog.taxonomy
+          .filter((tag) => work.meta.typeId === tag.id || work.meta.tagIds.includes(tag.id))
+          .map((tag) => [tag.labels[work.locale], ...tag.aliases[work.locale]].join(' '))
+          .join(' ')
+      }</span
+    >
   </header>
-  <nav class="detail-navigation" aria-label="作品切换">
-    <a class="back-link" href="/explore/">← Explore</a>
-    <a class="read-down" href="#reading" aria-label="向下阅读正文"
+  <nav class="detail-navigation" aria-label={t.switchWork} data-pagefind-ignore>
+    <a class="back-link" data-back-link href={browsePath(work.locale)}>← {t.explore}</a>
+    <a class="read-down" href="#reading" aria-label={t.readDown}
       ><img src="/icons/chevron-down.svg" width="20" height="20" alt="" /></a
     >
     <div class="work-pagination">
@@ -55,8 +114,8 @@ const source = new URL(work.url);
         previous ? (
           <a
             data-direction="previous"
-            href={workPath(previous.slug)}
-            aria-label={`上一个作品：${previous.title}`}
+            href={workPath(work.locale, previous.slug)}
+            aria-label={`${t.previousWork}：${previous.title}`}
           >
             <img
               class="previous-icon"
@@ -67,7 +126,7 @@ const source = new URL(work.url);
             />
           </a>
         ) : (
-          <span class="disabled-direction" aria-label="已经是第一个作品">
+          <span class="disabled-direction" aria-label={t.firstWork}>
             <img
               class="previous-icon"
               src="/icons/chevron-down.svg"
@@ -82,13 +141,13 @@ const source = new URL(work.url);
         next ? (
           <a
             data-direction="next"
-            href={workPath(next.slug)}
-            aria-label={`下一个作品：${next.title}`}
+            href={workPath(work.locale, next.slug)}
+            aria-label={`${t.nextWork}：${next.title}`}
           >
             <img class="next-icon" src="/icons/chevron-down.svg" width="18" height="18" alt="" />
           </a>
         ) : (
-          <span class="disabled-direction" aria-label="已经是最后一个作品">
+          <span class="disabled-direction" aria-label={t.lastWork}>
             <img class="next-icon" src="/icons/chevron-down.svg" width="18" height="18" alt="" />
           </span>
         )
@@ -96,11 +155,15 @@ const source = new URL(work.url);
     </div>
   </nav>
 </section>
-<section id="reading" class="reading-page" aria-label="作品正文" tabindex="-1">
-  <p class="reading-note">深入了解 <span>选择一个章节，展开阅读</span></p>
-  <div class="prose" lang="zh-CN"><slot /></div>
-  <a class="source-link" href={work.url} target="_blank" rel="noopener noreferrer"
-    >前往原始作品 ↗<span class="sr-only">（在新标签页打开）</span></a
+<section id="reading" class="reading-page" aria-label={t.body} tabindex="-1">
+  <p class="reading-note" data-pagefind-ignore>{t.more}<span>{t.chooseSection}</span></p>
+  <div class="prose" lang={htmlLanguages[work.locale]}><slot /></div>
+  <a
+    class="source-link"
+    href={work.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    data-pagefind-ignore>{t.source} ↗<span class="sr-only">（{t.external}）</span></a
   >
 </section>
 <script src="../scripts/detail.ts"></script>

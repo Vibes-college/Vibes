@@ -1,0 +1,350 @@
+[
+  {
+    "id": "code",
+    "kind": "type",
+    "labels": {
+      "zh": "代码",
+      "en": "Code"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "paper",
+    "kind": "type",
+    "labels": {
+      "zh": "论文",
+      "en": "Papers"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "website",
+    "kind": "type",
+    "labels": {
+      "zh": "网站",
+      "en": "Websites"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "video",
+    "kind": "type",
+    "labels": {
+      "zh": "视频",
+      "en": "Video"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "audio",
+    "kind": "type",
+    "labels": {
+      "zh": "音频",
+      "en": "Audio"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "article",
+    "kind": "type",
+    "labels": {
+      "zh": "文章",
+      "en": "Articles"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-ea1e10dc079a67fd",
+    "kind": "creator",
+    "labels": {
+      "zh": "Vaswani et al.",
+      "en": "Vaswani et al."
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-1b817f9efc97800a",
+    "kind": "creator",
+    "labels": {
+      "zh": "Hugging Face",
+      "en": "Hugging Face"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-caf12e1bc5a962de",
+    "kind": "creator",
+    "labels": {
+      "zh": "3Blue1Brown",
+      "en": "3Blue1Brown"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-2c046e702ec89084",
+    "kind": "creator",
+    "labels": {
+      "zh": "swyx & Alessio Fanelli",
+      "en": "swyx & Alessio Fanelli"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-ac68b75d8ede0fbb",
+    "kind": "creator",
+    "labels": {
+      "zh": "Google Creative Lab",
+      "en": "Google Creative Lab"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-566a2853d7659997",
+    "kind": "creator",
+    "labels": {
+      "zh": "Distill · Olah, Mordvintsev & Schubert",
+      "en": "Distill · Olah, Mordvintsev & Schubert"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-9faf40cbeb47ac38",
+    "kind": "creator",
+    "labels": {
+      "zh": "MLC AI",
+      "en": "MLC AI"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-0966f7e73247f0b9",
+    "kind": "creator",
+    "labels": {
+      "zh": "Stanford HAI",
+      "en": "Stanford HAI"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-f1186e667ca26c7c",
+    "kind": "creator",
+    "labels": {
+      "zh": "Observable",
+      "en": "Observable"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-6bc4875c8cf61287",
+    "kind": "creator",
+    "labels": {
+      "zh": "Paul Graham",
+      "en": "Paul Graham"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-8011e58228619492",
+    "kind": "creator",
+    "labels": {
+      "zh": "ggml community",
+      "en": "ggml community"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-032a62614fb85970",
+    "kind": "creator",
+    "labels": {
+      "zh": "fast.ai",
+      "en": "fast.ai"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-da62122186ab559a",
+    "kind": "creator",
+    "labels": {
+      "zh": "Hu et al.",
+      "en": "Hu et al."
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-fcdf040bc9b159f0",
+    "kind": "creator",
+    "labels": {
+      "zh": "Dwarkesh Patel",
+      "en": "Dwarkesh Patel"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-b54017efe2d2c6a1",
+    "kind": "creator",
+    "labels": {
+      "zh": "Cameron Beccario",
+      "en": "Cameron Beccario"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-bf9d5ae4efe00ad6",
+    "kind": "creator",
+    "labels": {
+      "zh": "Our World in Data",
+      "en": "Our World in Data"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-1475f32d6a90b6df",
+    "kind": "creator",
+    "labels": {
+      "zh": "Andrej Karpathy",
+      "en": "Andrej Karpathy"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-225b754637631f95",
+    "kind": "creator",
+    "labels": {
+      "zh": "Radford et al.",
+      "en": "Radford et al."
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-fd002d99775a1328",
+    "kind": "creator",
+    "labels": {
+      "zh": "Y Combinator",
+      "en": "Y Combinator"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-c5c4f383f3cd4192",
+    "kind": "creator",
+    "labels": {
+      "zh": "tldraw",
+      "en": "tldraw"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-961a6062ba1ba2d8",
+    "kind": "creator",
+    "labels": {
+      "zh": "Stripe",
+      "en": "Stripe"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-aa184e36db2c3837",
+    "kind": "creator",
+    "labels": {
+      "zh": "Radio Garden",
+      "en": "Radio Garden"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  },
+  {
+    "id": "creator-5c11a47a040d1ef7",
+    "kind": "creator",
+    "labels": {
+      "zh": "Khan Academy",
+      "en": "Khan Academy"
+    },
+    "aliases": {
+      "zh": [],
+      "en": []
+    }
+  }
+]

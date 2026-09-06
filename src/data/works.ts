@@ -1,45 +1,18 @@
-import entries from './works.json';
+import { readCatalog } from '../lib/content/catalog.ts';
+import { publishedWorks, browsePages, type WorkView } from '../lib/content/views.ts';
+import { locales, type Locale } from '../lib/i18n/routes.ts';
 
-export const formats = {
-  all: 'All',
-  code: 'Code',
-  paper: 'Papers',
-  website: 'Websites',
-  video: 'Video',
-  audio: 'Audio',
-  article: 'Articles',
-} as const;
-export type Format = Exclude<keyof typeof formats, 'all'>;
-export interface Work {
-  slug: string;
-  title: string;
-  type: Format;
-  creator: string;
-  url: string;
-  summary: string;
-  description: string;
-  preview: string;
-  eyebrow: string;
-  display: string;
-  note: string;
-  color: string;
+export type Work = WorkView;
+export const catalog = readCatalog();
+const localizedWorks = Object.fromEntries(
+  locales.map((locale) => [locale, publishedWorks(catalog, locale)]),
+) as Record<Locale, WorkView[]>;
+const localizedPages = Object.fromEntries(
+  locales.map((locale) => [locale, browsePages(catalog, locale)]),
+) as Record<Locale, ReturnType<typeof browsePages>>;
+export function getWorks(locale: Locale): WorkView[] {
+  return localizedWorks[locale];
 }
-const slugs = new Set<string>();
-for (const item of entries) {
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(item.slug) || slugs.has(item.slug))
-    throw new Error(`Invalid or duplicate slug: ${item.slug}`);
-  if (
-    !(item.type in formats) ||
-    item.type === 'all' ||
-    !item.description ||
-    !item.summary ||
-    !item.title
-  )
-    throw new Error(`Incomplete content: ${item.slug}`);
-  if (new URL(item.url).protocol !== 'https:')
-    throw new Error(`Expected HTTPS source: ${item.slug}`);
-  slugs.add(item.slug);
+export function getBrowsePages(locale: Locale) {
+  return localizedPages[locale];
 }
-export const works = entries as Work[];
-// 返回作品详情页的站内地址。
-export const workPath = (slug: string) => `/works/${slug}/`;

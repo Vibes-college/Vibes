@@ -1,0 +1,57 @@
+---
+import { getEntry } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import WorkDetail from '../../../components/WorkDetail.astro';
+import { catalog, getWorks } from '../../../data/works';
+import { articleSections } from '../../../data/article-sections';
+import { validateFactAnchors } from '../../../data/work-facts';
+import { locales, htmlLanguages, workPath } from '../../../lib/i18n/routes';
+import { languageTarget } from '../../../lib/content/views';
+export function getStaticPaths() {
+  return locales.flatMap((locale) =>
+    getWorks(locale).map((work) => ({ params: { locale, id: work.slug }, props: { work } })),
+  );
+}
+const { work } = Astro.props;
+const entry = await getEntry('workVersions', `${work.slug}/${work.locale}`);
+if (!entry?.rendered?.html)
+  throw new Error(`Missing rendered article: ${work.slug}/${work.locale}`);
+validateFactAnchors(work, entry.rendered.html);
+const sections = articleSections(entry.rendered.html);
+const alternates = locales.flatMap((locale) => {
+  const target = languageTarget(catalog, work.slug, locale);
+  return target?.href ? [{ locale: htmlLanguages[locale], path: target.href }] : [];
+});
+---
+
+<Layout
+  detail
+  locale={work.locale}
+  title={`${work.title} — Vibes`}
+  description={work.summary}
+  alternates={alternates}
+  defaultPath={workPath(work.originalLocale, work.slug)}
+>
+  <main id="main" class="detail-page" data-locale={work.locale}>
+    <article lang={htmlLanguages[work.locale]} data-pagefind-body>
+      <WorkDetail work={work}>
+        {
+          sections.map((section) =>
+            section.heading ? (
+              <details class="reading-section">
+                <>
+                  <summary>
+                    <Fragment set:html={section.heading} />
+                  </summary>
+                  <Fragment set:html={section.body} />
+                </>
+              </details>
+            ) : (
+              <Fragment set:html={section.body} />
+            ),
+          )
+        }
+      </WorkDetail>
+    </article>
+  </main>
+</Layout>

@@ -30,7 +30,9 @@ export const specPattern = /^specs\/(\d{3}-[a-z0-9-]+)\//;
 // 明确区分产品文章和上游资产；只有这些非治理Markdown使用自身格式。
 export function isExempt(path: string): boolean {
   return (
+    // Git冻结基线仍可能包含迁移前文章；它们也不是治理文档。
     path.startsWith('src/content/articles/') ||
+    /^src\/content\/works\/[a-z0-9-]+\/(zh|en)\.md$/.test(path) ||
     path.startsWith('.agents/skills/speckit-') ||
     (path.startsWith('.specify/templates/') && !path.startsWith('.specify/templates/overrides/')) ||
     path.startsWith('.specify/integrations/') ||

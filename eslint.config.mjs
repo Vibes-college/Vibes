@@ -8,6 +8,7 @@ export default [
       'dist/**',
       '.astro/**',
       '.wrangler/**',
+      '.scratch/**',
       'node_modules/**',
       'resources/references/**',
       'resources/evidence/**',

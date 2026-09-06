@@ -1,0 +1,62 @@
+{
+  "id": "neural-networks",
+  "originalLocale": "zh",
+  "order": 2,
+  "sourceUrl": "https://www.3blue1brown.com/?topic=neural-networks",
+  "typeId": "video",
+  "tagIds": ["creator-caf12e1bc5a962de"],
+  "preview": {
+    "kind": "network",
+    "color": "#17242a"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "3Blue1Brown",
+        "en": "3Blue1Brown"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-caf12e1bc5a962de"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "视频",
+        "en": "Video"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "video"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "A visual introduction"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

@@ -1,20 +1,20 @@
 ---
 tense: 'living'
-describes: '功能名：找不到页面的提示'
+describes: '找不到页面的提示'
 status: 'current'
-shaped-by: []
+shaped-by: ['001']
 ---
 
 # 找不到页面的提示
 
 ## 当前行为
 
-打开不存在地址（如/not-a-real-page），显示404与“This page isn’t in the collection.”，Back to Explore指向/explore/。Cloudflare本地预览返回HTTP404；提示英文，不是断网或所有服务错误的通用错误页。
+不存在地址、未知语言和缺失译文路径返回HTTP404，页面显示简短中英提示，返回入口为`/zh/`。不生成伪翻译页面；这不是断网或服务错误通用页面。
 
 ## 文件与依赖
 
-src/pages/404.astro、src/layouts/Layout.astro、wrangler.jsonc、wrangler.local.jsonc；依赖 [目录](explore-browse.md)。
+src/pages/404.astro、src/layouts/Layout.astro、wrangler.jsonc、wrangler.local.jsonc；依赖[目录](explore-browse.md)。旧根路径在public/_redirects及兼容页面中转到中文路径。
 
-## 验收与测试
+## 验收
 
-错误地址不白屏、状态404、返回链接正确。tests/explore.spec.ts验证提示；tests/explore.spec.ts的static output stays small and content routes exist检查HTTP404；返回链接需手动确认。
+2026-09-05本地Playwright桌面/手机通过未知地址、/fr/与/en/works/lora/的404及页面提示；tests/explore.spec.ts。

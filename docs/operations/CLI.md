@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '项目命令说明'
 status: 'current'
-shaped-by: []
+shaped-by: ['001', '002']
 ---
 
 # 项目命令说明
@@ -22,7 +22,7 @@ shaped-by: []
 | `npm run ci:scope`     | 根据CHECK_BASE_REF或origin/main计算docs/tools/full，不执行检查    |
 | `npm run db:reset`     | 删除本项目本机测试D1数据，迁移并填入固定样例                      |
 | `npm run db:migrate`   | 只应用本地未执行迁移；不接受线上参数                              |
-| `npm run deploy`       | 构建并向wrangler.jsonc指定Worker实际发布，需已有授权和目标核对    |
+| `npm run deploy`       | 校验同SHA云端/本地检查后发布固定独立测试Worker，需已有授权        |
 
 按[CI范围规则](CI.md)选择必需检查，不因纯文档变化运行整站浏览器。`verify`始终表示完整验收，不会按路径悄悄缩减。日常工具修改运行check；页面和测试基础设施修改运行verify与budget。
 
@@ -34,10 +34,21 @@ shaped-by: []
 
 ## 数据库和部署边界
 
-本地配置与数据位置固定为wrangler.local.jsonc和.wrangler/project-local；db:reset仅删除其中v3/d1。数据库仅有命令测试表，网站读取src/data/works.json；不配置或操作线上数据库。单独test:e2e不清库。已应用的迁移不改写，用新迁移表达变更。
+本地配置与数据位置固定为wrangler.local.jsonc和.wrangler/project-local；db:reset仅删除其中v3/d1。数据库仅有命令测试表，网站读取src/content/works/及src/data/taxonomy.json；不配置或操作线上数据库。单独test:e2e不清库。已应用的迁移不改写，用新迁移表达变更。
 
 Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不代表已发布；不切换旧vibes.college。缺失origin/main时docs:check会失败，可fetch或指定可信DOCS_BASE_REF。
 
 ## 检查失败
 
 按具体错误修复，再运行受影响检查。`npm run format`会排版所有受支持文件，局部问题优先只格式化相应文件；无需重跑无关浏览器检查。类型覆盖网站和工具；SQL测试实际执行，单元测试用Node内置测试器。
+
+## 内容维护与规模测量
+
+- `npm run content:validate`检查整个目录并报告各语言发布数量，不写文件。
+- `npm run content:revision -- <id>`报告当前原文摘要、语言状态与待复核标记，不批准或发布翻译。
+- `npm run build`先校验内容，再Astro构建，最后为dist生成Pagefind语言索引；缺内容或校验失败停止。
+- `node --experimental-strip-types scripts/measure-explore.ts`在.scratch生成隔离5000×2样例、构建、验证分页/正文搜索并测冷/热延迟；会使用系统分配的独立空闲端口，结束清理。真实内容和dist不覆盖，不部署样例；报告位于resources/evidence/001-multilingual-explore/。
+
+英文发布前须核对全文再记录sourceRevision；原文修改使旧译文标待复核，更新摘要前必须再次审核。详细字段见[内容维护](../features/content-maintenance.md)。
+
+`npm run release:restore -- <version-id>`恢复本地已记录的测试站版本；记录和门槛见[CI](CI.md)。不能传任意域名、账户或合成内容。

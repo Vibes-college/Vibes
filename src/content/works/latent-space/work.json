@@ -1,0 +1,62 @@
+{
+  "id": "latent-space",
+  "originalLocale": "zh",
+  "order": 3,
+  "sourceUrl": "https://www.latent.space/podcast",
+  "typeId": "audio",
+  "tagIds": ["creator-2c046e702ec89084"],
+  "preview": {
+    "kind": "audio",
+    "color": "#eadfd5"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "swyx & Alessio Fanelli",
+        "en": "swyx & Alessio Fanelli"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-2c046e702ec89084"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "音频",
+        "en": "Audio"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "audio"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Conversations about building AI"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

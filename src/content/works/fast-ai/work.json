@@ -1,0 +1,62 @@
+{
+  "id": "fast-ai",
+  "originalLocale": "zh",
+  "order": 11,
+  "sourceUrl": "https://course.fast.ai/",
+  "typeId": "website",
+  "tagIds": ["creator-032a62614fb85970"],
+  "preview": {
+    "kind": "text",
+    "color": "#f2e8df"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "fast.ai",
+        "en": "fast.ai"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-032a62614fb85970"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "网站",
+        "en": "Websites"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "website"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Practical Deep Learning for Coders"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

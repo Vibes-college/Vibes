@@ -1,42 +1,16 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { articleSections } from '../../data/article-sections';
-import WorkDetail from '../../components/WorkDetail.astro';
-import { works } from '../../data/works';
-import type { MarkdownInstance } from 'astro';
-const articles = import.meta.glob<MarkdownInstance<{ readingTitle: string }>>(
-  '../../content/articles/*.md',
-  { eager: true },
-);
-// 为每条作品生成静态详情页。
+import LegacyRedirect from '../../components/LegacyRedirect.astro';
+import { catalog } from '../../data/works';
+import { workPath } from '../../lib/i18n/routes';
 export function getStaticPaths() {
-  return works.map((work) => ({ params: { slug: work.slug }, props: { work } }));
+  return catalog.works
+    .filter((work) => work.versions[work.meta.originalLocale]?.data.status === 'published')
+    .map((work) => ({
+      params: { slug: work.meta.id },
+      props: { target: workPath(work.meta.originalLocale, work.meta.id) },
+    }));
 }
-const { work } = Astro.props;
-const article = articles[`../../content/articles/${work.slug}.md`];
-if (!article) throw new Error(`Missing article: ${work.slug}`);
-const sections = articleSections(await article.compiledContent());
+const { target } = Astro.props;
 ---
 
-<Layout detail title={`${work.title} — Vibes`} description={work.summary}>
-  <main id="main" class="detail-page">
-    <article lang="zh-CN">
-      <WorkDetail work={work}>
-        {
-          sections.map((section) =>
-            section.heading ? (
-              <details class="reading-section">
-                <summary>
-                  <Fragment set:html={section.heading} />
-                </summary>
-                <Fragment set:html={section.body} />
-              </details>
-            ) : (
-              <Fragment set:html={section.body} />
-            ),
-          )
-        }
-      </WorkDetail>
-    </article>
-  </main>
-</Layout>
+<LegacyRedirect target={target} />

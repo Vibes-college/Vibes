@@ -1,0 +1,62 @@
+{
+  "id": "feature-visualization",
+  "originalLocale": "zh",
+  "order": 5,
+  "sourceUrl": "https://distill.pub/2017/feature-visualization/",
+  "typeId": "article",
+  "tagIds": ["creator-566a2853d7659997"],
+  "preview": {
+    "kind": "field",
+    "color": "#e5e9df"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Distill · Olah, Mordvintsev & Schubert",
+        "en": "Distill · Olah, Mordvintsev & Schubert"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-566a2853d7659997"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "文章",
+        "en": "Articles"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "article"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Feature Visualization"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

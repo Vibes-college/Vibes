@@ -24,7 +24,7 @@ shaped-by: ['002']
 
 用户不会写代码：用中文和外行能理解的解释；小任务动手前简短说明，复杂任务用3–5句话，交付说明文件与验证方法。每轮最多3个问题，已确认的不重复问。新需求先确认用户、路径、明确不做与边界；已确认范围内持续执行，不扩展功能。
 
-当前只做Explore，不开放公众或Agent编辑及Markdown投稿，保留现有UI。Astro+TypeScript、Cloudflare优先；复杂业务按需讨论，不提前安装React/Tailwind或建立空服务。新增npm依赖先说明必要性并获同意；Pagefind已有许可但未安装。
+当前只做Explore，不开放公众或Agent编辑及Markdown投稿，保留现有UI。Astro+TypeScript、Cloudflare优先；复杂业务按需讨论，不提前安装React/Tailwind或建立空服务。新增npm依赖先说明必要性并获同意；Pagefind已按许可安装为构建依赖。
 
 ## 执行与文档
 

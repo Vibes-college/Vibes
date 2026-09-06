@@ -133,7 +133,7 @@ label:has(input:focus-visible) {
 .category-nav::-webkit-scrollbar {
   display: none;
 }
-.category-nav label {
+.category-nav a {
   position: relative;
   flex: none;
   padding: 10px 2px;
@@ -147,11 +147,11 @@ label:has(input:focus-visible) {
   width: 1px;
   height: 1px;
 }
-.category-nav label:has(input:checked) {
+.category-nav a[aria-current='page'] {
   color: #333;
   font-weight: 600;
 }
-.category-nav label:has(input:checked)::after {
+.category-nav a[aria-current='page']::after {
   content: '';
   position: absolute;
   height: 2px;
@@ -160,7 +160,7 @@ label:has(input:focus-visible) {
   right: 0;
   background: #74786c;
 }
-.category-nav label:has(input:focus-visible) {
+.category-nav a:focus-visible {
   outline-offset: -3px;
 }
 .work-grid {

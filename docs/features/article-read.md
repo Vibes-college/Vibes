@@ -1,24 +1,24 @@
 ---
 tense: 'living'
-describes: '功能名：两段式详情与来源阅读'
+describes: '两段式详情与来源阅读'
 status: 'current'
-shaped-by: []
+shaped-by: ['001']
 ---
 
 # 两段式详情与来源阅读
 
 ## 当前行为
 
-从卡片进入/works/{slug}/：原站链接→预览→标题/简介→作者/类型/主题信息。原站与预览打开外部来源，作者/类型指向筛选，主题指向正文。下滑或箭头进入二级标题折叠章节，可各自展开，保留表格/来源/完整HTML。
+详情`/{locale}/works/{id}/`先展示来源、预览、标题与可选事实，再进入二级标题折叠正文。外链打开原始来源；表格、三级标题及正文锚点保留。每条事实按内容文件顺序显示，只有有效目标才成为链接，未提供的信息不生成。
 
-左右滑动、按钮、键盘左右键切换全部目录中的前后作品，首尾不循环；不局限于进入前的筛选。Explore返回目录，浏览器返回保留URL条件。表格、代码、表单、摘要区域不触发切换。
+语言入口定位同一作品；缺失/草稿译文显示尚无译文，当前原文继续可读。已发布译文的原文变化时显示待复核提示和原文入口；事实缺少译文时标为原文信息。
 
-无JS正文仍可读、按钮和章节可用；触摸需JS。预览是编辑封面，不是实时截图；不包含编辑、评论、收藏、聊天或完整connection，不编造缺失prompt/商业属性。
+左右按钮、键盘和手机横滑在同语言完整目录中切换，首尾不循环；表格/代码/表单区域不触发切换。Explore返回同标签页保存的同语言目录与q，无JS也可阅读、展开和按钮导航。
 
 ## 文件与依赖
 
-src/pages/works/[slug].astro、src/components/WorkDetail.astro、src/data/work-facts.ts、article-sections.ts、src/scripts/detail.ts、src/styles/detail.css和article.css、src/content/articles/*.md。依赖 [内容维护](content-maintenance.md)、[搜索](explore-filter.md)。
+src/pages/[locale]/works/[id].astro、src/components/WorkDetail.astro、LanguageSwitch.astro、src/data/work-facts.ts、article-sections.ts、src/scripts/detail.ts、src/styles/detail.css和article.css。依赖[内容维护](content-maintenance.md)、[搜索](explore-filter.md)。
 
-## 验收与测试
+## 验收
 
-概览顺序、独立折叠、刷新保留正文、相邻切换、320px无溢出、无JS阅读由tests/explore.spec.ts覆盖；tests/unit/article-sections.test.ts验证内容/锚点/转义保留。外部来源可用性需逐个人工核对。
+2026-09-05本地Playwright桌面/手机通过折叠、前后切换、横滑、无JS阅读、同作品双语切换、缺失译文404和原文事实标注；tests/explore.spec.ts。tests/unit/article-sections.test.ts与content-relations.test.ts验证内容保留及事实/关联规则。tests/content-lifecycle.spec.ts已通过原文先发、译文草稿、发布、待复核及复核解除五个真实构建阶段。

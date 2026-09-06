@@ -48,3 +48,13 @@ PR基线为目标分支SHA，push为事件前一提交，新分支回退origin/m
 ## 部署
 
 npm run deploy构建后使用Wrangler发布静态Worker；必须核对已通过检查的SHA、账户与独立测试地址。当前工作流不自动发布。不得自动合并main或修改旧vibes.college的DNS/路由；切正式域名需单独授权。平台凭据不写进文档。
+
+## 独立测试站受控发布
+
+`npm run deploy`通过scripts/release.ts，只接受干净已提交源码，并检查同一SHA的GitHub check-runs中verify与budget全部成功；接着以测试SITE_URL运行完整本地verify和budget，确认HEAD和工作区未变化后发布。隔离内容环境变量禁止进入发布；容量默认免费档，不能因未知套餐假定付费额度。
+
+目标在scripts/release-policy.ts固定为vibes-explore.topologic-relay.workers.dev与已核对账户；生成临时Wrangler配置只含workers.dev，没有自定义域名、路由或线上数据库。沿用本机Wrangler OAuth，不读取或迁移旧项目业务密钥，没有新增GitHub部署凭据。
+
+每次成功保存版本ID、SHA、来源、体积与检查记录于resources/evidence/001-multilingual-explore/releases/。`npm run release:restore -- <version-id>`只接受此处已记录且目标匹配的版本，核对远端版本后执行rollback。回滚后仍需实际检查页面；不能把命令成功当视觉验收。
+
+部署后核对中文/英文目录、正文搜索、旧URL、404、canonical/sitemap/robots和恢复前后页面，记录实际版本。远端执行及恢复尚须各自实录，不因入口存在宣称上线。现有.github/workflows/check.yml继续提供同名verify/budget；不新增无人值守部署工作流。

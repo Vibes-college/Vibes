@@ -1,0 +1,62 @@
+{
+  "id": "earth",
+  "originalLocale": "zh",
+  "order": 14,
+  "sourceUrl": "https://earth.nullschool.net/",
+  "typeId": "website",
+  "tagIds": ["creator-b54017efe2d2c6a1"],
+  "preview": {
+    "kind": "earth",
+    "color": "#111c26"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Cameron Beccario",
+        "en": "Cameron Beccario"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-b54017efe2d2c6a1"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "网站",
+        "en": "Websites"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "website"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Wind · Weather · Ocean"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

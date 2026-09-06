@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '多语言Explore内容基础'
-status: 'draft'
+status: 'in-progress'
 feature-ids:
   [
     'explore-browse',
@@ -24,7 +24,7 @@ research-trigger: 'NEEDS CLARIFICATION: 内容规模、中文全文检索与Clou
 
 ## 用户与范围
 
-访客希望发现AI应用场景、理解能力边界、了解塑造AI的人物与成果。维护者通过Git日更内容；首发简体中文与英文，保留24件内容及现有视觉。实施计划待整体审阅，功能尚未实施。
+访客希望发现AI应用场景、理解能力边界、了解塑造AI的人物与成果。维护者通过Git日更内容；首发简体中文与英文，保留24件内容及现有视觉。用户已授权按计划实施；完成情况以tasks及验收证据为准。
 
 ## 用户故事
 

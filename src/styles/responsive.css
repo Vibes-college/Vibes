@@ -44,7 +44,7 @@
   .category-nav {
     gap: 22px;
   }
-  .category-nav label {
+  .category-nav a {
     padding: 10px 2px;
     font-size: 12px;
   }

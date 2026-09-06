@@ -1,63 +1,122 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Preview from './Preview.astro';
-import { works, formats, workPath } from '../data/works';
+import { catalog, getWorks, getBrowsePages } from '../data/works';
+import type { BrowsePage } from '../lib/content/views';
+import { messages } from '../lib/i18n/messages';
+import { browsePath, workPath, locales, htmlLanguages } from '../lib/i18n/routes';
+interface Props {
+  page: BrowsePage;
+}
+const { page } = Astro.props;
+const { locale, tag, total, works } = page;
+const t = messages[locale];
+const tagLabel = catalog.taxonomy.find((entry) => entry.id === tag)?.labels[locale];
+const types = catalog.taxonomy.filter(
+  (entry) => entry.kind === 'type' && getBrowsePages(locale).some((page) => page.tag === entry.id),
+);
+const alternates = locales.flatMap((other) =>
+  getBrowsePages(other).some((candidate) => candidate.tag === tag && candidate.page === page.page)
+    ? [{ locale: htmlLanguages[other], path: browsePath(other, tag, page.page) }]
+    : [],
+);
 ---
 
-<Layout search>
-  <main id="main" class="explore-main">
-    <h1 class="sr-only">Explore</h1>
-    <fieldset class="category-nav" data-enhanced hidden>
-      <legend class="sr-only">内容分类</legend>
+<Layout
+  search
+  locale={locale}
+  title={`${tagLabel ? tagLabel + ' — ' : ''}Explore — Vibes`}
+  alternates={alternates}
+  defaultPath={browsePath('zh')}
+>
+  <main
+    id="main"
+    class="explore-main"
+    data-locale={locale}
+    data-tag={tag || ''}
+    data-total={total}
+    data-has-content={getWorks(locale).length > 0}
+    data-messages={JSON.stringify(t)}
+  >
+    <h1 class="sr-only">{tagLabel || t.explore}</h1>
+    <nav class="category-nav" aria-label={t.categories}>
+      <a href={browsePath(locale)} aria-current={!tag ? 'page' : undefined}>{t.all}</a>
       {
-        Object.entries(formats).map(([key, label]) => (
-          <label>
-            <>
-              <input type="radio" name="format" value={key} checked={key === 'all'} />
-              <span>{label}</span>
-            </>
-          </label>
+        types.map((type) => (
+          <a href={browsePath(locale, type.id)} aria-current={tag === type.id ? 'page' : undefined}>
+            {type.labels[locale]}
+          </a>
         ))
       }
-    </fieldset>
-    <p class="sr-only" role="status" aria-live="polite" id="result-count">{works.length} 项内容</p>
-    <noscript
-      ><p class="no-script">
-        Explore all {works.length} selections below. Open any card to read more.
-      </p></noscript
-    >
-    <ul class="work-grid">
+    </nav>
+    {
+      tag && !types.some((type) => type.id === tag) && (
+        <p class="active-tag">
+          {tagLabel}{' '}
+          <a href={browsePath(locale)} aria-label={t.reset}>
+            ×
+          </a>
+        </p>
+      )
+    }
+    <p class="sr-only" role="status" aria-live="polite" id="result-count">{total} {t.selections}</p>
+    <noscript><p class="no-script">{t.noScript}</p></noscript>
+    <ul class="work-grid" data-browse-grid>
       {
-        works.map((work, index) => (
-          <li
-            class="work-card"
-            data-type={work.type}
-            data-title={work.title}
-            data-index={index}
-            data-search={`${work.title} ${work.creator} ${work.summary} ${work.description}`.toLocaleLowerCase()}
-          >
+        works.map((work) => (
+          <li class="work-card" data-type={work.type}>
             <a
               class="card-link"
-              href={workPath(work.slug)}
+              href={workPath(locale, work.slug)}
               data-work={work.slug}
-              aria-label={`Explore ${work.title}`}
+              aria-label={`${t.explore} ${work.title}`}
             >
-              <Preview work={work} />
-              <p class="card-summary" lang="zh-CN">
-                {work.summary}
-              </p>
+              <>
+                <Preview work={work} />
+                <p class="card-summary" lang={htmlLanguages[locale]}>
+                  {work.summary}
+                </p>
+              </>
             </a>
           </li>
         ))
       }
     </ul>
-    <div class="empty-state" hidden>
-      <h2>Nothing here, yet.</h2><p>Try another word or a different format.</p><button
-        type="button"
-        id="reset-filters">Clear search & filters</button
+    <ul class="work-grid" data-search-grid hidden></ul>
+    <div class="empty-state" hidden={total > 0}>
+      <h2>{total ? t.emptyTitle : t.noPublished}</h2><p>{t.emptyHelp}</p>
+      <button type="button" id="reset-filters" hidden={!total}>{t.reset}</button>
+      {!total && locale !== 'zh' && <a href="/zh/">{t.browseOriginal}</a>}
+    </div>
+    <div class="search-status" hidden>
+      <p role="status" aria-live="polite"></p><button type="button" data-retry hidden
+        >{t.retry}</button
       >
     </div>
-    <p class="collection-end">A small collection. More perspectives.</p>
+    <button class="more-results" type="button" data-more hidden>{t.moreResults}</button>
+    <nav
+      class="browse-pagination"
+      aria-label={t.pagination}
+      data-pagination
+      hidden={page.pages <= 1}
+    >
+      {
+        page.page > 1 && (
+          <a href={browsePath(locale, tag, page.page - 1)} rel="prev">
+            ← {t.previousPage}
+          </a>
+        )
+      }
+      <span>{page.page} / {page.pages}</span>
+      {
+        page.page < page.pages && (
+          <a href={browsePath(locale, tag, page.page + 1)} rel="next">
+            {t.nextPage} →
+          </a>
+        )
+      }
+    </nav>
+    <p class="collection-end">{t.end}</p>
   </main>
   <script src="../scripts/explore.ts"></script>
 </Layout>

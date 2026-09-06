@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '技术未知与决策'
-status: 'draft'
+status: 'in-progress'
 amended-by: []
 ---
 

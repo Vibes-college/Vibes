@@ -1,0 +1,62 @@
+{
+  "id": "tldraw",
+  "originalLocale": "zh",
+  "order": 20,
+  "sourceUrl": "https://www.tldraw.com/",
+  "typeId": "website",
+  "tagIds": ["creator-c5c4f383f3cd4192"],
+  "preview": {
+    "kind": "shapes",
+    "color": "#f4f2ef"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "tldraw",
+        "en": "tldraw"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-c5c4f383f3cd4192"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "网站",
+        "en": "Websites"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "website"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Draw · Connect · Explore"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

@@ -6,7 +6,7 @@ import { assertBudget } from '../scripts/budget-policy.ts';
 test('local filtering, empty state, and URL survive refresh', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.work-card:visible')).toHaveCount(24);
-  await page.getByText('Papers', { exact: true }).click();
+  await page.locator('.category-nav a[href="/zh/tags/paper/"]').click();
   await expect(page.locator('.work-card:visible')).toHaveCount(4);
   await page.getByRole('searchbox').fill('LoRA');
   await expect(page.locator('.work-card:visible')).toHaveCount(1);
@@ -14,8 +14,8 @@ test('local filtering, empty state, and URL survive refresh', async ({ page }) =
   await expect(page.getByRole('searchbox')).toHaveValue('LoRA');
   await expect(page.locator('.work-card:visible')).toHaveCount(1);
   await page.getByRole('searchbox').fill('not-in-the-collection');
-  await expect(page.getByRole('heading', { name: 'Nothing here, yet.' })).toBeVisible();
-  await page.getByRole('button', { name: 'Clear search & filters' }).click();
+  await expect(page.getByRole('heading', { name: '暂时没有找到。' })).toBeVisible();
+  await page.getByRole('button', { name: '清空搜索与筛选' }).click();
   await expect(page.locator('.work-card:visible')).toHaveCount(24);
 });
 
@@ -41,7 +41,7 @@ test('cards navigate directly to a complete article; browser back restores filte
   await page.reload();
   await expect(page.locator('.prose')).toContainText('低秩矩阵');
   await page.goBack();
-  await expect(page).toHaveURL(/type=paper/);
+  await expect(page).toHaveURL(/tags\/paper/);
   await expect(page.locator('.work-card:visible')).toHaveCount(4);
   expect(errors).toEqual([]);
 });
@@ -49,7 +49,7 @@ test('cards navigate directly to a complete article; browser back restores filte
 test('standalone detail is readable with JavaScript disabled', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
-  await page.goto('http://127.0.0.1:4322/works/attention-is-all-you-need/');
+  await page.goto('http://127.0.0.1:4322/zh/works/attention-is-all-you-need/');
   await expect(page.getByRole('heading', { name: 'Attention Is All You Need' })).toBeVisible();
   await expect(page.locator('.detail-description')).toContainText('Transformer');
   await page.getByRole('link', { name: '← Explore' }).click();
@@ -92,11 +92,11 @@ test('static output stays small and content routes exist', async ({ request, pag
   expect(js.length).toBeGreaterThan(0);
   assertBudget({
     javascriptGzip: total,
-    homepageGzip: gzipSync(readFileSync('dist/index.html')).length,
+    homepageGzip: gzipSync(readFileSync('dist/zh/index.html')).length,
     interactionSource: statSync('src/scripts/explore.ts').size,
   });
-  for (const slug of readdirSync('dist/works')) {
-    const html = readFileSync(`dist/works/${slug}/index.html`, 'utf8');
+  for (const slug of readdirSync('dist/zh/works')) {
+    const html = readFileSync(`dist/zh/works/${slug}/index.html`, 'utf8');
     expect(html).toContain('<table>');
     expect(html).toContain('来源与延伸阅读');
     expect(html).not.toContain('<dialog');
@@ -125,7 +125,7 @@ test('detail overview, disclosure, and adjacent navigation', async ({ page }) =>
   await page.locator('body').click({ position: { x: 1, y: 1 } });
   await page.keyboard.press('ArrowLeft');
   await expect(page).toHaveURL(/attention-is-all-you-need/);
-  await page.locator('.work-facts a[href="/?type=paper"]').click();
+  await page.locator('.work-facts a[href="/zh/tags/paper/"]').click();
   await expect(page.locator('.work-card:visible')).toHaveCount(4);
 });
 
@@ -158,4 +158,98 @@ test('touch swipe navigates to the next work and the previous button returns', a
   } finally {
     await session.detach();
   }
+});
+
+// 只有搜索意图加载索引；用正文独有词验证全文检索与返回状态。
+test('lazy full-text search and detail back link preserve the query', async ({ page }) => {
+  const requests: string[] = [];
+  page.on('request', (request) => requests.push(request.url()));
+  await page.goto('/zh/');
+  await expect(page.locator('[data-browse-grid] .work-card')).toHaveCount(24);
+  expect(requests.filter((url) => url.includes('/pagefind/'))).toEqual([]);
+  await page.getByRole('searchbox').fill('低秩矩阵');
+  await expect(page.locator('[data-search-grid] [data-work="lora"]')).toBeVisible();
+  expect(requests.some((url) => url.includes('/pagefind/'))).toBe(true);
+  await page.locator('[data-search-grid] [data-work="lora"]').click();
+  await page.locator('.back-link').click();
+  await expect(page.getByRole('searchbox')).toHaveValue('低秩矩阵');
+  await expect(page.locator('[data-search-grid] [data-work="lora"]')).toBeVisible();
+  await page.getByRole('button', { name: '清空搜索', exact: true }).click();
+  await expect(page.locator('.work-card:visible')).toHaveCount(24);
+  await expect(page).toHaveURL(/\/zh\/$/);
+});
+
+test('published languages switch the same work and missing translations remain absent', async ({
+  page,
+  request,
+}) => {
+  await page.goto('/zh/works/attention-is-all-you-need/');
+  await page.locator('.language-switch a[lang="en"]').click();
+  await expect(page).toHaveURL(/\/en\/works\/attention-is-all-you-need\//);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('.prose')).toContainText('attention');
+  await expect(page.locator('[data-direction]')).toHaveCount(0);
+  await expect(page.locator('.fact-fallback').first()).toBeVisible();
+  await page.locator('.language-switch a[lang="zh"]').click();
+  await expect(page).toHaveURL(/\/zh\/works\/attention-is-all-you-need\//);
+  await page.goto('/zh/works/lora/');
+  await expect(page.locator('.translation-unavailable')).toContainText('尚无译文');
+  expect((await request.get('/en/works/lora/')).status()).toBe(404);
+  expect((await request.get('/fr/')).status()).toBe(404);
+  await page.goto('/en/');
+  await expect(page.locator('.work-card:visible')).toHaveCount(1);
+  await page.getByRole('searchbox').fill('attention');
+  await expect(page.locator('[data-search-grid] .work-card')).toHaveCount(1);
+});
+
+test('failed search resources can retry and clearing cancels stale results', async ({ page }) => {
+  await page.route('**/pagefind/**', (route) => route.abort());
+  await page.goto('/zh/');
+  await page.getByRole('searchbox').fill('LoRA');
+  await expect(page.locator('[data-retry]')).toBeVisible({ timeout: 20000 });
+  await page.unroute('**/pagefind/**');
+  await page.locator('[data-retry]').click();
+  await expect(page.locator('[data-search-grid] [data-work="lora"]')).toBeVisible({
+    timeout: 20000,
+  });
+  await page.getByRole('searchbox').fill('Transformer');
+  await page.getByRole('button', { name: '清空搜索', exact: true }).click();
+  await expect(page.locator('[data-browse-grid]')).toBeVisible();
+  await expect(page.locator('[data-search-grid]')).toBeHidden();
+  await expect(page.locator('.work-card:visible')).toHaveCount(24);
+});
+
+test('metadata uses one origin and indexes only published language routes', async ({
+  page,
+  request,
+}) => {
+  await page.goto('/zh/?q=LoRA');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    `${process.env.SITE_URL || 'http://127.0.0.1:4322'}/zh/`,
+  );
+  await page.goto('/zh/works/lora/');
+  await expect(page.locator('link[hreflang="en"]')).toHaveCount(0);
+  await page.goto('/zh/works/attention-is-all-you-need/');
+  await expect(page.locator('link[hreflang="en"]')).toHaveAttribute(
+    'href',
+    /\/en\/works\/attention-is-all-you-need\/$/,
+  );
+  const sitemap = await (await request.get('/sitemap.xml')).text();
+  expect(sitemap).not.toContain('/en/works/lora/');
+  expect(sitemap).not.toContain('?q=');
+  expect(await (await request.get('/robots.txt')).text()).toContain(
+    `${process.env.SITE_URL || 'http://127.0.0.1:4322'}/sitemap.xml`,
+  );
+});
+
+test('failed result fragments recover after explicit retry', async ({ page }) => {
+  await page.route('**/*.pf_fragment', (route) => route.abort());
+  await page.goto('/zh/?q=LoRA');
+  await expect(page.locator('[data-retry]')).toBeVisible({ timeout: 20000 });
+  await page.unroute('**/*.pf_fragment');
+  await page.locator('[data-retry]').click();
+  await expect(page.locator('[data-search-grid] [data-work="lora"]')).toBeVisible({
+    timeout: 20000,
+  });
 });

@@ -1,0 +1,62 @@
+{
+  "id": "whisper-cpp",
+  "originalLocale": "zh",
+  "order": 10,
+  "sourceUrl": "https://github.com/ggml-org/whisper.cpp",
+  "typeId": "code",
+  "tagIds": ["creator-8011e58228619492"],
+  "preview": {
+    "kind": "wave",
+    "color": "#e8edf0"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "ggml community",
+        "en": "ggml community"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-8011e58228619492"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "代码",
+        "en": "Code"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "code"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Local speech recognition"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

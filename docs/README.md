@@ -24,7 +24,7 @@ shaped-by: ['002']
 
 ## 实现文件
 
-src/pages是网址，components/layouts是页面零件与外框，styles/scripts是样式与交互，data是作品数据，content/articles是访客阅读的正文。产品文章使用自己的内容字段，不是治理文档。
+src/pages是网址，components/layouts是页面零件与外框，styles/scripts是样式与交互，data提供内容视图及标签，content/works按作品保存元数据与中英正文，lib/content和lib/i18n提供共用规则。产品文章使用自己的内容字段，不是治理文档。
 
 public保存静态文件，scripts提供检查工具，tests验证行为，db仅保存本地测试库结构与样例。没有必要再套一层code目录改变导入和工具路径。
 

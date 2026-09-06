@@ -1,0 +1,18 @@
+---
+import Explore from '../../../../components/Explore.astro';
+import { getBrowsePages } from '../../../../data/works';
+import { locales } from '../../../../lib/i18n/routes';
+export function getStaticPaths() {
+  return locales.flatMap((locale) =>
+    getBrowsePages(locale)
+      .filter((page) => page.tag)
+      .map((page) => ({
+        params: { locale, tagId: page.tag, page: page.page > 1 ? `page/${page.page}` : undefined },
+        props: { page },
+      })),
+  );
+}
+const { page } = Astro.props;
+---
+
+<Explore page={page} />

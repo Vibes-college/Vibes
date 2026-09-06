@@ -2,16 +2,18 @@
 tense: 'living'
 describes: '当前架构'
 status: 'current'
-shaped-by: ['002']
+shaped-by: ['001', '002']
 ---
 
 # 当前架构
 
-单个Astro7.3.1静态网站，TypeScript5.9.3与普通CSS。没有React、Tailwind、Pagefind或线上业务数据库。
+单个Astro7.3.1静态网站，TypeScript5.9.3与普通CSS。构建使用Pagefind1.5.2，没有React、Tailwind或线上业务数据库。
 
-src/data/works.json保存24件卡片，src/content/articles保存中文Markdown，src/data/works.ts连接两者并生成页面数据。Explore输出全部卡片，explore.ts在DOM中搜索分类；WorkDetail和detail.ts提供两段式阅读、折叠及前后切换。无JS仍有正文HTML，交互能力依具体功能说明。
+src/content/works按稳定ID拆分work.json与zh/en.md，src/data/taxonomy.json保存稳定标签。src/lib/content共用schema、跨文件校验、版本摘要及读取规则；Astro Content Collections渲染Markdown。只有published语言生成详情、目录和索引；原文更新使已发布译文标待复核。
 
-astro.config.mjs、sitemap.xml.ts、public/robots.txt分别保存站点地址。wrangler.jsonc托管dist静态资源，没有业务Worker入口；wrangler.local.jsonc的D1仅供本地命令测试。
+目录与分类每页24项，以静态路径分页；search.ts按搜索意图加载Pagefind全文索引，explore.ts处理查询状态及分批结果，不再输出全量卡片。WorkDetail和detail.ts保持两段式阅读与同语言相邻导航；无JS可阅读和分页。
+
+src/config/site.ts统一SITE_URL，布局、sitemap、robots与Astro共用；wrangler.jsonc托管静态产物，无业务Worker入口。本地D1只用于命令测试。scripts/build.ts先校验后构建索引，.scratch支持隔离内容与输出，防止规模测试覆盖真实内容。
 
 npm run check执行类型、lint、格式、文档治理和单元测试；verify接本地数据库与浏览器检查；budget检查构建体积。GitHub运行verify/budget，并有每周文档体检，不包含自动部署。
 

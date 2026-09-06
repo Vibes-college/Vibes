@@ -106,3 +106,21 @@ detail?.addEventListener(
   },
   true,
 );
+
+// 从当前标签页保留的同语言目录恢复返回入口，拒绝外部或作品详情地址。
+const back = document.querySelector<HTMLAnchorElement>('[data-back-link]');
+try {
+  const locale = detail?.dataset.locale;
+  const value = locale && sessionStorage.getItem(`explore:${locale}`);
+  if (back && value) {
+    const url = new URL(value, location.origin);
+    if (
+      url.origin === location.origin &&
+      url.pathname.startsWith(`/${locale}/`) &&
+      !url.pathname.includes('/works/')
+    )
+      back.href = url.pathname + url.search;
+  }
+} catch {
+  /* Storage can be unavailable; the static directory link remains valid. */
+}
