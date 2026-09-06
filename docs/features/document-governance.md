@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '规划开发与维护文档'
 status: 'current'
-shaped-by: ['002', '003']
+shaped-by: ['002', '003', '004']
 legacy-feature-ids: ['spec-kit-workflow']
 code-sources:
   [
@@ -11,8 +11,9 @@ code-sources:
     'scripts/docs-index.ts',
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
+    'scripts/docs-lessons.ts',
   ]
-code-revision: 'ba2576352c7ee92261445007e6b9b59ea53859fe9d0fb75cdc43a12d2cf89d10'
+code-revision: '6453e7ca4e40d673c96fc376cda66306f1771a6e7211d0a2896d11eea1643e59'
 ---
 
 # 功能名：规划开发与维护文档
@@ -24,8 +25,8 @@ code-revision: 'ba2576352c7ee92261445007e6b9b59ea53859fe9d0fb75cdc43a12d2cf89d10
 ## 用户操作路径
 
 1. 用户描述要完成的事情；AI从[功能索引](README.md)找到相关操作路径，先读现状，再查对应代码。
-2. 新功能或跨模块改造先明确用户、成功路径与不做范围，使用Spec Kit形成spec、plan、tasks；计划经用户确认后执行。小修复和文档修正可直接处理，不机械生成全套文档。
-3. 开发时保存真实进度；功能说明按[模板](./_TEMPLATE.md)描述一条完整操作路径，包括成功、失败和必要的系统响应图，不按组件或样式拆篇。
+2. 新功能或跨模块改造先明确用户、成功路径与不做范围，使用Spec Kit形成spec、plan、tasks；计划经用户确认后执行；首版spec形成就建Draft PR并提供可打开链接与任务摘要。小修复和文档修正可直接处理，不机械生成全套文档。
+3. 开发时在PR描述更新当前进度、阻塞、下一步、阶段预览，重要证据写评论；详细清单以tasks.md为准，阶段/交接/暂停前提交推送，不强制逐commit push；功能说明按[模板](./_TEMPLATE.md)描述一条完整操作路径，包括成功、失败和必要的系统响应图，不按组件或样式拆篇。
 4. 更新功能现状与索引；技术配置和完整命令链接到docs/system，历史原因从shaped-by找到specs。
 5. 运行`npm run docs:check`与`npm run format:check`。遇到缺标签、索引不一致或冻结改写时，按错误定位修正，不通过就不称文档检查完成。
 6. 实现和验收完成后同步spec/plan/tasks及索引为complete，再提交一批完整相关改动供审阅，用户决定合并。合并后规格正文冻结，下一次决定另写规格并关联旧规格；当前功能说明原地维护。
@@ -49,6 +50,8 @@ flowchart TD
 ```
 
 当前文档可归并重写，旧规格正文仍保留。检查器通过当前文档的legacy-feature-ids找到旧功能编号对应的现状，不要求为历史编号保留一堆空壳文档。对应`scripts/docs-index.ts`、`scripts/docs-sources.ts`。
+
+开始相关任务读[失败经验](../LESSONS.md)，满足条件才记三行；转化到规则/模板/测试并保存验证证据。原原则历史保存在[DECISIONS](../DECISIONS.md)，迁移不改旧条目，失败经验可按规则整理。
 
 ## 涉及的文件
 
@@ -83,4 +86,6 @@ flowchart TD
 
 ## 已知问题 / 待办
 
-自动检查无法判断自然语言是否准确，也无法判断翻译或来源质量。只有生成技能文件不代表每条Spec Kit命令都已验证；没有自动合并或自动发布。
+自动检查无法判断自然语言是否准确，也无法判断翻译或来源质量。只有生成技能文件不代表每条Spec Kit命令都已验证；合并仍由用户决定；main网站变更通过检查后自动部署，实际启用和上线证据见检查与发布路径。
+
+004新增治理检查于2026-09-06在专用worktree运行npm run check通过（52项单元测试），覆盖三行经验/数量、决策迁移、累计main差异与清理保护；PR流程和真实部署另按交付路径验收。

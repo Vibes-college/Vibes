@@ -14,7 +14,7 @@ code-sources:
     'src/scripts/search.ts',
     'scripts/build.ts',
   ]
-code-revision: '661add471e8c6b7f0b0523a19ca74d78839db75eccd48f658cc9578ddf842d4b'
+code-revision: '7719f865d23d9c8d624ddedab7259a2d145005b6f777d6fffb6fef73b3922847'
 ---
 
 # VIBES项目总览
@@ -56,7 +56,7 @@ flowchart TD
   A[维护作品文件] --> B[校验身份、引用与发布状态]
   B --> C[Astro生成已发布语言的HTML]
   C --> D[Pagefind为正文生成静态索引]
-  D --> E[检查后由Wrangler发布到独立测试站]
+  D --> E[main检查后自动发布至vibes.college]
   E --> F[访客浏览完整静态页面]
   F --> G[开始搜索时才加载同站索引]
   F --> H[点击卡片进入完整详情，展开已有正文]
@@ -78,7 +78,7 @@ flowchart TD
 
 实现状态由当前代码及功能说明表达；最近一次有效验收在对应功能文档注明范围、日期和方法，不因文档排版就清空已通过记录。源码影响了结论时重新验证，不能仅刷新记录。
 
-独立测试站为[vibes-explore](https://vibes-explore.topologic-relay.workers.dev/zh/)，旧vibes.college未切换。合并PR不会自动发布；线上提交/版本以发布记录和实际站点为准，不能由本地main推断。版本记录在`resources/evidence/001-multilingual-explore/releases/`，可能只存在于执行发布的本机。
+用户已授权正式目标为[vibes.college](https://vibes.college/zh/)。首版spec即建立Draft PR，阶段预览不提升生产；网站变更合并main且检查通过后自动部署，线上验收后再清理本任务资源。实际启用和上线状态以[交付说明](system/checks-and-release.md)、GitHub部署结果与线上版本为准，不能由配置或本地main推断。新流程版本证据在resources/evidence/releases/及CI artifact，旧测试站记录只作历史。
 
 [规格索引](../specs/README.md)记录实现阶段与决定；合并状态看GitHub PR，不在每篇现状文档复制“待合并/已合并”流水账。
 

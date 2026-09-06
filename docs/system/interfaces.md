@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '接口与外部服务'
 status: 'current'
-shaped-by: ['001', '003']
+shaped-by: ['001', '003', '004']
 code-sources:
   [
     'src/scripts/search.ts',
@@ -13,7 +13,7 @@ code-sources:
     'scripts/release-policy.ts',
     'src/components/WorkDetail.astro',
   ]
-code-revision: 'c1e28a7ec5122d50dcf9dd9099ed42eb5c39d74130c8218949b1414d9804ad97'
+code-revision: '87de69387a169b139604482b0cbb37ee7e70c5db565d8d95128f2001ac3a8e62'
 ---
 
 # 接口与外部服务
@@ -30,7 +30,7 @@ code-revision: 'c1e28a7ec5122d50dcf9dd9099ed42eb5c39d74130c8218949b1414d9804ad97
 - 没有商品、订单、支付、退款或发票接口。
 - 没有上传文件、图片、音频或视频的接口。
 
-## 2 构建生成的两个静态资源地址
+## 2 构建与发布生成的静态资源地址
 
 ### `GET /robots.txt`
 
@@ -46,6 +46,10 @@ code-revision: 'c1e28a7ec5122d50dcf9dd9099ed42eb5c39d74130c8218949b1414d9804ad97
 - 内容：所有已发布语言的 Explore 首页、分页、标签页和作品详情页。
 - 不包含：搜索参数、草稿、未发布翻译、没有内容的标签页。
 - 实现：`src/pages/sitemap.xml.ts`。
+
+### `GET /__release.json`
+
+发布产物包含源码sha与内容digest，用于线上版本核对，不是业务API、不含秘密。普通本地build不生成；release-artifact.ts在发布准备时写入，release-smoke.ts检查该SHA与zh/en页面。
 
 ## 3 浏览器内部的搜索接口（不是本项目的 HTTP API）
 
@@ -70,17 +74,17 @@ code-revision: 'c1e28a7ec5122d50dcf9dd9099ed42eb5c39d74130c8218949b1414d9804ad97
 - `npm run db:reset`、`npm run db:migrate`：只操作本地测试 D1。
 - `npm run build`：检查内容、生成静态网站和 Pagefind 索引。
 - `npm run verify`：类型、格式、文档、单元测试、本地数据库和浏览器验收。
-- `npm run deploy`：检查当前提交后发布到受控独立测试站；不是自动部署，也不接收任意线上地址。
-
-发布脚本还会调用 GitHub CLI 的 `gh api` 读取当前提交的检查结果，以及 Wrangler 的 `deploy`、`versions view`、`rollback`。这些是维护工具对外部平台的调用，不是网站访客可以调用的接口。
+- `npm run deploy`：拒绝本地直接发布，指向main检查后的自动流程。
+- `npm run release:preview -- <PR号>`：本地完整验收后上传阶段预览，不提升生产。
+- `npm run cleanup:task -- <PR号> [--execute-idle]`：检查PR与上线证据，报告或清理本任务分支和空闲干净worktree。
 
 ## 外部平台与认证
 
-scripts/release.ts调用`gh api`以GET读取`repos/Vibes-college/Vibes/commits/{sha}/check-runs`，输入为当前40位SHA，要求verify和budget完成且成功；沿用gh现有认证，不读取或暴露token。查询失败阻断发布，不绕过限流。
+release-utils.ts通过gh api GET读取固定仓库Vibes-college/Vibes的pulls/{number}、git/ref/heads/main以及Actions运行/jobs。preview核对open PR的head，production核对当前main与同一运行verify/budget依赖结果；cleanup核对已合并、上线SHA包含合并、main部署job成功。查询错误阻断，不绕过限流。clean-up通过git远端引用查询与带预期SHA的删除操作防止清理额外提交。
 
-同一脚本调用现有Wrangler的deploy、versions view和rollback，目标账户/Worker/origin固定在scripts/release-policy.ts；上传验证后的dist，保存平台返回版本ID。沿用本机OAuth或CLOUDFLARE_API_TOKEN，不迁移旧业务密钥。Wrangler错误传递给调用者，不自动重试不确定的发布；版本ID未能解析时保留日志并要求核对，避免盲目再次发布。
+本机预览使用Wrangler OAuth，生产job仅注入GitHub环境secret CLOUDFLARE_API_TOKEN，账户/Worker/origin固定在release-policy.ts。release.ts只做versions upload/rollback，release-ci.ts做deployments list与deploy；生产仅绑定vibes.college，不同时启用另一套Git自动发布。平台上传错误传递，不盲目重试不确定发布。
 
-没有GitHub自动部署凭据或新增业务API。独立测试站实际发布、修订及恢复已验收；命令、边界和原始证据位置见[CI](../system/checks-and-release.md)。
+范围分类读取已上线/__release.json确定main累计影响，未知基线完整验证。线上验收fetch每请求10秒超时，最多6轮、轮间5秒，检查确切SHA及两种语言首页；失败保留证据，不清理。只有验收轮询重试，上传不自动重试。详细边界与实际状态见[交付](checks-and-release.md)。
 
 ## 新增服务时需要说明
 

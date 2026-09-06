@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '配置和环境变量'
 status: 'current'
-shaped-by: ['001']
+shaped-by: ['001', '004']
 code-sources:
   [
     'package.json',
@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: 'e8fb58dc4b87585983e939a91a5d5346d7076b1eff7576031c6c77a072e733e1'
+code-revision: '5836d7a07bfc090d7093479398bab32ef889129b0372c3a2a830d21f43f92c6a'
 ---
 
 # 配置和环境变量
@@ -34,34 +34,34 @@ code-revision: 'e8fb58dc4b87585983e939a91a5d5346d7076b1eff7576031c6c77a072e733e1
 
 开发流程工具为 Spec Kit 1.0.4，通过 `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v1.0.4` 安装到本机工具环境，不是 npm 或网站运行依赖。版本与初始化参数见 `.specify/init-options.json`；Codex skills 位于 `.agents/skills/`。升级需明确版本并审查生成文件差异，不能在初始化时覆盖项目决定。`.prettierignore` 排除上游受管理的技能、模板、清单与工作流，以保持安装清单哈希；项目自己维护的宪章和文档仍接受格式检查。使用与验收边界见 [Spec Kit 工作流](../features/document-governance.md)。
 
-| 项目                | 当前配置                                 | 用途 / 修改位置                                              |
-| ------------------- | ---------------------------------------- | ------------------------------------------------------------ |
-| 框架                | Astro 静态输出，TypeScript               | `astro.config.mjs`、`tsconfig.json`                          |
-| Node                | 至少 22.20.0；CI 固定 22.20.0            | `package.json`、`.github/workflows/check.yml`                |
-| 依赖版本            | `package-lock.json` 锁定，使用 `npm ci`  | 不手改锁文件；新增依赖先询问                                 |
-| 开发地址            | 通常为本机 4321，以终端实际地址为准      | `npm run dev`；端口占用时 Astro 可能使用其他端口             |
-| Cloudflare 本地预览 | 本机 4322                                | `npm run preview`、`wrangler.local.jsonc`                    |
-| 本地数据库          | `DB` / `vibes-explore-local`             | `wrangler.local.jsonc`；标识只供本地模拟使用                 |
-| 本地数据目录        | `.wrangler/project-local/`               | `scripts/local-tools.ts`；不提交 Git                         |
-| 直接 Worker 部署    | `vibes-explore`，静态资源 `dist`         | `wrangler.jsonc`；静态资源配置；受控入口已部署独立测试Worker |
-| 既有 Sites 绑定     | 已有托管项目                             | `.openai/hosting.json`；保留，不写入凭据                     |
-| 页面标准域名        | `SITE_URL`，本地默认127.0.0.1:4322       | `src/config/site.ts`统一供Astro、布局、sitemap和robots使用   |
-| 未来正式域名        | `vibes.college`，仍由旧项目使用          | 不得切 DNS，不绑定到新站；切换需单独验收与授权               |
-| 缓存与安全响应头    | 本站来源限制、禁止嵌入、构建资源缓存一年 | `public/_headers`                                            |
+| 项目                | 当前配置                                 | 用途 / 修改位置                                                 |
+| ------------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| 框架                | Astro 静态输出，TypeScript               | `astro.config.mjs`、`tsconfig.json`                             |
+| Node                | 至少 22.20.0；CI 固定 22.20.0            | `package.json`、`.github/workflows/check.yml`                   |
+| 依赖版本            | `package-lock.json` 锁定，使用 `npm ci`  | 不手改锁文件；新增依赖先询问                                    |
+| 开发地址            | 通常为本机 4321，以终端实际地址为准      | `npm run dev`；端口占用时 Astro 可能使用其他端口                |
+| Cloudflare 本地预览 | 本机 4322                                | `npm run preview`、`wrangler.local.jsonc`                       |
+| 本地数据库          | `DB` / `vibes-explore-local`             | `wrangler.local.jsonc`；标识只供本地模拟使用                    |
+| 本地数据目录        | `.wrangler/project-local/`               | `scripts/local-tools.ts`；不提交 Git                            |
+| 直接 Worker 部署    | `vibes-explore`，静态资源 `dist`         | `wrangler.jsonc`；静态资源配置；生产自动部署与PR版本预览        |
+| 既有 Sites 绑定     | 已有托管项目                             | `.openai/hosting.json`；保留，不写入凭据                        |
+| 页面标准域名        | `SITE_URL`，本地默认127.0.0.1:4322       | `src/config/site.ts`统一供Astro、布局、sitemap和robots使用      |
+| 正式域名            | `vibes.college`，用户已于2026-09-06授权  | wrangler.jsonc的Custom Domain；首次转接与实际上线结果见交付说明 |
+| 缓存与安全响应头    | 本站来源限制、禁止嵌入、构建资源缓存一年 | `public/_headers`                                               |
 
 ## 环境变量名称
 
 发布构建必须设置SITE_URL；当前网站没有必填业务密钥，没有登录、支付、邮件或 AI API 密钥。因此 `.dev.vars.example` 仅有说明，没有为了凑模板而增加无用变量。
 
-| 名称                                            | 谁提供 / 放哪里              | 用途                                                                     |
-| ----------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------ |
-| `CI`                                            | GitHub Actions 自动提供      | 云端禁止test.only；本地与CI均不复用服务                                  |
-| `GITHUB_ACTIONS`                                | GitHub Actions 自动提供      | 平台身份标志，不参与浏览器选择                                           |
-| `NODE_VERSION`                                  | 当前脚本不读取此变量         | 平台可能使用的名称；当前CI由setup-node固定版本                           |
-| `GITHUB_TOKEN`                                  | GitHub Actions 临时提供      | CI 读取代码所需的平台身份；工作流只授予 `contents: read`，无需手填       |
-| `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | 可选的 Wrangler 自动部署身份 | 当前未配置自动部署，不需要填；本机已有 Wrangler OAuth 登录可用于人工操作 |
+| 名称                                            | 谁提供 / 放哪里         | 用途                                                                                        |
+| ----------------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------- |
+| `CI`                                            | GitHub Actions 自动提供 | 云端禁止test.only；本地与CI均不复用服务                                                     |
+| `GITHUB_ACTIONS`                                | GitHub Actions 自动提供 | 平台身份标志，不参与浏览器选择                                                              |
+| `NODE_VERSION`                                  | 当前脚本不读取此变量    | 平台可能使用的名称；当前CI由setup-node固定版本                                              |
+| `GITHUB_TOKEN`                                  | GitHub Actions 临时提供 | CI 读取代码所需的平台身份；工作流只授予 `contents: read`，无需手填                          |
+| `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | Wrangler 自动部署身份   | Token仅放GitHub production环境secret；account由固定releaseTarget提供；本机OAuth用于阶段预览 |
 
-本地与CI均运行Playwright；按实际环境报告结果。Cloudflare Git 集成本身不需要把部署 Token 放入业务环境变量。
+本地与CI均运行Playwright；按实际环境报告结果。生产发布由GitHub检查工作流负责，不再配置第二套Cloudflare Git自动发布，以免抢先上线或重复构建。
 
 ## 本地与线上如何保存值
 
@@ -79,10 +79,16 @@ CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GIT
 
 ## 内容构建与隔离测试
 
-`SITE_URL`为纯origin，非本地必须HTTPS；`VIBES_DEPLOY=1`开启发布校验，缺失SITE_URL、localhost及旧vibes.college会失败。它只用于构建，不是浏览器秘密。
+`SITE_URL`为纯origin，非本地必须HTTPS；`VIBES_DEPLOY=1`开启发布校验，缺失SITE_URL、localhost会失败，vibes.college为已授权生产origin。它只用于构建，不是浏览器秘密。
 
 `VIBES_CONTENT_DIR`与`VIBES_TAXONOMY_FILE`覆盖隔离内容源；必须同时指定位于.scratch下的`VIBES_OUT_DIR`。scripts/build.ts在Astro前校验，随后为该输出生成Pagefind；Astro缓存随隔离输出分开，避免测试覆盖真实dist。正常命令不设置这些变量，读取src/content/works与src/data/taxonomy.json。
 
 eslint.config.mjs与.prettierignore排除.scratch合成内容和产物；它们不进入提交或部署。
 
 受控发布目标由scripts/release-policy.ts限定Worker vibes-explore、账户d2338644c67dab28bdc257b40d0fa115、来源https://vibes-explore.topologic-relay.workers.dev；这些标识不是密钥。scripts/release.ts生成.scratch/release-config.json并设置SITE_URL、VIBES_DEPLOY与账户，不使用旧域名；直接wrangler.jsonc只是配置，不等于通过发布检查。
+
+## 发布身份与权限
+
+CLOUDFLARE_API_TOKEN只授予部署所需Worker脚本编辑及vibes.college域名相关权限；仅发布job注入，不传给PR检查。身份配置由AI完成，缺少登录/授权时给用户具体步骤；不把短期本机OAuth复制为长期CI secret。GitHub production环境已于2026-09-06通过API建立，限制部署分支为main；环境secret已配置并验证令牌有效、域名和目标Worker可读取，权限为指定账户Workers Scripts编辑、vibes.college的Workers Routes编辑与Zone读取；首次自动部署仍待合并后验收。环境存在不等于已上线。
+
+wrangler.jsonc使用workers_dev:false、preview_urls:true和唯一vibes.college custom_domain。预览使用版本URL而非独立测试Worker，生产构建SITE_URL=https://vibes.college，PR预览同canonical并加noindex。发布元数据/__release.json仅公开源码SHA和产物摘要，不包含秘密。
