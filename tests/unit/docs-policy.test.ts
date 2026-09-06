@@ -357,3 +357,22 @@ test('complete describes implementation readiness and completed tasks cannot rem
   );
   assert.throws(() => validateIndexes(docs), /全部任务已完成/);
 });
+
+// 索引展示排序不能修改元数据，否则相同冻结文件会被误报为遭到篡改。
+test('index sorting preserves frozen feature metadata order', () => {
+  const docs = catalog();
+  const original = docs.get('specs/001-example/spec.md')!;
+  const ordered = document(original.path, { ...original.meta, 'feature-ids': ['zeta', 'example'] });
+  docs.set(original.path, ordered);
+  const index = docs.get('specs/README.md')!;
+  docs.set(
+    index.path,
+    document(index.path, index.meta, '| [001](001-example/spec.md) | draft | example, zeta |\n'),
+  );
+  validateIndexes(docs);
+  assert.deepEqual(ordered.meta['feature-ids'], ['zeta', 'example']);
+  const frozen = { ...ordered.meta, status: 'complete' };
+  assert.doesNotThrow(() =>
+    assertFrozen(document(ordered.path, frozen), document(ordered.path, frozen)),
+  );
+});

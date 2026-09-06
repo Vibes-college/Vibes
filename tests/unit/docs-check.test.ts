@@ -165,3 +165,42 @@ test('docs CLI catches source drift and uncovered additions in a real checkout',
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+// 分支上的complete仅表示实现就绪，进入main后才冻结，允许审阅时继续修订。
+test('a complete branch remains editable until its commit reaches main', () => {
+  const { root } = fixture('draft');
+  const git = (args: string[]) =>
+    execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    git(['checkout', '-b', 'work']);
+    for (const name of ['spec', 'plan', 'tasks']) {
+      const path = join(root, `specs/001-example/${name}.md`);
+      const parsed = parseDocument(path, readFileSync(path, 'utf8'));
+      writeFileSync(path, markdown({ ...parsed.meta, status: 'complete' }, parsed.body));
+    }
+    const index = join(root, 'specs/README.md');
+    writeFileSync(index, readFileSync(index, 'utf8').replace('| draft |', '| complete |'));
+    git(['add', '.']);
+    git([
+      '-c',
+      'user.name=Docs Test',
+      '-c',
+      'user.email=docs@example.invalid',
+      'commit',
+      '-m',
+      'ready',
+    ]);
+    const ready = git(['rev-parse', 'HEAD']).trim();
+    const plan = join(root, 'specs/001-example/plan.md');
+    const original = readFileSync(plan, 'utf8');
+    writeFileSync(plan, original + '\nReview adjustment.\n');
+    assert.equal(run(root, ready).status, 0);
+    writeFileSync(plan, original);
+    git(['checkout', 'main']);
+    git(['merge', '--ff-only', 'work']);
+    writeFileSync(plan, original + '\nFrozen change.\n');
+    assert.match(run(root, ready).output, /冻结正文/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});

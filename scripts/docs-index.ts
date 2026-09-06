@@ -31,7 +31,7 @@ function assertIndex(
     }
     if (spec) {
       const source = documents.get(`specs/${id}/spec.md`)!;
-      const names = listField(source, 'feature-ids').sort().join(', ');
+      const names = [...listField(source, 'feature-ids')].sort().join(', ');
       if (!row.split('|').some((cell) => cell.trim() === names))
         throw new Error(`${path}: ${id}影响功能不一致`);
     }

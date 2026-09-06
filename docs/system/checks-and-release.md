@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '7105a88a4162d2825c6ccd061a7cf1bc581417aaf309af3efff197744a2f9aef'
+code-revision: 'ba817300b4957697be0956c03d0176379201d22e0d0c30dd6cd2b65a79d868db'
 ---
 
 # 检查与发布
@@ -29,7 +29,7 @@ code-revision: '7105a88a4162d2825c6ccd061a7cf1bc581417aaf309af3efff197744a2f9aef
 
 手动触发、空差异或范围基线不可读均选择full。分类包含删除、改名前后路径和本地未跟踪文件；src中的文章也属于网站变化。路径白名单由脚本与tests/unit/check-scope.test.ts维护。分类不取代测试：需要缩减新的工具范围时先证明它不影响网站。
 
-PR基线为目标分支SHA，push为事件前一提交，新分支回退origin/main；checkout获取完整历史。DOCS_BASE_REF用于冻结检查，CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
+PR基线为目标分支SHA，push为事件前一提交，新分支回退origin/main；checkout获取完整历史。DOCS_BASE_REF提供比较提交；冻结检查取它与origin/main的共同祖先，仅冻结已进入main的历史，不把未合并分支的complete稿提前冻结。无远端main的本地测试仓库可使用本地main，找不到有效基线仍失败。CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
 
 每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。
 

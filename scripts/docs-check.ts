@@ -21,7 +21,15 @@ function baseline(): string {
   const requested = process.env.DOCS_BASE_REF;
   const ref = requested && !/^0+$/.test(requested) ? requested : 'origin/main';
   try {
-    return git(['rev-parse', '--verify', '--end-of-options', `${ref}^{commit}`]).trim();
+    const selected = git(['rev-parse', '--verify', '--end-of-options', `${ref}^{commit}`]).trim();
+    let main: string;
+    try {
+      main = git(['rev-parse', '--verify', '--quiet', 'refs/remotes/origin/main^{commit}']).trim();
+    } catch {
+      main = git(['rev-parse', '--verify', '--quiet', 'refs/heads/main^{commit}']).trim();
+    }
+    // push的前一提交可能仍在未合并分支，只有进入main的共同历史才能冻结正文。
+    return git(['merge-base', selected, main]).trim();
   } catch {
     throw new Error('冻结基线不可读取；fetch origin main或设置DOCS_BASE_REF为有效提交');
   }
