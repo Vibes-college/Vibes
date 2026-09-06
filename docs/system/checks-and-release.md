@@ -71,11 +71,11 @@ commit是保存进度，推送是备份或触发CI，PR是提交一批变化供�
 
 网站影响的main push在同一工作流中通过verify与budget后，deploy下载budget产物（含隐藏文件），核对SHA和内容摘要，再使用Wrangler发布至用户已授权的https://vibes.college。纯治理文档或文档工具无网站影响时不重建/发布，保留之前线上版本。生产job串行不强制取消，上传前确认仍是当前main，拒绝旧运行覆盖新版本。发布不再重复构建或跑verify。
 
-首次切换前实查：2026-09-06，vibes.college绑定旧Worker vibecoding-college，无普通Worker路由；wrangler.jsonc仅将这个Custom Domain转给vibes-explore。旧Worker保留，不删除业务资源。回退首次切换可将该域名绑定恢复到vibecoding-college；后续恢复使用已验证的生产版本记录。正式域名授权不等于已上线，实际结果以main部署job、版本记录与页面验收为准。
+vibes.college现由Worker vibes-explore提供服务。2026-09-06的[首次正式部署](https://github.com/Vibes-college/Vibes/actions/runs/34029233677)通过，线上SHA与合并提交一致，[页面验收与清理记录](https://github.com/Vibes-college/Vibes/pull/3#issuecomment-5558821204)已保存。此次Custom Domain从旧Worker vibecoding-college转接。旧Worker保留，不删除业务资源。回退首次切换可将该域名绑定恢复到vibecoding-college；后续恢复使用已验证的生产版本记录。正式域名授权不等于已上线，实际结果以main部署job、版本记录与页面验收为准。
 
-scripts/release-ci.ts保存发布前版本和结果于resources/evidence/releases/；CI artifact保留90天。只有线上/__release.json匹配SHA且zh/en页有效才记录verified:true；失败不清理，上传结果不确定先核对远端再重试。实际交互另由AI用ego-browser核对搜索、详情、语言与404，结果写PR评论。完整上线前不宣称发布成功。
+scripts/release-ci.ts保存发布前版本和结果于resources/evidence/releases/；CI artifact保留90天。只有线上/__release.json匹配SHA且zh/en页有效才记录verified:true；失败不清理，上传结果不确定先核对远端再重试。实际交互另由AI用内置浏览器核对搜索、详情、语言与404，结果写PR评论。完整上线前不宣称发布成功。
 
-AI在用户合并后继续收尾；跨对话等待时建立本机跟进，状态未变化不打扰。先核对PR已合并、线上版本包含该合并、对应main工作流部署成功，纯文档维护若不影响已上线网站，要求对应main检查成功才可收尾，不虚构重新部署。再检查本地脏文件/额外提交/其他任务占用；被忽略的.dev.vars、证据和未知文件仍受保护，仅node_modules/dist/.astro/test-results等明确缓存可随worktree清理。运行cleanup:task查看候选，切主checkout至main后再传--execute-idle；命令以PR head与GitHub合并证明兼容squash，删除采用预期SHA比对，竞态或未知状态保留。仍被其他open PR作为base使用的分支保留；仅删除本目标分支与空闲干净worktree；用户未跟踪文件原样保留，main和其他任务不清理。
+AI在用户合并后继续收尾；跨对话等待时建立本机跟进，状态未变化不打扰。先核对PR已合并、线上版本包含该合并、对应main工作流部署成功，纯文档维护若不影响已上线网站，要求对应main检查成功才可收尾，不虚构重新部署。再检查本地脏文件/额外提交/其他任务占用；被忽略的.dev.vars、证据和未知文件仍受保护，仅node_modules/dist/.astro/test-results等明确缓存可随worktree清理。运行cleanup:task查看候选，在待删除worktree之外的项目checkout核对状态后再传--execute-idle；不为清理切换其他任务的分支。命令以PR head与GitHub合并证明兼容squash，删除采用预期SHA比对，竞态或未知状态保留。仍被其他open PR作为base使用的分支保留；仅删除本目标分支与空闲干净worktree；用户未跟踪文件原样保留，main和其他任务不清理。
 
 远端分支也要等上线验收后删除，不开启GitHub合并即删分支。临时服务由本机AI按自己启动记录核对PID/用途并关闭，不能扫描后盲杀进程；保留的服务记用途/地址/启动方式，下次先核对再复用。发布版本、旧Worker和必要恢复证据不属于临时垃圾。
 
@@ -110,7 +110,7 @@ AI在用户合并后继续收尾；跨对话等待时建立本机跟进，状态
 
 ## 浏览器测试
 
-本地与CI使用同一配置和测试文件，无需ego lite。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
+本地与CI使用同一配置和测试文件。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
 
 手机项目包含Chromium与WebKit设备模拟，包含触摸横滑和320px列表/详情检查，不代表真实iPhone Safari通过。导航缓存测试使用隔离空持久profile验证缓存复用，桌面项目另等待真实60秒TTL验证过期后读取。ego-browser仅在有视觉或体验验收目的时按需使用，不是自动化E2E前提。`npx playwright test --headed`可查看测试过程，运行前先构建。
 

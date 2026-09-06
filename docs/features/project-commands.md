@@ -45,9 +45,9 @@ code-revision: '3330e5bad8b30fe3cfdf1c3f6cb6cd045008780bcedd886cb50e534c30710476
 3. 可体验阶段由AI运行`npm run release:preview -- <PR号>`：干净且已推送的PR head在本机verify/budget通过后上传预览版本，提供实际URL与SHA；不会提升生产。未跟踪的用户文件不删除，必要时用隔离worktree。
 4. 完成后转Ready，按整个PR差异运行verify/budget（文档和工具按范围缩减）；Ready之后再改代码仍重新检查。用户决定合并，AI不自动合并。
 5. 网站变更合并到main后，检查通过才自动发布同SHA验收产物至`https://vibes.college`；纯治理文档不重建网站，最新线上版本需核对。部署复用预算job产物，不重复构建，拒绝过时main版本；main按实际上线版本累计差异，避免后续文档提交掩盖尚未发布的网页改动。
-6. 云端检查线上SHA与中英文首页；AI再核对浏览、搜索、详情、语言与404，PR记录真实结果。失败或不确定状态停止收尾，保留恢复证据；不能将上传成功当作页面验收。
+6. 云端检查线上SHA与中英文首页；AI再用内置浏览器核对浏览、搜索、详情、语言与404，PR记录真实结果。失败或不确定状态停止收尾，保留恢复证据；不能将上传成功当作页面验收。
 7. 需要恢复时使用`npm run release:restore -- <已记录生产版本>`，从CI artifact取回记录后核对目标与版本；首次切换前旧Worker保留，具体恢复路径见交付说明。
-8. 上线验收后AI运行`npm run cleanup:task -- <PR号>`查看候选，确认无额外提交、无脏文件或其他任务占用，再执行清理；当前checkout先切main。跨对话等待通过本机跟进完成，未变化保持安静。分支删除不删除Git历史或回滚版本。
+8. 上线验收后AI运行`npm run cleanup:task -- <PR号>`查看候选，确认无额外提交、无脏文件或其他任务占用，再执行清理；从待删除worktree之外执行，不切换其他任务的分支。跨对话等待通过本机跟进完成，未变化保持安静。分支删除不删除Git历史或回滚版本。
 
 ### 操作之后发生什么
 
@@ -77,13 +77,13 @@ flowchart TD
 ## 验收标准
 
 - [x] Draft PR页面可见清单，阶段预览对应真实SHA并可操作。
-- [ ] Draft与Ready触发分离，分支push不重复CI；失败/旧SHA/产物漂移阻断发布。
+- [x] Draft与Ready触发分离，分支push不重复CI；失败/旧SHA/产物漂移阻断发布。
 - [x] 正式域名构建与来源校验通过，发布前保持明确目标和容量门槛。
-- [ ] main自动发布实际成功，线上版本与页面验收通过，再执行清理。
+- [x] main自动发布实际成功，线上版本与页面验收通过，再执行清理。
 - [x] 清理拒绝未合并、未上线、额外提交、脏文件/ignored配置/依赖PR，占用由AI核对声明；保护测试通过，保留恢复版本。
 - [x] 本地D1只用于命令验收，拒绝线上参数；2026-09-05本地verify验证有效，网站不读取此库。
 
-2026-09-06本地verify（52单元、26浏览器通过、2按设计跳过）、budget、Wrangler生产配置dry-run通过；专用worktreecheck再次通过。Draft运行34028631687通过；预览372ced7经ego-browser验证搜索、详情、语言切换及noindex，canonical指向正式域名；Ready的最新verify/budget结果见PR #3。首次生产待用户合并后执行，不沿用旧测试站发布勾选。历史证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，仅说明旧流程当时通过。
+2026-09-06本地verify（52单元、26浏览器通过、2按设计跳过）、budget、Wrangler生产配置dry-run通过；专用worktreecheck再次通过。Draft运行34028631687通过；预览372ced7经ego-browser验证搜索、详情、语言切换及noindex，canonical指向正式域名；Ready运行34028923187和main运行34029233677全部通过；main合并提交bd34b7d已部署至vibes.college，2026-09-06实际浏览搜索、详情、语言与404通过，本任务分支/worktree已清理，证据和回滚版本保留。见[PR #3收尾记录](https://github.com/Vibes-college/Vibes/pull/3#issuecomment-5558821204)。历史证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，仅说明旧流程当时通过。
 
 ## 对应的自动化测试
 
@@ -99,4 +99,4 @@ flowchart TD
 
 ## 已知问题 / 待办
 
-合并、自动发布、线上体验和本机清理是不同状态；未发生的步骤不能提前勾选。GitHub main保护和production仅main准入已于2026-09-06实查配置，发布仍须等用户合并后验证。5000件双语规模样例超过免费档文件数，小目录能上线不代表大目录容量已解决，不自动升级套餐。
+合并、自动发布、线上体验和本机清理是不同状态；未发生的步骤不能提前勾选。GitHub main保护和production仅main准入已于2026-09-06实查配置，首次生产发布及收尾已按上述记录验证；以后每次发布仍须验收对应版本。5000件双语规模样例超过免费档文件数，小目录能上线不代表大目录容量已解决，不自动升级套餐。
