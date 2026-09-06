@@ -21,4 +21,4 @@ src/pages/[locale]/works/[id].astro、src/components/WorkDetail.astro、Language
 
 ## 验收
 
-2026-09-05本地Playwright桌面/手机通过折叠、前后切换、横滑、无JS阅读、同作品双语切换、缺失译文404和原文事实标注；tests/explore.spec.ts。tests/unit/article-sections.test.ts与content-relations.test.ts验证内容保留及事实/关联规则。tests/content-lifecycle.spec.ts已通过原文先发、译文草稿、发布、待复核及复核解除五个真实构建阶段。
+2026-09-05本地Playwright桌面/手机通过折叠、前后切换、横滑、无JS阅读、同作品双语切换、缺失译文404和原文事实标注；tests/explore.spec.ts。tests/unit/article-sections.test.ts与content-relations.test.ts验证内容保留及事实/关联规则。tests/content-lifecycle.spec.ts已通过原文先发、译文草稿、发布、待复核、复核解除、全部草稿及空目录七个真实构建阶段。

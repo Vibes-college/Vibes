@@ -57,4 +57,4 @@ npm run deploy构建后使用Wrangler发布静态Worker；必须核对已通过�
 
 每次成功保存版本ID、SHA、来源、体积与检查记录于resources/evidence/001-multilingual-explore/releases/。`npm run release:restore -- <version-id>`只接受此处已记录且目标匹配的版本，核对远端版本后执行rollback。回滚后仍需实际检查页面；不能把命令成功当视觉验收。
 
-部署后核对中文/英文目录、正文搜索、旧URL、404、canonical/sitemap/robots和恢复前后页面，记录实际版本。远端执行及恢复尚须各自实录，不因入口存在宣称上线。现有.github/workflows/check.yml继续提供同名verify/budget；不新增无人值守部署工作流。
+部署后核对中文/英文目录、正文搜索、旧URL、404、canonical/sitemap/robots和恢复前后页面，记录实际版本。独立测试站已完成同SHA检查、首次发布、内容修订和上一版本恢复；摘要在PR，原始记录在resources/evidence/001-multilingual-explore/cloudflare-release.md。现有.github/workflows/check.yml继续提供同名verify/budget；不新增无人值守部署工作流。

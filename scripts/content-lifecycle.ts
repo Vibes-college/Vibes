@@ -20,13 +20,25 @@ export function verifyContentLifecycle() {
     const out = join(root, 'dist');
     writeFileSync(taxonomy, JSON.stringify(catalog.taxonomy));
     const states = [];
-    for (const state of ['original-only', 'draft', 'published', 'stale', 'reviewed'] as const) {
+    for (const state of [
+      'original-only',
+      'draft',
+      'published',
+      'stale',
+      'reviewed',
+      'all-draft',
+      'empty',
+    ] as const) {
       if (state === 'original-only') delete work.versions.en;
       if (state === 'draft')
         work.versions.en = { ...translation, data: { ...translation.data, status: 'draft' } };
       if (state === 'published') work.versions.en!.data.status = 'published';
       if (state === 'stale') work.versions.zh!.body += '\n\n新增原文内容。\n';
       if (state === 'reviewed') work.versions.en!.data.sourceRevision = sourceRevision(work);
+      if (state === 'all-draft') {
+        work.versions.zh!.data.status = 'draft';
+        work.versions.en!.data.status = 'draft';
+      }
       writeFileSync(join(directory, 'work.json'), JSON.stringify(work.meta));
       for (const [locale, version] of Object.entries(work.versions))
         writeFileSync(
@@ -35,6 +47,7 @@ export function verifyContentLifecycle() {
             .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
             .join('\n')}\n---${version.body}`,
         );
+      if (state === 'empty') rmSync(directory, { recursive: true, force: true });
       const build = spawnSync('npm', ['run', 'build'], {
         env: {
           ...process.env,
@@ -46,7 +59,7 @@ export function verifyContentLifecycle() {
         maxBuffer: 10 * 1024 * 1024,
       });
       assert.equal(build.status, 0, `${state}: ${build.stdout}\n${build.stderr}`);
-      const expected = !['original-only', 'draft'].includes(state);
+      const expected = !['original-only', 'draft', 'all-draft', 'empty'].includes(state);
       const detail = join(out, 'en/works', work.meta.id, 'index.html');
       assert.equal(existsSync(detail), expected, `${state}: route publication`);
       assert.equal(
@@ -54,7 +67,13 @@ export function verifyContentLifecycle() {
         expected,
         `${state}: sitemap publication`,
       );
-      assert.match(build.stdout, expected ? /Indexed 2 pages/ : /Indexed 1 page/);
+      if (['all-draft', 'empty'].includes(state))
+        assert.equal(
+          existsSync(join(out, 'pagefind')),
+          false,
+          'Empty publication must not index navigation',
+        );
+      else assert.match(build.stdout, expected ? /Indexed 2 pages/ : /Indexed 1 page/);
       if (expected)
         assert.equal(
           readFileSync(detail, 'utf8').includes('class="translation-notice"'),

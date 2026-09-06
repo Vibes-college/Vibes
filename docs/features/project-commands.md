@@ -22,3 +22,7 @@ package.json、scripts/test-e2e.ts、scripts/docs-check.ts、scripts/check-scope
 命令打印实际地址，任一步失败不继续；浏览器缺失/断言失败不冒充通过。文档CLI基线和失败退出由tests/unit/docs-check.test.ts验证，其余完整编排通过实际verify/budget验证。部署与模拟检查结果不能等同上线。
 
 CI按差异缩减检查；npm run verify本身始终完整运行。范围规则及失败追踪见[CI](../operations/CI.md)。
+
+## 已验证环境
+
+2026-09-05本地与GitHub的verify/budget通过；独立[Cloudflare测试站](https://vibes-explore.topologic-relay.workers.dev/zh/)已部署。中文24件、英文1件，线上中英搜索、语言切换、旧路径、404与元数据核对通过；内容修订与恢复上一版本的页面和索引也已实测。原始证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，发布摘要见PR；旧vibes.college未切换。

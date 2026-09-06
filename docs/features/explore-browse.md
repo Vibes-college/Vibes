@@ -20,3 +20,5 @@ src/pages/[locale]/下的index.astro、page/[page].astro、tags/[tagId]/[...page
 ## 验收
 
 2026-09-05本地Playwright桌面/手机Chromium验证24/1件目录、卡片导航、320px无溢出及两行简介通过；tests/explore.spec.ts。5000×2隔离构建的首中末正文搜索、无JS第二页/末页和结果分批加载也已通过；scripts/measure-explore.ts，详细边界见规模报告。
+
+5000×2产物有26,675文件，超过Workers免费档20,000上限；不能把本地规模通过当成免费档可直接托管。实际样例站142文件，按免费容量检查后已部署。

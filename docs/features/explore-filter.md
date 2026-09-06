@@ -20,3 +20,7 @@ src/scripts/explore.ts处理界面，src/scripts/search.ts加载和查询Pagefin
 ## 验收与限制
 
 2026-09-05本地Playwright桌面/手机通过分类4→1、刷新、正文独有词搜索、返回恢复、失败重试、清空以及无意图时零Pagefind请求；tests/explore.spec.ts。搜索需要JavaScript。中文索引不做词干还原；真实大语料性能以规模报告为准。
+
+## 已验证环境
+
+2026-09-05本地与GitHub的verify/budget通过；独立[Cloudflare测试站](https://vibes-explore.topologic-relay.workers.dev/zh/)已部署。中文24件、英文1件，线上中英搜索、语言切换、旧路径、404与元数据核对通过；内容修订与恢复上一版本的页面和索引也已实测。原始证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，发布摘要见PR；旧vibes.college未切换。

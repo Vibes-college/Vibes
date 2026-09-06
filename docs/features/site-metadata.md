@@ -17,4 +17,8 @@ SITE_URL通过src/config/site.ts统一站点来源；canonical去掉搜索参数
 
 src/config/site.ts、astro.config.mjs、src/layouts/Layout.astro、src/pages/sitemap.xml.ts、src/pages/robots.txt.ts；public/robots.txt已移除。依赖[内容维护](content-maintenance.md)。
 
-2026-09-05本地tests/unit/site-config.test.ts通过配置边界；tests/explore.spec.ts验证sitemap包含已发布LoRA。部署来源及完整SEO产物核对仍需发布验收。
+2026-09-05本地tests/unit/site-config.test.ts通过配置边界；tests/explore.spec.ts验证sitemap包含已发布LoRA。独立测试站的页面、sitemap、robots和索引入口已与本地受检产物逐字核对。
+
+## 已验证环境
+
+2026-09-05本地与GitHub的verify/budget通过；独立[Cloudflare测试站](https://vibes-explore.topologic-relay.workers.dev/zh/)已部署。中文24件、英文1件，线上中英搜索、语言切换、旧路径、404与元数据核对通过；内容修订与恢复上一版本的页面和索引也已实测。原始证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，发布摘要见PR；旧vibes.college未切换。

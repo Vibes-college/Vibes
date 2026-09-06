@@ -46,7 +46,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 - `npm run content:validate`检查整个目录并报告各语言发布数量，不写文件。
 - `npm run content:revision -- <id>`报告当前原文摘要、语言状态与待复核标记，不批准或发布翻译。
-- `npm run build`先校验内容，再Astro构建，最后为dist生成Pagefind语言索引；缺内容或校验失败停止。
+- `npm run build`先校验内容，再Astro构建，最后为dist生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容或校验失败停止。
 - `node --experimental-strip-types scripts/measure-explore.ts`在.scratch生成隔离5000×2样例、构建、验证分页/正文搜索并测冷/热延迟；会使用系统分配的独立空闲端口，结束清理。真实内容和dist不覆盖，不部署样例；报告位于resources/evidence/001-multilingual-explore/。
 
 英文发布前须核对全文再记录sourceRevision；原文修改使旧译文标待复核，更新摘要前必须再次审核。详细字段见[内容维护](../features/content-maintenance.md)。

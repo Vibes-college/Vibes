@@ -60,9 +60,9 @@ amended-by: []
 - [x] T027 在 `scripts/budget.ts`、`scripts/budget-policy.ts` 与 `tests/unit/budget.test.ts` 保留首屏原预算，增加搜索资源独立报告并核对实际Cloudflare文件数量/大小上限；同步 `docs/technical/CONSTANTS.md`，不默默放宽预算。
 - [x] T028 在 `scripts/release.ts`、`package.json` 和 `docs/operations/CI.md` 建立受控发布/恢复入口，核对同一SHA的verify/budget、目标账户与独立测试URL；自动化凭据未配置时使用已有本机OAuth，不合并main。
 - [x] T029 在 `.github/workflows/check.yml` 验证PR的verify/budget持续执行，若接入手动部署则新增 `.github/workflows/deploy.yml` 并限制目标/检查提交；同步 `docs/technical/INTEGRATIONS.md`、`docs/features/delivery-setup.md` 和 `project-commands.md`。
-- [ ] T030 按 `plan.md` 的验证场景 跑本地check/verify/budget与CI检查，完成 `resources/evidence/001-multilingual-explore/cloudflare-release.md` 的独立站新增、修订及上一版本恢复实录，记录SHA/版本/URL/时间及可见页面证据，保持旧域名不变。
+- [x] T030 按 `plan.md` 的验证场景 跑本地check/verify/budget与CI检查，完成 `resources/evidence/001-multilingual-explore/cloudflare-release.md` 的独立站新增、修订及上一版本恢复实录，记录SHA/版本/URL/时间及可见页面证据，保持旧域名不变。
 - [x] T031 在 `src/data/works.ts` 与旧内容路径清理迁移后重复源及失效引用，核对每个自行维护代码文件职责清晰，超过300行进行审阅、必要注释与所有相关 `docs/features/` 路径、测试名称和验收状态，重跑受影响检查。
-- [ ] T032 更新 `docs/features/<受影响功能>.md` 为合并后的最终行为，更新shaped-by；更新 `docs/features/README.md` 与 `specs/README.md` 状态；使用converge核对全部需求及真实验收，未同步不算完成。
+- [x] T032 更新 `docs/features/<受影响功能>.md` 为合并后的最终行为，更新shaped-by；更新 `docs/features/README.md` 与 `specs/README.md` 状态；使用converge核对全部需求及真实验收，未同步不算完成。
 
 本地阶段证据：resources/evidence/001-multilingual-explore/记录迁移等价、浏览器截图与英文样例审核范围；2026-09-05完整verify通过35单元测试与24项浏览器/构建生命周期测试，2项按设备去重跳过。发布门槛另有同SHA单元用例，远端执行/恢复和规模速度仍未验收，不提前勾选T029/T030/T032。
 
@@ -72,4 +72,12 @@ amended-by: []
 
 ## Phase 6: Convergence
 
-- [ ] T033 完成同SHA GitHub verify/budget、独立Cloudflare测试站首次发布、真实内容修订和上一成功版本恢复；核对恢复后的页面/索引/canonical并在resources/evidence/001-multilingual-explore/cloudflare-release.md及PR记录SHA、版本、URL和时间，补齐T029/T030的未执行证据 per FR-007、SC-005（partial，HIGH）。
+- [x] T033 完成同SHA GitHub verify/budget、独立Cloudflare测试站首次发布、真实内容修订和上一成功版本恢复；核对恢复后的页面/索引/canonical并在resources/evidence/001-multilingual-explore/cloudflare-release.md及PR记录SHA、版本、URL和时间，补齐T029/T030的未执行证据 per FR-007、SC-005（partial，HIGH）。
+
+交付验收：同SHA云端verify/budget、本地35单元/26浏览器测试及budget通过；Cloudflare首次51c98e5→修订b7057a9→恢复首次版本，页面、SEO、索引入口逐字及搜索结果验证通过。最终现状文档已同步，待用户决定PR合并；未切换旧域名。
+
+## Phase 7: Convergence
+
+- [x] T034 在scripts/build.ts明确限制Pagefind的正文根选择器，并在scripts/content-lifecycle.ts覆盖全部草稿/零发布目录的实际构建，验证0作品索引且不收录导航；保留有正文时的元数据和双语搜索验收 per FR-005、plan: 搜索索引范围、spec: 0件边界（partial，MEDIUM）。
+
+零发布补验：原实现会把5个导航/说明页收入索引（有效RED）；显式正文选择器及零发布不生成索引后，全部草稿和空目录真实构建通过。完整verify仍为35单元+26浏览器/构建测试，2项设备去重跳过；最新5000×2复测通过，尺寸/速度见explore-scale.md。

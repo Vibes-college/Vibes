@@ -13,5 +13,7 @@ test('isolated builds preserve original-first publication and translation review
     'published',
     'stale',
     'reviewed',
+    'all-draft',
+    'empty',
   ]);
 });

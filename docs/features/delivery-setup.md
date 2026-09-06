@@ -27,6 +27,10 @@ CI出现两个独立结果，失败不发布；本地与云端verify均使用Pla
 
 ## 限制
 
-配置存在不代表远端连接、分支保护或部署已完成，平台状态需实际核对；人与AI共享身份不能靠规则区分谁点击合并。旧vibes.college的域名/路由不修改；正式切换需单独授权。
+部署验证不等于分支保护已启用，平台保护状态仍需实际核对；人与AI共享身份不能靠规则区分谁点击合并。旧vibes.college的域名/路由不修改；正式切换需单独授权。
 
 受控目标为vibes-explore.topologic-relay.workers.dev，账户由release-policy.ts限定。生成配置没有自定义域名和路由；restore只接受本地记录且目标匹配的已验证版本。tests/unit/release-policy.test.ts覆盖同SHA检查门槛；实际恢复效果仍须页面核对。
+
+## 已验证环境
+
+2026-09-05本地与GitHub的verify/budget通过；独立[Cloudflare测试站](https://vibes-explore.topologic-relay.workers.dev/zh/)已部署。中文24件、英文1件，线上中英搜索、语言切换、旧路径、404与元数据核对通过；内容修订与恢复上一版本的页面和索引也已实测。原始证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，发布摘要见PR；旧vibes.college未切换。

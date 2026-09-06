@@ -14,7 +14,7 @@ shaped-by: ['001']
 - `src/lib/content/schema.ts`限定zh/en、稳定小写ID、非空语言字段、无凭据HTTPS来源、预览枚举/颜色、可选事实及单一关联；`validate.ts`校验目录身份、ID/顺序唯一、引用与发布关系。
 - `src/data/taxonomy.json`是类型/标签名称及别名唯一源；原文语言、排序、事实顺序和关系属于各作品work.json。目录只包含当前语言published版本，每页24件；路径函数在`src/lib/i18n/routes.ts`。
 - `src/lib/content/revision.ts`对规范化原文与影响理解的字段计算SHA256；排序和其他语言变化不影响摘要。已发布译文摘要不一致时标待复核，不自动撤回或更新。
-- 搜索为Pagefind语言全文索引，与tag分类取交集；不再用卡片文本过滤。q最长160字符、输入延迟150ms、请求15秒超时、每批24项；索引/分片重试释放失败实例；程序下载失败重试刷新页面保留q，清除模块失败缓存；结果序号隔离旧请求。规则在src/scripts/explore.ts与search.ts。
+- 搜索为Pagefind语言全文索引，与tag分类取交集；构建限定[data-pagefind-body]根，零发布时不生成索引并移除旧索引；不再用卡片文本过滤。q最长160字符、输入延迟150ms、请求15秒超时、每批24项；索引/分片重试释放失败实例；程序下载失败重试刷新页面保留q，清除模块失败缓存；结果序号隔离旧请求。规则在src/scripts/explore.ts与search.ts。
 - 目录路径`/{locale}/`、分类`/{locale}/tags/{tagId}/`、分页`page/{n}/`、详情`/{locale}/works/{id}/`；旧根路径转中文，旧type转分类。UI文案在src/lib/i18n/messages.ts。
 - `src/config/site.ts`统一来源；发布要求独立HTTPS SITE_URL，拒绝localhost、vibes.college和非纯origin地址。canonical去查询，语言替代链接仅含实际版本，sitemap不含搜索或草稿。
 - 外部目标HTTPS且新标签noopener noreferrer；事实无有效目标显示纯文本。正文锚点在构建时核对，翻译缺失值显示原文标注。

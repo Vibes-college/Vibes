@@ -14,4 +14,4 @@ shaped-by: ['002']
 
 当前任务看in-progress；draft仍需审阅。每目录按spec→plan→tasks阅读，research记录技术未知与决定。待合并稿准备merged，进入main后冻结；frozen-at可省略，实际日期以PR合并记录为准，后续修订通过amends/amended-by追溯。当前功能看 [功能索引](../docs/features/README.md)，工作过程看PR/git。
 
-本分支实施001；002本地实现和验收已完成，等待PR合并，尚未冻结。当前工具定位见.specify/feature.json。
+001已实现并完成本地/云端检查、独立站发布及恢复演练；002本地实现和验收已完成，两者均等待用户决定PR合并，尚未冻结。当前工具定位见.specify/feature.json。
