@@ -1,0 +1,62 @@
+{
+  "id": "observable-plot",
+  "originalLocale": "zh",
+  "order": 8,
+  "sourceUrl": "https://observablehq.com/plot/",
+  "typeId": "code",
+  "tagIds": ["creator-f1186e667ca26c7c"],
+  "preview": {
+    "kind": "plot",
+    "color": "#f5f2e8"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Observable",
+        "en": "Observable"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-f1186e667ca26c7c"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "代码",
+        "en": "Code"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "code"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Plot your next question."
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

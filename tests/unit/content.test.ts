@@ -1,18 +1,17 @@
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
 import { test } from 'node:test';
+import { readCatalog } from '../../src/lib/content/catalog.ts';
 
-// 验证每张卡片都有唯一地址、完整文章和安全的来源网址。
+// 实际内容从独立文件读取，原文与已发布译文均具有完整正文和安全来源。
 test('every work has a unique route, article, and HTTPS source', () => {
-  const works = JSON.parse(readFileSync('src/data/works.json', 'utf8'));
-  assert.ok(works.length > 0);
-  const slugs = new Set();
-  for (const work of works) {
-    assert.match(work.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
-    assert.ok(!slugs.has(work.slug), `重复地址：${work.slug}`);
-    slugs.add(work.slug);
-    assert.equal(new URL(work.url).protocol, 'https:');
-    assert.ok(work.title && work.summary && work.description);
-    assert.ok(existsSync(`src/content/articles/${work.slug}.md`), `缺少文章：${work.slug}`);
+  const catalog = readCatalog();
+  assert.ok(catalog.works.length > 0);
+  for (const work of catalog.works) {
+    assert.equal(new URL(work.meta.sourceUrl).protocol, 'https:');
+    assert.ok(work.versions[work.meta.originalLocale]?.body.trim());
+    for (const version of Object.values(work.versions)) {
+      assert.ok(version.data.title && version.data.summary && version.data.description);
+      assert.ok(version.body.length > 0);
+    }
   }
 });

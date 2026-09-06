@@ -1,0 +1,62 @@
+{
+  "id": "attention-is-all-you-need",
+  "originalLocale": "zh",
+  "order": 0,
+  "sourceUrl": "https://arxiv.org/abs/1706.03762",
+  "typeId": "paper",
+  "tagIds": ["creator-ea1e10dc079a67fd"],
+  "preview": {
+    "kind": "paper",
+    "color": "#faf9f5"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Vaswani et al.",
+        "en": "Vaswani et al."
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-ea1e10dc079a67fd"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "论文",
+        "en": "Papers"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "paper"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "The Transformer architecture"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

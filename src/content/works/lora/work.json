@@ -1,0 +1,62 @@
+{
+  "id": "lora",
+  "originalLocale": "zh",
+  "order": 12,
+  "sourceUrl": "https://arxiv.org/abs/2106.09685",
+  "typeId": "paper",
+  "tagIds": ["creator-da62122186ab559a"],
+  "preview": {
+    "kind": "paper",
+    "color": "#faf9f5"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Hu et al.",
+        "en": "Hu et al."
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-da62122186ab559a"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "论文",
+        "en": "Papers"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "paper"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Low-Rank Adaptation\nof Large Language Models"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

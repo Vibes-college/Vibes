@@ -1,0 +1,14 @@
+---
+import Explore from '../../components/Explore.astro';
+import { getBrowsePages } from '../../data/works';
+import { locales } from '../../lib/i18n/routes';
+export function getStaticPaths() {
+  return locales.map((locale) => ({
+    params: { locale },
+    props: { page: getBrowsePages(locale).find((page) => !page.tag && page.page === 1)! },
+  }));
+}
+const { page } = Astro.props;
+---
+
+<Explore page={page} />

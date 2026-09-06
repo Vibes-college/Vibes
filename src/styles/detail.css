@@ -1,0 +1,221 @@
+.is-detail {
+  background: #fafaf8;
+}
+.is-detail > .site-header {
+  display: none;
+}
+.detail-page {
+  width: 100%;
+  max-width: 780px;
+  padding: 0 16px;
+  margin: 0 auto;
+}
+.detail-cover {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  padding-top: 10px;
+  touch-action: pan-y pinch-zoom;
+}
+.original-site {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #e3e3df;
+  border-radius: 3px;
+  background: #f1f1ee;
+  color: #62626b;
+  font-size: 14px;
+}
+.original-site span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.original-site img {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.detail-preview {
+  display: block;
+  margin: 10px -4px 0;
+}
+.detail-preview .preview {
+  height: clamp(200px, 38svh, 380px);
+  aspect-ratio: auto;
+}
+.detail-preview .preview-art {
+  width: 100%;
+  height: 100%;
+  padding: 5%;
+}
+.detail-preview .preview-title {
+  font-size: clamp(26px, 5vw, 42px);
+}
+.detail-preview .preview-eyebrow {
+  font-size: 10px;
+}
+.detail-preview .preview-note {
+  font-size: 12px;
+}
+.detail-page .article-header {
+  margin: 14px 0 0;
+}
+.detail-page .article-header h1 {
+  margin: 0 0 10px;
+  color: #161616;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.4px;
+}
+.detail-page .detail-description {
+  margin: 0 0 12px;
+  color: #64646c;
+  font-size: 16px;
+  line-height: 1.55;
+}
+.work-facts {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.work-facts > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 4px 0;
+  border-bottom: 1px solid #eaeae7;
+}
+.work-facts > div:last-child {
+  border-bottom: 0;
+}
+.work-facts dt {
+  flex-shrink: 0;
+  color: #717179;
+}
+.work-facts dd {
+  margin: 0;
+  text-align: right;
+  color: #171717;
+  overflow-wrap: anywhere;
+}
+.work-facts a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.detail-navigation {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding: 28px 0 16px;
+  min-height: 90px;
+}
+.detail-navigation .back-link {
+  font-size: 12px;
+}
+.read-down {
+  position: absolute;
+  left: calc(50% - 22px);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  opacity: 0.65;
+}
+.work-pagination {
+  display: flex;
+  gap: 2px;
+}
+.work-pagination a,
+.disabled-direction {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 44px;
+}
+.disabled-direction {
+  opacity: 0.15;
+}
+.previous-icon {
+  transform: rotate(90deg);
+}
+.next-icon {
+  transform: rotate(-90deg);
+}
+.reading-page {
+  min-height: 100svh;
+  padding: 32px 0 80px;
+  scroll-margin-top: 16px;
+}
+.reading-note {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 26px;
+  font-size: 13px;
+  color: #555;
+}
+.reading-note span {
+  color: #858585;
+  font-size: 12px;
+}
+.reading-section {
+  border-top: 1px solid #e0e0dd;
+  padding: 0 0 4px;
+}
+.reading-section summary {
+  cursor: pointer;
+  padding: 20px 0;
+  list-style-position: outside;
+  margin-left: 18px;
+}
+.reading-section summary::marker {
+  font-size: 12px;
+  color: #777;
+}
+.reading-section summary:focus-visible {
+  outline: 2px solid #525252;
+  outline-offset: 4px;
+}
+.prose .reading-section summary h2 {
+  display: inline;
+  font-size: 20px;
+  line-height: 1.5;
+  margin: 0;
+}
+.reading-section[open] {
+  padding-bottom: 20px;
+}
+@media (max-width: 560px) {
+  .detail-page {
+    padding: 0 12px;
+    margin: 0 auto;
+  }
+  .detail-cover {
+    padding-top: 6px;
+  }
+  .work-facts > div {
+    padding: 1px 0;
+  }
+  .detail-page .article-header h1 {
+    font-size: 18px;
+  }
+  .detail-page .detail-description,
+  .work-facts {
+    font-size: 13px;
+  }
+  .detail-preview .preview {
+    height: clamp(190px, 36svh, 320px);
+  }
+  .prose .reading-section summary h2 {
+    font-size: 19px;
+  }
+}

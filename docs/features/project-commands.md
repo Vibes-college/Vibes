@@ -1,59 +1,28 @@
-# 功能名：开发、检查、验收与部署命令
+---
+tense: 'living'
+describes: '功能名：开发、检查、验收与部署命令'
+status: 'current'
+shaped-by: ['001', '002']
+---
 
-## 状态
+# 开发、检查、验收与部署命令
 
-✅ 已完成（当前本地实现范围）
+## 当前行为
 
-## 一句话说明
+npm run dev启动开发，preview构建并启动本地Cloudflare；check依次类型、lint、格式、docs:check和单元测试，失败即停止。verify接check→db:reset→test:e2e；本地与CI均为Playwright Chromium。budget构建并校验体积。
 
-维护者用固定命令启动网站、检查改动和进行完整本地验收。
+deploy经scripts/release.ts校验干净提交、同SHA云端及本地检查，再向固定独立Worker发布；release:restore恢复已记录版本。dry-run可验证打包而不发布。完整verify会清空本地测试库，需Playwright Chromium及4322端口可用。
 
-## 用户操作路径
+## 文件与依赖
 
-1. 运行 `npm run dev`，按终端打印的地址查看开发效果。
-2. 修改完成后运行 `npm run check`。
-3. 完整验收运行 `npm run verify`，按顺序完成检查、重建本地测试库、ego-browser 操作。
-4. 需要模拟线上时用 `npm run preview`；决定上线后才运行 `npm run deploy`。
+package.json、scripts/test-e2e.ts、scripts/docs-check.ts、scripts/check-scope.ts、scripts/build.ts、scripts/validate-content.ts、scripts/release.ts、根目录检查/预览配置与.github/workflows/check.yml。命令详细参数见 [CLI](../operations/CLI.md)；依赖 [数据库](local-database.md)、[搜索](explore-filter.md)、[详情](article-read.md)、[404](not-found.md) 和 [文档治理](document-governance.md)。
 
-## 涉及的文件
+## 验收与测试
 
-- [package.json](../../package.json)
-- [docs/CLI.md](../../docs/CLI.md)
-- [scripts/test-e2e.ts](../../scripts/test-e2e.ts)
-- [scripts/ego-e2e.sh](../../scripts/ego-e2e.sh)
-- [eslint.config.mjs](../../eslint.config.mjs)
-- [.prettierrc.json](../../.prettierrc.json)
-- [tsconfig.tools.json](../../tsconfig.tools.json)
-- [.github/workflows/check.yml](../../.github/workflows/check.yml)
-- [wrangler.jsonc](../../wrangler.jsonc)
+命令打印实际地址，任一步失败不继续；浏览器缺失/断言失败不冒充通过。文档CLI基线和失败退出由tests/unit/docs-check.test.ts验证，其余完整编排通过实际verify/budget验证。部署与模拟检查结果不能等同上线。
 
-数据库：验收会调用本地测试库，见依赖功能；没有线上数据库配置。
+CI按差异缩减检查；npm run verify本身始终完整运行。范围规则及失败追踪见[CI](../operations/CI.md)。
 
-## 验收标准
+## 已验证环境
 
-- [ ] dev 打印实际访问地址；preview 使用 Cloudflare 本地服务。
-- [ ] check 顺序执行类型检查、lint、格式检查和单元测试，失败即停止。
-- [ ] verify 顺序执行 check、db:reset、test:e2e，失败即停止。
-- [ ] test:e2e 使用 ego-browser；浏览器缺失或断言失败不能显示通过。
-- [ ] 部署模拟检查 `npm run deploy -- --dry-run` 成功，且不发布。
-
-## 对应的自动化测试
-
-检查入口和各测试文件的对应关系见 [CLI](../CLI.md)。`scripts/ego-e2e.sh` 是浏览器验收脚本，由 `scripts/test-e2e.ts` 启动；实际命令串联是否成功以运行结果为准，没有独立的命令编排单元测试。
-
-## 依赖的其他功能
-
-- [本地测试库重建与迁移](local-database.md)
-- [搜索与分类筛选](explore-filter.md)
-- [文章阅读与来源链接](article-read.md)
-- [找不到页面的提示](not-found.md)
-
-## 已知问题 / 待办
-
-完整验收会清空本地测试库，需要本机 ego lite，且 4322 端口空闲。GitHub CI 使用 Playwright 执行云端浏览器验收，本地仍使用 ego-browser；两种环境都运行 `npm run verify`，另以 `npm run budget` 检查体积。部署命令沿用直接 Wrangler 路径，不等于更新既有 Sites 站点；已验证命令与模拟打包，不表示已上线。
-
-## 最近核对
-
-- 日期：2026-09-05。
-- 依据：当前本地源码、命令配置及真实测试文件；本次为文档核对，没有重跑浏览器或线上验收。
-- 验收框留空，供下一次实际验收逐项勾选；已有代码不等于所有边界都有自动测试。
+2026-09-05本地与GitHub的verify/budget通过；独立[Cloudflare测试站](https://vibes-explore.topologic-relay.workers.dev/zh/)已部署。中文24件、英文1件，线上中英搜索、语言切换、旧路径、404与元数据核对通过；内容修订与恢复上一版本的页面和索引也已实测。原始证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，发布摘要见PR；旧vibes.college未切换。

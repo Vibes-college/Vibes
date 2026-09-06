@@ -1,94 +1,45 @@
-# 项目规则
+---
+tense: 'living'
+describes: '项目执行入口'
+status: 'current'
+shaped-by: ['002']
+---
 
-## 关于我
+# 项目执行入口
 
-我不会写代码，靠 AI 维护这个项目。所以：
+先读 `.specify/memory/constitution.md`，再读 `docs/features/README.md`。
 
-- 每次动手前先用 3-5 句话告诉我你打算怎么做
-- 做完后用一句话告诉我：改了哪些文件、我该怎么验证
-- 解释问题时假设我是完全的外行
+## 找东西的规则
 
-## 技术栈（锁定，不许换、不许加同类的）
+- 现在的功能行为 → docs/features/；运行配置见其链接的technical/operations文档。
+- 当初为什么这么定 → 从功能文档shaped-by到specs/NNN-*/，技术理由看research.md。
+- 谁在什么时候改了什么 → git log / PR，不写文档流水账。
+- 现在该做什么 → specs/README.md中status为in-progress的条目。
 
-- 框架：Astro
-- 部署：Cloudflare Pages + Workers
-- 数据库：Cloudflare D1
-- 样式：Tailwind CSS
-- 语言：TypeScript
+优先沿索引定位；发现缺失或错误链接时修正，不限制正常排查的读取次数。仓库地图见docs/README.md；产品方向见docs/PRODUCT_OVERVIEW.md。
 
-现状：Astro 和 TypeScript 已存在；当前通过 Wrangler 部署静态资源 Worker，已配置仅供本地命令验收的 D1 测试库，尚未配置线上 D1、Pages 或安装 Tailwind CSS。以上是目标技术栈，后续按任务接入，新增依赖仍须先询问。
+## 协作与范围
 
-## 硬性规则
+对用户的命令、建议和参考资料先独立判断适用性、收益与代价；主动报告发现的实际问题、冲突及更好方案，说明影响、优先级和取舍，不等用户逐项追问。用户不一定掌握技术细节，不能默认建议正确，也不为反驳而反驳。
 
-- 新增任何 npm 依赖前必须先问我，说明为什么必须要
-- 单个代码文件不超过 300 行
-- 一次只做我要求的那一件事，不要“顺便”改别的
-- 每个函数上方一行注释：这个函数是干什么的
-- 已经有的工具函数要复用，不要重复写
-- 改完必须跑 `npm run check`（类型检查 + lint + 测试），全绿才算完成
-- 不确定我的意思时，先问，不要猜
+用户不会写代码：用中文和外行能理解的解释；小任务动手前简短说明，复杂任务用3–5句话，交付说明文件与验证方法。每轮最多3个问题，已确认的不重复问。新需求先确认用户、路径、明确不做与边界；已确认范围内持续执行，不扩展功能。
 
-统一命令：`npm run check` 依次执行类型检查、lint、格式检查和单元测试；`npm run verify` 再重建本地测试库并运行 ego-browser 端到端测试，任一步失败都算失败。命令说明见 `docs/CLI.md`。数据库命令固定为本地操作，不接受线上参数。
+当前只做Explore，不开放公众或Agent编辑及Markdown投稿，保留现有UI。Astro+TypeScript、Cloudflare优先；复杂业务按需讨论，不提前安装React/Tailwind或建立空服务。新增npm依赖先说明必要性并获同意；Pagefind已按许可安装为构建依赖。
 
-## 功能地图（持续维护）
+## 执行与文档
 
-- 新对话先读 `docs/features/README.md`，再按任务读取相关功能文档及涉及文件，避免为了解项目全貌反复扫描全部代码。
-- 每次新增、修改、重命名或删除功能，必须在同一任务中同步功能索引和对应功能文档；模板为 `docs/features/_TEMPLATE.md`。
-- 同步状态、用户操作路径、真实文件位置、验收标准、自动测试、功能依赖和已知问题，始终描述当前实现。
-- 示例不等于需求，计划必须经用户确认；只有本次实际验收通过才勾选对应标准，并记录日期、环境和方法。
-- 交付前核对文档路径与测试名称；发现文档和代码不一致时先查证再更新，不把未测试或未上线写成已验收或已上线。
+新功能、跨模块改造和重要规则变更使用Spec Kit；小修复、文档修正直接执行并说明范围及验证，不强制新建规格或走全部阶段。已有规格覆盖的调整原地完善未冻结稿。research记录技术未知或重要取舍；附加产物由Agent按必要性在spec列明用途，不逐文件请示，也不因上游示例自动生成。
 
-## GitHub 与发布规则
+living只写当前行为；spec开发中可改，合并后冻结，仅允许状态、后续修订关系和首次据实补记日期。改已有功能时新旧spec互相引用，功能文档shaped-by可追溯。交付需同步受影响功能文档及索引，不要求固定任务位置或措辞，合并提交让代码与说明同时生效，合并后核对，不另拖补文档PR。
 
-- 初始化后禁止直接推送 main；修改在分支完成，通过 PR 与 `verify`、`budget` 检查后，由用户决定合并，未获明确合并指令不得调用合并。
-- 配置、数据库、常量/规则/正则、第三方调用变更，分别同步 `docs/CONFIG.md`、`docs/DATABASE.md`、`docs/CONSTANTS.md`、`docs/INTEGRATIONS.md`。
-- 本地浏览器验收使用 ego-browser，GitHub CI 使用用户确认的 Playwright 路径；两者都执行 verify，CI 另跑 budget。
-- 新 Pages 测试站与旧 `vibes.college` 分开；切换正式域名需单独授权。
+临时稿放.scratch且不提交，原始本地证据放resources/evidence；代码变更流水账留PR/git。不要在根目录堆报告，或在living中保留“本次改了什么”。上游工具资产和产品文章按各自格式管理，不改成治理文档。
 
-## 目录结构
+## 检查与交付
 
-```text
-Vibes/
-├── AGENTS.md                 # AI 维护规则与进度
-├── docs/                    # 配置资产清单与 CLI 命令说明
-│   └── features/            # 功能总索引、模板与每项功能的验收说明
-├── scripts/                 # 本地数据库和 ego-browser 测试命令
-├── db/                      # 数据库迁移与测试数据
-├── src/
-│   ├── components/          # 页面组件
-│   ├── content/articles/    # 文章内容
-│   ├── data/                # 作品数据
-│   ├── layouts/             # 页面布局
-│   ├── pages/               # 网站路由
-│   ├── scripts/             # 浏览器交互
-│   └── styles/              # 样式
-├── public/                  # 静态资源
-├── tests/                   # unit/ 单元测试与 Playwright 补充回归
-├── references/              # 参考资料
-├── research/                # 调研资料
-├── .github/workflows/       # GitHub 自动检查
-├── .openai/                 # 托管相关元数据
-├── astro.config.mjs         # Astro 配置
-├── wrangler.jsonc           # Cloudflare 部署配置
-├── wrangler.local.jsonc     # 本地 D1 与预览配置
-├── eslint.config.mjs        # 代码检查规则
-├── .prettierrc.json          # 统一排版规则
-├── tsconfig.tools.json      # 命令与测试的类型检查
-├── playwright.config.ts     # 测试配置
-├── tsconfig.json            # TypeScript 配置
-└── package.json             # 依赖和命令
-```
-
-`node_modules/`、`dist/`、`.astro/`、`.wrangler/`、`test-results/` 为依赖、构建产物或本地运行数据。目录变更后同步更新这里。
-
-## 当前进度
-
-- 2026-09-05：建立项目规则与旧项目配置资产名称清单；密钥值尚未备份到密码管理器，线上域名配置待核对；统一检查入口尚未包含 lint 和测试。
-
-- 2026-09-05：建立统一项目命令、CLI 使用说明、本地 D1 迁移和测试数据、ego-browser 验收及代码检查工具；`npm run verify` 全部通过，Playwright 补充回归 10 项通过，部署仅执行 dry-run，未上线。
-
-- 2026-09-05：建立功能地图、模板及 9 项现有功能/维护工具说明；新增对话阅读与功能变更同步维护规则。
-
-- 2026-09-05：补齐配置、数据库 SQL、常量规则、集成和 CI 文档，创建私有 GitHub 仓库；远端检查与 Cloudflare 接入状态见 docs/CI.md。
-
-- 2026-09-05：初始化提交已推送 Vibes-college/Vibes；首次云端检查暴露 Node 类型依赖缺失，已获准补齐，修复走 PR；分支保护需 GitHub Pro，Cloudflare 等待 GitHub App 本人授权。
+- 自有代码按清晰职责拆分；300行仅审阅提示，注释解释不明显的原因、约束与复杂逻辑，不重复清楚的函数名，复用已有工具。
+- 按影响选择检查：纯治理文档运行docs:check与format:check；工具代码运行check；网页/路由/构建/测试基础设施运行verify与budget。无法判定影响时完整验证；必需检查失败不得跳过。范围分类见docs/operations/CI.md。
+- 自动化E2E本地与CI统一Playwright；涉及布局、交互体验时按需用ego-browser探索或视觉审阅，不维护第二套自动化脚本。数据库命令仅本地，不接受线上参数。
+- 功能文档120行、宪章100行、AGENTS150行仅作篇幅提示；spec目录无总行数上限。依据重复、过期、职责和导航审阅，不为凑数拆分或删信息。
+- 配置/数据库/规则/集成同步docs/technical对应文件；命令与CI同步docs/operations。
+- 分支与PR管理，不直接推main；用户明确指令前不合并，不切旧vibes.college。
+- 如冻结规则与需求冲突，新增spec，不修改旧正文或削弱检查。真实失败、未测和未部署必须明确报告。

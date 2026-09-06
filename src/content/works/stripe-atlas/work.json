@@ -1,0 +1,62 @@
+{
+  "id": "stripe-atlas",
+  "originalLocale": "zh",
+  "order": 21,
+  "sourceUrl": "https://stripe.com/atlas/guides",
+  "typeId": "article",
+  "tagIds": ["creator-961a6062ba1ba2d8"],
+  "preview": {
+    "kind": "text",
+    "color": "#eae7f2"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Stripe",
+        "en": "Stripe"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-961a6062ba1ba2d8"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "文章",
+        "en": "Articles"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "article"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Starting an internet business"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

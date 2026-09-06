@@ -1,53 +1,24 @@
-# 功能名：精选目录浏览
+---
+tense: 'living'
+describes: '精选目录浏览'
+status: 'current'
+shaped-by: ['001']
+---
 
-## 状态
+# 精选目录浏览
 
-✅ 已完成（当前本地实现范围）
+## 当前行为
 
-## 一句话说明
+访客打开`/`或`/explore/`会转到`/zh/`，可切换`/en/`。目录及分类每页最多24件，只显示该语言已发布版本；下一页是静态链接，不依赖JavaScript。当前中文24件、英文1件审核样例；没有译文的作品不混入英文目录。
 
-访客可以浏览精选内容卡片，点击后进入站内阅读页。
+点击卡片进入`/{locale}/works/{id}/`；简介最多两行，预览是编辑封面，无播放器或嵌入。没有投稿、收藏或编辑后台。
 
-## 用户操作路径
+## 文件与依赖
 
-1. 打开首页 `/` 或 `/explore/`。
-2. 浏览卡片上的视觉预览和简介。
-3. 点击任一卡片，例如 LoRA，进入对应的阅读页。
+src/pages/[locale]/下的index.astro、page/[page].astro、tags/[tagId]/[...page].astro；src/components/Explore.astro、Preview.astro；src/lib/content/views.ts与src/data/works.ts。依赖[内容维护](content-maintenance.md)与[详情](article-read.md)。
 
-## 涉及的文件
+## 验收
 
-- [src/pages/index.astro](../../src/pages/index.astro)
-- [src/pages/explore/index.astro](../../src/pages/explore/index.astro)
-- [src/components/Explore.astro](../../src/components/Explore.astro)
-- [src/components/Preview.astro](../../src/components/Preview.astro)
-- [src/data/works.ts](../../src/data/works.ts)
-- [src/data/works.json](../../src/data/works.json)
+2026-09-05本地Playwright桌面/手机Chromium验证24/1件目录、卡片导航、320px无溢出及两行简介通过；tests/explore.spec.ts。5000×2隔离构建的首中末正文搜索、无JS第二页/末页和结果分批加载也已通过；scripts/measure-explore.ts，详细边界见规模报告。
 
-数据库：无；当前功能不读写数据库。
-
-## 验收标准
-
-- [ ] 首页与 `/explore/` 都能显示精选目录。
-- [ ] 当前数据下显示 24 张卡片，卡片可以点击。
-- [ ] 卡片简介最多显示两行，不嵌入视频、音频或 iframe。
-
-## 对应的自动化测试
-
-`scripts/ego-e2e.sh`：首页 24 张卡片、卡片进入文章；运行 `npm run test:e2e`。
-
-`tests/explore.spec.ts`：`local filtering, empty state, and URL survive refresh`、`no horizontal overflow, no embeds, two-line card descriptions`；补充回归见 [CLI](../CLI.md)。
-
-## 依赖的其他功能
-
-- [精选内容维护](content-maintenance.md)
-- [文章阅读与来源链接](article-read.md)
-
-## 已知问题 / 待办
-
-当前是固定精选集合，没有分页、用户投稿、收藏或播放器。卡片视觉是编辑制作的概括，不是来源网站截图。自动测试中的 24 条是当前数据基线，增删内容时要同步调整。
-
-## 最近核对
-
-- 日期：2026-09-05。
-- 依据：当前本地源码、命令配置及真实测试文件；本次为文档核对，没有重跑浏览器或线上验收。
-- 验收框留空，供下一次实际验收逐项勾选；已有代码不等于所有边界都有自动测试。
+5000×2产物有26,675文件，超过Workers免费档20,000上限；不能把本地规模通过当成免费档可直接托管。实际样例站142文件，按免费容量检查后已部署。

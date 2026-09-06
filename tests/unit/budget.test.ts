@@ -12,3 +12,15 @@ test('budget rejects each oversized or invalid measurement', () => {
     }
   }
 });
+
+import { assertAssetBudget, assetLimits } from '../../scripts/budget-policy.ts';
+test('asset budget distinguishes free and paid counts without weakening individual file limit', () => {
+  assert.doesNotThrow(() =>
+    assertAssetBudget({ fileCount: 20000, largestFile: assetLimits.fileBytes }),
+  );
+  assert.throws(() => assertAssetBudget({ fileCount: 20001, largestFile: 100 }));
+  assert.doesNotThrow(() => assertAssetBudget({ fileCount: 20001, largestFile: 100 }, true));
+  assert.throws(() => assertAssetBudget({ fileCount: 100001, largestFile: 100 }, true));
+  for (const value of [0, NaN, Infinity, assetLimits.fileBytes + 1])
+    assert.throws(() => assertAssetBudget({ fileCount: 1, largestFile: value }, true));
+});

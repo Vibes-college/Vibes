@@ -1,0 +1,62 @@
+{
+  "id": "our-world-in-data",
+  "originalLocale": "zh",
+  "order": 16,
+  "sourceUrl": "https://ourworldindata.org/artificial-intelligence",
+  "typeId": "article",
+  "tagIds": ["creator-bf9d5ae4efe00ad6"],
+  "preview": {
+    "kind": "plot",
+    "color": "#e8edf4"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Our World in Data",
+        "en": "Our World in Data"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-bf9d5ae4efe00ad6"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "文章",
+        "en": "Articles"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "article"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Artificial Intelligence"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

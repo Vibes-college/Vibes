@@ -1,0 +1,62 @@
+{
+  "id": "karpathy-llm",
+  "originalLocale": "zh",
+  "order": 17,
+  "sourceUrl": "https://www.youtube.com/watch?v=zjkBMFhNj_g",
+  "typeId": "video",
+  "tagIds": ["creator-1475f32d6a90b6df"],
+  "preview": {
+    "kind": "network",
+    "color": "#272820"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Andrej Karpathy",
+        "en": "Andrej Karpathy"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-1475f32d6a90b6df"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "视频",
+        "en": "Video"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "video"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "An introduction"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

@@ -1,0 +1,62 @@
+{
+  "id": "radio-garden",
+  "originalLocale": "zh",
+  "order": 22,
+  "sourceUrl": "https://radio.garden/",
+  "typeId": "audio",
+  "tagIds": ["creator-aa184e36db2c3837"],
+  "preview": {
+    "kind": "earth",
+    "color": "#244139"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Radio Garden",
+        "en": "Radio Garden"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-aa184e36db2c3837"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "音频",
+        "en": "Audio"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "audio"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "A world of radio"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

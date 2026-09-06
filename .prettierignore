@@ -4,9 +4,18 @@ dist/
 .wrangler/
 .git/
 .openai/
-references/
-research/
+resources/references/
+resources/evidence/
 test-results/
 playwright-report/
 package-lock.json
 public/
+# Spec Kit 1.0.4 upstream-managed assets; preserve installation manifest hashes.
+.agents/skills/speckit-*/
+.specify/templates/*
+!.specify/templates/overrides/
+.specify/integrations/
+.specify/workflows/
+.specify/memory/.constitution-template.json
+
+.scratch/

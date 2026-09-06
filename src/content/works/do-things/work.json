@@ -1,0 +1,62 @@
+{
+  "id": "do-things",
+  "originalLocale": "zh",
+  "order": 9,
+  "sourceUrl": "https://paulgraham.com/ds.html",
+  "typeId": "article",
+  "tagIds": ["creator-6bc4875c8cf61287"],
+  "preview": {
+    "kind": "text",
+    "color": "#fff"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Paul Graham",
+        "en": "Paul Graham"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-6bc4875c8cf61287"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "文章",
+        "en": "Articles"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "article"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "July 2013"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

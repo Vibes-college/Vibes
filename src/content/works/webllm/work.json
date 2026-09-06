@@ -1,0 +1,62 @@
+{
+  "id": "webllm",
+  "originalLocale": "zh",
+  "order": 6,
+  "sourceUrl": "https://webllm.mlc.ai/",
+  "typeId": "code",
+  "tagIds": ["creator-9faf40cbeb47ac38"],
+  "preview": {
+    "kind": "code",
+    "color": "#e6edf5"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "MLC AI",
+        "en": "MLC AI"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-9faf40cbeb47ac38"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "代码",
+        "en": "Code"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "code"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "WebGPU → language models"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

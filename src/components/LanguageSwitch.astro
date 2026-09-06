@@ -1,0 +1,40 @@
+---
+import { catalog } from '../data/works';
+import { languageTarget } from '../lib/content/views';
+import { locales, languageNames, browsePath, type Locale } from '../lib/i18n/routes';
+import { messages } from '../lib/i18n/messages';
+interface Props {
+  locale: Locale;
+  id?: string;
+}
+const { locale, id } = Astro.props;
+const t = messages[locale];
+---
+
+<nav class="language-switch" aria-label={t.language} data-pagefind-ignore>
+  {
+    locales.map((target) => {
+      const destination = id
+        ? languageTarget(catalog, id, target)
+        : { href: browsePath(target), originalHref: '' };
+      return target === locale ? (
+        <span aria-current="true" lang={target}>
+          {languageNames[target]}
+        </span>
+      ) : destination?.href ? (
+        <a href={destination.href} lang={target} hreflang={target}>
+          {languageNames[target]}
+        </a>
+      ) : (
+        <span
+          class="translation-unavailable"
+          title={`${languageNames[target]} · ${t.noTranslation}`}
+        >
+          {languageNames[target]}
+          <small> · {t.noTranslation}</small>
+          {destination?.originalHref && <a href={destination.originalHref}>{t.original}</a>}
+        </span>
+      );
+    })
+  }
+</nav>

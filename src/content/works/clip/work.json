@@ -1,0 +1,62 @@
+{
+  "id": "clip",
+  "originalLocale": "zh",
+  "order": 18,
+  "sourceUrl": "https://arxiv.org/abs/2103.00020",
+  "typeId": "paper",
+  "tagIds": ["creator-225b754637631f95"],
+  "preview": {
+    "kind": "paper",
+    "color": "#faf9f5"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Radford et al.",
+        "en": "Radford et al."
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-225b754637631f95"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "论文",
+        "en": "Papers"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "paper"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "CLIP · Radford et al."
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

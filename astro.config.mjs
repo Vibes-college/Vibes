@@ -1,7 +1,10 @@
 import { defineConfig } from 'astro/config';
+import { buildSite } from './src/config/site.ts';
 export default defineConfig({
-  site: 'https://vibes-explore.jachi2.chatgpt.site',
+  site: buildSite().origin,
   output: 'static',
+  outDir: process.env.VIBES_OUT_DIR || './dist',
+  cacheDir: process.env.VIBES_OUT_DIR ? `${process.env.VIBES_OUT_DIR}-cache` : './.astro',
   trailingSlash: 'always',
   devToolbar: { enabled: false },
   vite: { build: { assetsInlineLimit: 0 } },

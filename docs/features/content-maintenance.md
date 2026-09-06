@@ -1,53 +1,28 @@
-# 功能名：精选内容维护
+---
+tense: 'living'
+describes: '精选内容维护'
+status: 'current'
+shaped-by: ['001']
+---
 
-## 状态
+# 精选内容维护
 
-✅ 已完成（当前本地实现范围）
+## 当前行为
 
-## 一句话说明
+维护者让AI编辑`src/content/works/{id}/work.json`和`zh.md`/`en.md`；标签统一在src/data/taxonomy.json。work.json保存稳定ID、原文语言、排序、来源、预览、事实和单一无向关联；Markdown保存语言字段与正文。网站不读D1，无公众或Agent编辑入口。
 
-项目维护者通过 AI 更新卡片数据和中文导读，再构建发布。
+先运行`npm run content:validate`；每次build也先校验。全部草稿或空目录可以构建，但不生成搜索索引，旧索引会移除。重复ID/顺序、文件身份错误、缺失原文、无效来源/标签/事实目标、自关联及反向重复关系会失败。原文和译文各有draft/published状态；只有published生成路由和索引，原文可先独立发布。
 
-## 用户操作路径
+人工或明确的编辑审核后发布译文：查询`npm run content:revision -- <id>`，核对完整译文，再填写sourceRevision及published。命令只报告摘要，不写文件或自动发布。原文正文、可翻译字段、事实等改变会让已发布译文派生待复核；排序改变不触发。旧译文仍可读，复核并更新摘要才解除提示。
 
-1. 告诉 AI 要新增、修改或移除哪条精选内容。
-2. AI 更新卡片数据及对应的 Markdown 文章。
-3. 运行 `npm run check` 和 `npm run test:e2e`，再从目录打开文章核对。
-4. 确认后另行部署；只改本地文件不会自动更新线上网站。
+关联只记录一次，双方可读；用途是相似/归组/比较，不表达继承依赖。可选事实按作品顺序展示，链接/标签/锚点必须有效；未翻译事实明确标注回退。当前中文24件；英文仅一件AI逐段编辑审核样例，不代表人工审核或全部翻译完成。
 
-## 涉及的文件
+## 文件与验证
 
-- [src/data/works.json](../../src/data/works.json)
-- [src/data/works.ts](../../src/data/works.ts)
-- [src/content/articles/](../../src/content/articles/)
-- [src/pages/works/[slug].astro](../../src/pages/works/[slug].astro)
-- [tests/unit/content.test.ts](../../tests/unit/content.test.ts)
+src/lib/content/{schema,catalog,validate,revision,relations,views}.ts；src/content.config.ts接Astro集合；scripts/validate-content.ts与build.ts；src/data/work-facts.ts渲染事实。
 
-数据库：无；当前功能不读写数据库。
+2026-09-05本地单元测试通过schema/身份/迁移、发布规则、修订摘要与无向关联；tests/unit/content-validation.test.ts、content-revision.test.ts、content-relations.test.ts、i18n.test.ts。来源真实性、授权和翻译质量仍需编辑核对，类型检查不证明这些事项。
 
-## 验收标准
+## 已验证环境
 
-- [ ] 每个条目的 slug（地址名称）唯一，且只包含规定的小写字母、数字和连接号。
-- [ ] 每张卡片有标题、简介、HTTPS 来源和同名文章文件。
-- [ ] 数据数组中的顺序决定目录顺序。
-- [ ] 缺少文章时构建失败，不生成不完整的详情页。
-
-## 对应的自动化测试
-
-`tests/unit/content.test.ts`：`every work has a unique route, article, and HTTPS source`；运行 `npm run test:unit`。
-
-`src/data/works.ts` 的数据校验及详情页的缺文章检查在 `npm run build` 时执行；补充静态产物检查在 `tests/explore.spec.ts`。
-
-## 依赖的其他功能
-
-无。
-
-## 已知问题 / 待办
-
-没有可视化编辑后台，内容不从 D1 读取。增删卡片后须同步测试中的固定数量及功能地图；文章质量、版权和外部来源有效性需要人工核对。
-
-## 最近核对
-
-- 日期：2026-09-05。
-- 依据：当前本地源码、命令配置及真实测试文件；本次为文档核对，没有重跑浏览器或线上验收。
-- 验收框留空，供下一次实际验收逐项勾选；已有代码不等于所有边界都有自动测试。
+2026-09-05本地与GitHub的verify/budget通过；独立[Cloudflare测试站](https://vibes-explore.topologic-relay.workers.dev/zh/)已部署。中文24件、英文1件，线上中英搜索、语言切换、旧路径、404与元数据核对通过；内容修订与恢复上一版本的页面和索引也已实测。原始证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，发布摘要见PR；旧vibes.college未切换。

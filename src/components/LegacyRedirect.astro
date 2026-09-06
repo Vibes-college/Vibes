@@ -1,0 +1,21 @@
+---
+interface Props {
+  target: string;
+}
+const { target } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head
+    ><meta charset="utf-8" /><meta http-equiv="refresh" content={`0;url=${target}`} /><meta
+      name="robots"
+      content="noindex"
+    /><title>Explore — Vibes</title></head
+  ><body data-redirect={target}
+    ><a href={target}>前往 Explore / Continue →</a><script>
+      const target = document.body.dataset.redirect;
+      if (target) location.replace(target + location.search + location.hash);
+    </script></body
+  >
+</html>

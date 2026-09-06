@@ -1,54 +1,26 @@
-# 功能名：搜索与分类筛选
+---
+tense: 'living'
+describes: '搜索与分类筛选'
+status: 'current'
+shaped-by: ['001']
+---
 
-## 状态
+# 搜索与分类筛选
 
-✅ 已完成（当前本地实现范围）
+## 当前行为
 
-## 一句话说明
+分类进入`/{locale}/tags/{tagId}/`，关键词写入q参数；旧type参数转换为分类路径。搜索框×只清关键词，保留分类；空结果按钮清除关键词和分类。刷新、浏览器返回及同标签页详情的Explore返回保留搜索位置。
 
-访客通过关键词和内容分类缩小列表范围，刷新或返回后保留筛选。
+Pagefind搜索整个语言的已发布标题、简介、正文及标签，分类取交集；列表DOM不保存全量内容。首次聚焦或带q链接才加载搜索模块/索引，普通首页不预加载。关键词最多160字符，输入延迟150ms；结果每批24项，点击加载更多。加载、无结果、失败和重试均有提示；15秒超时显示失败，索引/分片失败的显式重试重建搜索实例；搜索程序下载失败则保留q重新加载页面，清除浏览器缓存的模块失败；过期结果不覆盖新查询。
 
-## 用户操作路径
+## 文件与依赖
 
-1. 打开 `/`，点击“论文”。
-2. 在搜索框输入 `LoRA`，列表缩小为一条。
-3. 刷新页面，搜索词和分类保留；打开文章后用浏览器返回按钮回到筛选结果。
-4. 输入 `not-in-the-collection` 查看空结果提示，再点“Clear search & filters”恢复全部。
-5. 搜索框右侧的 × 只清除搜索词，保留已选分类。
+src/scripts/explore.ts处理界面，src/scripts/search.ts加载和查询Pagefind，src/components/Explore.astro提供列表；src/lib/i18n提供路径与文案。依赖[目录](explore-browse.md)、[内容维护](content-maintenance.md)。
 
-## 涉及的文件
+## 验收与限制
 
-- [src/scripts/explore.ts](../../src/scripts/explore.ts)
-- [src/components/Explore.astro](../../src/components/Explore.astro)
-- [src/layouts/Layout.astro](../../src/layouts/Layout.astro)
-- [src/data/works.ts](../../src/data/works.ts)
+2026-09-05本地Playwright桌面/手机通过分类4→1、刷新、正文独有词搜索、返回恢复、失败重试、清空以及无意图时零Pagefind请求；tests/explore.spec.ts。搜索需要JavaScript。中文索引不做词干还原；真实大语料性能以规模报告为准。
 
-数据库：无；当前功能不读写数据库。
+## 已验证环境
 
-## 验收标准
-
-- [ ] 当前数据下“论文”显示 4 条，搜索 LoRA 后显示 1 条。
-- [ ] 刷新与浏览器返回后保留筛选条件。
-- [ ] 无结果时显示提示，清除全部条件后恢复 24 条。
-- [ ] 点击搜索框 × 清空搜索词，但不清除分类。
-- [ ] 英文搜索不区分大小写；多个空格分隔的词需同时匹配。
-
-## 对应的自动化测试
-
-`scripts/ego-e2e.sh`：论文筛选、搜索、刷新、空结果、清除和返回；运行 `npm run test:e2e`。
-
-`tests/explore.spec.ts`：前两个测试覆盖相同主流程；搜索框 × 和多词匹配暂无专门断言，需手动验收。
-
-## 依赖的其他功能
-
-- [精选目录浏览](explore-browse.md)
-
-## 已知问题 / 待办
-
-筛选依赖 JavaScript。搜索的是卡片标题、作者和简介字段，不是整篇文章；最多输入 160 个字符。网址中的 `q` 和 `type` 保存筛选条件；没有后台搜索服务。
-
-## 最近核对
-
-- 日期：2026-09-05。
-- 依据：当前本地源码、命令配置及真实测试文件；本次为文档核对，没有重跑浏览器或线上验收。
-- 验收框留空，供下一次实际验收逐项勾选；已有代码不等于所有边界都有自动测试。
+2026-09-05本地与GitHub的verify/budget通过；独立[Cloudflare测试站](https://vibes-explore.topologic-relay.workers.dev/zh/)已部署。中文24件、英文1件，线上中英搜索、语言切换、旧路径、404与元数据核对通过；内容修订与恢复上一版本的页面和索引也已实测。原始证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，发布摘要见PR；旧vibes.college未切换。

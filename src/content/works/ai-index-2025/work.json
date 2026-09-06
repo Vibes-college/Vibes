@@ -1,0 +1,62 @@
+{
+  "id": "ai-index-2025",
+  "originalLocale": "zh",
+  "order": 7,
+  "sourceUrl": "https://hai.stanford.edu/ai-index/2025-ai-index-report",
+  "typeId": "paper",
+  "tagIds": ["creator-0966f7e73247f0b9"],
+  "preview": {
+    "kind": "report",
+    "color": "#dfe7df"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Stanford HAI",
+        "en": "Stanford HAI"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-0966f7e73247f0b9"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "论文",
+        "en": "Papers"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "paper"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "2025"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

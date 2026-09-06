@@ -1,0 +1,62 @@
+{
+  "id": "startup-school",
+  "originalLocale": "zh",
+  "order": 19,
+  "sourceUrl": "https://www.startupschool.org/",
+  "typeId": "website",
+  "tagIds": ["creator-fd002d99775a1328"],
+  "preview": {
+    "kind": "text",
+    "color": "#f6e6d8"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Y Combinator",
+        "en": "Y Combinator"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "creator-fd002d99775a1328"
+      }
+    },
+    {
+      "key": "type",
+      "kind": "type",
+      "label": {
+        "zh": "类型",
+        "en": "Format"
+      },
+      "value": {
+        "zh": "网站",
+        "en": "Websites"
+      },
+      "target": {
+        "kind": "tag",
+        "tagId": "website"
+      }
+    },
+    {
+      "key": "topic",
+      "kind": "topic",
+      "label": {
+        "zh": "主题",
+        "en": "Topic"
+      },
+      "value": {
+        "zh": "Startup School"
+      },
+      "target": {
+        "kind": "anchor",
+        "anchor": "reading"
+      }
+    }
+  ],
+  "related": []
+}

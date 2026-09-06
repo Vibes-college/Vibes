@@ -1,0 +1,5 @@
+/ /zh/ 301
+/explore /zh/ 301
+/explore/ /zh/ 301
+/works/:slug /zh/works/:slug/ 301
+/works/:slug/ /zh/works/:slug/ 301
