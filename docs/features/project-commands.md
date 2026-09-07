@@ -45,7 +45,7 @@ code-revision: '8e9db5699dbd36bcc61df171295947600231e47c73b0ee816eb431724e0038f7
 1. 仅需要Spec Kit的需求使用PR；小修复、文档和小型规则补充按影响检查后直接提交，不单独开PR。远端保护限制见[发布规则](../system/checks-and-release.md)。采用Spec Kit时，AI在首版spec形成时建立Draft PR，给用户可打开的链接和任务摘要；当前进度、阻塞、下一步、预览范围放PR描述，重要决定和证据放评论。
 2. 浏览器验收包含桌面Chromium与手机Chromium/WebKit模拟，真实iPhone另验；本地按[检查规则](../system/checks-and-release.md)验证；Draft云端运行独立check，不把跳过的verify/budget当作完成验收。阶段、交接和暂停前提交推送，不逐commit强制push。
 3. 可体验阶段由AI运行`npm run release:preview -- <PR号>`：干净且已推送的PR head在本机verify/budget通过后上传预览版本，提供实际URL与SHA；不会提升生产。未跟踪的用户文件不删除，必要时用隔离worktree。
-4. 完成后转Ready，按整个PR差异运行verify/budget（文档和工具按范围缩减）；Ready之后再改代码仍重新检查。用户决定合并，AI不自动合并。
+4. 基础设施或重要PR完成实现后，AI主动新建独立会话，让另一Agent审查整个PR，重点检查加载、缓存、资源消耗及代码质量。问题修复并由审查者复核最终SHA后才转Ready，按整个PR差异运行verify/budget（文档和工具按范围缩减）；全部通过后通知你点合并。Ready之后再改代码须退回Draft、复核并重跑检查；具体范围见[独立审查规则](../system/checks-and-release.md#ready前的独立审查)。普通小改动保留按影响检查的路径，AI不自动合并。
 5. 网站变更合并到main后，检查通过才自动发布同SHA验收产物至`https://vibes.college`；纯治理文档不重建网站，最新线上版本需核对。部署复用预算job产物，不重复构建，拒绝过时main版本；main按实际上线版本累计差异，避免后续文档提交掩盖尚未发布的网页改动。
 6. 云端检查线上SHA与中英文首页；AI再用内置浏览器核对浏览、搜索、详情、语言与404，PR记录真实结果。失败或不确定状态停止收尾，保留恢复证据；不能将上传成功当作页面验收。
 7. 需要恢复时使用`npm run release:restore -- <已记录生产版本>`，从CI artifact取回记录后核对目标与版本；首次切换前旧Worker保留，具体恢复路径见交付说明。
@@ -57,8 +57,12 @@ code-revision: '8e9db5699dbd36bcc61df171295947600231e47c73b0ee816eb431724e0038f7
 flowchart TD
   A[首版spec与Draft PR] --> B[本地开发，轻量检查]
   B --> C[可体验阶段上传预览，更新PR]
-  C --> D[转Ready，检查整个PR]
-  D --> E[用户决定合并]
+  C --> R{基础设施或重要PR}
+  R -->|是| V[新会话独立审查，修复后复核]
+  V -->|通过| D[转Ready，检查整个PR]
+  V -->|需修复| B
+  R -->|否| D
+  D -->|检查通过，通知用户| E[用户决定合并]
   E --> F[main检查成功]
   F --> G[发布同SHA产物至vibes.college]
   G --> H[线上版本与页面验收]
