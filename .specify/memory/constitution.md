@@ -2,7 +2,7 @@
 tense: 'living'
 describes: 'VIBES Constitution'
 status: 'current'
-shaped-by: ['002', '003']
+shaped-by: ['002', '003', '011']
 ---
 
 # VIBES Constitution
@@ -31,7 +31,7 @@ shaped-by: ['002', '003']
 
 ## Architecture Boundaries
 
-当前产品仅Explore，保留UI，不开放公众/Agent编辑或Markdown投稿。Market、Events、Tag仅为未来方向。浏览器不得持有秘密或决定支付与权限；Worker不等于完整Node/Linux或本地Agent执行环境。
+当前产品仅Explore，保留UI，不开放公众/Agent编辑或Markdown投稿。Market、Events、Tag仅为未来方向。浏览器不得持有服务端或模型凭据，不是支付与权限的执行权威；用户主动授权的设备配对凭据和临时加密密钥仅用于连接自己的本地Agent，浏览器提交审批选择、由本地daemon执行权限判断。Worker不等于完整Node/Linux或本地Agent执行环境。
 
 ## C. 文档纪律
 
@@ -77,4 +77,4 @@ AGENTS是执行入口，本宪章维护长期规则，docs维护现状，specs�
 
 原则重大变更在DECISIONS添加不可改写的决策条目；不记录工作流水账。版本按不兼容原则变更升主版本、新增原则升次版本、澄清升修订版本。模板、规则和检查必须一致，验收证据不得虚构；网站资源体积预算仍为硬性检查。
 
-**Version**: 4.0.0 | **Ratified**: 2026-09-05 | **Last Amended**: 2026-09-06
+**Version**: 4.0.1 | **Ratified**: 2026-09-05 | **Last Amended**: 2026-09-07
