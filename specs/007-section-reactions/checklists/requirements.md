@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '分章评价规格质量'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

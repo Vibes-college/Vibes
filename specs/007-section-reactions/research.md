@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '表情动画与加载取舍'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

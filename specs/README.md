@@ -22,4 +22,4 @@ shaped-by: ['002']
 
 | [006 详情页导航与渐进阅读](006-detail-reading/spec.md) | complete | article-read |
 
-| [007 正文分章表情评价](007-section-reactions/spec.md) | in-progress | article-read |
+| [007 正文分章表情评价](007-section-reactions/spec.md) | complete | article-read |

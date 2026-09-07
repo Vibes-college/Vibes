@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '正文分章表情评价'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 feature-ids: ['article-read']
 amends: ['001', '005', '006']
