@@ -1,0 +1,39 @@
+{
+  "id": "mdx-interaction-lab",
+  "originalLocale": "zh",
+  "order": 1001,
+  "sourceUrl": "https://github.com/Vibes-college/Vibes",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "编写",
+        "en": "Written by"
+      },
+      "value": {
+        "zh": "Vibes",
+        "en": "Vibes"
+      }
+    },
+    {
+      "key": "purpose",
+      "kind": "text",
+      "label": {
+        "zh": "用途",
+        "en": "Purpose"
+      },
+      "value": {
+        "zh": "互动文章验收",
+        "en": "Interactive article demo"
+      }
+    }
+  ],
+  "related": []
+}

@@ -1,0 +1,160 @@
+---
+locale: 'zh'
+status: 'published'
+title: 'beUI · 十种可以亲手玩的动效组件'
+summary: '从弹簧按钮到拖动滑杆，在一篇文章里体验十种不同的 beUI 组件。'
+description: '逐项操作、观察反馈，了解动效如何帮助表达状态与交互。'
+previewText:
+  eyebrow: 'VIBES / COMPONENT LAB'
+  display: 'Ten ways to interact.'
+  note: '十种动效 · 亲手体验'
+---
+
+import TiltDemo from '../../../components/demos/beui/TiltDemo';
+import ButtonDemo from '../../../components/demos/beui/ButtonDemo';
+import TabsDemo from '../../../components/demos/beui/TabsDemo';
+import SwitchDemo from '../../../components/demos/beui/SwitchDemo';
+import CheckboxDemo from '../../../components/demos/beui/CheckboxDemo';
+import RadioDemo from '../../../components/demos/beui/RadioDemo';
+import RangeDemo from '../../../components/demos/beui/RangeDemo';
+import AccordionDemo from '../../../components/demos/beui/AccordionDemo';
+import BadgeDemo from '../../../components/demos/beui/BadgeDemo';
+import MarqueeDemo from '../../../components/demos/beui/MarqueeDemo';
+
+## 从这里开始
+
+下面的十项来自 [beUI Motion](https://beui.dev/components/motion)。深色区域保留原站示例的组件变体、英文文案、参数、字体和排列；中文解释放在外面，帮助你对照体验。它们是十种不同组件，不是同一个组件重复十次。
+
+先按每节的步骤操作，再观察效果；可用文章目录跳到任意一项。演示不会提交信息或产生购买，刷新会恢复初始状态。MDX文章不通过左右拖动换篇，拖动交给组件。开启系统「减少动态效果」会减少装饰动画；关闭JavaScript时仍可阅读正文和初始外观，控件不会响应。
+
+| 你想体验什么                 | 对应组件                                    |
+| ---------------------------- | ------------------------------------------- |
+| 跟随、金属质感、切换内容     | Tilt Card、Metallic Button、Tabs            |
+| 开关、勾选、单选、数值       | Switch、Checkbox、Radio Group、Range Slider |
+| 展开说明、表达状态、循环展示 | Bouncy Accordion、Animated Badge、Marquee   |
+
+## Tilt Card · 倾斜卡片
+
+给卡片增加轻微的空间感。这里保留原站的 Premium 卡片、标题和说明文字。
+
+**动手试试：** 把鼠标移到卡片四角，再移出。
+
+<TiltDemo client:visible />
+
+**应该看到：** 卡片随鼠标倾斜，光晕跟随落点，离开后回正。触屏或减少动态效果模式下保持静止。
+
+[查看 beUI 原组件](https://beui.dev/components/motion/tilt-card)
+
+## Metallic Button · 金属按钮
+
+这组是原站 Button 页的 Metallic Button 变体：金属边缘带有持续移动的反光，按钮内部保持深色。
+
+**动手试试：** 将鼠标移到 Continue 或 Generate 上，按下后松开；也可用键盘聚焦并按空格。
+
+<ButtonDemo client:visible />
+
+**应该看到：** 银色边缘缓慢流动，悬停时反光扫过，按压有弹性反馈。三个按钮仅展示外观与动效，不执行继续、生成或导航操作。
+
+[查看 beUI 原组件](https://beui.dev/components/motion/button#metallic-preview)
+
+## Tabs · 三种页签
+
+Pill、Segment、Underline 是同一组组件的三种原站变体，分别使用胶囊、分段和下划线指示。
+
+**动手试试：** 第一组选择 Activity，再分别切换第二、第三组。聚焦后可用左右方向键。
+
+<TabsDemo client:visible />
+
+**应该看到：** 第一组下方显示 Recent events.，指示块在选项之间滑动；三组选择互不影响。
+
+[查看 beUI 原组件](https://beui.dev/components/motion/tabs)
+
+## Switch · 状态开关
+
+原站把可操作、固定关闭与禁用三个状态放在一起，便于比较。
+
+**动手试试：** 点击 Enable notifications，或聚焦后按空格。
+
+<SwitchDemo client:visible />
+
+**应该看到：** 第一行滑块从右移到左，背景随开关变化。第二行 Off 固定关闭，第三行 Disabled 不可操作；这里不会开启真实通知。
+
+[查看 beUI 原组件](https://beui.dev/components/motion/switch)
+
+## Checkbox · 勾选反馈
+
+这组同时展示选中、未选中、部分选中和禁用状态。
+
+**动手试试：** 点击 Email me product updates，再取消；也可切换第一行。
+
+<CheckboxDemo client:visible />
+
+**应该看到：** 勾号绘制出来，取消时退出。第三行固定展示部分选中，第四行禁用；不会提交同意条款或订阅请求。
+
+[查看 beUI 原组件](https://beui.dev/components/motion/checkbox)
+
+## Radio Group · 单选组
+
+保留原站纵向排列的套餐示例，默认选择 Pro，并包含不可选的 Legacy plan。
+
+**动手试试：** 选择 Starter，再选择 Team；聚焦后也可用方向键。
+
+<RadioDemo client:visible />
+
+**应该看到：** 圆点在选项之间移动，同一时间只有一个选中。Legacy plan 不可选择；这些价格只是原站演示文案，不会产生购买。
+
+[查看 beUI 原组件](https://beui.dev/components/motion/radio)
+
+## Range Slider · 拖动滑杆
+
+保留原站上方左侧的操作提示、右侧数值，以及带刻度点的轨道。
+
+**动手试试：** 在轨道上拖动，或聚焦滑块按左右键；Home 与 End 可到达两端。
+
+<RangeDemo client:visible />
+
+**应该看到：** 初始值为40，每步变化5；数值在上方右侧更新，竖条和填充跟随拖动。拖动不会切换文章。
+
+[查看 beUI 原组件](https://beui.dev/components/motion/range-slider#stepped-preview)
+
+## Bouncy Accordion · 弹性折叠
+
+原站的六项发布清单保留在同一个区域，默认展开 Rollout Calendar。
+
+**动手试试：** 展开 Release Brief，再展开 Launch Checklist，最后再次点击当前项。
+
+<AccordionDemo client:visible />
+
+**应该看到：** 同时只展开一项，段落出现时相邻组的间距和圆角一起变化。再次点击当前项会收起；这只是演示，不执行发布操作。
+
+[查看 beUI 原组件](https://beui.dev/components/motion/bouncy-accordion)
+
+## Animated Badge · 动态状态
+
+上方标签自动轮换，下方六个小标签并排展示不同状态。
+
+**动手试试：** 观察上方标签约每1.6秒切换一次。
+
+<BadgeDemo client:visible />
+
+**应该看到：** Syncing、Synced、Review、Failed循环出现，图标和文字随状态滚动替换。它不连接后台任务。
+
+[查看 beUI 原组件](https://beui.dev/components/motion/animated-badge)
+
+## Marquee · 循环滚动
+
+保留原站的品牌名称卡片、淡出边缘和循环排列。
+
+**动手试试：** 观察卡片移动，鼠标悬停在展示区域暂停，移出后继续。
+
+<MarqueeDemo client:visible />
+
+**应该看到：** Vercel、Linear、Stripe等卡片连续经过，首尾衔接。手机上自动滚动；系统减少动态效果模式下静态展示。
+
+[查看 beUI 原组件](https://beui.dev/components/motion/marquee)
+
+## 来源与实现说明
+
+组件及对应演示来自 [beUI 开源项目](https://github.com/starc007/ui-components)，作者Saurabh Chauhan，使用[MIT许可](/licenses/beui.txt)。图标为[Lucide](/licenses/lucide.txt)，字体使用原站Geist字体的本地副本及[OFL许可](/fonts/beui/OFL.txt)。组件区域使用原站默认深色主题，外框增加圆角与左右留白，Vibes正文保留现有外观。
+
+MDX把这些React组件嵌入正文，各项进入可视区后启动，同页共享React、Motion和样式辅助模块。保留原站演示源码及参数，只调整导入路径、样式隔离和键盘访问。原站外围导航、主题面板和广告不属于组件演示。

@@ -1,5 +1,5 @@
 import { readFileSync, readdirSync } from 'node:fs';
-import { join, basename } from 'node:path';
+import { join, parse } from 'node:path';
 import { parseFrontmatter } from 'astro/markdown';
 import {
   languageSchema,
@@ -32,14 +32,15 @@ export function readCatalog(
     const versions: CatalogWork['versions'] = {};
     for (const name of readdirSync(directory)) {
       if (name === 'work.json') continue;
-      if (!['zh.md', 'en.md'].includes(name))
+      if (!/^(zh|en)\.mdx?$/.test(name))
         throw new Error(`${directory}/${name}: unsupported language or content file`);
       const path = join(directory, name);
       const parsed = parseFrontmatter(readFileSync(path, 'utf8'));
       const data = parseContent(languageSchema, parsed.frontmatter, path);
-      if (data.locale !== basename(name, '.md'))
-        throw new Error(`${path}: locale must match filename`);
+      if (data.locale !== parse(name).name) throw new Error(`${path}: locale must match filename`);
       if (!parsed.content.trim()) throw new Error(`${path}: empty article body`);
+      if (versions[data.locale])
+        throw new Error(`${directory}: duplicate article for ${data.locale}; keep one .md or .mdx`);
       versions[data.locale] = { data, body: parsed.content, file: path };
     }
     works.push({ meta, versions });

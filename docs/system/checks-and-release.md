@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003', '004', '005']
+shaped-by: ['002', '003', '004', '005', '009']
 code-sources:
   [
     'package.json',
@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'c27684d45488e6a9b7b3bcffe9ada4917352f16c86be28856a1a6b2b01fbf321'
+code-revision: 'a624244261d2fbda534655f86e4a85f25908a4da37388f9e5af274b55ca2446c'
 ---
 
 # 检查与发布
@@ -55,7 +55,7 @@ PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA�
 
 ## 分支与PR的工作单位
 
-一个完整功能、修复或一批相关维护使用一个工作分支，默认codex/前缀；同一工作继续使用未合并分支及已有PR，不按对话轮次、commit或文件数拆分。新工作从同步后的main开始；已有待合并的小收尾可以纳入下一次相关维护，先核对差异与范围，不夹带无关功能。已合并分支不继续承载新工作。
+仅需要Spec Kit的需求必须使用工作分支与PR，默认codex/前缀，按完整需求组织并复用未合并分支和已有PR。小修复、文档和小型规则补充直接在当前工作分支提交，不单独开PR；必要检查仍按实际影响执行。新工作从同步后的main开始；已有待合并的小收尾可以纳入下一次相关维护，先核对差异与范围，不夹带无关功能。已合并分支不继续承载新工作。
 
 commit是保存进度，推送是备份或触发CI，PR是提交一批变化供审阅，合并才是进入main；它们不必同时发生。首版spec形成即创建Draft PR，AI给用户可打开的链接；描述维护目标、范围、任务摘要、当前进度、阻塞、下一步和阶段预览，详细清单以tasks.md为准。到可体验阶段、交接、暂停或结束前提交并推送有效进度、更新PR；不强制每commit立即push，也不限制领先commit数量。一个PR可包含多个commit；修改当前PR时直接继续提交，不另开修正PR。批量组织不等于无限累积，出现独立交付目的或需要单独回滚的变化时分开。
 
@@ -65,7 +65,9 @@ commit是保存进度，推送是备份或触发CI，PR是提交一批变化供�
 
 代码与功能文档在同一PR准备好；合并操作者核对清单全部完成、功能及spec索引、shaped-by和amends关系，实现完成时把该规格与plan/tasks、索引统一设为complete并通过检查，再执行用户明确授权的合并。未进入main的稿件尚未冻结；main中的complete/历史merged记录冻结，允许状态前进、追加amended-by及首次据实补记frozen-at；日期可省略，实际合并时间以GitHub PR记录为准，不提前虚构。合并后的核对不要求立即创建补丁PR；仅可选日期可延后；实现状态应在代码交付前完成，PR是否合并由Git记录。
 
-最终行为随代码合并生效，合并后核对docs/features。不得另等文档补丁才能称交付完成。2026-09-06已通过GitHub API启用main保护：必须经PR、verify/budget成功且分支更新到最新main，管理员同样受限，禁止force push和删除main；未设置必须他人批准，因此用户仍可自行决定合并。
+最终行为随代码合并生效，必要说明仍须在同一PR交付。合并后逐个审阅PR中commit的实际差异，定位其影响的用户路径、配置、接口、规则与相关docs说明，再检查PR整体差异及合并后的代码，确认文档没有遗漏、冲突或过时描述。后续commit撤销或替换的行为以最终实现为准；每个commit不必新增或修改文档，未影响现有说明的改动无需凑写内容。PR收尾评论记录审阅范围、对应文档及发现的漏项和处理状态，不在docs写commit流水账；code-revision及自动检查通过不能代替语义核对。发现漏项及时补齐，不能把合并后补文档作为正常交付流程。
+
+main不要求通过PR；目标提交仍须取得verify/budget成功并包含最新main，管理员同样受限，禁止force push和删除main。小改动可先在保存该提交的工作分支手动运行Project checks，检查通过后再直接推送main；需要Spec Kit的需求仍按项目规则使用PR。检查失败时保留进度并修复，不擅自削弱保护。
 
 ## 合并后上线与收尾
 
@@ -75,7 +77,7 @@ vibes.college现由Worker vibes-explore提供服务。2026-09-06的[首次正式
 
 scripts/release-ci.ts保存发布前版本和结果于resources/evidence/releases/；CI artifact保留90天。只有线上/__release.json匹配SHA且zh/en页有效才记录verified:true；失败不清理，上传结果不确定先核对远端再重试。实际交互另由AI用内置浏览器核对搜索、详情、语言与404，结果写PR评论。完整上线前不宣称发布成功。
 
-AI在用户合并后继续收尾；跨对话等待时建立本机跟进，状态未变化不打扰。先核对PR已合并、线上版本包含该合并、对应main工作流部署成功，纯文档维护若不影响已上线网站，要求对应main检查成功才可收尾，不虚构重新部署。再检查本地脏文件/额外提交/其他任务占用；被忽略的.dev.vars、证据和未知文件仍受保护，仅node_modules/dist/.astro/test-results等明确缓存可随worktree清理。运行cleanup:task查看候选，在待删除worktree之外的项目checkout核对状态后再传--execute-idle；不为清理切换其他任务的分支。命令以PR head与GitHub合并证明兼容squash，删除采用预期SHA比对，竞态或未知状态保留。仍被其他open PR作为base使用的分支保留；仅删除本目标分支与空闲干净worktree；用户未跟踪文件原样保留，main和其他任务不清理。
+AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并、线上版本包含该合并、对应main工作流部署成功，纯文档维护若不影响已上线网站，要求对应main检查成功才可收尾，不虚构重新部署。再检查本地脏文件/额外提交/其他任务占用，将空闲的本地主目录同步到origin/main：无本地独有提交时快进，有本地提交时保留并合并远端main，解决冲突后按影响验证；不能以有本地提交为由停止同步，也不重置或丢弃它们；被忽略的.dev.vars、证据和未知文件仍受保护，仅node_modules/dist/.astro/test-results等明确缓存可随worktree清理。运行cleanup:task查看候选，在待删除worktree之外的项目checkout核对状态后再传--execute-idle；不为清理切换其他任务的分支。命令以PR head与GitHub合并证明兼容squash，删除采用预期SHA比对，竞态或未知状态保留。仍被其他open PR作为base使用的分支保留；仅删除本目标分支与空闲干净worktree；用户未跟踪文件原样保留，main和其他任务不清理。
 
 远端分支也要等上线验收后删除，不开启GitHub合并即删分支。临时服务由本机AI按自己启动记录核对PID/用途并关闭，不能扫描后盲杀进程；保留的服务记用途/地址/启动方式，下次先核对再复用。发布版本、旧Worker和必要恢复证据不属于临时垃圾。
 
@@ -130,8 +132,10 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 - `npm run content:validate`检查整个目录并报告各语言发布数量，不写文件。
 - `npm run content:revision -- <id>`报告当前原文摘要、语言状态与待复核标记，不批准或发布翻译。
-- `npm run build`先校验内容，再Astro完整重编译内容缓存并构建，最后为dist生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容或校验失败停止。
+- `npm run build`先校验内容，再Astro完整重编译内容缓存并构建，为dist/_headers补齐精确内联脚本哈希，最后生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容或校验失败停止。
 - `node --experimental-strip-types scripts/measure-explore.ts`在.scratch生成隔离5000×2样例、构建、验证分页/正文搜索并测冷/热延迟；会使用系统分配的独立空闲端口，结束清理。真实内容和dist不覆盖，不部署样例；报告位于resources/evidence/001-multilingual-explore/。
+
+普通.md与互动.mdx使用同一内容校验和发布命令；MDX语法、import与组件构建错误必须修复，不能把内容校验通过当作交互验收。
 
 英文发布前须核对全文再记录sourceRevision；原文修改使旧译文标待复核，更新摘要前必须再次审核。详细字段见[内容维护](../features/content-maintenance.md)。
 

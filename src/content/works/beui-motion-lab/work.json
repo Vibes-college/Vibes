@@ -1,0 +1,39 @@
+{
+  "id": "beui-motion-lab",
+  "originalLocale": "zh",
+  "order": 1002,
+  "sourceUrl": "https://beui.dev/components/motion",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "编写",
+        "en": "Written by"
+      },
+      "value": {
+        "zh": "Vibes",
+        "en": "Vibes"
+      }
+    },
+    {
+      "key": "purpose",
+      "kind": "text",
+      "label": {
+        "zh": "用途",
+        "en": "Purpose"
+      },
+      "value": {
+        "zh": "beUI 组件体验",
+        "en": "beUI component demo"
+      }
+    }
+  ],
+  "related": []
+}

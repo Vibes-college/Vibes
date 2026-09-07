@@ -1,6 +1,7 @@
 import { test, expect } from './browser-test.ts';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
+import { measureScriptBudget } from '../scripts/script-budget.ts';
 import { assertBudget } from '../scripts/budget-policy.ts';
 
 test('local filtering, empty state, and URL survive refresh', async ({ page }) => {
@@ -87,11 +88,8 @@ test('no horizontal overflow, no embeds, two-line card descriptions', async ({ p
 });
 
 test('static output stays small and content routes exist', async ({ request, page }) => {
-  const js = readdirSync('dist/_astro').filter((file) => file.endsWith('.js'));
-  const total = js.reduce((n, file) => n + gzipSync(readFileSync(`dist/_astro/${file}`)).length, 0);
-  expect(js.length).toBeGreaterThan(0);
   assertBudget({
-    javascriptGzip: total,
+    ...measureScriptBudget('dist'),
     homepageGzip: gzipSync(readFileSync('dist/zh/index.html')).length,
     interactionSource: statSync('src/scripts/explore.ts').size,
   });
@@ -204,7 +202,11 @@ test('homepage switches language and detail omits language controls while routes
   await expect(page).toHaveURL(/\/en\/works\/attention-is-all-you-need\//);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('.prose')).toContainText('attention');
-  await expect(page.locator('[data-direction]')).toHaveCount(0);
+  await expect(page.locator('[data-direction]')).toHaveCount(1);
+  await expect(page.locator('[data-direction="next"]')).toHaveAttribute(
+    'href',
+    '/en/works/mdx-interaction-lab/',
+  );
   await expect(page.locator('.fact-fallback').first()).toBeVisible();
   await page.locator('[data-back-link]').click();
   await page.locator('.language-switch a[lang="zh"]').click();
@@ -214,7 +216,7 @@ test('homepage switches language and detail omits language controls while routes
   expect((await request.get('/en/works/lora/')).status()).toBe(404);
   expect((await request.get('/fr/')).status()).toBe(404);
   await page.goto('/en/');
-  await expect(page.locator('.work-card:visible')).toHaveCount(1);
+  await expect(page.locator('.work-card:visible')).toHaveCount(2);
   await page.getByRole('searchbox').fill('attention');
   await expect(page.locator('[data-search-grid] .work-card')).toHaveCount(1);
 });

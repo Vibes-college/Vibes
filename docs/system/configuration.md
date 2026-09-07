@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '配置和环境变量'
 status: 'current'
-shaped-by: ['001', '004', '005']
+shaped-by: ['001', '004', '005', '009']
 code-sources:
   [
     'package.json',
@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: 'b57689553eb454ac4b60ff163ee77159c0b32735d947f03248053d64d5f50282'
+code-revision: '3168aeae6f0af0ff2cda5c42b17f05e61733ebd4124fad0491888cae21525de2'
 ---
 
 # 配置和环境变量
@@ -34,24 +34,26 @@ code-revision: 'b57689553eb454ac4b60ff163ee77159c0b32735d947f03248053d64d5f50282
 
 开发流程工具为 Spec Kit 1.0.4，通过 `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v1.0.4` 安装到本机工具环境，不是 npm 或网站运行依赖。版本与初始化参数见 `.specify/init-options.json`；Codex skills 位于 `.agents/skills/`。升级需明确版本并审查生成文件差异，不能在初始化时覆盖项目决定。`.prettierignore` 排除上游受管理的技能、模板、清单与工作流，以保持安装清单哈希；项目自己维护的宪章和文档仍接受格式检查。使用与验收边界见 [Spec Kit 工作流](../features/document-governance.md)。
 
-| 项目                | 当前配置                                 | 用途 / 修改位置                                                     |
-| ------------------- | ---------------------------------------- | ------------------------------------------------------------------- |
-| 框架                | Astro 静态输出，TypeScript               | `astro.config.mjs`、`tsconfig.json`                                 |
-| Node                | 至少 22.20.0；CI 固定 22.20.0            | `package.json`、`.github/workflows/check.yml`                       |
-| 依赖版本            | `package-lock.json` 锁定，使用 `npm ci`  | 不手改锁文件；新增依赖先询问                                        |
-| 开发地址            | 通常为本机 4321，以终端实际地址为准      | `npm run dev`；端口占用时 Astro 可能使用其他端口                    |
-| Cloudflare 本地预览 | 本机 4322                                | `npm run preview`、`wrangler.local.jsonc`                           |
-| 本地数据库          | `DB` / `vibes-explore-local`             | `wrangler.local.jsonc`；标识只供本地模拟使用                        |
-| 本地数据目录        | `.wrangler/project-local/`               | `scripts/local-tools.ts`；不提交 Git                                |
-| 直接 Worker 部署    | `vibes-explore`，静态资源 `dist`         | `wrangler.jsonc`；静态资源配置；生产自动部署与PR版本预览            |
-| 既有 Sites 绑定     | 已有托管项目                             | `.openai/hosting.json`；保留，不写入凭据                            |
-| 页面标准域名        | `SITE_URL`，本地默认127.0.0.1:4322       | `src/config/site.ts`统一供Astro、布局、sitemap和robots使用          |
-| 正式域名            | `vibes.college`，用户已于2026-09-06授权  | wrangler.jsonc的Custom Domain；已转接上线；发布与恢复结果见交付说明 |
-| 缓存与安全响应头    | 本站来源限制、禁止嵌入、构建资源缓存一年 | `public/_headers`                                                   |
+| 项目                | 当前配置                                           | 用途 / 修改位置                                                     |
+| ------------------- | -------------------------------------------------- | ------------------------------------------------------------------- |
+| 框架                | Astro 静态输出，TypeScript                         | `astro.config.mjs`、`tsconfig.json`                                 |
+| Node                | 至少 22.20.0；CI 固定 22.20.0                      | `package.json`、`.github/workflows/check.yml`                       |
+| 依赖版本            | `package-lock.json` 锁定，使用 `npm ci`            | 不手改锁文件；新增依赖先询问                                        |
+| 开发地址            | 通常为本机 4321，以终端实际地址为准                | `npm run dev`；端口占用时 Astro 可能使用其他端口                    |
+| Cloudflare 本地预览 | 本机 4322                                          | `npm run preview`、`wrangler.local.jsonc`                           |
+| 本地数据库          | `DB` / `vibes-explore-local`                       | `wrangler.local.jsonc`；标识只供本地模拟使用                        |
+| 本地数据目录        | `.wrangler/project-local/`                         | `scripts/local-tools.ts`；不提交 Git                                |
+| 直接 Worker 部署    | `vibes-explore`，静态资源 `dist`                   | `wrangler.jsonc`；静态资源配置；生产自动部署与PR版本预览            |
+| 既有 Sites 绑定     | 已有托管项目                                       | `.openai/hosting.json`；保留，不写入凭据                            |
+| 页面标准域名        | `SITE_URL`，本地默认127.0.0.1:4322                 | `src/config/site.ts`统一供Astro、布局、sitemap和robots使用          |
+| 正式域名            | `vibes.college`，用户已于2026-09-06授权            | wrangler.jsonc的Custom Domain；已转接上线；发布与恢复结果见交付说明 |
+| 缓存与安全响应头    | 同源限制、精确脚本哈希、禁止嵌入、构建资源缓存一年 | `public/_headers`                                                   |
 
 ## Markdown与排版依赖
 
-Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，没有React或Tailwind运行时。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
+Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，普通Markdown页面不加载React。@astrojs/mdx与@astrojs/react分别提供MDX编译和React islands；react/react-dom仅在需要交互的岛上加载，@types/react及@types/react-dom用于类型检查，tsconfig.json使用react-jsx。Motion用于beUI组件动画，lucide-react提供其原版图标，clsx与tailwind-merge保留原版类合并行为；Tailwind与@tailwindcss/vite在构建期生成组件样式，不加载浏览器运行库，不导入全局Preflight，仅扫描beUI组件及演示目录。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
+
+构建后scripts/content-security.ts扫描HTML中的内联可执行脚本，按精确内容补充dist/_headers的SHA256许可，支持从普通页面连续导航到互动文章；其他CSP指令保持public/_headers定义。Astro内置CSP当前不兼容ClientRouter，因此不同时开启两套策略；脚本不使用unsafe-inline。
 
 ## 环境变量名称
 

@@ -2,7 +2,7 @@
 tense: 'frozen'
 describes: '详情页导航、整屏分页与渐进阅读'
 status: 'complete'
-amended-by: ['007', '008']
+amended-by: ['007', '008', '009']
 feature-ids: ['article-read']
 amends: ['001', '005']
 approved-artifacts: []

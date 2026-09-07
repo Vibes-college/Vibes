@@ -1,0 +1,144 @@
+/* beUI's component utilities only. Keep the site's own UI and Prose styles outside this frame. */
+@layer theme, components;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' source(none);
+@source './';
+@source '../demos/beui/';
+@custom-variant dark (&:where(.beui-demo.dark, .beui-demo.dark *));
+
+@font-face {
+  font-family: 'beUI Geist';
+  src: url('/fonts/beui/geist-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@theme inline {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-primary: var(--foreground);
+  --color-primary-foreground: var(--background);
+  --color-muted: var(--card);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--border-strong);
+  --color-destructive: var(--danger);
+  --animate-marquee: beui-marquee 30s linear infinite;
+  --animate-marquee-vertical: beui-marquee-vertical 30s linear infinite;
+  @keyframes beui-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap, 1rem)));
+    }
+  }
+  @keyframes beui-marquee-vertical {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(-100% - var(--gap, 1rem)));
+    }
+  }
+}
+
+@layer components {
+  .beui-demo {
+    /* Default dark beUI Current tokens, copied from the reference theme. */
+    --background: #151515;
+    --foreground: oklch(96% 0 0);
+    --card: #1c1c1c;
+    --muted-foreground: oklch(62% 0 0);
+    --border: rgb(255 255 255 / 0.05);
+    --border-strong: rgb(255 255 255 / 0.1);
+    --danger: oklch(62% 0.22 25);
+    color: var(--foreground);
+    background: var(--background);
+    font:
+      400 16px/1.5 'beUI Geist',
+      ui-sans-serif,
+      system-ui,
+      sans-serif;
+    letter-spacing: normal;
+    text-align: left;
+    overflow-wrap: normal;
+    width: calc(100% - 8px);
+    max-width: 664px;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 40px 16px;
+    margin: 24px auto;
+    border: 0;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .beui-demo--compact {
+    min-height: 260px;
+  }
+  /* Source components expect Preflight defaults. Apply them only inside the frame. */
+  .beui-demo *,
+  .beui-demo *::before,
+  .beui-demo *::after {
+    box-sizing: border-box;
+    border: 0 solid;
+    margin: 0;
+    padding: 0;
+  }
+  .beui-demo button {
+    appearance: button;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border-radius: 0;
+    cursor: pointer;
+  }
+  .beui-demo :where(h1, h2, h3, h4, h5, h6) {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  .beui-demo svg {
+    display: block;
+    vertical-align: middle;
+  }
+  .beui-demo :where(button, [tabindex]):focus-visible {
+    outline: 2px solid var(--foreground);
+    outline-offset: 4px;
+  }
+  .beui-demo [hidden] {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beui-demo .animate-marquee,
+  .beui-demo .animate-marquee-vertical {
+    animation: none;
+  }
+}
+
+/* Prose's .not-prose fallback is unlayered Arial; restore the reference font at the boundary. */
+.prose-ui .beui-demo.not-prose {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font:
+    400 16px/1.5 'beUI Geist',
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+/* Keep the three original tabs inside the padded frame on the narrowest phones. */
+@media (max-width: 360px) {
+  .beui-demo[data-beui='TabsDemo'] [role='tab'] {
+    padding-inline: 10px;
+  }
+}

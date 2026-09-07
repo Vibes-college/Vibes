@@ -1,5 +1,7 @@
 ---
-import { getEntry } from 'astro:content';
+import MdxHeading from '../../../components/MdxHeading.astro';
+import { escapeHtml } from '../../../lib/preview';
+import { getEntry, render } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import WorkDetail from '../../../components/WorkDetail.astro';
 import SectionReaction from '../../../components/SectionReaction.astro';
@@ -20,10 +22,27 @@ export function getStaticPaths() {
 }
 const { work } = Astro.props;
 const entry = await getEntry('workVersions', `${work.slug}/${work.locale}`);
-if (!entry?.rendered?.html)
+if (!entry) throw new Error(`Missing article: ${work.slug}/${work.locale}`);
+const isMdx = catalog.works
+  .find((item) => item.meta.id === work.slug)
+  ?.versions[work.locale]?.file.endsWith('.mdx');
+if (!isMdx && !entry.rendered?.html)
   throw new Error(`Missing rendered article: ${work.slug}/${work.locale}`);
-validateFactAnchors(work, entry.rendered.html);
-const sections = articleSections(entry.rendered.html);
+const rendered = isMdx ? await render(entry) : undefined;
+const Content = rendered?.Content;
+const metadata = rendered?.remarkPluginFrontmatter;
+const sections = isMdx
+  ? (metadata?.articleHeadings as { id: string; title: string }[]).map(({ id, title }) => ({
+      heading: `<h2 id="${escapeHtml(id)}">${escapeHtml(title)}</h2>`,
+      body: '',
+    }))
+  : articleSections(entry.rendered?.html ?? '');
+validateFactAnchors(
+  work,
+  isMdx
+    ? (metadata?.articleAnchors as string[]).map((id) => `id="${escapeHtml(id)}"`).join(' ')
+    : (entry.rendered?.html ?? ''),
+);
 const alternates = locales.flatMap((locale) => {
   const target = languageTarget(catalog, work.slug, locale);
   return target?.href ? [{ locale: htmlLanguages[locale], path: target.href }] : [];
@@ -38,21 +57,30 @@ const alternates = locales.flatMap((locale) => {
   alternates={alternates}
   defaultPath={workPath(work.originalLocale, work.slug)}
 >
-  <main id="main" class="detail-page" data-locale={work.locale}>
+  <main
+    id="main"
+    class="detail-page"
+    data-locale={work.locale}
+    data-article-format={isMdx ? 'mdx' : 'md'}
+  >
     <article lang={htmlLanguages[work.locale]} data-pagefind-body>
       <WorkDetail work={work}>
         {
-          sections.map((section) =>
-            section.heading ? (
-              <section class="reading-section">
-                <SectionReaction heading={section.heading} locale={work.locale} />
-                <div class="section-content">
-                  <Fragment set:html={section.body} />
-                </div>
-              </section>
-            ) : (
-              <Fragment set:html={section.body} />
-            ),
+          Content ? (
+            <Content components={{ h2: MdxHeading }} />
+          ) : (
+            sections.map((section) =>
+              section.heading ? (
+                <section class="reading-section">
+                  <SectionReaction heading={section.heading} locale={work.locale} />
+                  <div class="section-content">
+                    <Fragment set:html={section.body} />
+                  </div>
+                </section>
+              ) : (
+                <Fragment set:html={section.body} />
+              ),
+            )
           )
         }
       </WorkDetail>

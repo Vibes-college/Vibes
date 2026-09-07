@@ -1,4 +1,5 @@
 import { unified, type ShikiConfig } from '@astrojs/markdown-remark';
+import rehypeArticleSections from './rehype-article-sections.ts';
 import remarkDirective from 'remark-directive';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -12,6 +13,7 @@ export const proseProcessor = unified({
     [rehypeKatex, { throwOnError: true, strict: 'error' }],
     rehypeProse,
     rehypeImageSize,
+    rehypeArticleSections,
   ],
 });
 export const proseHighlight: ShikiConfig = {

@@ -1,0 +1,20 @@
+---
+interface Props {
+  id?: string;
+  locale: string;
+}
+const { id, locale } = Astro.props;
+---
+
+<button
+  hidden
+  type="button"
+  class="section-reaction"
+  data-reaction={id}
+  aria-label={locale === 'zh' ? '评价这一节' : 'React to this section'}
+  aria-haspopup="menu"
+  aria-expanded="false"
+>
+  <img src="/icons/reaction.svg" width="14" height="14" alt="" />
+  <span data-reaction-value></span>
+</button>

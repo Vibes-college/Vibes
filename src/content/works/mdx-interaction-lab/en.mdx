@@ -1,0 +1,86 @@
+---
+locale: 'en'
+status: 'published'
+title: 'MDX · Interactive color lab'
+summary: 'Mix two colors inside an article and explore interactive components.'
+description: 'An original Vibes demo: drag, use the keyboard, reset, then keep reading with the chapter menu.'
+previewText:
+  eyebrow: 'VIBES / INTERACTION LAB'
+  display: 'Read. Mix. Explore.'
+  note: 'An article you can interact with'
+sourceRevision: '79f3785862bd8d36d84dc23af4d2381328afb6e05b9498685e0baab81104b103'
+---
+
+import MixDemo from '../../../components/demos/MixDemo';
+
+## Mix the colors
+
+This original Vibes amberblue experiment demonstrates interactive articles; it is not a third-party recommendation. Drag the slider, or focus the dashed area and use arrow keys, then reset.
+
+<MixDemo locale="en" initial={35} client:visible />
+
+:::callout{variant="tip"}
+Dragging inside the demo controls the demo. The surrounding article keeps its reading navigation.
+:::
+
+## Keep reading
+
+Reading exercise 1: mixing colors is one small experiment. The article can still use paragraphs, links and emphasis. Pause to compare the colors or scroll naturally through the text. Interaction complements a clear explanation.
+
+Reading exercise 2: mixing colors is one small experiment. The article can still use paragraphs, links and emphasis. Pause to compare the colors or scroll naturally through the text. Interaction complements a clear explanation.
+
+Reading exercise 3: mixing colors is one small experiment. The article can still use paragraphs, links and emphasis. Pause to compare the colors or scroll naturally through the text. Interaction complements a clear explanation.
+
+Reading exercise 4: mixing colors is one small experiment. The article can still use paragraphs, links and emphasis. Pause to compare the colors or scroll naturally through the text. Interaction complements a clear explanation.
+
+Reading exercise 5: mixing colors is one small experiment. The article can still use paragraphs, links and emphasis. Pause to compare the colors or scroll naturally through the text. Interaction complements a clear explanation.
+
+Reading exercise 6: mixing colors is one small experiment. The article can still use paragraphs, links and emphasis. Pause to compare the colors or scroll naturally through the text. Interaction complements a clear explanation.
+
+Reading exercise 7: mixing colors is one small experiment. The article can still use paragraphs, links and emphasis. Pause to compare the colors or scroll naturally through the text. Interaction complements a clear explanation.
+
+Reading exercise 8: mixing colors is one small experiment. The article can still use paragraphs, links and emphasis. Pause to compare the colors or scroll naturally through the text. Interaction complements a clear explanation.
+
+Reading exercise 9: mixing colors is one small experiment. The article can still use paragraphs, links and emphasis. Pause to compare the colors or scroll naturally through the text. Interaction complements a clear explanation.
+
+Reading exercise 10: mixing colors is one small experiment. The article can still use paragraphs, links and emphasis. Pause to compare the colors or scroll naturally through the text. Interaction complements a clear explanation.
+
+## A second independent experiment
+
+This instance starts with a different mix. Changing it does not change the first swatch.
+
+<MixDemo locale="en" initial={70} client:visible />
+
+## Formatting and sources
+
+| Type             | Result              |
+| ---------------- | ------------------- |
+| Article text     | Read directly       |
+| Interactive demo | Operate when needed |
+
+:::codegroup{groupId="mix-example"}
+
+```ts title="Mix"
+const blue: number = 35;
+```
+
+```js title="Mix"
+const blue = 35;
+```
+
+:::
+
+![Vibes geometric sample](/images/prose/inline.svg)
+
+The mix can also be written as $x + (1-x) = 1$.
+
+:::callout{variant="note"}
+
+## Nested note
+
+This formatted block does not create a separate chapter.
+:::
+
+Vibes wrote this example. Component source needs review and adaptation. GIFs and videos show an effect but cannot offer the live controls above.
+
+[Astro MDX](https://docs.astro.build/en/guides/integrations-guide/mdx/)

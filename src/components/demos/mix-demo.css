@@ -1,0 +1,57 @@
+.mix-demo {
+  padding: 24px;
+  margin: 24px 0;
+  border: 1px solid #dedbd3;
+  border-radius: 16px;
+  background: #f5f2eb;
+  color: #2e2b29;
+}
+.mix-demo p {
+  margin: 0 0 16px;
+  font-weight: 600;
+}
+.mix-demo-swatch {
+  height: 110px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+.mix-demo label {
+  display: grid;
+  gap: 10px;
+}
+.mix-demo input {
+  width: 100%;
+  accent-color: #3268ae;
+}
+.mix-demo output {
+  display: block;
+  margin: 12px 0;
+  font-variant-numeric: tabular-nums;
+}
+.mix-demo-drag {
+  touch-action: none;
+  padding: 20px 12px;
+  margin: 12px 0;
+  border: 1px dashed #7c807f;
+  border-radius: 8px;
+  user-select: none;
+  cursor: ew-resize;
+}
+.mix-demo button {
+  padding: 8px 14px;
+  border: 1px solid #9c9b95;
+  border-radius: 8px;
+  background: #fcfbf8;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.mix-demo small {
+  display: block;
+  margin-top: 16px;
+  line-height: 1.6;
+}
+.mix-demo :focus-visible {
+  outline: 2px solid #3268ae;
+  outline-offset: 4px;
+}
