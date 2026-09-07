@@ -13,7 +13,7 @@ code-sources:
     'scripts/release-policy.ts',
     'src/components/WorkDetail.astro',
   ]
-code-revision: '5e3a300d4898f4c4233c771cae157c857582d8e8feaa2fe2fbac9fc246424263'
+code-revision: '4270acbcde2e29b76a4d8d0fa11ec4c4541978d6a77dcef11441227d7b7ed33c'
 ---
 
 # 接口与外部服务
@@ -91,3 +91,5 @@ release-utils.ts通过gh api GET读取固定仓库Vibes-college/Vibes的pulls/{n
 用途、调用文件、方法与地址、输入/返回、认证变量名、超时/重试/限流、失败时的反馈和对应测试。只列名字，不保存秘密值。作品的外链不等于平台集成。
 
 站内导航和提前准备使用同站详情HTML GET，没有新增业务API。Astro公共`navigate`与`prefetch`接口分别处理导航和HTTP预取；搜索加载器按zh/en返回独立Pagefind实例，创建时核对当前文档语言，过时加载以AbortError终止。
+
+文章图片可引用HTTPS外链，浏览器直接向图源请求；img-src允许HTTPS图片，其余脚本、连接与字体仍同源。第三方图源中断不阻止其余正文阅读，维护者应提供替代文字与尺寸；详见[Markdown排版](markdown.md)。

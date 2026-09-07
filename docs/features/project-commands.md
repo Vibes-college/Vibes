@@ -29,7 +29,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '3330e5bad8b30fe3cfdf1c3f6cb6cd045008780bcedd886cb50e534c30710476'
+code-revision: '0ad10aa22ecf3d56a17d3b5378bc1e237d09339e5964854a3720a49b3d412fce'
 ---
 
 # 功能名：检查与发布网站
@@ -91,6 +91,7 @@ flowchart TD
 - `tests/unit/delivery-git.test.ts`：真实Git覆盖累计main差异、ignored配置和目录/符号链接保护。
 - `tests/unit/delivery.test.ts`：触发模式、生产事件与SHA、产物完整性、清理拒绝和经验/决策保护。
 - `tests/unit/site-config.test.ts`、`tests/unit/budget.test.ts`、`tests/unit/database.test.ts`：origin、容量、本地库边界。
+- `tests/reactions.spec.ts`：分章评价加载、保存、键盘、手机边界与动画清理。
 - `tests/explore.spec.ts`：浏览、搜索、详情、语言、404、元数据与响应式。
 
 ## 依赖的其他功能

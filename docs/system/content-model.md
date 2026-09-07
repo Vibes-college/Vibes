@@ -13,7 +13,7 @@ code-sources:
     'scripts/validate-content.ts',
     'scripts/migrate-content.ts',
   ]
-code-revision: 'fc416b4990131b6c36ce905eba9d2ae358806dcabab37f1265301121f7df796e'
+code-revision: '6d35bf47d2f3cabfd1792b2fde32f2884f4712084cfff5a59d93b1ce214e282f'
 ---
 
 # 数据和内容结构
@@ -120,7 +120,7 @@ front matter 后面的 Markdown 正文会被编译成 HTML；代码会保留表�
 
 ### `ArticleSection`
 
-折叠章节：
+正文章节（始终展开）：
 
 `heading`、`body`。
 

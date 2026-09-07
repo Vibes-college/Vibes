@@ -6,7 +6,9 @@ export interface ArticleSection {
 // 按编译后的二级标题切分本地可信 Markdown，保留表格、来源及原有标题锚点。
 export function articleSections(html: string): ArticleSection[] {
   const sections: ArticleSection[] = [];
-  const headings = [...html.matchAll(/<h2(?:\s[^>]*)?>[\s\S]*?<\/h2>/g)];
+  const headings = [...html.matchAll(/<h2(?:\s[^>]*)?>[\s\S]*?<\/h2>/g)].filter(
+    (heading) => !heading[0].includes('data-prose-nested="true"'),
+  );
   if (!headings.length) return [{ heading: '', body: html }];
   const intro = html.slice(0, headings[0].index);
   if (intro.trim()) sections.push({ heading: '', body: intro });

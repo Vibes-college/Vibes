@@ -1,71 +1,43 @@
-import { navigate } from 'astro:transitions/client';
+import { installReactionEntry } from './reaction-entry';
 import { onPageLoad } from './page-lifecycle';
 import { watchReadingLinks } from './reading-prefetch';
+import { installDetailGestures } from './detail-gestures';
+import { installDetailPaging } from './detail-paging';
+import { installReadingProgress } from './reading-progress';
+import { detailNavigation } from './detail-transition';
 
 onPageLoad((signal) => {
   const detail = document.querySelector<HTMLElement>('.detail-page');
   if (!detail) return;
   watchReadingLinks(detail, signal);
-  let suppressClick = false;
-  let start: { x: number; y: number } | null = null;
+  installReactionEntry(detail, signal);
 
-  // 切换到真实相邻网址，首尾没有对应链接时保持当前作品。
-  function navigateWork(direction: 'previous' | 'next') {
-    const link = document.querySelector<HTMLAnchorElement>(`[data-direction="${direction}"]`);
-    if (link) void navigate(link.href);
-  }
+  const navigateWork = detailNavigation(detail, signal);
   // 排除链接、表格、文本选择等操作，避免阅读与横向滚动误切换。
   function isInteractive(target: EventTarget | null) {
     return (
       target instanceof Element &&
       Boolean(
         target.closest(
-          'a, button, input, textarea, select, summary, table, pre, [contenteditable], video, audio',
+          '[role=button], [role=tabpanel], .prose-image-dialog, a, button, input, textarea, select, summary, table, pre, [contenteditable], video, audio',
         ),
       )
     );
   }
-  // 记录触摸起点，多指操作与可交互区域不进入切换手势。
-  detail?.addEventListener(
-    'touchstart',
-    (event) => {
-      start =
-        event.touches.length === 1 &&
-        !(
-          event.target instanceof Element &&
-          event.target.closest('button, input, textarea, select, summary, table, pre, video, audio')
-        )
-          ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
-          : null;
+  installDetailGestures(detail, navigateWork, signal);
+  installDetailPaging(detail, signal);
+  // The cover needs no progress measurements; initialize only as reading approaches.
+  const readingObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (!entry.isIntersecting) return;
+      readingObserver.disconnect();
+      installReadingProgress(detail, signal);
     },
-    { passive: true },
+    { rootMargin: '80px' },
   );
-  // 只有明确的横向滑动才切换，保留普通上下滚动与文本选取。
-  detail?.addEventListener(
-    'touchend',
-    (event) => {
-      if (!start || !event.changedTouches.length) return;
-      const dx = event.changedTouches[0].clientX - start.x;
-      const dy = event.changedTouches[0].clientY - start.y;
-      start = null;
-      if (
-        Math.abs(dx) >= 70 &&
-        Math.abs(dx) > Math.abs(dy) * 1.4 &&
-        !window.getSelection()?.toString()
-      ) {
-        const direction = dx < 0 ? 'next' : 'previous';
-        if (!document.querySelector(`[data-direction="${direction}"]`)) return;
-        suppressClick = true;
-        if (event.cancelable) event.preventDefault();
-        navigateWork(direction);
-      }
-    },
-    { passive: false },
-  );
-  // 取消手势时清除起点，避免下次触摸沿用旧坐标。
-  detail?.addEventListener('touchcancel', () => {
-    start = null;
-  });
+  readingObserver.observe(detail.querySelector('#reading')!);
+  signal.addEventListener('abort', () => readingObserver.disconnect(), { once: true });
+
   // 桌面方向键提供等价导航，不截取输入、选择或带修饰键的操作。
   document.addEventListener(
     'keydown',
@@ -86,38 +58,6 @@ onPageLoad((signal) => {
     },
     { signal },
   );
-  // 打开深层标题链接前先展开其所在章节，支持复制正文锚点。
-  function revealHash() {
-    if (!location.hash) return;
-    let id: string;
-    try {
-      id = decodeURIComponent(location.hash.slice(1));
-    } catch {
-      return;
-    }
-    const target = document.getElementById(id);
-    const section = target?.closest('details');
-    if (section) {
-      section.open = true;
-      target?.scrollIntoView();
-    }
-  }
-  window.addEventListener('hashchange', revealHash, { signal });
-  revealHash();
-
-  // 滑动结束后不再触发预览或标签链接的点击。
-  detail?.addEventListener(
-    'click',
-    (event) => {
-      if (suppressClick) {
-        event.preventDefault();
-        event.stopPropagation();
-        suppressClick = false;
-      }
-    },
-    true,
-  );
-
   // 从当前标签页保留的同语言目录恢复返回入口，拒绝外部或作品详情地址。
   const back = document.querySelector<HTMLAnchorElement>('[data-back-link]');
   try {

@@ -122,12 +122,6 @@
   .article-header h1 {
     font-size: 28px;
   }
-  .prose h2 {
-    font-size: 24px;
-  }
-  .prose table {
-    margin: 24px 0;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   *,
