@@ -1,7 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
-  testMatch: ['explore.spec.ts', 'content-lifecycle.spec.ts', 'navigation.spec.ts'],
+  testMatch: [
+    'explore.spec.ts',
+    'content-lifecycle.spec.ts',
+    'navigation.spec.ts',
+    'reactions.spec.ts',
+  ],
   fullyParallel: true,
   workers: 2,
   forbidOnly: Boolean(process.env.CI),

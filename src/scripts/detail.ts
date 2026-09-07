@@ -1,3 +1,4 @@
+import { installReactionEntry } from './reaction-entry';
 import { onPageLoad } from './page-lifecycle';
 import { watchReadingLinks } from './reading-prefetch';
 import { installDetailGestures } from './detail-gestures';
@@ -8,6 +9,7 @@ onPageLoad((signal) => {
   const detail = document.querySelector<HTMLElement>('.detail-page');
   if (!detail) return;
   watchReadingLinks(detail, signal);
+  installReactionEntry(detail, signal);
 
   const navigateWork = detailNavigation(detail, signal);
   // 排除链接、表格、文本选择等操作，避免阅读与横向滚动误切换。

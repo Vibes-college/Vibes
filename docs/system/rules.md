@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005', '006']
+shaped-by: ['001', '003', '005', '006', '007']
 code-sources:
   [
     'src/lib/content/',
@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '387488708df64d01254ec41bcf8d900ff63b9a8d4ae65b03ad299210784fd3b2'
+code-revision: '528df9db3e5cfdd1dbe93d0337ab061df4cd6ab227c7f7861a41116683656b47'
 ---
 
 # 常量、规则表与正则
@@ -49,7 +49,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 
 | 名称 / 规则     | 当前值或行为                                                                                                  | 定义位置                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 体积预算        | JS gzip 总量 < 15000 字节；首页 gzip < 40000；交互源码 < 12000                                                | scripts/budget-policy.ts；被 scripts/budget.ts 和 tests/explore.spec.ts 复用 |
+| 体积预算        | JS gzip 总量 < 19000 字节；首页 gzip < 40000；交互源码 < 12000                                                | scripts/budget-policy.ts；被 scripts/budget.ts 和 tests/explore.spec.ts 复用 |
 | 空产物          | 没有 JS 文件时失败；不能把空包算通过                                                                          | scripts/budget.ts；tests/explore.spec.ts                                     |
 | 篇幅提示        | 代码文件超过300行提示审阅职责，不阻断检查                                                                     | scripts/docs-check.ts；AGENTS.md                                             |
 | 格式            | 单引号、100 字符目标行宽、Astro parser；完整检查范围见忽略文件                                                | .prettierrc.json；.prettierignore                                            |
@@ -114,7 +114,7 @@ scripts/docs-index.ts读取当前功能说明的可选legacy-feature-ids数组�
 
 ## 搜索资源与托管容量
 
-scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。首屏JS仍保守计入_astro全部自有JS；双语首页取gzip较大者；首页40000字节及交互源码12000字节预算保留。连续导航增加框架运行时代码，JS预算经用户同意调整至15000字节，实测与取舍见[005研究](../../specs/005-continuous-navigation/research.md)。
+scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。总脚本预算计入_astro全部JS，包括延迟加载模块，不作为首屏下载量；双语首页取gzip较大者；首页40000字节及交互源码12000字节预算保留。分章表情经用户同意将JS总预算调整至19000字节；整页加载完成且正文可见1.5秒后空闲预加载（空闲最长等待3秒），省流量仅点击加载。后台、离开正文或换页取消尚未开始的准备；提前点击立即加载。构建不为动态目标自身生成modulepreload，保留其依赖准备，防止WebKit下载失败后无法刷新重试。实测与取舍见[007研究](../../specs/007-section-reactions/research.md)。
 
 scripts/budget-policy.ts及tests/unit/budget.test.ts校验Workers静态资源：Free每版本20,000文件，Paid100,000文件，单文件最多25MiB；默认采用Free，实际账户套餐须发布前核对。依据[Cloudflare官方限制](https://developers.cloudflare.com/workers/platform/limits/)。普通budget报告数量，受控发布按账户容量阻断。
 

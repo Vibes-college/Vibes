@@ -2,10 +2,16 @@
 tense: 'living'
 describes: '阅读作品详情'
 status: 'current'
-shaped-by: ['001', '003', '005', '006']
+shaped-by: ['001', '003', '005', '006', '007']
 code-sources:
   [
     'src/components/WorkDetail.astro',
+    'src/components/SectionReaction.astro',
+    'src/scripts/reaction-entry.ts',
+    'src/scripts/section-reactions.ts',
+    'src/styles/section-reactions.css',
+    'public/icons/reaction.svg',
+    'tests/reactions.spec.ts',
     'src/data/article-sections.ts',
     'src/data/work-facts.ts',
     'src/scripts/detail.ts',
@@ -25,7 +31,7 @@ code-sources:
     'src/pages/[locale]/works/[id].astro',
     'tests/explore.spec.ts',
   ]
-code-revision: '6686afe3ceb3eb7a6dd56c1bcda96470db87e08d911efb716e56f0f18f6804bd'
+code-revision: 'acd92cc9ee1243e6f0d8b9b0020195742ae19d665d9481ddc0895ecce0741ad2'
 ---
 
 # 功能名：阅读作品详情
@@ -39,10 +45,11 @@ code-revision: '6686afe3ceb3eb7a6dd56c1bcda96470db87e08d911efb716e56f0f18f6804bd
 1. 从目录点击卡片，进入`/{locale}/works/{id}/`，先看来源、预览、标题、介绍和已有的作者/类型等信息。
 2. 点击原站链接，在新标签页打开原始作品；预览封面不是内嵌播放器。
 3. 上下滑动或点轻微摆动的向下入口，在概览与正文两屏间停靠；正文全部展开；进入正文超过32px后关闭强制停靠，底部继续滑动保持普通滚动，回到入口附近恢复停靠。底部进度胶囊只在正文出现，显示阅读进度与当前章；点击展开目录并跳转，Escape或点外部关闭。
-4. 点击有链接的信息项，进入同类作品或对应正文；没有有效目标的信息只显示文字。
-5. 顶部依次为交叉关闭、上一件、下一件，随概览滚走，正文不悬浮保留；电脑可用左右键，手机可横滑。横滑或空白长按显示边缘方向提示，随触点上下移动；明确横移后松手切换，取消或只长按不切换。首尾不循环。
-6. 详情不显示中英切换、缺译提示或查看原文入口；可返回首页选择语言。已有语言网址仍可直接打开，待复核译文保留状态文字。
-7. 点顶部交叉按钮返回同语言目录；同标签页访问时恢复之前的分类和关键词。直接打开不存在的作品或译文地址会得到404。
+4. 点击章节标题右上角的小表情，展开五个选项；选择后逐个飘出，第一章向下飘，其他章按顶部空间调整。可按住入口拖到表情松开，或长按表情连续发射。每章选择只在当前浏览器保存，刷新后恢复。点入口、外部或Escape关闭；方向键选择，减少动态偏好不发射。
+5. 点击有链接的信息项，进入同类作品或对应正文；没有有效目标的信息只显示文字。
+6. 顶部依次为交叉关闭、上一件、下一件，随概览滚走，正文不悬浮保留；电脑可用左右键，手机可横滑。横滑或空白长按显示边缘方向提示，随触点上下移动；明确横移后松手切换，取消或只长按不切换。首尾不循环。
+7. 详情不显示中英切换、缺译提示或查看原文入口；可返回首页选择语言。已有语言网址仍可直接打开，待复核译文保留状态文字。
+8. 点顶部交叉按钮返回同语言目录；同标签页访问时恢复之前的分类和关键词。直接打开不存在的作品或译文地址会得到404。
 
 ### 操作之后发生什么
 
@@ -60,7 +67,11 @@ flowchart TD
 
 正文在构建时已转为HTML，目录不再请求正文；无脚本保留全部正文、CSS整屏停靠与真实导航，进度胶囊隐藏。正文不显示序号、折叠按钮、引导语或重复的底部原站入口；来源链接仍属于文章内容。标题保持完整原意，以18–20px排版；通用章节用短导航名，其他长名称在胶囊省略、目录换行。胶囊接近正文时才初始化，不在封面首屏测量章节；尺寸有可取消回弹，文字交叉淡入，目录逐项出现，圆环平滑追随；减少动态偏好即时更新。进度按正文顶部到正文底部进入视口计算，缩放与尺寸变化重新校准，页面离开清理监听和动画。站内链接和相邻作品通过Astro ClientRouter保留运行环境并更新页面、标题与网址；相邻切换带短距离方向过渡，导航失败回退普通打开。可见相邻链接会提前准备；见[预取与缓存](../system/rules.md)。
 
+表情菜单与动画模块在整页加载完成、进入正文停留1.5秒后的空闲时预加载，省流量模式仅点击加载，提前点击立即加载。预加载不创建工具条、不运行动画；全页共享一个工具条，最多40个粒子，关闭、滚轮操作、离开或进入后台清理；其他滚动时工具条随标题移动，标题离开视口则关闭。无JS时隐藏入口；存储受限时当次仍可使用，无法跨刷新保存。系统emoji在不同平台外观可能不同，不请求第三方图片。
+
 ## 涉及的文件
+
+分章表情：`SectionReaction.astro`保留标题结构并定位小入口，`reaction-entry.ts`负责恢复选择与延迟加载，`section-reactions.ts`负责工具条、输入、保存与动画，`section-reactions.css`负责排版。
 
 - 页面：`src/pages/[locale]/works/[id].astro`、`src/components/WorkDetail.astro`。
 - 正文与信息：`src/data/article-sections.ts`、`src/data/work-facts.ts`、`src/lib/content/relations.ts`。
@@ -80,7 +91,7 @@ flowchart TD
 
 连续阅读的历史滚动、反复搜索与语言切换由`tests/navigation.spec.ts`覆盖；旧页面监听与未完成搜索在切换时失效。
 
-最近有效验收：2026-09-06 Playwright桌面Chromium、手机Chromium/WebKit覆盖常显正文、进度目录、锚点、Escape/外部关闭、减少动画、两屏停靠、相邻切换、首页语言和历史。底部连续滚动、视口尺寸变化后保留末章及返回入口恢复停靠由新增回归覆盖。完整verify/budget与发布记录保存在证据目录；脚本体积仍受15,000字节gzip预算限制。内置浏览器核对390px手机正文与目录，并与Rare UI相同视口参考对照。Chromium手机使用原生触摸；WebKit横滑为DOM事件、停靠使用scrollTo。原始截图、加载与滚动比较在`resources/evidence/006-detail-reading/`，性能样本仅代表同机模拟环境，不能证明所有设备零影响；真机与读屏尚未专项验收。005目录历史证据保留原目录。
+最近有效验收：2026-09-06 Playwright桌面Chromium、手机Chromium/WebKit覆盖常显正文、进度目录、锚点、Escape/外部关闭、减少动画、两屏停靠、相邻切换、首页语言和历史。底部连续滚动、视口尺寸变化后保留末章及返回入口恢复停靠由新增回归覆盖。完整verify/budget与发布记录保存在证据目录；脚本预算见[系统规则](../system/rules.md)。内置浏览器核对390px手机正文与目录，并与Rare UI相同视口参考对照。Chromium手机使用原生触摸；WebKit横滑为DOM事件、停靠使用scrollTo。原始截图、加载与滚动比较在`resources/evidence/006-detail-reading/`，性能样本仅代表同机模拟环境，不能证明所有设备零影响；真机与读屏尚未专项验收。005目录历史证据保留原目录。
 
 ## 对应的自动化测试
 
@@ -95,6 +106,8 @@ flowchart TD
 - `reading bottom stays put after repeated overscroll and viewport changes`
 - `no horizontal overflow, no embeds, two-line card descriptions`
 
+`tests/reactions.spec.ts`覆盖加载时机、省流量、独立保存、键盘、320px边界、减少动态、受限存储与长按清理。
+
 `tests/unit/article-sections.test.ts`验证正文结构；`tests/unit/content-relations.test.ts`验证事实/关联；`tests/content-lifecycle.spec.ts`验证译文发布及待复核的真实构建。
 
 ## 依赖的其他功能
@@ -104,4 +117,4 @@ flowchart TD
 
 ## 已知问题 / 待办
 
-用户报告iOS 26 Safari底部每次继续滑动都会回到正文第一节；已将正文内强制停靠关闭。模拟WebKit未重现相同的系统弹性回顶，回归覆盖底部追加滚动与视口变化，修复仍待iPhone真机复测。读屏尚未完成专项验收。未提供的事实不会自动补全；来源与内容质量仍需编辑判断。
+用户已确认iOS 26 Safari底部回第一节的问题修复有效；正文内停用强制停靠的回归保留。读屏尚未完成专项验收。未提供的事实不会自动补全；来源与内容质量仍需编辑判断。

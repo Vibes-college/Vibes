@@ -1,5 +1,5 @@
 export const budgetLimits = {
-  javascriptGzip: 15_000,
+  javascriptGzip: 19_000,
   homepageGzip: 40_000,
   interactionSource: 12_000,
 } as const;

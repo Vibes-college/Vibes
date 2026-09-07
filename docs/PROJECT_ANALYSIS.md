@@ -14,7 +14,7 @@ code-sources:
     'src/scripts/search.ts',
     'scripts/build.ts',
   ]
-code-revision: '06d80e6036e9f1d89b484bb72087ad67e5ab91baeeaf0ebe18fb75b22ece6e64'
+code-revision: 'b5b2a152633c2a4afd1249aad9f7bc18ae612f7b2245fbe1a9338f470f3448a8'
 ---
 
 # VIBES项目总览
@@ -69,7 +69,7 @@ flowchart TD
 ## 产品要求放在哪里维护
 
 - 发现、分类、搜索、语言目录及手机卡片行为归[浏览与搜索](features/explore-browse.md)。
-- 手机优先的“顶部导航→作品概览→整屏正文”、常显正文、进度目录、相邻手势和来源归[阅读详情](features/article-read.md)。
+- 手机优先的“顶部导航→作品概览→整屏正文”、常显正文、进度目录、分章表情评价、相邻手势和来源归[阅读详情](features/article-read.md)。
 - 中英发布、可选事实、稳定身份及关联数据归[内容维护](features/content-maintenance.md)与[数据结构](system/content-model.md)。
 - 中文界面显示中文分类，英文界面显示英文分类；“紧凑英文分类”是旧描述，不再当作当前两种语言共同规则。
 - 设计采用系统字体与渐进阅读；借鉴Wikipedia的来源追溯、Are.na的内容关联及roadmap的清晰层级，不复制品牌或源码。参考图已移除，当前行为以功能文档和源码为准。

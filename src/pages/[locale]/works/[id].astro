@@ -2,6 +2,8 @@
 import { getEntry } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import WorkDetail from '../../../components/WorkDetail.astro';
+import SectionReaction from '../../../components/SectionReaction.astro';
+import '../../../styles/section-reactions.css';
 import ReadingProgress from '../../../components/ReadingProgress.astro';
 import { catalog, getWorks } from '../../../data/works';
 import { articleSections } from '../../../data/article-sections';
@@ -40,7 +42,7 @@ const alternates = locales.flatMap((locale) => {
           sections.map((section) =>
             section.heading ? (
               <section class="reading-section">
-                <Fragment set:html={section.heading} />
+                <SectionReaction heading={section.heading} locale={work.locale} />
                 <div class="section-content">
                   <Fragment set:html={section.body} />
                 </div>
