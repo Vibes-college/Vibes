@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '浏览与搜索作品'
 status: 'current'
-shaped-by: ['001', '003']
+shaped-by: ['001', '003', '005']
 legacy-feature-ids: ['explore-filter', 'not-found', 'responsive-access']
 code-sources:
   [
@@ -13,6 +13,9 @@ code-sources:
     'src/pages/',
     'src/scripts/explore.ts',
     'src/scripts/search.ts',
+    'src/scripts/page-lifecycle.ts',
+    'src/scripts/reading-prefetch.ts',
+    'tests/navigation.spec.ts',
     'src/lib/i18n/',
     'src/lib/preview.ts',
     'src/lib/content/views.ts',
@@ -23,7 +26,7 @@ code-sources:
     'public/icons/',
     'tests/explore.spec.ts',
   ]
-code-revision: '6b896cd0f98a53b7ed8221e6e1a6fbfd47d2a797f501efd1e499aac34768e56c'
+code-revision: 'b9fefdebe2bdcbe79eacac8f71ea7780318469a55bd0c6e3dc84151bb72a07ef'
 ---
 
 # 功能名：浏览与搜索作品
@@ -57,10 +60,10 @@ flowchart TD
   G -->|没有作品| J[显示空结果和重置入口]
   F -->|下载失败或超时| K[显示失败和重试入口]
   K -->|重试| E
-  H --> L[点击卡片：打开完整详情页面]
+  H --> L[点击卡片：读取详情HTML并连续切换]
 ```
 
-普通浏览使用预生成HTML，不预先下载全文搜索索引；带q的网址会直接发起搜索。新输入或清空后，旧请求即使返回也不会覆盖当前结果。重试索引失败会重建搜索实例；搜索程序本身下载失败时会保留q并刷新页面。对应`src/scripts/explore.ts`和`src/scripts/search.ts`。
+普通浏览使用预生成HTML，站内切换保留文档运行环境。列表前6个候选在可见停留后预取详情，其余在悬停、键盘聚焦或触摸时准备；不预先下载全文搜索索引；带q的网址会直接发起搜索。新输入或清空后，旧请求即使返回也不会覆盖当前结果。中英文分别保留独立搜索实例，切换后重新绑定当前页面操作，旧异步结果不修改新页面；浏览器返回等待搜索结果恢复后还原滚动，用户开始滚动则停止自动还原。重试索引失败只重建当前语言实例；搜索程序本身下载失败时会保留q并刷新页面。对应`src/scripts/explore.ts`和`src/scripts/search.ts`。
 
 ## 涉及的文件
 
@@ -81,7 +84,7 @@ flowchart TD
 - [x] 320px宽度无整页横向溢出；不存在地址返回404并有回首页入口。
 - [x] 普通浏览不下载搜索索引，开始搜索后才加载。
 
-最近有效验收：2026-09-05 Playwright桌面/手机模拟及5000×2隔离目录验收通过；2026-09-06 ego-browser实际检查中文目录、搜索和进入详情。原始记录在`resources/evidence/001-multilingual-explore/`，相关产品代码未变，保留结果，不将文档修订日期当作重新测试日期。
+最近有效验收：2026-09-06 Playwright桌面Chromium、手机Chromium/WebKit检查浏览、搜索、语言切换、失败重试与历史；ego-browser检查真实页面连续阅读。证据在`resources/evidence/005-continuous-navigation/`。2026-09-05的5000×2容量数据只保留为历史基线，搜索生命周期改动后未重跑该专项，不代表此次规模性能已验收。
 
 ## 对应的自动化测试
 
@@ -95,6 +98,8 @@ flowchart TD
 - `failed result fragments recover after explicit retry`
 - `failed lazy search client can recover without losing the query`
 - `static output stays small and content routes exist`
+
+`tests/navigation.spec.ts`覆盖连续导航、异步结果滚动恢复、语言往返、预取上限、触摸与失败回退。
 
 大目录分页和结果分批由`scripts/measure-explore.ts`单独验证，不属于每次普通E2E；单位规则见`tests/unit/i18n.test.ts`。
 

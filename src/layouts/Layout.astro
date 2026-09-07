@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import LanguageSwitch from '../components/LanguageSwitch.astro';
 import { messages } from '../lib/i18n/messages';
 import { browsePath, htmlLanguages, type Locale } from '../lib/i18n/routes';
@@ -31,8 +32,9 @@ const summary = description || t.footer;
 ---
 
 <!doctype html>
-<html lang={htmlLanguages[locale]}>
+<html lang={htmlLanguages[locale]} transition:animate="none">
   <head>
+    <ClientRouter fallback="swap" />
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title><meta name="description" content={summary} />
     <link rel="canonical" href={canonical} /><link
@@ -93,7 +95,8 @@ const summary = description || t.footer;
       <span class="header-note">{t.campus}</span>
     </header>
     <slot />
-    <footer class="site-footer" data-pagefind-ignore>
+    <script src="../scripts/reading-prefetch.ts"></script>
+    <footer class="site-footer" data-pagefind-ignore transition:persist={`footer-${locale}`}>
       <span>{t.footer}</span><a href="#main">{t.top}</a>
     </footer>
   </body>
