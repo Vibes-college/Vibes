@@ -327,11 +327,15 @@ test('video cards keep the configured framing in the directory and search', asyn
   await useLocalVideoTransport(page);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/zh/page/2/');
-  const card = page
-    .locator('.work-card[data-kind=video]')
-    .filter({ has: page.locator('a[data-work=yaoda-fx]') });
   for (const search of [false, true]) {
     if (search) await page.getByRole('searchbox').fill('华丽');
+    // Search keeps the original directory in the DOM; wait for the intended grid.
+    const grid = page.locator(search ? '[data-search-grid]' : '[data-browse-grid]');
+    await expect(grid).toBeVisible();
+    const card = grid
+      .locator('.work-card[data-kind=video]')
+      .filter({ has: page.locator('a[data-work=yaoda-fx]') });
+    await expect(card).toHaveCount(1);
     await expect(card).toBeVisible();
     await card.scrollIntoViewIfNeeded();
     await card.locator('[data-media-toggle]').click();
