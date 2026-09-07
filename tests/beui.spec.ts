@@ -134,6 +134,15 @@ test('reduced motion keeps the original controls usable at 320px and stops marqu
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 320, height: 740 });
   await page.goto(url + '#reading');
+  const tabs = page.locator('[data-beui="TabsDemo"]');
+  await tabs.scrollIntoViewIfNeeded();
+  await expect(tabs).toHaveCSS('border-radius', '16px');
+  const frame = (await tabs.boundingBox())!;
+  for (const list of await tabs.getByRole('tablist').all()) {
+    const bounds = (await list.boundingBox())!;
+    expect(bounds.x).toBeGreaterThanOrEqual(frame.x + 16);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(frame.x + frame.width - 16);
+  }
   const marquee = page.locator('[data-beui="MarqueeDemo"]');
   await marquee.scrollIntoViewIfNeeded();
   await expect(marquee.locator('.animate-marquee').first()).toHaveCSS('animation-name', 'none');

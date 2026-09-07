@@ -42,7 +42,7 @@ code-sources:
     'src/pages/[locale]/works/[id].astro',
     'tests/explore.spec.ts',
   ]
-code-revision: 'b377c806030a20a2d54c0f4598e6ab56ea54243acc997e913fa0a8f62f802f1b'
+code-revision: 'e8bfbcaf2a40e2e3d60110e7d237c815428ef45f6c42defe70c94095f0a52446'
 ---
 
 # 功能名：阅读作品详情
@@ -72,7 +72,7 @@ code-revision: 'b377c806030a20a2d54c0f4598e6ab56ea54243acc997e913fa0a8f62f802f1b
 
 ### 操作文章中的互动演示
 
-[beUI十组件文章](../../src/content/works/beui-motion-lab/zh.mdx)提供不同的真实组件，按每节操作说明体验点击、选择、拖动、折叠与暂停；每项附来源，刷新恢复初始状态。
+[beUI十组件文章](../../src/content/works/beui-motion-lab/zh.mdx)用带圆角与左右留白的深色容器提供不同的真实组件，按每节操作说明体验点击、选择、拖动、折叠与暂停；每项附来源，刷新恢复初始状态。
 
 互动文章仍从同样的作品卡片进入。[调色实验](../../src/content/works/mdx-interaction-lab/zh.mdx)提供中英文版本：进入正文后拖动滑杆/虚线区域、聚焦后按左右键或点击重置；两个色块独立变化。示例进入可视区才加载React，多实例共享运行时；普通Markdown文章不请求React。组件区域的触摸、鼠标、方向键和滚轮由演示处理，MDX整篇不安装左右拖动或长按拖动换篇手势，使用作品概览页顶部的上一篇/下一篇按钮换篇；普通Markdown保留手势。正文滚动、目录和组件自身拖动照常可用。
 
@@ -125,6 +125,8 @@ flowchart TD
 分章评价有效验收：2026-09-06完整发布检查通过52项单测、96项浏览器测试（3项设备适用性跳过）及budget；内置浏览器在Cloudflare预览390px宽度实际选择与刷新，已恢复原表情、无整页溢出和控制台错误。表情主体约2.1KB延后，首开脚本增量约1.35KB；详细测量与限制见[007研究](../../specs/007-section-reactions/research.md)，原始证据在`resources/evidence/007-section-reactions/`。
 
 排版专项验收：2026-09-06，编译单测覆盖所有组件、属性错误、错误公式、图像尺寸与章节完整性；Playwright专项覆盖同步/复制、禁用JS、320px、图片键盘关闭与存储受限。完整verify通过61项单测、111项浏览器测试（3项设备适用性跳过），budget通过；Cloudflare预览已实际核对复制、同步、图片关闭、暖白背景与控制台。截图对照与限制见`resources/evidence/008-prose-markdown/design-qa.md`，发布证据见同目录及PR。
+
+圆角与留白验收：2026-09-07，三种浏览器的6项beUI专项通过，包含320px页签左右边界与十组件交互；日志为`resources/evidence/009-mdx-articles/rounded-6-pass.log`。
 
 MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器140项通过及4项按设备适用性跳过；新增英文文章使旧数量断言失败，修正该测试后在三种浏览器专项3项通过，其余代码未变。budget通过。原版十组件、双语调色、无JS、减少动画、320px、加载隔离与MDX横拖禁用均有覆盖；证据在`resources/evidence/009-mdx-articles/`，真机iOS未专项验收。
 

@@ -74,10 +74,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 0;
+    box-sizing: border-box;
+    padding: 40px 16px;
     margin: 24px auto;
     border: 0;
-    border-radius: 0;
+    border-radius: 16px;
+    overflow: hidden;
   }
   .beui-demo--compact {
     min-height: 260px;
@@ -132,4 +134,11 @@
     ui-sans-serif,
     system-ui,
     sans-serif;
+}
+
+/* Keep the three original tabs inside the padded frame on the narrowest phones. */
+@media (max-width: 360px) {
+  .beui-demo[data-beui='TabsDemo'] [role='tab'] {
+    padding-inline: 10px;
+  }
 }

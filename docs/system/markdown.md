@@ -78,7 +78,7 @@ MDX是可信仓库源码，会在构建中执行import；不接收公众输入�
 
 ## beUI 组件文章
 
-[十组件介绍](../../src/content/works/beui-motion-lab/zh.mdx)是一篇永久中文体验文章，每节包括用途、操作、预期与上游来源。src/components/beui保存MIT组件与本地许可，src/components/demos/beui每项单独入口，正文使用client:visible。Motion处理交互动画，Marquee使用CSS，悬停暂停。
+[十组件介绍](../../src/content/works/beui-motion-lab/zh.mdx)是一篇永久中文体验文章，每节包括用途、操作、预期与上游来源。src/components/beui保存MIT组件与本地许可，src/components/demos/beui每项单独入口，正文使用client:visible。Motion处理交互动画，Marquee使用CSS，悬停暂停。黑色演示容器统一16px圆角与左右16px留白；最窄手机略缩页签按钮的横向内边距，避免三项挤出内容区。
 
 beui.css通过Tailwind Vite插件编译，只扫描上述两个目录，不导入Preflight；主题和基础元素修正限定.beui-demo。预览保留原站英文文案、参数与变体，使用原站Geist本地字体及lucide-react图标；cn使用clsx与tailwind-merge处理类合并。维护上游组件时保留许可证并重新对照原站。新增演示目录须加入CSS的@source。每篇MDX预算包含该文全部延迟组件和共享运行时，见[系统规则](rules.md)。
 
