@@ -67,7 +67,7 @@ src/content/works/<id>/
 | presentation            | card（mediaId、image/motion/audio/embed模式、cover/contain）、detail.items顺序、静态fallbackId                          |
 | 语言文件的mediaText[id] | title、图像alt、caption/hint、chapters标签、transcript（可带start）、columns标签、context与keyResults（值/标签/上下文） |
 
-字幕使用zh/en WebVTT；章节ID唯一且时间递增，不能超出duration。图表dataset只接受随站发布的/media/_.json或/media/_.csv本地文件；外部原始数据先核对并保存本地，浏览器不直连远端数据源，保持connect-src self。图表只接受有界的纯数值JSON行数组或CSV（不支持带引号单元格），列名必须与映射一致，拒绝空值、非有限数字、超行数和超体积；keyResults是带上下文的编辑摘要，不能用装饰图替代数值。来源更新日期dataAsOf与原始采集时间分别说明。
+字幕使用zh/en WebVTT；章节ID唯一且时间递增，不能超出duration。图表dataset只接受随站发布的`/media/*.json`或`/media/*.csv`本地文件；外部原始数据先核对并保存本地，浏览器不直连远端数据源，保持connect-src self。图表只接受有界的纯数值JSON行数组或CSV（不支持带引号单元格），列名必须与映射一致，拒绝空值、非有限数字、超行数和超体积；keyResults是带上下文的编辑摘要，不能用装饰图替代数值。来源更新日期dataAsOf与原始采集时间分别说明。
 
 本地路径仅允许public下的/media和/images，校验符号链接越界、缺文件、实际字节、字幕头和数值；外站仅允许登记HTTPS来源，远端内容及真实尺寸需编辑实查。搜索只投影卡片所需海报、短源、时长、试听波形或嵌入ID，不投影完整录音、字幕、图表数据、演示配置和全文媒体说明。媒体资料、展示和原文mediaText纳入原文摘要，旧的无媒体作品摘要保持原规则。
 
