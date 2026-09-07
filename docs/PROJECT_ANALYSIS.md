@@ -14,7 +14,7 @@ code-sources:
     'src/scripts/search.ts',
     'scripts/build.ts',
   ]
-code-revision: 'dd47c7de3075753fbdd9521a9d77ea02c3a043aa964ebf8cdb57571143eb4365'
+code-revision: '7688c3b8346a5a74045a3e6a6b7c3e32590436c6cbf1101aed24361eae990182'
 ---
 
 # VIBES项目总览
@@ -39,13 +39,13 @@ Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物
 
 ## 现在能完成什么
 
-| 你关心的问题               | 看这里                                      | 主要代码                                               |
-| -------------------------- | ------------------------------------------- | ------------------------------------------------------ |
-| 访客怎样找到作品           | [浏览与搜索](features/explore-browse.md)    | src/components/Explore.astro、src/scripts/explore.ts   |
-| 怎样阅读、换语言和继续探索 | [阅读详情](features/article-read.md)        | src/components/WorkDetail.astro、src/scripts/detail.ts |
-| 怎样日常更新原文与译文     | [维护内容](features/content-maintenance.md) | src/lib/content/、scripts/validate-content.ts          |
-| 怎样检查并发布到测试站     | [检查与发布](features/project-commands.md)  | scripts/release.ts、.github/workflows/check.yml        |
-| 怎样让文档跟代码一起变化   | [维护文档](features/document-governance.md) | scripts/docs-check.ts、scripts/docs-sources.ts         |
+| 你关心的问题             | 看这里                                      | 主要代码                                               |
+| ------------------------ | ------------------------------------------- | ------------------------------------------------------ |
+| 访客怎样找到作品         | [浏览与搜索](features/explore-browse.md)    | src/components/Explore.astro、src/scripts/explore.ts   |
+| 怎样阅读与继续探索       | [阅读详情](features/article-read.md)        | src/components/WorkDetail.astro、src/scripts/detail.ts |
+| 怎样日常更新原文与译文   | [维护内容](features/content-maintenance.md) | src/lib/content/、scripts/validate-content.ts          |
+| 怎样检查并发布到测试站   | [检查与发布](features/project-commands.md)  | scripts/release.ts、.github/workflows/check.yml        |
+| 怎样让文档跟代码一起变化 | [维护文档](features/document-governance.md) | scripts/docs-check.ts、scripts/docs-sources.ts         |
 
 中英文路由、原文先发布、译文复核状态和全文搜索均已实现；英文内容量取决于实际发布文件，不代表全部译文完成。当前数量以`npm run content:validate`输出为准，不在多篇文档手抄同一组易过期数字。几千条内容与日更是规模目标，日常编辑发布仍由维护者执行。
 
@@ -59,20 +59,20 @@ flowchart TD
   D --> E[main检查后自动发布至vibes.college]
   E --> F[访客浏览完整静态页面]
   F --> G[开始搜索时才加载同站索引]
-  F --> H[点击卡片进入完整详情，展开已有正文]
+  F --> H[点击卡片进入完整详情，连续阅读完整正文]
 ```
 
-构建框架是Astro，语言是TypeScript，样式是普通CSS。站内阅读使用Astro ClientRouter连续切换并有限预取详情，搜索仍按需加载；规则和缓存边界见[系统规则](system/rules.md)。没有React、Tailwind或线上业务数据库；Node与依赖版本以[运行配置](system/configuration.md)所链接的package.json/锁文件为准。
+构建框架是Astro，语言是TypeScript，样式是普通CSS，正文复用Prose UI独立样式，并在构建时编译Markdown组件与公式。站内阅读使用Astro ClientRouter连续切换并有限预取详情，搜索仍按需加载；规则和缓存边界见[系统规则](system/rules.md)。没有React、Tailwind或线上业务数据库；Node与依赖版本以[运行配置](system/configuration.md)所链接的package.json/锁文件为准。
 
 访客请求不会触发登录、订单或内容提交服务。robots.txt和sitemap.xml也在构建时生成，并非动态业务接口；说明见[接口与外部服务](system/interfaces.md)。
 
 ## 产品要求放在哪里维护
 
 - 发现、分类、搜索、语言目录及手机卡片行为归[浏览与搜索](features/explore-browse.md)。
-- 手机优先的“原站链接→预览→介绍/信息→折叠正文”、首尾不循环、表格与来源归[阅读详情](features/article-read.md)。
+- 手机优先的“顶部导航→作品概览→整屏正文”、常显正文、进度目录、分章表情评价、相邻手势和来源归[阅读详情](features/article-read.md)。
 - 中英发布、可选事实、稳定身份及关联数据归[内容维护](features/content-maintenance.md)与[数据结构](system/content-model.md)。
 - 中文界面显示中文分类，英文界面显示英文分类；“紧凑英文分类”是旧描述，不再当作当前两种语言共同规则。
-- 设计采用系统字体与渐进阅读；借鉴Wikipedia的来源追溯、Are.na的内容关联及roadmap的清晰层级，不复制品牌或源码。参考图已移除，当前行为以功能文档和源码为准。
+- 外壳采用系统字体，正文采用Geist与本机中文字体、暖白背景和渐进阅读；借鉴Wikipedia的来源追溯、Are.na的内容关联及roadmap的清晰层级，不复制品牌或源码。参考图已移除，当前行为以功能文档和源码为准。
 
 ## 实现、验收与部署分开看
 

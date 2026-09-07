@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '7baaf635ec76f7e6cedafe96efdf6ea08d7ff9d116b3b3fca147c203f6c8adb7'
+code-revision: 'c27684d45488e6a9b7b3bcffe9ada4917352f16c86be28856a1a6b2b01fbf321'
 ---
 
 # 检查与发布
@@ -33,7 +33,7 @@ Draft仅运行独立的Draft progress（npm run check，不启动浏览器或预
 
 PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA累计比较到当前源码，无法读取/非法/非当前历史时完整检查，防止旧网页提交被后续文档提交挤掉而漏发；checkout获取完整历史。冻结检查仍以事件比较提交和main共同祖先为准。DOCS_BASE_REF提供比较提交；冻结检查取它与origin/main的共同祖先，仅冻结已进入main的历史，不把未合并分支的complete稿提前冻结。无远端main的本地测试仓库可使用本地main，找不到有效基线仍失败。CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
 
-每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。
+每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。整套浏览器用例串行执行，降低单个本地Worker的并发连接压力；全部设备与用例仍执行，不自动重试。浏览器测试关闭普通页面及独立缓存profile前等待有限资源请求结束，超时仍失败，避免本地代理在截断响应时退出；断言不重试。
 
 功能文档可按操作路径归并；旧编号通过legacy-feature-ids追溯，缺失对应、重复编号或来源缺失仍失败。历史规格正文与现有冻结检查不变。
 
@@ -112,6 +112,8 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 
 本地与CI使用同一配置和测试文件。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
 
+测试页面关闭前等待静态资源传输结束，10秒内仍未空闲即失败；这是对Wrangler本地代理中断响应会退出问题的防护，不重试测试或吞掉错误。公共fixture见tests/browser-test.ts。
+
 手机项目包含Chromium与WebKit设备模拟，包含触摸横滑和320px列表/详情检查，不代表真实iPhone Safari通过。导航缓存测试使用隔离空持久profile验证缓存复用，桌面项目另等待真实60秒TTL验证过期后读取。ego-browser仅在有视觉或体验验收目的时按需使用，不是自动化E2E前提。`npx playwright test --headed`可查看测试过程，运行前先构建。
 
 ## 数据库和部署边界
@@ -128,7 +130,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 - `npm run content:validate`检查整个目录并报告各语言发布数量，不写文件。
 - `npm run content:revision -- <id>`报告当前原文摘要、语言状态与待复核标记，不批准或发布翻译。
-- `npm run build`先校验内容，再Astro构建，最后为dist生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容或校验失败停止。
+- `npm run build`先校验内容，再Astro完整重编译内容缓存并构建，最后为dist生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容或校验失败停止。
 - `node --experimental-strip-types scripts/measure-explore.ts`在.scratch生成隔离5000×2样例、构建、验证分页/正文搜索并测冷/热延迟；会使用系统分配的独立空闲端口，结束清理。真实内容和dist不覆盖，不部署样例；报告位于resources/evidence/001-multilingual-explore/。
 
 英文发布前须核对全文再记录sourceRevision；原文修改使旧译文标待复核，更新摘要前必须再次审核。详细字段见[内容维护](../features/content-maintenance.md)。

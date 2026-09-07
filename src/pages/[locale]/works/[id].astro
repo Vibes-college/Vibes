@@ -2,6 +2,12 @@
 import { getEntry } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import WorkDetail from '../../../components/WorkDetail.astro';
+import SectionReaction from '../../../components/SectionReaction.astro';
+import '../../../styles/section-reactions.css';
+import 'virtual:prose-ui.css';
+import '../../../styles/prose.css';
+import '@prose-ui/style/katex.css';
+import ReadingProgress from '../../../components/ReadingProgress.astro';
 import { catalog, getWorks } from '../../../data/works';
 import { articleSections } from '../../../data/article-sections';
 import { validateFactAnchors } from '../../../data/work-facts';
@@ -38,14 +44,12 @@ const alternates = locales.flatMap((locale) => {
         {
           sections.map((section) =>
             section.heading ? (
-              <details class="reading-section">
-                <>
-                  <summary>
-                    <Fragment set:html={section.heading} />
-                  </summary>
+              <section class="reading-section">
+                <SectionReaction heading={section.heading} locale={work.locale} />
+                <div class="section-content">
                   <Fragment set:html={section.body} />
-                </>
-              </details>
+                </div>
+              </section>
             ) : (
               <Fragment set:html={section.body} />
             ),
@@ -53,5 +57,8 @@ const alternates = locales.flatMap((locale) => {
         }
       </WorkDetail>
     </article>
+    <ReadingProgress sections={sections} locale={work.locale} />
   </main>
 </Layout>
+
+<script src="../../../scripts/prose.ts"></script>

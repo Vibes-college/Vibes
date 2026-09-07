@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-test.ts';
 
 const first = '/zh/works/attention-is-all-you-need/';
 const second = '/zh/works/transformers-js/';
@@ -25,7 +25,10 @@ test('continuous lifecycle survives adjacent reading, history, search and langua
   await page.getByRole('searchbox').fill('Transformer');
   await expect(page.locator('[data-search-grid] .card-link').first()).toBeVisible();
   await page.locator(`.card-link[href="${first}"]:visible`).click();
+  await expect(page.locator('.language-switch')).toHaveCount(0);
+  await page.locator('[data-back-link]').click();
   await page.locator('.language-switch a[hreflang="en"]').click();
+  await page.locator('.card-link[href="/en/works/attention-is-all-you-need/"]:visible').click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await page.locator('[data-back-link]').click();
   await page.getByRole('searchbox').fill('Transformer');
@@ -250,7 +253,14 @@ test('completed prefetch is reused in a persistent browser context', async ({
       ).toBeGreaterThan(0);
     }
   } finally {
-    await context.close();
+    // This independent profile does not use browser-test's page teardown fixture.
+    try {
+      await Promise.all(
+        context.pages().map((page) => page.waitForLoadState('networkidle', { timeout: 10_000 })),
+      );
+    } finally {
+      await context.close();
+    }
   }
 });
 

@@ -7,6 +7,7 @@ legacy-feature-ids: ['explore-filter', 'not-found', 'responsive-access']
 code-sources:
   [
     'src/components/Explore.astro',
+    'src/components/LanguageSwitch.astro',
     'src/components/Preview.astro',
     'src/components/LegacyRedirect.astro',
     'src/layouts/Layout.astro',
@@ -26,7 +27,7 @@ code-sources:
     'public/icons/',
     'tests/explore.spec.ts',
   ]
-code-revision: 'b9fefdebe2bdcbe79eacac8f71ea7780318469a55bd0c6e3dc84151bb72a07ef'
+code-revision: '1e86496b48fcea73107ef9ba11dd1339410c57f47f3f9ddfc18488d2f2f11756'
 ---
 
 # 功能名：浏览与搜索作品

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005']
+shaped-by: ['001', '003', '005', '006', '007']
 code-sources:
   [
     'src/lib/content/',
@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'd2b94abcf1a7983a2573ef3bc36da8cb2bf058d17df97ab3236d4c09e599e411'
+code-revision: 'daf86a53f13ec2d2091fb7e7e680c23f3816a9994f988287adbfd40a25529dd7'
 ---
 
 # 常量、规则表与正则
@@ -49,7 +49,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 
 | 名称 / 规则     | 当前值或行为                                                                                                  | 定义位置                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 体积预算        | JS gzip 总量 < 15000 字节；首页 gzip < 40000；交互源码 < 12000                                                | scripts/budget-policy.ts；被 scripts/budget.ts 和 tests/explore.spec.ts 复用 |
+| 体积预算        | JS gzip 总量 < 21000 字节；首页 gzip < 40000；交互源码 < 12000                                                | scripts/budget-policy.ts；被 scripts/budget.ts 和 tests/explore.spec.ts 复用 |
 | 空产物          | 没有 JS 文件时失败；不能把空包算通过                                                                          | scripts/budget.ts；tests/explore.spec.ts                                     |
 | 篇幅提示        | 代码文件超过300行提示审阅职责，不阻断检查                                                                     | scripts/docs-check.ts；AGENTS.md                                             |
 | 格式            | 单引号、100 字符目标行宽、Astro parser；完整检查范围见忽略文件                                                | .prettierrc.json；.prettierignore                                            |
@@ -88,15 +88,15 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 
 ## Explore 手机布局和详情规则
 
-| 规则                                  | 用途                                                                                                      | 来源                                                   |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| 分类字号 12px、纵向内边距 10px        | 紧凑英文分类；首页卡片保持原样                                                                            | src/styles/base.css；src/styles/responsive.css         |
-| 详情最大宽 780px；首屏最小高度 100svh | 手机首屏展示概览，桌面限制阅读宽度                                                                        | src/styles/detail.css                                  |
-| 每条内容的作者、类型、主题信息        | 作者查同作者；类型查同类；主题进入正文，不编造不存在的 Prompt                                             | src/data/work-facts.ts                                 |
-| 相邻作品按 works 顺序；首尾不循环     | 左右滑动、按钮、键盘切换；浏览器返回仍可用                                                                | src/components/WorkDetail.astro；src/scripts/detail.ts |
-| 横移至少 70px 且超过纵移的 1.4 倍     | 区分切换与上下滚动；多指、表格、输入等不触发                                                              | src/scripts/detail.ts                                  |
-| `<h2(?:\s[^>]*)?>[\s\S]*?<\/h2>`      | 对本地已编译可信 Markdown 按二级标题切分，原生 details 默认关闭，保留完整内容和锚点；不是任意 HTML 清洗器 | src/data/article-sections.ts                           |
-| 正文 16px/24px；表格 14px/24px        | 沿用现有 Arena 风格正文，章节目录标题单独使用 19–20px                                                     | src/styles/article.css；src/styles/detail.css          |
+| 规则                                        | 用途                                                                                                                                                               | 来源                                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| 分类字号 12px、纵向内边距 10px              | 紧凑英文分类；首页卡片保持原样                                                                                                                                     | src/styles/base.css；src/styles/responsive.css                                 |
+| 详情最大宽780px，两屏至少100svh             | 概览与正文独立换页，无滚动吸附；单指位移72px后松手翻页，280ms短幅淡入，未达门槛保持当前页；长内容原生滚动；顶部44px导航，图标15px，点击区域40×44px                 | src/styles/detail.css；src/scripts/detail-paging.ts                            |
+| 每条内容的作者、类型、主题信息              | 作者查同作者；类型查同类；主题进入正文，不编造不存在的 Prompt                                                                                                      | src/data/work-facts.ts                                                         |
+| 相邻作品按works顺序；首尾不循环             | 左右滑动、按钮、键盘切换，短距离方向过渡；浏览器返回仍可用                                                                                                         | src/components/WorkDetail.astro；src/scripts/detail-transition.ts              |
+| 横移14px且超过纵移1.4倍锁方向，松手至少70px | 锁定后纵向跟手；空白长按380ms显现，只长按松手不切换。多指、选文、控件、表格/代码和屏幕边缘24px排除                                                                 | src/scripts/detail-gestures.ts                                                 |
+| 按编译后的二级标题切分正文                  | 全部章节常显，无序号或正文引导语；保留内容与锚点，不是任意HTML清洗器                                                                                               | src/data/article-sections.ts；src/pages/[locale]/works/[id].astro              |
+| 正文16px/1.85；标题18–20px，进度目录14px    | 接近正文才初始化；进入正文32px后停用根滚动停靠，回到入口恢复；底部胶囊仅在正文出现，500ms尺寸回弹、220ms文字交叉淡入、目录逐项显示及圆环追随；减少动态偏好即时完成 | src/styles/article.css；src/styles/detail.css；src/scripts/reading-progress.ts |
 
 ## 文档治理检查与篇幅提示
 
@@ -114,7 +114,7 @@ scripts/docs-index.ts读取当前功能说明的可选legacy-feature-ids数组�
 
 ## 搜索资源与托管容量
 
-scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。首屏JS仍保守计入_astro全部自有JS；双语首页取gzip较大者；首页40000字节及交互源码12000字节预算保留。连续导航增加框架运行时代码，JS预算经用户同意调整至15000字节，实测与取舍见[005研究](../../specs/005-continuous-navigation/research.md)。
+scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。总脚本预算计入_astro全部JS，包括延迟加载模块，不作为首屏下载量；双语首页取gzip较大者；首页40000字节及交互源码12000字节预算保留。经用户同意小幅放宽，JS总预算为21000字节，计入正文交互与分章表情；整页加载完成且正文可见1.5秒后空闲预加载（空闲最长等待3秒），省流量仅点击加载。后台、离开正文或换页取消尚未开始的准备；提前点击立即加载。构建不为动态目标自身生成modulepreload，保留其依赖准备，防止WebKit下载失败后无法刷新重试。实测与取舍见[007研究](../../specs/007-section-reactions/research.md)。
 
 scripts/budget-policy.ts及tests/unit/budget.test.ts校验Workers静态资源：Free每版本20,000文件，Paid100,000文件，单文件最多25MiB；默认采用Free，实际账户套餐须发布前核对。依据[Cloudflare官方限制](https://developers.cloudflare.com/workers/platform/limits/)。普通budget报告数量，受控发布按账户容量阻断。
 
@@ -131,3 +131,5 @@ scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序�
 生产origin固定https://vibes.college，worker/account见scripts/release-policy.ts与wrangler.jsonc；ci-policy.ts只允许main push确切SHA和两个成功检查进入生产。release-artifact.ts验证产物SHA与摘要；release-smoke.ts每请求10秒超时、最多6轮、轮间5秒。cleanup-policy.ts拒绝未合并/未部署/合并未进入线上/额外提交/脏文件/占用/其他open PR依赖；具体占用由本机AI核对后显式声明；真实配置与证据等ignored文件受保护，当前目录及其子目录/符号链接不得被移除。
 
 docs/DECISIONS.md只能追加，原LESSONS历史迁移时保留旧正文；新的docs/LESSONS.md为living。docs-lessons.ts要求经验三行、日期有效、现象/原因/证据/措施/状态齐全，不超过30条；已转化另需验证和转化日期。30天后的有效性和是否适合清退由AI审阅，不自动删除。记录条件见经验文档，规则不能证明叙事真实性。
+
+正文组件、暖白底色、字体与扩展参数统一见[Markdown排版](markdown.md)。

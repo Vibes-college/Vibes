@@ -21,6 +21,8 @@ Markdown是给你看的代码说明，不是另一套可以晚些更新的报告
 | 数值限制、样式约束和校验规则是什么       | [系统规则](system/rules.md)                |
 | 怎样检查、审阅、发布与恢复               | [检查与发布](system/checks-and-release.md) |
 
+正文组件与扩展语法见[Markdown排版](system/markdown.md)。
+
 ## 目录只按阅读目的划分
 
 ```text

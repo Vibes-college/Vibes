@@ -1,0 +1,81 @@
+---
+import '../styles/reading-progress.css';
+import type { ArticleSection } from '../data/article-sections';
+interface Props {
+  sections: ArticleSection[];
+  locale: string;
+}
+const { sections, locale } = Astro.props;
+const entries = sections.flatMap(({ heading }) => {
+  const id = heading.match(/\bid="([^"]+)"/)?.[1];
+  if (!id) return [];
+  const title = heading.replace(/^<h2[^>]*>|<\/h2>$/g, '');
+  const short =
+    new Map([
+      ['带着一个小练习继续探索', '动手探索'],
+      ['来源与延伸阅读', '延伸阅读'],
+      ['让模型成为网页的一部分', '网页里的模型'],
+      ['“在浏览器运行”意味着什么', '浏览器运行'],
+    ]).get(title) ?? title;
+  return [{ id, title, short }];
+});
+---
+
+{
+  entries.length > 0 && (
+    <nav
+      class="reading-progress"
+      aria-label={locale === 'zh' ? '正文目录与阅读进度' : 'Reading progress and sections'}
+      data-pagefind-ignore
+      hidden
+    >
+      <div class="progress-surface">
+        <button
+          class="progress-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="reading-menu"
+          aria-label={locale === 'zh' ? '打开章节目录' : 'Show sections'}
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              opacity=".15"
+            />
+            <circle
+              data-progress-ring
+              cx="12"
+              cy="12"
+              r="10"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              pathLength="100"
+              stroke-dasharray="100"
+              stroke-dashoffset="100"
+            />
+          </svg>
+          <span class="progress-label">
+            <Fragment set:html={entries[0].short} />
+          </span>
+        </button>
+        <div class="progress-menu" id="reading-menu" inert>
+          {entries.map(({ id, short }, index) => (
+            <a href={`#${id}`} style={`--item:${index}`}>
+              <span class="progress-dot" aria-hidden="true" />
+              <span>
+                <Fragment set:html={short} />
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </nav>
+  )
+}

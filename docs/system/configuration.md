@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: 'f383a3a7024c819b2d286fafdd6a27da4cf94824ca4813d01a97fdc637f29bad'
+code-revision: 'b57689553eb454ac4b60ff163ee77159c0b32735d947f03248053d64d5f50282'
 ---
 
 # 配置和环境变量
@@ -49,6 +49,10 @@ code-revision: 'f383a3a7024c819b2d286fafdd6a27da4cf94824ca4813d01a97fdc637f29bad
 | 正式域名            | `vibes.college`，用户已于2026-09-06授权  | wrangler.jsonc的Custom Domain；已转接上线；发布与恢复结果见交付说明 |
 | 缓存与安全响应头    | 本站来源限制、禁止嵌入、构建资源缓存一年 | `public/_headers`                                                   |
 
+## Markdown与排版依赖
+
+Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，没有React或Tailwind运行时。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
+
 ## 环境变量名称
 
 发布构建必须设置SITE_URL；当前网站没有必填业务密钥，没有登录、支付、邮件或 AI API 密钥。因此 `.dev.vars.example` 仅有说明，没有为了凑模板而增加无用变量。
@@ -61,7 +65,7 @@ code-revision: 'f383a3a7024c819b2d286fafdd6a27da4cf94824ca4813d01a97fdc637f29bad
 | `GITHUB_TOKEN`                                  | GitHub Actions 临时提供 | CI 读取代码所需的平台身份；普通检查授予 `contents: read`，发布job另有 `deployments: write`；无需手填 |
 | `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | Wrangler 自动部署身份   | Token仅放GitHub production环境secret；account由固定releaseTarget提供；本机OAuth用于阶段预览          |
 
-本地与CI均运行Playwright Chromium和WebKit；按实际环境报告结果。生产发布由GitHub检查工作流负责，不再配置第二套Cloudflare Git自动发布，以免抢先上线或重复构建。
+本地与CI均以1个worker串行运行Playwright Chromium和WebKit，包括reactions.spec.ts的分章评价加载与保存回归；按实际环境报告结果。生产发布由GitHub检查工作流负责，不再配置第二套Cloudflare Git自动发布，以免抢先上线或重复构建。
 
 ## 本地与线上如何保存值
 
@@ -92,5 +96,7 @@ eslint.config.mjs与.prettierignore排除.scratch合成内容和产物；它们�
 CLOUDFLARE_API_TOKEN只授予部署所需Worker脚本编辑及vibes.college域名相关权限；仅发布job注入，不传给PR检查。身份配置由AI完成，缺少登录/授权时给用户具体步骤；不把短期本机OAuth复制为长期CI secret。GitHub production环境已于2026-09-06通过API建立，限制部署分支为main；环境secret已配置并验证令牌有效、域名和目标Worker可读取，权限为指定账户Workers Scripts编辑、vibes.college的Workers Routes编辑与Zone读取；首次自动部署已由[main运行34029233677](https://github.com/Vibes-college/Vibes/actions/runs/34029233677)及[线上验收](https://github.com/Vibes-college/Vibes/pull/3#issuecomment-5558821204)确认成功。后续仍按每次实际发布记录判断状态。
 
 wrangler.jsonc使用workers_dev:false、preview_urls:true和唯一vibes.college custom_domain。预览使用版本URL而非独立测试Worker，生产构建SITE_URL=https://vibes.college，PR预览同canonical并加noindex。发布元数据/__release.json仅公开源码SHA和产物摘要，不包含秘密。
+
+astro.config.mjs在客户端构建中让动态目标由原生import下载，仅并行准备其依赖，避免WebKit将失败的modulepreload一直留在缓存；现有搜索失败后刷新重试回归覆盖。
 
 Astro在公共布局启用ClientRouter，`prefetchAll:false`关闭全站自动策略，由`src/scripts/reading-prefetch.ts`选取有限阅读目标。`public/_headers`为中英文页面设置60秒公开缓存，构建哈希资源仍缓存一年；详见[系统规则](rules.md)。

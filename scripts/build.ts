@@ -13,7 +13,9 @@ const catalog = readCatalog();
 const hasPublished = catalog.works.some((work) =>
   Object.values(work.versions).some((version) => version.data.status === 'published'),
 );
-run(process.execPath, ['node_modules/astro/bin/astro.mjs', 'build']);
+// Custom Markdown plugins and public image dimensions can change without Markdown edits.
+// A full content rebuild prevents Astro from publishing stale rendered HTML.
+run(process.execPath, ['node_modules/astro/bin/astro.mjs', 'build', '--force']);
 // 显式指定正文根；全站没有发布作品时也不能回退去索引导航页面。
 if (hasPublished)
   run(process.execPath, [
