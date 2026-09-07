@@ -19,3 +19,5 @@ shaped-by: ['002']
 当前任务看in-progress；draft仍需审阅。新规格complete表示实现完成，进入main后冻结；历史merged状态保留兼容。这里不记录PR是否已经合并或线上部署到哪个版本，分别以Git/PR及发布记录为准。当前行为看[功能索引](../docs/features/README.md)，历史feature-ids通过当前说明legacy-feature-ids追溯。
 
 | [005 连续阅读与详情预取](005-continuous-navigation/spec.md) | complete | article-read, explore-browse |
+
+| [006 详情页导航与渐进阅读](006-detail-reading/spec.md) | in-progress | article-read |

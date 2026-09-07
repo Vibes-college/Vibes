@@ -2,7 +2,7 @@
 tense: 'frozen'
 describes: '连续阅读与有界详情预取'
 status: 'complete'
-amended-by: []
+amended-by: ['006']
 feature-ids: ['article-read', 'explore-browse']
 amends: ['001']
 approved-artifacts: []
