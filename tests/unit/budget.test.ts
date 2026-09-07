@@ -9,6 +9,7 @@ test('budget rejects each oversized or invalid measurement', () => {
     mdxJavascriptGzip: 100,
     homepageGzip: 200,
     interactionSource: 300,
+    largestOptimizedImage: 400,
   };
   assert.doesNotThrow(() => assertBudget(small));
   for (const key of Object.keys(budgetLimits) as (keyof typeof budgetLimits)[]) {

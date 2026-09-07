@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: '3168aeae6f0af0ff2cda5c42b17f05e61733ebd4124fad0491888cae21525de2'
+code-revision: 'd8033155bad1f9e7cbcba9cfdfcd33c7f2c2010c08e360edde6bec3905f179dc'
 ---
 
 # 配置和环境变量

@@ -10,6 +10,8 @@ const sizes = {
     ...['zh', 'en'].map((locale) => gzipSync(readFileSync(`dist/${locale}/index.html`)).length),
   ),
   interactionSource: statSync('src/scripts/explore.ts').size,
+  largestOptimizedImage: JSON.parse(readFileSync('dist/image-manifest.json', 'utf8'))
+    .largestOutputBytes,
 };
 assertBudget(sizes);
 console.table(

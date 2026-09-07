@@ -64,7 +64,7 @@ test('prose images support keyboard zoom, Escape, focus restoration and cleanup'
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(page.getByRole('dialog').locator('img').first()).toHaveJSProperty(
     'naturalWidth',
-    3820,
+    1440,
   );
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);

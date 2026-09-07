@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'bd73c3128e542cca80efbe809cb4178ab99fc3840d935b67fd0f382054a65a0c'
+code-revision: '5f2a339f264b1d82fac5da1c9719100cdf5614d95d93919a4a8186c97e9c9616'
 ---
 
 # 常量、规则表与正则
@@ -47,29 +47,29 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 
 ## 检查与运行规则
 
-| 名称 / 规则     | 当前值或行为                                                                                                  | 定义位置                                                                     |
-| --------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 体积预算        | 公共JS gzip < 21000；每篇MDX额外JS gzip < 150000；首页 gzip < 40000；交互源码 < 12000                         | scripts/budget-policy.ts；被 scripts/budget.ts 和 tests/explore.spec.ts 复用 |
-| 空产物          | 没有 JS 文件时失败；不能把空包算通过                                                                          | scripts/budget.ts；tests/explore.spec.ts                                     |
-| 篇幅提示        | 代码文件超过300行提示审阅职责，不阻断检查                                                                     | scripts/docs-check.ts；AGENTS.md                                             |
-| 格式            | 单引号、100 字符目标行宽、Astro parser；完整检查范围见忽略文件                                                | .prettierrc.json；.prettierignore                                            |
-| Node 与工具版本 | Node >=22.20.0；具体依赖版本由锁文件决定                                                                      | package.json；package-lock.json                                              |
-| 类型规则        | 网站 strict；工具 NodeNext/ES2023/strict/noEmit                                                               | tsconfig.json；tsconfig.tools.json                                           |
-| CI              | push、PR、手动触发；verify 最多 15 分钟，budget 最多 10 分钟；只读 contents                                   | .github/workflows/check.yml                                                  |
-| 浏览器选择      | 本地与CI统一Playwright Chromium和WebKit                                                                       | playwright.config.ts                                                         |
-| 预览端口        | 本机 4322；E2E 要求端口空闲；开发默认端口以 Astro 打印为准                                                    | package.json；scripts/test-e2e.ts；playwright.config.ts                      |
-| 服务等待        | Playwright webServer最多60000ms                                                                               | playwright.config.ts                                                         |
-| 单项测试超时    | 单项测试使用Playwright默认30000ms                                                                             | playwright.config.ts                                                         |
-| 页面断言等待    | Playwright自动等待，expect默认5000ms                                                                          | playwright.config.ts                                                         |
-| 手机验收尺寸    | desktop-chromium / mobile-chromium / mobile-webkit，另有320×700检查；不代表真机Safari                         | playwright.config.ts；tests/explore.spec.ts                                  |
-| 阅读验收        | LoRA 正文 >700 字、包含低秩矩阵、表格与来源标题；禁止 dialog                                                  | tests/explore.spec.ts                                                        |
-| 嵌入和卡片      | 不包含 iframe/video/audio；简介最多两行                                                                       | tests/explore.spec.ts；src/styles/base.css                                   |
-| 本地数据库限制  | reset/migrate 是唯一入口，不接受额外参数；固定 --local                                                        | scripts/local-tools.ts；scripts/database.ts                                  |
-| 数据位置        | .wrangler/project-local；重建只删其 v3/d1                                                                     | scripts/local-tools.ts；scripts/database.ts                                  |
-| 测试数据        | local_test_records 的两个固定记录；name 唯一且必填                                                            | db/migrations/0001_local_test_records.sql；db/seed.sql                       |
-| Cloudflare 配置 | 兼容日期 2026-09-04；静态 dist；404-page；本地绑定 remote:false                                               | wrangler.jsonc；wrangler.local.jsonc                                         |
-| 缓存与安全      | 中英文HTML缓存60秒并要求过期验证，构建文件缓存31536000秒；nosniff、strict-origin-when-cross-origin、DENY、CSP | public/_headers（完整原文见下方）                                            |
-| 图形类型        | network/earth 使用 dark 标志；network/plot/wave/audio/earth/field/shapes 绘制 SVG；paper 用模拟横线           | src/components/Preview.astro                                                 |
+| 名称 / 规则     | 当前值或行为                                                                                                     | 定义位置                                                                     |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| 体积预算        | 公共JS gzip < 21000；每篇MDX额外JS gzip < 150000；首页 gzip < 40000；交互源码 < 12000；优化图片最大文件 < 204800 | scripts/budget-policy.ts；被 scripts/budget.ts 和 tests/explore.spec.ts 复用 |
+| 空产物          | 没有 JS 文件时失败；不能把空包算通过                                                                             | scripts/budget.ts；tests/explore.spec.ts                                     |
+| 篇幅提示        | 代码文件超过300行提示审阅职责，不阻断检查                                                                        | scripts/docs-check.ts；AGENTS.md                                             |
+| 格式            | 单引号、100 字符目标行宽、Astro parser；完整检查范围见忽略文件                                                   | .prettierrc.json；.prettierignore                                            |
+| Node 与工具版本 | Node >=22.20.0；具体依赖版本由锁文件决定                                                                         | package.json；package-lock.json                                              |
+| 类型规则        | 网站 strict；工具 NodeNext/ES2023/strict/noEmit                                                                  | tsconfig.json；tsconfig.tools.json                                           |
+| CI              | push、PR、手动触发；verify 最多 15 分钟，budget 最多 10 分钟；只读 contents                                      | .github/workflows/check.yml                                                  |
+| 浏览器选择      | 本地与CI统一Playwright Chromium和WebKit                                                                          | playwright.config.ts                                                         |
+| 预览端口        | 本机 4322；E2E 要求端口空闲；开发默认端口以 Astro 打印为准                                                       | package.json；scripts/test-e2e.ts；playwright.config.ts                      |
+| 服务等待        | Playwright webServer最多60000ms                                                                                  | playwright.config.ts                                                         |
+| 单项测试超时    | 单项测试使用Playwright默认30000ms                                                                                | playwright.config.ts                                                         |
+| 页面断言等待    | Playwright自动等待，expect默认5000ms                                                                             | playwright.config.ts                                                         |
+| 手机验收尺寸    | desktop-chromium / mobile-chromium / mobile-webkit，另有320×700检查；不代表真机Safari                            | playwright.config.ts；tests/explore.spec.ts                                  |
+| 阅读验收        | LoRA 正文 >700 字、包含低秩矩阵、表格与来源标题；禁止 dialog                                                     | tests/explore.spec.ts                                                        |
+| 嵌入和卡片      | 不包含 iframe/video/audio；简介最多两行                                                                          | tests/explore.spec.ts；src/styles/base.css                                   |
+| 本地数据库限制  | reset/migrate 是唯一入口，不接受额外参数；固定 --local                                                           | scripts/local-tools.ts；scripts/database.ts                                  |
+| 数据位置        | .wrangler/project-local；重建只删其 v3/d1                                                                        | scripts/local-tools.ts；scripts/database.ts                                  |
+| 测试数据        | local_test_records 的两个固定记录；name 唯一且必填                                                               | db/migrations/0001_local_test_records.sql；db/seed.sql                       |
+| Cloudflare 配置 | 兼容日期 2026-09-04；静态 dist；404-page；本地绑定 remote:false                                                  | wrangler.jsonc；wrangler.local.jsonc                                         |
+| 缓存与安全      | 中英文HTML缓存60秒并要求过期验证，构建文件缓存31536000秒；nosniff、strict-origin-when-cross-origin、DENY、CSP    | public/_headers（完整原文见下方）                                            |
+| 图形类型        | network/earth 使用 dark 标志；network/plot/wave/audio/earth/field/shapes 绘制 SVG；paper 用模拟横线              | src/components/Preview.astro                                                 |
 
 ## 关键正则示例
 
@@ -114,7 +114,7 @@ scripts/docs-index.ts读取当前功能说明的可选legacy-feature-ids数组�
 
 ## 搜索资源与托管容量
 
-scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。脚本预算按scripts/script-budget.ts分析模块引用：普通页公共脚本小于21000字节；每篇MDX额外模块（含React、Motion、所有延迟组件及启动脚本）去重gzip小于150000字节。取最重文章验收，非全站文章累加；同组件重复实例不重复算代码。未归属模块保守计入公共，不作为首屏下载量；双语首页取gzip较大者；首页40000字节及交互源码12000字节预算保留。公共预算计入正文交互与分章表情；整页加载完成且正文可见1.5秒后空闲预加载（空闲最长等待3秒），省流量仅点击加载。后台、离开正文或换页取消尚未开始的准备；提前点击立即加载。构建不为动态目标自身生成modulepreload，保留其依赖准备，防止WebKit下载失败后无法刷新重试。实测与取舍见[007研究](../../specs/007-section-reactions/research.md)。
+scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。脚本预算按scripts/script-budget.ts分析模块引用：普通页公共脚本小于21000字节；每篇MDX额外模块（含React、Motion、所有延迟组件及启动脚本）去重gzip小于150000字节。取最重文章验收，非全站文章累加；同组件重复实例不重复算代码。未归属模块保守计入公共，不作为首屏下载量；双语首页取gzip较大者；首页40000字节、交互源码12000字节及优化图片204800字节预算保留。构建扫描public/images中超过200KB的栅格图片，在dist生成不改源文件的WebP响应式变体和image-manifest.json，并把本地图片补上srcset；优化后的最大输出仍须低于204800字节。公共预算计入正文交互与分章表情；整页加载完成且正文可见1.5秒后空闲预加载（空闲最长等待3秒），省流量仅点击加载。后台、离开正文或换页取消尚未开始的准备；提前点击立即加载。构建不为动态目标自身生成modulepreload，保留其依赖准备，防止WebKit下载失败后无法刷新重试。实测与取舍见[007研究](../../specs/007-section-reactions/research.md)。
 
 scripts/budget-policy.ts及tests/unit/budget.test.ts校验Workers静态资源：Free每版本20,000文件，Paid100,000文件，单文件最多25MiB；默认采用Free，实际账户套餐须发布前核对。依据[Cloudflare官方限制](https://developers.cloudflare.com/workers/platform/limits/)。普通budget报告数量，受控发布按账户容量阻断。
 

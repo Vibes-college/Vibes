@@ -3,6 +3,7 @@ export const budgetLimits = {
   mdxJavascriptGzip: 150_000,
   homepageGzip: 40_000,
   interactionSource: 12_000,
+  largestOptimizedImage: 200 * 1024,
 } as const;
 
 // Cloudflare Workers官方限制，2026-09-05核对；不把付费容量作为账户默认值。

@@ -113,7 +113,9 @@ onPageLoad((signal) => {
     zoom.className = 'prose-image-dialog';
     zoom.setAttribute('aria-label', image.alt || '图片预览');
     const full = document.createElement('img');
-    full.src = image.currentSrc || image.src;
+    // Re-request the optimized fallback so zoom is not limited to whichever
+    // responsive candidate happened to render in the article.
+    full.src = image.src;
     full.alt = image.alt;
     const button = document.createElement('button');
     button.type = 'button';
