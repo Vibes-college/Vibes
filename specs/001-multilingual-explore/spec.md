@@ -16,7 +16,7 @@ feature-ids:
     'project-commands',
   ]
 amends: []
-amended-by: ['007', '006', '004', '005', '009']
+amended-by: ['007', '006', '004', '005', '009', '010']
 approved-artifacts: []
 research-trigger: 'NEEDS CLARIFICATION: 内容规模、中文全文检索与Cloudflare运行边界'
 ---
