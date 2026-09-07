@@ -2,6 +2,7 @@ import { installReactionEntry } from './reaction-entry';
 import { onPageLoad } from './page-lifecycle';
 import { watchReadingLinks } from './reading-prefetch';
 import { installDetailGestures } from './detail-gestures';
+import { installDetailPaging } from './detail-paging';
 import { installReadingProgress } from './reading-progress';
 import { detailNavigation } from './detail-transition';
 
@@ -24,6 +25,7 @@ onPageLoad((signal) => {
     );
   }
   installDetailGestures(detail, navigateWork, signal);
+  installDetailPaging(detail, signal);
   // The cover needs no progress measurements; initialize only as reading approaches.
   const readingObserver = new IntersectionObserver(
     ([entry]) => {

@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '0f7536057888c6b84f12a0982be68becb970374f50c9aef8128a1e149c321077'
+code-revision: '5eebd39918ca9e156c11ec44d0671a97b70f52485a6fff0bc7f840e19ff2c140'
 ---
 
 # 检查与发布

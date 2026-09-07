@@ -11,7 +11,7 @@ amended-by: []
 
 沿用Astro、TypeScript、原生DOM与Web Animations及Heroicons静态资源，无新增依赖。
 WorkDetail.astro负责顶部真实导航、边缘提示和封面下滑入口；正文不显示引导语和末尾原站入口；作品路由保留章节容器与完整标题，全部正文展开；ReadingProgress.astro提供正文目录与圆环。
-detail.css负责文档级两屏scroll-snap、导航与阅读排版；detail-gestures.ts负责触摸/鼠标长按与横向方向锁定，reading-progress.ts负责进度弹簧、目录尺寸过渡、可取消文字切换与交互；detail.ts延后到接近正文才初始化进度组件，并保留键盘和历史生命周期，正文锚点使用真实链接。
+detail.css负责文档级两屏scroll-snap、导航与阅读排版；detail-paging.ts只接管封面与正文入口的纵向触摸，跟手滚动、位移门槛与320ms整页收尾；detail-gestures.ts负责触摸/鼠标长按与横向方向锁定，两者共用交互内容排除规则，reading-progress.ts负责进度弹簧、目录尺寸过渡、可取消文字切换与交互；detail.ts延后到接近正文才初始化进度组件，并保留键盘和历史生命周期，正文锚点使用真实链接。
 
 ## 宪章检查与预算
 

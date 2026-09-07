@@ -14,7 +14,7 @@ amended-by: []
 ## 用户故事
 
 - [x] T002 [US1] 在WorkDetail.astro和detail.css移除语言控件并重排顶部导航；tests/explore.spec.ts验证位置与链接。
-- [x] T003 [US2] 在detail.css实现两屏停靠与下滑提示动画；tests/explore.spec.ts验证入口停靠、长正文取消强制停靠、底部追加滚动与减少动画。
+- [x] T003 [US2] 在detail.css与detail-paging.ts实现两屏停靠、触摸跟手、门槛翻页/取消回位与下滑提示动画；tests/explore.spec.ts验证轻滑不翻、明确翻页、反向返回、取消、入口停靠、长正文取消强制停靠、底部追加滚动与减少动画。
 - [x] T004 [US3] 在src/scripts/detail-gestures.ts实现长按、跟手、锁方向和取消；tests/explore.spec.ts验证真实触摸与排除区域。
 - [x] T005 [US4] 在作品路由、ReadingProgress.astro与reading-progress.ts实现常显正文、弹性进度目录、长标题适配和完整键盘/锚点；tests/explore.spec.ts验证快速切换、目录关闭与进度。
 

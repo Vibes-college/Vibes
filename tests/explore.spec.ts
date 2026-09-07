@@ -355,26 +355,101 @@ test('a slight cover scroll does not skip to the reading page', async ({
     await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await session.detach();
   } else if (isMobile) {
-    // WebKit programmatic scrolling checks layout, not native iPhone flick physics.
-    await page.evaluate(() => window.scrollTo({ top: 32, behavior: 'smooth' }));
+    // DOM events cover our threshold; they do not reproduce native iPhone inertia.
+    const detail = page.locator('.detail-page');
+    await detail.dispatchEvent('touchstart', { touches: [{ clientX: 340, clientY: 600 }] });
+    await detail.dispatchEvent('touchmove', { touches: [{ clientX: 340, clientY: 568 }] });
+    await detail.dispatchEvent('touchend', { changedTouches: [{ clientX: 340, clientY: 568 }] });
   } else await page.mouse.wheel(0, 32);
   // Observe the settled result, not the initial position before snap animation starts.
   await page.waitForTimeout(1200);
-  expect(await page.evaluate(() => scrollY)).toBeLessThan(120);
+  expect(await page.evaluate(() => scrollY)).toBeLessThan(2);
   await expect(page.locator('.progress-toggle')).toBeHidden();
-  // Mid-cover scrolling may remain between the two entrances; it must not force a page turn.
-  const entrance = await page
-    .locator('#reading')
-    .evaluate((el) => el.getBoundingClientRect().top + scrollY);
-  await page.evaluate((top) => window.scrollTo({ top, behavior: 'smooth' }), entrance * 0.45);
-  await page.waitForTimeout(1200);
-  const middle = await page.evaluate(() => scrollY);
-  expect(middle).toBeGreaterThan(entrance * 0.25);
-  expect(middle).toBeLessThan(entrance * 0.65);
   await page.locator('.read-down').click();
   await expect
     .poll(async () => Math.abs((await page.locator('#reading').boundingBox())!.y))
     .toBeLessThan(2);
+});
+
+test('touch page turns follow the finger, commit past the threshold and cancel back', async ({
+  page,
+  context,
+  browserName,
+  isMobile,
+}, testInfo) => {
+  test.skip(!isMobile, '整页手势在手机模拟项目验证');
+  await page.goto('/zh/works/transformers-js/');
+  await page.evaluate(() => document.fonts.ready);
+  const session = browserName === 'chromium' ? await context.newCDPSession(page) : undefined;
+  const gesture = async (
+    type: 'touchStart' | 'touchMove' | 'touchEnd' | 'touchCancel',
+    y = 600,
+  ) => {
+    if (session)
+      await session.send('Input.dispatchTouchEvent', {
+        type,
+        touchPoints: type === 'touchEnd' || type === 'touchCancel' ? [] : [{ x: 340, y }],
+      });
+    else
+      await page.locator('.detail-page').dispatchEvent(type.toLowerCase(), {
+        touches:
+          type === 'touchEnd' || type === 'touchCancel' ? [] : [{ clientX: 340, clientY: y }],
+        changedTouches: [{ clientX: 340, clientY: y }],
+      });
+  };
+  try {
+    await gesture('touchStart');
+    await gesture('touchMove', 420);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(120);
+    expect(await page.evaluate(() => scrollY)).toBeLessThan(250);
+    await page.screenshot({ path: testInfo.outputPath('page-turn-drag.png') });
+    await gesture('touchEnd', 420);
+    await expect
+      .poll(async () => Math.abs((await page.locator('#reading').boundingBox())!.y))
+      .toBeLessThan(2);
+    await expect(page.locator('.detail-page')).not.toHaveAttribute('data-paging');
+    await page.screenshot({ path: testInfo.outputPath('page-turn-settled.png') });
+    await gesture('touchStart', 420);
+    await gesture('touchMove', 600);
+    await gesture('touchEnd');
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
+    await expect(page.locator('.detail-page')).not.toHaveAttribute('data-paging');
+    await gesture('touchStart');
+    await gesture('touchMove', 420);
+    await gesture('touchCancel');
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
+    await expect(page.locator('.detail-page')).not.toHaveAttribute('data-paging');
+    await gesture('touchStart');
+    await gesture('touchMove', 420);
+    if (session)
+      await session.send('Input.dispatchTouchEvent', {
+        type: 'touchStart',
+        touchPoints: [
+          { id: 0, x: 340, y: 420 },
+          { id: 1, x: 280, y: 420 },
+        ],
+      });
+    else
+      await page.locator('.detail-page').dispatchEvent('touchstart', {
+        touches: [
+          { clientX: 340, clientY: 420 },
+          { clientX: 280, clientY: 420 },
+        ],
+      });
+    await gesture('touchEnd', 420);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2);
+    await expect(page.locator('.detail-page')).not.toHaveAttribute('data-paging');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await gesture('touchStart');
+    await gesture('touchMove', 420);
+    await gesture('touchEnd', 420);
+    await expect
+      .poll(async () => Math.abs((await page.locator('#reading').boundingBox())!.y))
+      .toBeLessThan(2);
+    await expect(page.locator('.detail-page')).not.toHaveAttribute('data-paging');
+  } finally {
+    await session?.detach();
+  }
 });
 
 test('vertical paging lands on reading and long content stays reachable', async ({
@@ -465,7 +540,7 @@ test('reading bottom stays put after repeated overscroll and viewport changes', 
   await page.locator('.progress-menu a').first().click();
   // The first heading retains its 28px anchor margin; it is not the #reading snap anchor.
   await expect(page.locator('.reading-section h2').first()).toBeInViewport();
-  await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'y');
+  await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'y mandatory');
 });
 
 test('reading controls, selected text and system edges do not change works', async ({ page }) => {

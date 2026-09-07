@@ -109,12 +109,13 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-/* Assist near page entrances without turning a small native scroll into a full page jump. */
+/* Touch paging applies its own intent threshold before restoring the two snap positions. */
 html:has(.is-detail) {
-  scroll-snap-type: y proximity;
+  scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
 }
-html:has(.detail-page[data-free-reading]) {
+html:has(.detail-page[data-free-reading]),
+html:has(.detail-page[data-paging]) {
   scroll-snap-type: none;
 }
 .is-detail > .site-footer {

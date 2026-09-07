@@ -1,5 +1,5 @@
 type Direction = 'previous' | 'next';
-const excluded =
+export const detailGestureExclusions =
   '.reading-progress, .prose-table-scroll, .code-scroll, .katex-display, img[data-zoom], [role=tabpanel], button, input, textarea, select, summary, table, pre, [contenteditable], video, audio';
 
 export function installDetailGestures(
@@ -35,7 +35,7 @@ export function installDetailGestures(
     clear();
     if (
       !(target instanceof Element) ||
-      target.closest(excluded) ||
+      target.closest(detailGestureExclusions) ||
       window.getSelection()?.toString()
     )
       return;
