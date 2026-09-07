@@ -24,3 +24,7 @@ shaped-by: ['004']
 - [2026-09-06] 现象：完整E2E多次因本地Wrangler代理中途退出失败｜证据：resources/evidence/008-prose-markdown/verify-repeated-service-failure.log
   原因：代理报告Network connection lost；与上游workers-sdk#15317症状一致，不能据此确定全部内部根因。
   转化：[browser-test.ts](../tests/browser-test.ts)及[navigation.spec.ts](../tests/navigation.spec.ts)在普通页面和独立缓存profile关闭前等待有限资源完成，超时仍失败｜验证：008完整verify两轮111通过；后续封面回归补齐独立profile清理仍复现；改为单worker串行以降低并发压力，验证见006的cover-proximity证据目录｜转化日期：2026-09-06｜状态：已转化
+
+- [2026-09-07] 现象：iOS 26 Safari反复报告正文回第一节或封面｜证据：resources/evidence/006-detail-reading/bounce-investigation/findings.md
+  原因：旧实现同时使用CSS吸附与脚本滚动；模拟浏览器未完整复现真机回跳，不能把模拟通过当作真机修复确认。
+  转化：[detail-paging.ts](../src/scripts/detail-paging.ts)改为独立页面状态，移除吸附及逐帧滚动｜验证：[explore.spec.ts](../tests/explore.spec.ts)覆盖切页后等待、视口变化及正文原生滚动；真机仍待复测｜转化日期：2026-09-07｜状态：已转化

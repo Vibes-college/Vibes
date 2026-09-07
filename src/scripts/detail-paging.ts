@@ -1,77 +1,88 @@
 import { detailGestureExclusions } from './detail-gestures';
 
-// Only the cover/reading boundary behaves like a page turn; article scrolling stays native.
+/** Two independent pages: only the active page contributes to native document scrolling. */
 export function installDetailPaging(root: HTMLElement, signal: AbortSignal) {
+  const cover = root.querySelector<HTMLElement>('.detail-cover')!;
   const reading = root.querySelector<HTMLElement>('#reading')!;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let frame = 0;
+  let animation: Animation | undefined;
+  let readingActive = false;
   let suppressUntil = 0;
-  let gesture:
-    | {
-        x: number;
-        y: number;
-        top: number;
-        cover: number;
-        reading: number;
-        fromCover: boolean;
-        dy: number;
-        locked: boolean;
-      }
-    | undefined;
+  let wheelDistance = 0;
+  let wheelTime = 0;
+  let gesture: { x: number; y: number; dy: number; locked: boolean } | undefined;
 
-  function clear() {
-    cancelAnimationFrame(frame);
-    frame = 0;
-    gesture = undefined;
-    delete root.dataset.paging;
-  }
-  function finish(commit: boolean) {
-    const current = gesture;
-    gesture = undefined;
-    if (!current?.locked) return;
-    const target = current.fromCover === commit ? current.reading : current.cover;
-    const from = scrollY;
-    const start = performance.now();
-    suppressUntil = start + 500;
-    // Keep CSS snapping disabled until the deliberate page turn has settled.
-    function animate(now: number) {
-      const progress = reduced.matches ? 1 : Math.min(1, (now - start) / 320);
-      window.scrollTo({
-        top: from + (target - from) * (1 - (1 - progress) ** 3),
-        behavior: 'instant',
-      });
-      if (progress < 1) frame = requestAnimationFrame(animate);
-      else clear();
+  function show(next: boolean, animate = true) {
+    const changed = readingActive !== next;
+    readingActive = next;
+    if (changed) animation?.cancel();
+    cover.hidden = next;
+    reading.hidden = !next;
+    root.dataset.detailPage = next ? 'reading' : 'cover';
+    if (changed) {
+      // One position reset when exchanging pages; scrolling never drives the animation.
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (animate && !reduced.matches)
+        animation = (next ? reading : cover).animate(
+          { translate: [`0 ${next ? 56 : -56}px`, '0 0'], opacity: [0.4, 1] },
+          { duration: 280, easing: 'cubic-bezier(.22,1,.36,1)' },
+        );
+      void animation?.finished
+        .then(() => root.dispatchEvent(new Event('detail:page')))
+        .catch(() => {});
     }
-    frame = requestAnimationFrame(animate);
+    root.dispatchEvent(new Event('detail:page'));
   }
+  function turn(next: boolean) {
+    suppressUntil = performance.now() + 400;
+    history.pushState(history.state, '', next ? '#reading' : location.pathname + location.search);
+    show(next);
+    (next ? reading : cover).focus({ preventScroll: true });
+  }
+  function fromLocation() {
+    const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    show(Boolean(target && reading.contains(target)), false);
+    target?.scrollIntoView({ behavior: 'instant' });
+  }
+  function atBoundary() {
+    return readingActive ? scrollY <= 2 : cover.getBoundingClientRect().bottom <= innerHeight + 2;
+  }
+  cover.tabIndex = -1;
+  fromLocation();
+  window.addEventListener('hashchange', fromLocation, { signal });
+  window.addEventListener('popstate', fromLocation, { signal });
+  // Reveal a hidden destination before the browser follows a real fragment link.
+  root.addEventListener(
+    'click',
+    (event) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey ||
+        event.shiftKey
+      )
+        return;
+      const link = (event.target as Element).closest<HTMLAnchorElement>('a[href]');
+      if (!link) return;
+      const url = new URL(link.href);
+      if (url.origin !== location.origin || url.pathname !== location.pathname || !url.hash) return;
+      const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+      if (target && reading.contains(target)) show(true, false);
+    },
+    { capture: true, signal },
+  );
   root.addEventListener(
     'touchstart',
     (event) => {
-      if (event.touches.length !== 1) {
-        finish(false);
-        return;
-      }
-      clear();
-      if (window.getSelection()?.toString()) return;
+      gesture = undefined;
+      if (event.touches.length !== 1 || !atBoundary() || window.getSelection()?.toString()) return;
       const target = event.target;
       if (!(target instanceof Element) || target.closest(detailGestureExclusions)) return;
       const point = event.touches[0];
       if (point.clientX < 24 || point.clientX > innerWidth - 24) return;
-      const start = reading.getBoundingClientRect().top + scrollY;
-      // A taller cover can scroll naturally until its last viewport; never hide cover content.
-      const cover = Math.max(0, start - innerHeight);
-      if (scrollY < cover - 2 || scrollY > start + 2) return;
-      gesture = {
-        x: point.clientX,
-        y: point.clientY,
-        top: scrollY,
-        cover,
-        reading: start,
-        fromCover: scrollY < (cover + start) / 2,
-        dy: 0,
-        locked: false,
-      };
+      gesture = { x: point.clientX, y: point.clientY, dy: 0, locked: false };
     },
     { passive: true, signal },
   );
@@ -80,59 +91,90 @@ export function installDetailPaging(root: HTMLElement, signal: AbortSignal) {
     (event) => {
       if (!gesture) return;
       if (event.touches.length !== 1 || window.getSelection()?.toString()) {
-        finish(false);
+        gesture = undefined;
         return;
       }
-      const point = event.touches[0];
-      const dx = point.clientX - gesture.x;
-      const dy = point.clientY - gesture.y;
+      const dx = event.touches[0].clientX - gesture.x;
+      const dy = event.touches[0].clientY - gesture.y;
       if (!gesture.locked) {
         if (Math.abs(dx) >= 14 && Math.abs(dx) >= Math.abs(dy) * 1.4) {
           gesture = undefined;
           return;
         }
-        // Hold small ambiguous movement until an axis is clear, before Safari starts panning.
-        if (Math.abs(dy) < Math.max(8, Math.abs(dx) * 1.2)) {
-          if (event.cancelable) event.preventDefault();
-          return;
-        }
-        // Pull-to-refresh on the cover and forward article reading belong to Safari.
-        if ((gesture.fromCover && dy > 0) || (!gesture.fromCover && dy < 0) || !event.cancelable) {
+        if (Math.abs(dy) < Math.max(8, Math.abs(dx) * 1.2)) return;
+        if ((readingActive ? dy < 0 : dy > 0) || !event.cancelable) {
           gesture = undefined;
           return;
         }
         gesture.locked = true;
-        root.dataset.paging = '';
       }
       event.preventDefault();
       gesture.dy = dy;
-      window.scrollTo({
-        top: Math.max(gesture.cover, Math.min(gesture.reading, gesture.top - dy)),
-        behavior: 'instant',
-      });
     },
     { passive: false, signal },
   );
   root.addEventListener(
     'touchend',
     (event) => {
-      if (!gesture) return;
-      if (gesture.locked && event.cancelable) event.preventDefault();
-      const distance = gesture.fromCover ? -gesture.dy : gesture.dy;
-      finish(distance >= Math.min(120, (gesture.reading - gesture.cover) * 0.18));
+      const current = gesture;
+      gesture = undefined;
+      if (!current?.locked) return;
+      if (event.cancelable) event.preventDefault();
+      if ((readingActive ? current.dy : -current.dy) >= 72) turn(!readingActive);
     },
     { passive: false, signal },
   );
-  root.addEventListener('touchcancel', () => finish(false), { signal });
   root.addEventListener(
-    'click',
+    'touchcancel',
+    () => {
+      gesture = undefined;
+    },
+    { signal },
+  );
+  root.addEventListener(
+    'wheel',
     (event) => {
-      if (performance.now() < suppressUntil) {
-        event.preventDefault();
-        event.stopPropagation();
+      if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY) || !atBoundary()) return;
+      if (readingActive ? event.deltaY >= 0 : event.deltaY <= 0) return;
+      if ((event.target as Element).closest(detailGestureExclusions)) return;
+      event.preventDefault();
+      const now = performance.now();
+      if (now < suppressUntil) return;
+      if (now - wheelTime > 180) wheelDistance = 0;
+      wheelTime = now;
+      wheelDistance +=
+        Math.abs(event.deltaY) *
+        (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1);
+      if (wheelDistance >= 72) {
+        wheelDistance = 0;
+        turn(!readingActive);
       }
     },
-    { capture: true, signal },
+    { passive: false, signal },
   );
-  signal.addEventListener('abort', clear, { once: true });
+  document.addEventListener(
+    'keydown',
+    (event) => {
+      if (
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        window.getSelection()?.toString()
+      )
+        return;
+      if ((event.target as Element).closest(detailGestureExclusions)) return;
+      if (!atBoundary()) return;
+      if (
+        (!readingActive && ['ArrowDown', 'PageDown', ' '].includes(event.key)) ||
+        (readingActive && ['ArrowUp', 'PageUp'].includes(event.key))
+      ) {
+        event.preventDefault();
+        turn(!readingActive);
+      }
+    },
+    { signal },
+  );
+  signal.addEventListener('abort', () => animation?.cancel(), { once: true });
 }

@@ -69,10 +69,7 @@ export function installReadingProgress(root: HTMLElement, signal: AbortSignal) {
   }
   function update(now: number) {
     frame = 0;
-    // Keep snapping at the cover/reading entrance only. iOS rubber-banding in
-    // a long mandatory snap area can otherwise restore an earlier snap position.
-    root.toggleAttribute('data-free-reading', scrollY > start + 32);
-    const visible = scrollY >= start - 32;
+    const visible = root.dataset.detailPage === 'reading';
     if (nav!.hidden === visible) {
       nav!.hidden = !visible;
       if (visible) resizeSurface();
@@ -173,6 +170,7 @@ export function installReadingProgress(root: HTMLElement, signal: AbortSignal) {
   );
   window.addEventListener('scroll', schedule, { passive: true, signal });
   window.addEventListener('resize', measure, { signal });
+  root.addEventListener('detail:page', measure, { signal });
   reduced.addEventListener(
     'change',
     () => {

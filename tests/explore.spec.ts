@@ -371,7 +371,7 @@ test('a slight cover scroll does not skip to the reading page', async ({
     .toBeLessThan(2);
 });
 
-test('touch page turns follow the finger, commit past the threshold and cancel back', async ({
+test('independent pages turn deliberately, stay settled and cancel safely', async ({
   page,
   context,
   browserName,
@@ -400,14 +400,22 @@ test('touch page turns follow the finger, commit past the threshold and cancel b
   try {
     await gesture('touchStart');
     await gesture('touchMove', 420);
-    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(120);
-    expect(await page.evaluate(() => scrollY)).toBeLessThan(250);
+    await expect(page.locator('#reading')).toBeHidden();
+    expect(await page.evaluate(() => scrollY)).toBeLessThan(2);
     await page.screenshot({ path: testInfo.outputPath('page-turn-drag.png') });
     await gesture('touchEnd', 420);
     await expect
       .poll(async () => Math.abs((await page.locator('#reading').boundingBox())!.y))
       .toBeLessThan(2);
     await expect(page.locator('.detail-page')).not.toHaveAttribute('data-paging');
+    await page.waitForTimeout(1600);
+    await expect(page.locator('.detail-cover')).toBeHidden();
+    await expect(page.locator('#reading')).toBeVisible();
+    const viewport = page.viewportSize()!;
+    await page.setViewportSize({ ...viewport, height: viewport.height + 80 });
+    await page.setViewportSize(viewport);
+    await expect(page.locator('#reading')).toBeInViewport();
+    await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'none');
     await page.screenshot({ path: testInfo.outputPath('page-turn-settled.png') });
     await gesture('touchStart', 420);
     await gesture('touchMove', 600);
@@ -459,13 +467,15 @@ test('vertical paging lands on reading and long content stays reachable', async 
   isMobile,
 }) => {
   await page.goto('/zh/works/transformers-js/');
+  await expect(page.locator('.detail-page')).toHaveAttribute('data-detail-page', 'cover');
+  await page.evaluate(() => document.fonts.ready);
   if (isMobile && browserName === 'chromium') {
     const session = await context.newCDPSession(page);
     await session.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
-      touchPoints: [{ x: 340, y: 710 }],
+      touchPoints: [{ x: 340, y: 600 }],
     });
-    for (const y of [650, 530, 410, 290, 170, 65]) {
+    for (const y of [540, 480, 420, 360, 300, 240]) {
       await session.send('Input.dispatchTouchEvent', {
         type: 'touchMove',
         touchPoints: [{ x: 340, y }],
@@ -477,10 +487,13 @@ test('vertical paging lands on reading and long content stays reachable', async 
     await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await session.detach();
   } else if (isMobile && browserName === 'webkit') {
-    // Mobile WebKit exposes no native wheel/touch input API in Playwright.
-    // Programmatic scrolling still exercises the browser's CSS snap layout.
-    await page.evaluate(() => window.scrollTo({ top: 650, behavior: 'smooth' }));
+    // DOM touch events test our page state; native iPhone inertia requires device QA.
+    const detail = page.locator('.detail-page');
+    await detail.dispatchEvent('touchstart', { touches: [{ clientX: 340, clientY: 600 }] });
+    await detail.dispatchEvent('touchmove', { touches: [{ clientX: 340, clientY: 420 }] });
+    await detail.dispatchEvent('touchend', { touches: [] });
   } else {
+    await page.locator('.detail-description').hover();
     await page.mouse.wheel(0, 650);
   }
   await expect
@@ -490,6 +503,32 @@ test('vertical paging lands on reading and long content stays reachable', async 
   const lastLink = page.locator('.section-content a').last();
   await lastLink.scrollIntoViewIfNeeded();
   await expect(lastLink).toBeInViewport();
+});
+
+test('page state survives anchors and history while reading scroll remains native', async ({
+  page,
+}) => {
+  await page.goto('/zh/works/transformers-js/');
+  const root = page.locator('.detail-page');
+  await expect(root).toHaveAttribute('data-detail-page', 'cover');
+  await page.keyboard.press('PageDown');
+  await expect(root).toHaveAttribute('data-detail-page', 'reading');
+  await expect(page.locator('.detail-cover')).toBeHidden();
+  await page.waitForTimeout(350);
+  await page.evaluate(() => window.scrollTo({ top: 240, behavior: 'instant' }));
+  await page.waitForTimeout(800);
+  expect(await page.evaluate(() => scrollY)).toBe(240);
+  await expect(root).toHaveAttribute('data-detail-page', 'reading');
+  await page.goBack();
+  await expect(page.locator('.detail-cover')).toBeVisible();
+  await expect(page.locator('#reading')).toBeHidden();
+  await page.goForward();
+  await expect(page.locator('#reading')).toBeVisible();
+  await page.locator('.progress-toggle').click();
+  await page.locator('.progress-menu a').last().click();
+  await page.reload();
+  await expect(page.locator('.reading-section h2').last()).toBeInViewport();
+  await expect(page.locator('.detail-cover')).toBeHidden();
 });
 
 test('reading bottom stays put after repeated overscroll and viewport changes', async ({
@@ -538,9 +577,9 @@ test('reading bottom stays put after repeated overscroll and viewport changes', 
   await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'none');
   await page.locator('.progress-toggle').click();
   await page.locator('.progress-menu a').first().click();
-  // The first heading retains its 28px anchor margin; it is not the #reading snap anchor.
+  // Returning to the first heading keeps reading active without re-enabling snapping.
   await expect(page.locator('.reading-section h2').first()).toBeInViewport();
-  await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'y mandatory');
+  await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'none');
 });
 
 test('reading controls, selected text and system edges do not change works', async ({ page }) => {
