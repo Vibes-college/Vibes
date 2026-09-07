@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '阅读作品详情'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '008']
+shaped-by: ['001', '003', '005', '006', '007', '008', '009']
 code-sources:
   [
     'src/components/WorkDetail.astro',
@@ -11,6 +11,13 @@ code-sources:
     'public/icons/prose/',
     'tests/prose.spec.ts',
     'src/components/SectionReaction.astro',
+    'src/components/ReactionButton.astro',
+    'src/components/MdxHeading.astro',
+    'src/components/demos/',
+    'src/components/beui/',
+    'tests/beui.spec.ts',
+    'src/lib/markdown/rehype-article-sections.ts',
+    'tests/mdx.spec.ts',
     'src/scripts/reaction-entry.ts',
     'src/scripts/section-reactions.ts',
     'src/styles/section-reactions.css',
@@ -35,7 +42,7 @@ code-sources:
     'src/pages/[locale]/works/[id].astro',
     'tests/explore.spec.ts',
   ]
-code-revision: '550ed7d0efa5f87670bd3e76ed34e483de7519b7c9718bb54c7f6f3ddd59b876'
+code-revision: 'b377c806030a20a2d54c0f4598e6ab56ea54243acc997e913fa0a8f62f802f1b'
 ---
 
 # 功能名：阅读作品详情
@@ -63,6 +70,14 @@ code-revision: '550ed7d0efa5f87670bd3e76ed34e483de7519b7c9718bb54c7f6f3ddd59b876
 
 [排版全览文章](../../src/content/works/prose-ui-showcase/zh.md)覆盖公开组件变体，作为Vibes原创验收文章显示在中文目录；没有英文译文。无JS时各标签/代码面板连续展示，复制与放大不启用；公式仍是静态可读内容。宽表格、长代码和块级公式各自在自己的区域内滚动。写法与参数见[Markdown排版](../system/markdown.md)。
 
+### 操作文章中的互动演示
+
+[beUI十组件文章](../../src/content/works/beui-motion-lab/zh.mdx)提供不同的真实组件，按每节操作说明体验点击、选择、拖动、折叠与暂停；每项附来源，刷新恢复初始状态。
+
+互动文章仍从同样的作品卡片进入。[调色实验](../../src/content/works/mdx-interaction-lab/zh.mdx)提供中英文版本：进入正文后拖动滑杆/虚线区域、聚焦后按左右键或点击重置；两个色块独立变化。示例进入可视区才加载React，多实例共享运行时；普通Markdown文章不请求React。组件区域的触摸、鼠标、方向键和滚轮由演示处理，MDX整篇不安装左右拖动或长按拖动换篇手势，使用作品概览页顶部的上一篇/下一篇按钮换篇；普通Markdown保留手势。正文滚动、目录和组件自身拖动照常可用。
+
+互动组件周围的章节、目录深链接、回应与全文搜索保持同一套路径；组件内部标题不加入文章目录。禁用JS时正文、表格、公式和演示初始状态仍可读，不能动态调整。GIF或视频是效果展示，不能替代可操作组件。
+
 ### 操作之后发生什么
 
 ```mermaid
@@ -77,13 +92,13 @@ flowchart TD
   J --> K[打开同语言相邻作品，首尾不循环]
 ```
 
-正文在构建时已转为HTML，目录不再请求正文；无脚本保留全部正文、CSS两屏停靠与真实导航，进度胶囊隐藏。正文不显示序号、折叠按钮、引导语或重复的底部原站入口；来源链接仍属于文章内容。标题保持完整原意，以Prose UI层级排版；通用章节用短导航名，其他长名称在胶囊省略、目录换行。胶囊接近正文时才初始化，不在封面首屏测量章节；尺寸有可取消回弹，文字交叉淡入，目录逐项出现，圆环平滑追随；减少动态偏好即时更新。进度按正文顶部到正文底部进入视口计算，缩放与尺寸变化重新校准，页面离开清理监听和动画。站内链接和相邻作品通过Astro ClientRouter保留运行环境并更新页面、标题与网址；相邻切换带短距离方向过渡，导航失败回退普通打开。可见相邻链接会提前准备；见[预取与缓存](../system/rules.md)。
+正文在构建时已转为HTML，目录不再请求正文；无脚本保留全部正文、顺序展开的封面/正文与真实导航，进度胶囊隐藏。正文不显示序号、折叠按钮、引导语或重复的底部原站入口；来源链接仍属于文章内容。标题保持完整原意，以Prose UI层级排版；通用章节用短导航名，其他长名称在胶囊省略、目录换行。胶囊接近正文时才初始化，不在封面首屏测量章节；尺寸有可取消回弹，文字交叉淡入，目录逐项出现，圆环平滑追随；减少动态偏好即时更新。进度按正文顶部到正文底部进入视口计算，缩放与尺寸变化重新校准，页面离开清理监听和动画。站内链接和相邻作品通过Astro ClientRouter保留运行环境并更新页面、标题与网址；相邻切换带短距离方向过渡，导航失败回退普通打开。可见相邻链接会提前准备；见[预取与缓存](../system/rules.md)。
 
 表情菜单与动画模块在整页加载完成、进入正文停留1.5秒后的空闲时预加载，省流量模式仅点击加载，提前点击立即加载。预加载不创建工具条、不运行动画；全页共享一个工具条，最多40个粒子，关闭、滚轮操作、离开或进入后台清理；其他滚动时工具条随标题移动，标题离开视口则关闭。无JS时隐藏入口；存储受限时当次仍可使用，无法跨刷新保存。系统emoji在不同平台外观可能不同，不请求第三方图片。
 
 ## 涉及的文件
 
-分章表情：`SectionReaction.astro`保留标题结构并定位小入口，`reaction-entry.ts`负责恢复选择与延迟加载，`section-reactions.ts`负责工具条、输入、保存与动画，`section-reactions.css`负责排版。
+分章表情：`SectionReaction.astro`与MDX的`MdxHeading.astro`保留标题结构，共用`ReactionButton.astro`定位小入口，`reaction-entry.ts`负责恢复选择与延迟加载，`section-reactions.ts`负责工具条、输入、保存与动画，`section-reactions.css`负责排版。
 
 - 页面：`src/pages/[locale]/works/[id].astro`、`src/components/WorkDetail.astro`。
 - 正文与信息：`src/data/article-sections.ts`、`src/data/work-facts.ts`、`src/lib/content/relations.ts`。
@@ -111,6 +126,8 @@ flowchart TD
 
 排版专项验收：2026-09-06，编译单测覆盖所有组件、属性错误、错误公式、图像尺寸与章节完整性；Playwright专项覆盖同步/复制、禁用JS、320px、图片键盘关闭与存储受限。完整verify通过61项单测、111项浏览器测试（3项设备适用性跳过），budget通过；Cloudflare预览已实际核对复制、同步、图片关闭、暖白背景与控制台。截图对照与限制见`resources/evidence/008-prose-markdown/design-qa.md`，发布证据见同目录及PR。
 
+MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器140项通过及4项按设备适用性跳过；新增英文文章使旧数量断言失败，修正该测试后在三种浏览器专项3项通过，其余代码未变。budget通过。原版十组件、双语调色、无JS、减少动画、320px、加载隔离与MDX横拖禁用均有覆盖；证据在`resources/evidence/009-mdx-articles/`，真机iOS未专项验收。
+
 ## 对应的自动化测试
 
 `tests/explore.spec.ts`：
@@ -127,6 +144,8 @@ flowchart TD
 `tests/prose.spec.ts`覆盖排版交互与窄屏/无JS；`tests/unit/prose-markdown.test.ts`使用真实Astro编译器验证语法、错误和全部示例。
 
 `tests/reactions.spec.ts`覆盖加载时机、省流量、独立保存、键盘、320px边界、减少动态、受限存储与长按清理。
+
+`tests/mdx.spec.ts`覆盖双语互动、懒加载、多实例、搜索、深链接、回应、历史、320px与无JS；`tests/unit/mdx-sections.test.ts`覆盖AST分节和静态标题限制。
 
 `tests/unit/article-sections.test.ts`验证正文结构；`tests/unit/content-relations.test.ts`验证事实/关联；`tests/content-lifecycle.spec.ts`验证译文发布及待复核的真实构建。
 

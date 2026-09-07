@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '检查与发布网站'
 status: 'current'
-shaped-by: ['001', '002', '003', '004', '005']
+shaped-by: ['001', '002', '003', '004', '005', '009']
 legacy-feature-ids: ['delivery-setup', 'local-database', 'site-metadata']
 code-sources:
   [
@@ -19,6 +19,8 @@ code-sources:
     'scripts/build.ts',
     'scripts/budget.ts',
     'scripts/budget-policy.ts',
+    'scripts/script-budget.ts',
+    'scripts/content-security.ts',
     'scripts/test-e2e.ts',
     'scripts/database.ts',
     'scripts/local-tools.ts',
@@ -29,7 +31,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '0ad10aa22ecf3d56a17d3b5378bc1e237d09339e5964854a3720a49b3d412fce'
+code-revision: '22486096a694e39dadc7799114166e684a736e9611caba68b4f1a2dca41629fb'
 ---
 
 # 功能名：检查与发布网站
@@ -73,6 +75,8 @@ flowchart TD
 - 清理：`scripts/cleanup-task.ts`、`scripts/cleanup-policy.ts`；服务占用由本机AI核对。
 - 构建、容量和本地测试：`scripts/build.ts`、`scripts/budget.ts`、`scripts/budget-policy.ts`、`scripts/asset-sizes.ts`、`scripts/test-e2e.ts`、`scripts/database.ts`、`scripts/local-tools.ts`、`playwright.config.ts`、`wrangler.local.jsonc`。
 - 来源与静态元数据：`src/config/site.ts`、`astro.config.mjs`、`src/layouts/Layout.astro`、`src/pages/sitemap.xml.ts`、`src/pages/robots.txt.ts`；测试D1并非网站数据源，见[数据模型](../system/content-model.md)。
+
+构建为MDX启动脚本写入精确CSP哈希；预算分别检查公共脚本与每篇MDX的完整额外模块，包含延迟加载。通过体积门槛不等于组件已在真机验收，具体限制见[规则](../system/rules.md)。
 
 ## 验收标准
 

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '数据和内容结构'
 status: 'current'
-shaped-by: ['001', '003']
+shaped-by: ['001', '003', '009']
 code-sources:
   [
     'src/lib/content/',
@@ -13,7 +13,7 @@ code-sources:
     'scripts/validate-content.ts',
     'scripts/migrate-content.ts',
   ]
-code-revision: '6d35bf47d2f3cabfd1792b2fde32f2884f4712084cfff5a59d93b1ce214e282f'
+code-revision: '7a5c1840663572d1c51a33891291d990a90e4b24ab754fe974a1c2e1a89289b3'
 ---
 
 # 数据和内容结构
@@ -31,7 +31,9 @@ src/content/works/<id>/
 └── en.md       # 可选英文版本
 ```
 
-`en.md` 也可以不存在，或存在但仍是 `draft`；只有 `published` 才会生成英文页面。
+需要交互时用`zh.mdx`或`en.mdx`替代对应文件，同一语言同时存在.md和.mdx会报错。正文后缀不进入作品ID或路由。组件源码放src/components，作品目录仍只放work.json和语言正文。
+
+`en.md`（或`en.mdx`）也可以不存在，或存在但仍是 `draft`；只有 `published` 才会生成英文页面。
 
 ## 2 `work.json`：作品共享资料
 
@@ -65,11 +67,11 @@ src/content/works/<id>/
 
 - `link`：一个 HTTPS 外部链接。
 - `tag`：站内标签 ID，跳到对应语言的筛选页。
-- `anchor`：站内正文锚点，例如跳到“阅读正文”。构建时会检查这个锚点真实存在。
+- `anchor`：站内正文锚点，例如跳到“阅读正文”。构建时会检查这个锚点真实存在。MDX事实目标限静态Markdown生成的锚点或reading，组件运行时生成的ID不能作为此目标。
 
 ## 4 Markdown 语言版本的 front matter
 
-每份 `zh.md` 或 `en.md` 的文件头包括：
+每份`zh.md`、`en.md`或对应`.mdx`文件头使用同一schema：
 
 | 字段                  | 类型                            | 给人的含义                     |
 | --------------------- | ------------------------------- | ------------------------------ |
@@ -83,7 +85,7 @@ src/content/works/<id>/
 | `previewText.note`    | 字符串                          | 预览图上的补充文字             |
 | `sourceRevision`      | 可选的 64 位小写 SHA-256 字符串 | 译文最后一次核对的原文版本摘要 |
 
-front matter 后面的 Markdown 正文会被编译成 HTML；代码会保留表格、来源、标题和锚点。
+普通Markdown正文编译为HTML；MDX原生渲染Content，在构建时输出正文及islands初始HTML。MDX的静态主标题形成章节元数据，import和JSX保留在编译树；两种格式都保留表格、来源与锚点。原文摘要包含正文中的import/参数文字，不包含被导入组件文件的内容；组件变化需额外复核译文。
 
 ## 5 `taxonomy.json`：标签字典
 
@@ -122,7 +124,7 @@ front matter 后面的 Markdown 正文会被编译成 HTML；代码会保留表�
 
 正文章节（始终展开）：
 
-`heading`、`body`。
+`heading`、`body`。普通Markdown保存章节HTML；MDX给目录提供转义后的标题与空body，实际正文由Content渲染，不转成字符串。
 
 ### `PreviewData`
 

@@ -7,6 +7,8 @@ export default defineConfig({
     'navigation.spec.ts',
     'reactions.spec.ts',
     'prose.spec.ts',
+    'mdx.spec.ts',
+    'beui.spec.ts',
   ],
   fullyParallel: true,
   // A single local Worker serves the suite; serialize clients to avoid proxy connection loss.

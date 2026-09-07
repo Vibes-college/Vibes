@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '维护作品内容'
 status: 'current'
-shaped-by: ['001', '003', '008']
+shaped-by: ['001', '003', '008', '009']
 code-sources:
   [
     'src/lib/content/',
@@ -13,7 +13,7 @@ code-sources:
     'scripts/migrate-content.ts',
     'tests/content-lifecycle.spec.ts',
   ]
-code-revision: 'd21fe5751196862b951be5139bae0f4ff39fc378e0c08fb3a300c3941370243c'
+code-revision: 'bbc1ad5672d3566d2415f6c023952ee06395b787ab4ccb558287a2078d0d9cf3'
 ---
 
 # 功能名：维护作品内容
@@ -24,14 +24,23 @@ code-revision: 'd21fe5751196862b951be5139bae0f4ff39fc378e0c08fb3a300c3941370243c
 
 ## 用户操作路径
 
-1. 明确要新增或修改的作品、可靠来源和原文语言，让AI编辑`src/content/works/{id}/work.json`与`zh.md`或`en.md`；网站没有编辑后台。
+1. 明确要新增或修改的作品、可靠来源和原文语言，让AI编辑`src/content/works/{id}/work.json`与`zh.md`或`en.md`（需要交互时用同名`.mdx`）；网站没有编辑后台。
 2. 填写稳定ID、顺序、来源、预览和实际可提供的信息；标签使用`src/data/taxonomy.json`，不要把同一作品改名成另一个身份。
-3. 用普通Markdown写正文，复杂内容按[Markdown组件写法](../system/markdown.md)加入提示、卡片、步骤、代码组、标签或公式；完整示例为`src/content/works/prose-ui-showcase/zh.md`。保存正文并设置`draft`或`published`；草稿不生成页面或搜索结果，原文可先于译文发布。
+3. 大多数文章用普通Markdown写正文，复杂内容按[Markdown组件写法](../system/markdown.md)加入提示、卡片、步骤、代码组、标签或公式；完整示例为`src/content/works/prose-ui-showcase/zh.md`。保存正文并设置`draft`或`published`；草稿不生成页面或搜索结果，原文可先于译文发布。
 4. 如需关联作品，只记录一次相似/归组/比较关系，程序可从任意一方读取关系；当前详情没有关联作品区域，不表达继承或业务依赖。
 5. 运行`npm run content:validate`。成功会报告目录状态；有错误则根据提示修复，不进入构建发布。
 6. 发布译文前核对全文，运行`npm run content:revision -- <id>`取得原文摘要，再填写`sourceRevision`和发布状态；命令不会替你审核或自动修改文件。
 7. 原文更新后，旧译文继续可读但提示待复核；重新核对译文并更新摘要后解除提示。
 8. 进入[检查与发布网站](project-commands.md)，通过检查并发布后再核对线上页面和搜索。
+
+### 在文章里加入可操作演示
+
+1. 提供要嵌入的组件源码、来源/许可与希望读者完成的操作，让AI检查字体、样式、框架、浏览器API和后台依赖。需要新npm依赖时先说明用途并征得同意；不能保证复制即用。
+2. 只把需要交互的语言正文改为`zh.mdx`或`en.mdx`，保留原文件头。同一语言只能有一个.md或.mdx，旧文件应移除，其他文章不用迁移。
+3. 将审核后的组件放在`src/components/`，在MDX中import并传入参数。正文下方演示通常用`client:visible`，进入可视区才启动；首屏必须立即操作才选`client:load`。无client指令只有静态初始展示，更多写法见[MDX规则](../system/markdown.md#mdx互动文章)。
+4. 十种不同组件的完整操作文章见[beUI体验](../../src/content/works/beui-motion-lab/zh.mdx)。参考[中文互动示例](../../src/content/works/mdx-interaction-lab/zh.mdx)与[英文示例](../../src/content/works/mdx-interaction-lab/en.mdx)，保留静态`##`主章节，检查目录、回应、搜索与语言；组件内部标题不作为文章章节。
+5. 运行内容校验与完整构建；在浏览器实际操作按钮、拖动和键盘，再按[交付流程](project-commands.md)验收。修改组件里的文案/逻辑后也应复核译文，因为原文摘要不追踪import目标文件的字节。
+6. 效果难以适配时可使用GIF或视频，明确它只能展示、不能交互；本地资源放public并遵守[媒体与体积规则](../system/markdown.md)。
 
 ### 操作之后发生什么
 
@@ -51,11 +60,11 @@ flowchart TD
   K --> L[下次构建解除待复核提示]
 ```
 
-内容校验不编译正文；组件拼写、参数与公式需由构建验证，错误使构建失败。校验命令只报告问题；修改文件或把状态写成published都不会直接改变线上网站。网站更新仍需构建与发布。对应`src/lib/content/revision.ts`、`scripts/validate-content.ts`和`scripts/build.ts`。
+内容校验不编译正文；组件拼写、参数、公式、MDX标签/表达式和import需由构建验证，错误使构建失败。校验命令只报告问题；修改文件或把状态写成published都不会直接改变线上网站。网站更新仍需构建与发布。对应`src/lib/content/revision.ts`、`scripts/validate-content.ts`和`scripts/build.ts`。
 
 ## 涉及的文件
 
-- 内容：`src/content/works/{id}/work.json`、`src/content/works/{id}/zh.md`、`src/content/works/{id}/en.md`，其中`{id}`是作品目录占位符；现有示例为`src/content/works/attention-is-all-you-need/`。
+- 内容：`src/content/works/{id}/work.json`、`src/content/works/{id}/zh.md`、`src/content/works/{id}/en.md`（两种语言均可改用`.mdx`），其中`{id}`是作品目录占位符；现有示例为`src/content/works/attention-is-all-you-need/`。
 - 分类：`src/data/taxonomy.json`。
 - 内容规则：`src/lib/content/schema.ts`、`src/lib/content/catalog.ts`、`src/lib/content/validate.ts`、`src/lib/content/revision.ts`、`src/lib/content/relations.ts`、`src/lib/content/views.ts`。
 - 读取和校验：`src/content.config.ts`、`scripts/validate-content.ts`、`scripts/build.ts`。
@@ -69,12 +78,15 @@ flowchart TD
 - [x] 原文正文与可翻译信息更新触发译文待复核，单纯排序变化不触发。
 - [x] 核对译文并更新摘要后解除待复核提示，命令本身不自动批准发布。
 - [x] 全部草稿或空目录可以构建，且不残留旧搜索索引。
+- [x] MDX与Markdown共存、重复语言文件拒绝，互动文章可按语言搜索与阅读。
 
-最近有效验收：2026-09-05单元测试、七阶段隔离构建及独立测试站内容修订/恢复通过；记录在`resources/evidence/001-multilingual-explore/`。相关产品实现未变，保留结果；这次文档修订不声称重新执行发布。
+MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器140项通过及4项按设备适用性跳过；新增英文文章使旧数量断言失败，修正该测试后在三种浏览器专项3项通过，其余代码未变。budget通过。原版十组件、双语调色、无JS、减少动画、320px、加载隔离与MDX横拖禁用均有覆盖；证据在`resources/evidence/009-mdx-articles/`，真机iOS未专项验收。
+
+最近有效验收：2026-09-05单元测试、七阶段隔离构建及独立测试站内容修订/恢复通过；记录在`resources/evidence/001-multilingual-explore/`。该证据覆盖普通Markdown既有路径，不替代MDX专项验证。
 
 ## 对应的自动化测试
 
-- `tests/unit/content.test.ts`：真实作品身份、正文和HTTPS来源。
+- `tests/unit/content.test.ts`：真实作品身份、正文、HTTPS来源、MDX文件及重复语言拒绝；`tests/mdx.spec.ts`验证互动文章真实构建后的阅读路径。
 - `tests/unit/content-validation.test.ts`：内容格式与跨文件约束。
 - `tests/unit/content-revision.test.ts`：摘要与待复核状态。
 - `tests/unit/content-relations.test.ts`：事实与双向关系。
@@ -84,6 +96,8 @@ flowchart TD
 ## 依赖的其他功能
 
 [检查与发布网站](project-commands.md)：让文件改动经过检查并上线。
+
+MDX专项验收按`tests/mdx.spec.ts`及`resources/evidence/009-mdx-articles/`记录；未通过完整门槛前不宣称可发布。
 
 ## 已知问题 / 待办
 

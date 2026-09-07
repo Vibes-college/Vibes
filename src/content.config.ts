@@ -9,9 +9,9 @@ const workMetadata = defineCollection({
 });
 const workVersions = defineCollection({
   loader: glob({
-    pattern: '**/{zh,en}.md',
+    pattern: '**/{zh,en}.{md,mdx}',
     base: process.env.VIBES_CONTENT_DIR || './src/content/works',
-    generateId: ({ entry }) => entry.replace(/\.md$/, ''),
+    generateId: ({ entry }) => entry.replace(/\.mdx?$/, ''),
   }),
   schema: languageSchema,
 });

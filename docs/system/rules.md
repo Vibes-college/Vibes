@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007']
+shaped-by: ['001', '003', '005', '006', '007', '009']
 code-sources:
   [
     'src/lib/content/',
@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'daf86a53f13ec2d2091fb7e7e680c23f3816a9994f988287adbfd40a25529dd7'
+code-revision: 'bd73c3128e542cca80efbe809cb4178ab99fc3840d935b67fd0f382054a65a0c'
 ---
 
 # 常量、规则表与正则
@@ -28,7 +28,7 @@ code-revision: 'daf86a53f13ec2d2091fb7e7e680c23f3816a9994f988287adbfd40a25529dd7
 
 ## 产品规则
 
-- `src/lib/content/schema.ts`限定zh/en、稳定小写ID、非空语言字段、无凭据HTTPS来源、预览枚举/颜色、可选事实及单一关联；`validate.ts`校验目录身份、ID/顺序唯一、引用与发布关系。
+- `src/lib/content/catalog.ts`允许每种语言一个.md或.mdx，重复后缀拒绝；`src/lib/content/schema.ts`限定zh/en、稳定小写ID、非空语言字段、无凭据HTTPS来源、预览枚举/颜色、可选事实及单一关联；`validate.ts`校验目录身份、ID/顺序唯一、引用与发布关系。
 - `src/data/taxonomy.json`是类型/标签名称及别名唯一源；原文语言、排序、事实顺序和关系属于各作品work.json。目录只包含当前语言published版本，每页24件；路径函数在`src/lib/i18n/routes.ts`。
 - `src/lib/content/revision.ts`对规范化原文与影响理解的字段计算SHA256；排序和其他语言变化不影响摘要。已发布译文摘要不一致时标待复核，不自动撤回或更新。
 - 搜索为Pagefind语言全文索引，与tag分类取交集；构建限定[data-pagefind-body]根，零发布时不生成索引并移除旧索引；不再用卡片文本过滤。q最长160字符、输入延迟150ms、请求15秒超时、每批24项；索引/分片重试释放失败实例；程序下载失败重试刷新页面保留q，清除模块失败缓存；结果序号隔离旧请求。规则在src/scripts/explore.ts与search.ts。
@@ -49,7 +49,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 
 | 名称 / 规则     | 当前值或行为                                                                                                  | 定义位置                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 体积预算        | JS gzip 总量 < 21000 字节；首页 gzip < 40000；交互源码 < 12000                                                | scripts/budget-policy.ts；被 scripts/budget.ts 和 tests/explore.spec.ts 复用 |
+| 体积预算        | 公共JS gzip < 21000；每篇MDX额外JS gzip < 150000；首页 gzip < 40000；交互源码 < 12000                         | scripts/budget-policy.ts；被 scripts/budget.ts 和 tests/explore.spec.ts 复用 |
 | 空产物          | 没有 JS 文件时失败；不能把空包算通过                                                                          | scripts/budget.ts；tests/explore.spec.ts                                     |
 | 篇幅提示        | 代码文件超过300行提示审阅职责，不阻断检查                                                                     | scripts/docs-check.ts；AGENTS.md                                             |
 | 格式            | 单引号、100 字符目标行宽、Astro parser；完整检查范围见忽略文件                                                | .prettierrc.json；.prettierignore                                            |
@@ -114,7 +114,7 @@ scripts/docs-index.ts读取当前功能说明的可选legacy-feature-ids数组�
 
 ## 搜索资源与托管容量
 
-scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。总脚本预算计入_astro全部JS，包括延迟加载模块，不作为首屏下载量；双语首页取gzip较大者；首页40000字节及交互源码12000字节预算保留。经用户同意小幅放宽，JS总预算为21000字节，计入正文交互与分章表情；整页加载完成且正文可见1.5秒后空闲预加载（空闲最长等待3秒），省流量仅点击加载。后台、离开正文或换页取消尚未开始的准备；提前点击立即加载。构建不为动态目标自身生成modulepreload，保留其依赖准备，防止WebKit下载失败后无法刷新重试。实测与取舍见[007研究](../../specs/007-section-reactions/research.md)。
+scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。脚本预算按scripts/script-budget.ts分析模块引用：普通页公共脚本小于21000字节；每篇MDX额外模块（含React、Motion、所有延迟组件及启动脚本）去重gzip小于150000字节。取最重文章验收，非全站文章累加；同组件重复实例不重复算代码。未归属模块保守计入公共，不作为首屏下载量；双语首页取gzip较大者；首页40000字节及交互源码12000字节预算保留。公共预算计入正文交互与分章表情；整页加载完成且正文可见1.5秒后空闲预加载（空闲最长等待3秒），省流量仅点击加载。后台、离开正文或换页取消尚未开始的准备；提前点击立即加载。构建不为动态目标自身生成modulepreload，保留其依赖准备，防止WebKit下载失败后无法刷新重试。实测与取舍见[007研究](../../specs/007-section-reactions/research.md)。
 
 scripts/budget-policy.ts及tests/unit/budget.test.ts校验Workers静态资源：Free每版本20,000文件，Paid100,000文件，单文件最多25MiB；默认采用Free，实际账户套餐须发布前核对。依据[Cloudflare官方限制](https://developers.cloudflare.com/workers/platform/limits/)。普通budget报告数量，受控发布按账户容量阻断。
 
@@ -133,3 +133,7 @@ scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序�
 docs/DECISIONS.md只能追加，原LESSONS历史迁移时保留旧正文；新的docs/LESSONS.md为living。docs-lessons.ts要求经验三行、日期有效、现象/原因/证据/措施/状态齐全，不超过30条；已转化另需验证和转化日期。30天后的有效性和是否适合清退由AI审阅，不自动删除。记录条件见经验文档，规则不能证明叙事真实性。
 
 正文组件、暖白底色、字体与扩展参数统一见[Markdown排版](markdown.md)。
+
+MDX仅为需要交互的文章启用React islands；普通Markdown不加载React，多实例共享模块。章节和事实锚点限制见[MDX规则](markdown.md#mdx互动文章)。detail.ts、detail-gestures.ts与detail-paging.ts共用组件区域排除，避免键盘、横滑和纵向翻页抢走组件输入。scripts/content-security.ts仅为本次构建产物的确切内联脚本追加SHA256许可，不启用脚本unsafe-inline。
+
+MDX格式整篇关闭左右拖动及长按拖动换篇，作品概览页顶部的相邻文章链接保留；普通Markdown维持原有手势。组件区域仍排除阅读键盘和纵向封面翻页手势。

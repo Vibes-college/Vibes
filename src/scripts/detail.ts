@@ -1,7 +1,7 @@
 import { installReactionEntry } from './reaction-entry';
 import { onPageLoad } from './page-lifecycle';
 import { watchReadingLinks } from './reading-prefetch';
-import { installDetailGestures } from './detail-gestures';
+import { installDetailGestures, detailGestureExclusions } from './detail-gestures';
 import { installDetailPaging } from './detail-paging';
 import { installReadingProgress } from './reading-progress';
 import { detailNavigation } from './detail-transition';
@@ -17,14 +17,11 @@ onPageLoad((signal) => {
   function isInteractive(target: EventTarget | null) {
     return (
       target instanceof Element &&
-      Boolean(
-        target.closest(
-          '[role=button], [role=tabpanel], .prose-image-dialog, a, button, input, textarea, select, summary, table, pre, [contenteditable], video, audio',
-        ),
-      )
+      Boolean(target.closest(`${detailGestureExclusions}, [role=button], .prose-image-dialog, a`))
     );
   }
-  installDetailGestures(detail, navigateWork, signal);
+  // MDX can contain arbitrary interactive surfaces; adjacent-work gestures are opt-out by format.
+  if (detail.dataset.articleFormat !== 'mdx') installDetailGestures(detail, navigateWork, signal);
   installDetailPaging(detail, signal);
   // The cover needs no progress measurements; initialize only as reading approaches.
   const readingObserver = new IntersectionObserver(
@@ -43,6 +40,7 @@ onPageLoad((signal) => {
     'keydown',
     (event) => {
       if (
+        event.defaultPrevented ||
         isInteractive(event.target) ||
         event.altKey ||
         event.ctrlKey ||

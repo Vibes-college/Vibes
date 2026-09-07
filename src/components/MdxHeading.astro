@@ -1,0 +1,20 @@
+---
+import ReactionButton from './ReactionButton.astro';
+const { id, 'data-prose-nested': nested, ...attributes } = Astro.props;
+const locale = Astro.url.pathname.split('/')[1];
+---
+
+{
+  nested ? (
+    <h2 id={id} data-prose-nested={nested} {...attributes}>
+      <slot />
+    </h2>
+  ) : (
+    <div class="chapter-heading">
+      <h2 id={id} {...attributes}>
+        <slot />
+      </h2>
+      <ReactionButton id={id} locale={locale} />
+    </div>
+  )
+}

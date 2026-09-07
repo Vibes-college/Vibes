@@ -1,9 +1,13 @@
+import tailwindcss from '@tailwindcss/vite';
+import mdx from '@astrojs/mdx';
+import react from '@astrojs/react';
 import { defineConfig } from 'astro/config';
 import { proseStyle } from './src/lib/markdown/prose-style.ts';
 import { proseProcessor, proseHighlight } from './src/lib/markdown/config.ts';
 import { buildSite } from './src/config/site.ts';
 export default defineConfig({
   site: buildSite().origin,
+  integrations: [mdx(), react()],
   markdown: { processor: proseProcessor, shikiConfig: proseHighlight },
   output: 'static',
   prefetch: { prefetchAll: false },
@@ -15,6 +19,7 @@ export default defineConfig({
     build: { assetsInlineLimit: 0 },
     plugins: [
       proseStyle(),
+      tailwindcss(),
       {
         name: 'recoverable-lazy-imports',
         // Astro supplies its own build environments; apply this at the client boundary.
