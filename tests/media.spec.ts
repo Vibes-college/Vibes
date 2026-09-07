@@ -1,4 +1,13 @@
 import { test, expect } from './browser-test.ts';
+import type { Page } from '@playwright/test';
+
+// Exercise decoding/lifecycle with a licensed local stream; external playback is manual QA.
+// Apply only to the remote-video cases so the cold/cached timing test keeps real HTTP caching.
+async function useLocalVideoTransport(page: Page) {
+  await page.route(/^https:\/\/yaoda\.work\/video\//, (route) =>
+    route.fulfill({ path: 'public/media/sintel/preview.mp4', contentType: 'video/mp4' }),
+  );
+}
 
 const detail = (kind: string, locale = 'zh') =>
   `/${locale}/works/${({ video: 'sintel-trailer', audio: 'carefree', loop: 'yaoda-football', gallery: 'feature-visualization', chart: 'anscombe-quartet', demo: '2048-original' } as Record<string, string>)[kind]}/`;
@@ -41,6 +50,7 @@ test('search cards preserve navigation, manual audio is exclusive, and replaceme
   page,
   isMobile,
 }) => {
+  await useLocalVideoTransport(page);
   await page.goto('/zh/page/2/');
   const max = isMobile ? 1 : 2;
   const playing = () =>
@@ -77,6 +87,7 @@ test('search cards preserve navigation, manual audio is exclusive, and replaceme
 test('reduced motion waits for explicit play, pauses offscreen, and does not restart a user pause', async ({
   page,
 }) => {
+  await useLocalVideoTransport(page);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(detail('loop'));
   const root = page.locator('[data-media-panel]');
