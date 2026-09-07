@@ -75,7 +75,7 @@ vibes.college现由Worker vibes-explore提供服务。2026-09-06的[首次正式
 
 scripts/release-ci.ts保存发布前版本和结果于resources/evidence/releases/；CI artifact保留90天。只有线上/__release.json匹配SHA且zh/en页有效才记录verified:true；失败不清理，上传结果不确定先核对远端再重试。实际交互另由AI用内置浏览器核对搜索、详情、语言与404，结果写PR评论。完整上线前不宣称发布成功。
 
-AI在用户合并后继续收尾；跨对话等待时建立本机跟进，状态未变化不打扰。先核对PR已合并、线上版本包含该合并、对应main工作流部署成功，纯文档维护若不影响已上线网站，要求对应main检查成功才可收尾，不虚构重新部署。再检查本地脏文件/额外提交/其他任务占用；被忽略的.dev.vars、证据和未知文件仍受保护，仅node_modules/dist/.astro/test-results等明确缓存可随worktree清理。运行cleanup:task查看候选，在待删除worktree之外的项目checkout核对状态后再传--execute-idle；不为清理切换其他任务的分支。命令以PR head与GitHub合并证明兼容squash，删除采用预期SHA比对，竞态或未知状态保留。仍被其他open PR作为base使用的分支保留；仅删除本目标分支与空闲干净worktree；用户未跟踪文件原样保留，main和其他任务不清理。
+AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并、线上版本包含该合并、对应main工作流部署成功，纯文档维护若不影响已上线网站，要求对应main检查成功才可收尾，不虚构重新部署。再检查本地脏文件/额外提交/其他任务占用，将空闲且可安全快进的本地主目录同步到origin/main；被忽略的.dev.vars、证据和未知文件仍受保护，仅node_modules/dist/.astro/test-results等明确缓存可随worktree清理。运行cleanup:task查看候选，在待删除worktree之外的项目checkout核对状态后再传--execute-idle；不为清理切换其他任务的分支。命令以PR head与GitHub合并证明兼容squash，删除采用预期SHA比对，竞态或未知状态保留。仍被其他open PR作为base使用的分支保留；仅删除本目标分支与空闲干净worktree；用户未跟踪文件原样保留，main和其他任务不清理。
 
 远端分支也要等上线验收后删除，不开启GitHub合并即删分支。临时服务由本机AI按自己启动记录核对PID/用途并关闭，不能扫描后盲杀进程；保留的服务记用途/地址/启动方式，下次先核对再复用。发布版本、旧Worker和必要恢复证据不属于临时垃圾。
 
