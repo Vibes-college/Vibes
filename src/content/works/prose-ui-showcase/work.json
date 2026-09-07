@@ -1,0 +1,26 @@
+{
+  "id": "prose-ui-showcase",
+  "originalLocale": "zh",
+  "order": 1000,
+  "sourceUrl": "https://prose-ui.com/",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": { "kind": "code", "color": "#e9eee9" },
+  "facts": [
+    { "key": "author", "kind": "author", "label": { "zh": "编写" }, "value": { "zh": "Vibes" } },
+    {
+      "key": "purpose",
+      "kind": "text",
+      "label": { "zh": "用途" },
+      "value": { "zh": "Markdown 排版验收" }
+    },
+    {
+      "key": "reference",
+      "kind": "source",
+      "label": { "zh": "样式来源" },
+      "value": { "zh": "Prose UI" },
+      "target": { "kind": "link", "url": "https://prose-ui.com/" }
+    }
+  ],
+  "related": []
+}

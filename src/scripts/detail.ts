@@ -18,7 +18,7 @@ onPageLoad((signal) => {
       target instanceof Element &&
       Boolean(
         target.closest(
-          'a, button, input, textarea, select, summary, table, pre, [contenteditable], video, audio',
+          '[role=button], [role=tabpanel], .prose-image-dialog, a, button, input, textarea, select, summary, table, pre, [contenteditable], video, audio',
         ),
       )
     );

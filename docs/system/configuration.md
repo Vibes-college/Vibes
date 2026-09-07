@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: 'd3d7584deed173d905ba152d54d68879592ed9959c9c4b07cdfc9721212f4d3b'
+code-revision: 'afb9dbd887b4848fa098623d14b60a7c339f6966399c72bd4a2eba9c919354d8'
 ---
 
 # 配置和环境变量
@@ -48,6 +48,10 @@ code-revision: 'd3d7584deed173d905ba152d54d68879592ed9959c9c4b07cdfc9721212f4d3b
 | 页面标准域名        | `SITE_URL`，本地默认127.0.0.1:4322       | `src/config/site.ts`统一供Astro、布局、sitemap和robots使用          |
 | 正式域名            | `vibes.college`，用户已于2026-09-06授权  | wrangler.jsonc的Custom Domain；已转接上线；发布与恢复结果见交付说明 |
 | 缓存与安全响应头    | 本站来源限制、禁止嵌入、构建资源缓存一年 | `public/_headers`                                                   |
+
+## Markdown与排版依赖
+
+Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，没有React或Tailwind运行时。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
 
 ## 环境变量名称
 

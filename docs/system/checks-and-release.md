@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '495fe6a4cd15b619a3f682f10e06ba8cea8ea258966e3f129e2f006abbb8eafa'
+code-revision: 'ec1625083efa11a8dddc6ec1b7c5b239031aca06978199c1cb42ce0079b3be64'
 ---
 
 # 检查与发布
@@ -112,6 +112,8 @@ AI在用户合并后继续收尾；跨对话等待时建立本机跟进，状态
 
 本地与CI使用同一配置和测试文件。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
 
+测试页面关闭前等待静态资源传输结束，10秒内仍未空闲即失败；这是对Wrangler本地代理中断响应会退出问题的防护，不重试测试或吞掉错误。公共fixture见tests/browser-test.ts。
+
 手机项目包含Chromium与WebKit设备模拟，包含触摸横滑和320px列表/详情检查，不代表真实iPhone Safari通过。导航缓存测试使用隔离空持久profile验证缓存复用，桌面项目另等待真实60秒TTL验证过期后读取。ego-browser仅在有视觉或体验验收目的时按需使用，不是自动化E2E前提。`npx playwright test --headed`可查看测试过程，运行前先构建。
 
 ## 数据库和部署边界
@@ -128,7 +130,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 - `npm run content:validate`检查整个目录并报告各语言发布数量，不写文件。
 - `npm run content:revision -- <id>`报告当前原文摘要、语言状态与待复核标记，不批准或发布翻译。
-- `npm run build`先校验内容，再Astro构建，最后为dist生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容或校验失败停止。
+- `npm run build`先校验内容，再Astro完整重编译内容缓存并构建，最后为dist生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容或校验失败停止。
 - `node --experimental-strip-types scripts/measure-explore.ts`在.scratch生成隔离5000×2样例、构建、验证分页/正文搜索并测冷/热延迟；会使用系统分配的独立空闲端口，结束清理。真实内容和dist不覆盖，不部署样例；报告位于resources/evidence/001-multilingual-explore/。
 
 英文发布前须核对全文再记录sourceRevision；原文修改使旧译文标待复核，更新摘要前必须再次审核。详细字段见[内容维护](../features/content-maintenance.md)。

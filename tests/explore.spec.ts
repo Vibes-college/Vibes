@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-test.ts';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { assertBudget } from '../scripts/budget-policy.ts';
@@ -95,7 +95,7 @@ test('static output stays small and content routes exist', async ({ request, pag
   for (const slug of readdirSync('dist/zh/works')) {
     const html = readFileSync(`dist/zh/works/${slug}/index.html`, 'utf8');
     expect(html).toContain('<table>');
-    expect(html).toContain('来源与延伸阅读');
+    expect(html).toContain('class="original-site"');
     expect(html).not.toContain('<dialog');
   }
   const response = await request.get('/sitemap.xml');

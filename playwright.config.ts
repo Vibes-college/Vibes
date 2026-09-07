@@ -6,6 +6,7 @@ export default defineConfig({
     'content-lifecycle.spec.ts',
     'navigation.spec.ts',
     'reactions.spec.ts',
+    'prose.spec.ts',
   ],
   fullyParallel: true,
   workers: 2,

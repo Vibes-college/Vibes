@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-test.ts';
 
 test('reactions wait for reading idle, save independently and clean up on navigation', async ({
   page,

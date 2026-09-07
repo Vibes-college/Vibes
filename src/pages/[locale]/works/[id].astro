@@ -4,6 +4,9 @@ import Layout from '../../../layouts/Layout.astro';
 import WorkDetail from '../../../components/WorkDetail.astro';
 import SectionReaction from '../../../components/SectionReaction.astro';
 import '../../../styles/section-reactions.css';
+import 'virtual:prose-ui.css';
+import '../../../styles/prose.css';
+import '@prose-ui/style/katex.css';
 import ReadingProgress from '../../../components/ReadingProgress.astro';
 import { catalog, getWorks } from '../../../data/works';
 import { articleSections } from '../../../data/article-sections';
@@ -57,3 +60,5 @@ const alternates = locales.flatMap((locale) => {
     <ReadingProgress sections={sections} locale={work.locale} />
   </main>
 </Layout>
+
+<script src="../../../scripts/prose.ts"></script>

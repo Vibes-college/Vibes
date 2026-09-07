@@ -1,5 +1,5 @@
 .is-detail {
-  background: #fafaf8;
+  background: #fcfbf8;
 }
 .is-detail > .site-header {
   display: none;
@@ -216,18 +216,6 @@ html:has(.detail-page[data-free-reading]) {
 .reading-section [id] {
   scroll-margin-top: 28px;
 }
-.prose .reading-section h2 {
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 1.6;
-  margin: 0 0 16px;
-  letter-spacing: -0.02em;
-  text-wrap: pretty;
-}
-.prose .reading-section h3 {
-  font-size: 16px;
-  font-weight: 500;
-}
 .section-content {
   display: flow-root;
 }
@@ -236,10 +224,6 @@ html:has(.detail-page[data-free-reading]) {
 }
 .section-content > :last-child {
   margin-bottom: 0;
-}
-.reading-page .prose {
-  line-height: 1.85;
-  font-size: 16px;
 }
 .edge-navigation {
   position: fixed;
@@ -318,8 +302,5 @@ html:has(.detail-page[data-free-reading]) {
   }
   .detail-preview .preview {
     height: clamp(190px, 36svh, 320px);
-  }
-  .prose .reading-section h2 {
-    font-size: 18px;
   }
 }

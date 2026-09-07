@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '维护作品内容'
 status: 'current'
-shaped-by: ['001', '003']
+shaped-by: ['001', '003', '008']
 code-sources:
   [
     'src/lib/content/',
@@ -13,7 +13,7 @@ code-sources:
     'scripts/migrate-content.ts',
     'tests/content-lifecycle.spec.ts',
   ]
-code-revision: '91b5bfef3da97fe6d15c3f7b470f576d7cea8da1624e98f2dd674e2a69eeddab'
+code-revision: 'd21fe5751196862b951be5139bae0f4ff39fc378e0c08fb3a300c3941370243c'
 ---
 
 # 功能名：维护作品内容
@@ -26,7 +26,7 @@ code-revision: '91b5bfef3da97fe6d15c3f7b470f576d7cea8da1624e98f2dd674e2a69eeddab
 
 1. 明确要新增或修改的作品、可靠来源和原文语言，让AI编辑`src/content/works/{id}/work.json`与`zh.md`或`en.md`；网站没有编辑后台。
 2. 填写稳定ID、顺序、来源、预览和实际可提供的信息；标签使用`src/data/taxonomy.json`，不要把同一作品改名成另一个身份。
-3. 保存正文并设置`draft`或`published`；草稿不生成页面或搜索结果，原文可先于译文发布。
+3. 用普通Markdown写正文，复杂内容按[Markdown组件写法](../system/markdown.md)加入提示、卡片、步骤、代码组、标签或公式；完整示例为`src/content/works/prose-ui-showcase/zh.md`。保存正文并设置`draft`或`published`；草稿不生成页面或搜索结果，原文可先于译文发布。
 4. 如需关联作品，只记录一次相似/归组/比较关系，程序可从任意一方读取关系；当前详情没有关联作品区域，不表达继承或业务依赖。
 5. 运行`npm run content:validate`。成功会报告目录状态；有错误则根据提示修复，不进入构建发布。
 6. 发布译文前核对全文，运行`npm run content:revision -- <id>`取得原文摘要，再填写`sourceRevision`和发布状态；命令不会替你审核或自动修改文件。
@@ -51,7 +51,7 @@ flowchart TD
   K --> L[下次构建解除待复核提示]
 ```
 
-校验命令只报告问题；修改文件或把状态写成published都不会直接改变线上网站。网站更新仍需构建与发布。对应`src/lib/content/revision.ts`、`scripts/validate-content.ts`和`scripts/build.ts`。
+内容校验不编译正文；组件拼写、参数与公式需由构建验证，错误使构建失败。校验命令只报告问题；修改文件或把状态写成published都不会直接改变线上网站。网站更新仍需构建与发布。对应`src/lib/content/revision.ts`、`scripts/validate-content.ts`和`scripts/build.ts`。
 
 ## 涉及的文件
 

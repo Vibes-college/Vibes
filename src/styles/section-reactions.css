@@ -4,7 +4,7 @@
   max-width: calc(100% - 28px);
   margin-bottom: 16px;
 }
-.prose .chapter-heading h2 {
+.prose-ui .chapter-heading h2 {
   margin-bottom: 0;
 }
 .section-reaction {

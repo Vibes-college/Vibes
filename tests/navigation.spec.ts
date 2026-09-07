@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-test.ts';
 
 const first = '/zh/works/attention-is-all-you-need/';
 const second = '/zh/works/transformers-js/';

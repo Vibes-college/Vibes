@@ -1,6 +1,6 @@
 type Direction = 'previous' | 'next';
 const excluded =
-  '.reading-progress, button, input, textarea, select, summary, table, pre, [contenteditable], video, audio';
+  '.reading-progress, .prose-table-scroll, .code-scroll, .katex-display, img[data-zoom], [role=tabpanel], button, input, textarea, select, summary, table, pre, [contenteditable], video, audio';
 
 export function installDetailGestures(
   root: HTMLElement,

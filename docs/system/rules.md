@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '528df9db3e5cfdd1dbe93d0337ab061df4cd6ab227c7f7861a41116683656b47'
+code-revision: 'f3054a8bbc52f6ae5239bf4da4c87a0eb2b29aea2e7c17fa318e83f3efc68e57'
 ---
 
 # 常量、规则表与正则
@@ -49,7 +49,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 
 | 名称 / 规则     | 当前值或行为                                                                                                  | 定义位置                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 体积预算        | JS gzip 总量 < 19000 字节；首页 gzip < 40000；交互源码 < 12000                                                | scripts/budget-policy.ts；被 scripts/budget.ts 和 tests/explore.spec.ts 复用 |
+| 体积预算        | JS gzip 总量 < 21000 字节；首页 gzip < 40000；交互源码 < 12000                                                | scripts/budget-policy.ts；被 scripts/budget.ts 和 tests/explore.spec.ts 复用 |
 | 空产物          | 没有 JS 文件时失败；不能把空包算通过                                                                          | scripts/budget.ts；tests/explore.spec.ts                                     |
 | 篇幅提示        | 代码文件超过300行提示审阅职责，不阻断检查                                                                     | scripts/docs-check.ts；AGENTS.md                                             |
 | 格式            | 单引号、100 字符目标行宽、Astro parser；完整检查范围见忽略文件                                                | .prettierrc.json；.prettierignore                                            |
@@ -114,7 +114,7 @@ scripts/docs-index.ts读取当前功能说明的可选legacy-feature-ids数组�
 
 ## 搜索资源与托管容量
 
-scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。总脚本预算计入_astro全部JS，包括延迟加载模块，不作为首屏下载量；双语首页取gzip较大者；首页40000字节及交互源码12000字节预算保留。分章表情经用户同意将JS总预算调整至19000字节；整页加载完成且正文可见1.5秒后空闲预加载（空闲最长等待3秒），省流量仅点击加载。后台、离开正文或换页取消尚未开始的准备；提前点击立即加载。构建不为动态目标自身生成modulepreload，保留其依赖准备，防止WebKit下载失败后无法刷新重试。实测与取舍见[007研究](../../specs/007-section-reactions/research.md)。
+scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全站文件数量、最大文件；总索引体积不等于首次搜索下载。总脚本预算计入_astro全部JS，包括延迟加载模块，不作为首屏下载量；双语首页取gzip较大者；首页40000字节及交互源码12000字节预算保留。经用户同意小幅放宽，JS总预算为21000字节，计入正文交互与分章表情；整页加载完成且正文可见1.5秒后空闲预加载（空闲最长等待3秒），省流量仅点击加载。后台、离开正文或换页取消尚未开始的准备；提前点击立即加载。构建不为动态目标自身生成modulepreload，保留其依赖准备，防止WebKit下载失败后无法刷新重试。实测与取舍见[007研究](../../specs/007-section-reactions/research.md)。
 
 scripts/budget-policy.ts及tests/unit/budget.test.ts校验Workers静态资源：Free每版本20,000文件，Paid100,000文件，单文件最多25MiB；默认采用Free，实际账户套餐须发布前核对。依据[Cloudflare官方限制](https://developers.cloudflare.com/workers/platform/limits/)。普通budget报告数量，受控发布按账户容量阻断。
 
@@ -131,3 +131,5 @@ scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序�
 生产origin固定https://vibes.college，worker/account见scripts/release-policy.ts与wrangler.jsonc；ci-policy.ts只允许main push确切SHA和两个成功检查进入生产。release-artifact.ts验证产物SHA与摘要；release-smoke.ts每请求10秒超时、最多6轮、轮间5秒。cleanup-policy.ts拒绝未合并/未部署/合并未进入线上/额外提交/脏文件/占用/其他open PR依赖；具体占用由本机AI核对后显式声明；真实配置与证据等ignored文件受保护，当前目录及其子目录/符号链接不得被移除。
 
 docs/DECISIONS.md只能追加，原LESSONS历史迁移时保留旧正文；新的docs/LESSONS.md为living。docs-lessons.ts要求经验三行、日期有效、现象/原因/证据/措施/状态齐全，不超过30条；已转化另需验证和转化日期。30天后的有效性和是否适合清退由AI审阅，不自动删除。记录条件见经验文档，规则不能证明叙事真实性。
+
+正文组件、暖白底色、字体与扩展参数统一见[Markdown排版](markdown.md)。
