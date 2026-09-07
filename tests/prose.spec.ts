@@ -14,6 +14,7 @@ test('prose groups synchronize files and languages, copy visible code and restor
     });
   });
   await page.goto(path);
+  await page.locator('.read-down').click();
   await expect(page.locator('.prose-ui[data-prose-ready]')).toBeVisible();
   const codes = page.locator('[data-prose-group="codegroup"][data-sync="reader-example"]');
   await codes.first().getByRole('tab', { name: 'Client', exact: true }).click();
@@ -53,6 +54,7 @@ test('prose images support keyboard zoom, Escape, focus restoration and cleanup'
   page,
 }) => {
   await page.goto(path);
+  await page.locator('.read-down').click();
   const image = page.getByRole('button', {
     name: '放大图片：木星表面的云带，来自 Juno 任务的影像',
     exact: true,
@@ -71,6 +73,7 @@ test('prose images support keyboard zoom, Escape, focus restoration and cleanup'
   await page.getByRole('button', { name: '关闭图片', exact: true }).click();
   await expect(image).toBeFocused();
   await expect(page.locator('img[alt="不启用放大的图片"]')).not.toHaveAttribute('role', 'button');
+  await page.goBack();
   await page.locator('.detail-navigation a').first().click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });
@@ -92,6 +95,7 @@ test('prose handles denied clipboard and storage without losing content', async 
     });
   });
   await page.goto(path);
+  await page.locator('.read-down').click();
   const group = page.locator('[data-prose-group="tabs"]').first();
   await group.getByRole('tab', { name: '检查', exact: true }).click();
   await expect(group.getByRole('tabpanel', { name: '检查', exact: true })).toBeVisible();

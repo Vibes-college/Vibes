@@ -35,7 +35,7 @@ code-sources:
     'src/pages/[locale]/works/[id].astro',
     'tests/explore.spec.ts',
   ]
-code-revision: '2f514e311c485362b1c46e4ff43c534d03a83229fecccd0f7f3aaec22aa8919b'
+code-revision: '4f5d7fb6e13b59d4a67a9cbd4aa25efcdb482c2b2c929dadb0b100a9bb573fb9'
 ---
 
 # 功能名：阅读作品详情

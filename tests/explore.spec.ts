@@ -36,10 +36,13 @@ test('cards navigate directly to a complete article; browser back restores filte
   await expect(page.locator('dialog')).toHaveCount(0);
   await expect(page.getByRole('heading', { level: 1 })).toContainText('LoRA');
   await expect(page.locator('.prose table')).toHaveCount(1);
+  await page.locator('.read-down').click();
   await expect(page.getByRole('heading', { name: '来源与延伸阅读' })).toBeVisible();
   expect((await page.locator('.prose').textContent())!.length).toBeGreaterThan(700);
   await page.reload();
   await expect(page.locator('.prose')).toContainText('低秩矩阵');
+  await page.goBack();
+  await expect(page.locator('.detail-cover')).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/tags\/paper/);
   await expect(page.locator('.work-card:visible')).toHaveCount(4);
@@ -115,6 +118,7 @@ test('detail overview, continuous reading, and adjacent navigation', async ({ pa
   await expect(page.locator('.reading-note, .section-number, .source-link')).toHaveCount(0);
   await page.getByRole('link', { name: '向下阅读正文' }).click();
   await expect(page.locator('.prose table')).toBeVisible();
+  await page.goBack();
   await page.locator('[data-direction="next"]').click();
   await expect(page).toHaveURL(/transformers-js/);
   await page.locator('body').click({ position: { x: 1, y: 1 } });
