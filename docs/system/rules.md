@@ -96,7 +96,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 | 相邻作品按works顺序；首尾不循环             | 左右滑动、按钮、键盘切换，短距离方向过渡；浏览器返回仍可用                                                                                                         | src/components/WorkDetail.astro；src/scripts/detail-transition.ts              |
 | 横移14px且超过纵移1.4倍锁方向，松手至少70px | 锁定后纵向跟手；空白长按380ms显现，只长按松手不切换。多指、选文、控件、表格/代码和屏幕边缘24px排除                                                                 | src/scripts/detail-gestures.ts                                                 |
 | 按编译后的二级标题切分正文                  | 全部章节常显，无序号或正文引导语；保留内容与锚点，不是任意HTML清洗器                                                                                               | src/data/article-sections.ts；src/pages/[locale]/works/[id].astro              |
-| 正文16px/1.85；标题18–20px，进度目录14px    | 接近正文才初始化；进入正文32px后停用根滚动停靠，回到入口恢复；底部胶囊仅在正文出现，500ms尺寸回弹、220ms文字交叉淡入、目录逐项显示及圆环追随；减少动态偏好即时完成 | src/styles/article.css；src/styles/detail.css；src/scripts/reading-progress.ts |
+| 正文16px/1.85；标题18–20px，进度目录14px    | 进入正文才初始化；随当前页面显隐重新测量，整页不使用滚动停靠；底部胶囊仅在正文出现，500ms尺寸回弹、220ms文字交叉淡入、目录逐项显示及圆环追随；减少动态偏好即时完成 | src/styles/article.css；src/styles/detail.css；src/scripts/reading-progress.ts |
 
 ## 文档治理检查与篇幅提示
 
