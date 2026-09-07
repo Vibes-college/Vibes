@@ -29,7 +29,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '1d70e39177773d718449d589d412a89d5141a581152c7f16265a818c1c566573'
+code-revision: '0ad10aa22ecf3d56a17d3b5378bc1e237d09339e5964854a3720a49b3d412fce'
 ---
 
 # 功能名：检查与发布网站

@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: 'afb9dbd887b4848fa098623d14b60a7c339f6966399c72bd4a2eba9c919354d8'
+code-revision: 'b57689553eb454ac4b60ff163ee77159c0b32735d947f03248053d64d5f50282'
 ---
 
 # 配置和环境变量
@@ -65,7 +65,7 @@ Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、rem
 | `GITHUB_TOKEN`                                  | GitHub Actions 临时提供 | CI 读取代码所需的平台身份；普通检查授予 `contents: read`，发布job另有 `deployments: write`；无需手填 |
 | `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | Wrangler 自动部署身份   | Token仅放GitHub production环境secret；account由固定releaseTarget提供；本机OAuth用于阶段预览          |
 
-本地与CI均运行Playwright Chromium和WebKit，包括reactions.spec.ts的分章评价加载与保存回归；按实际环境报告结果。生产发布由GitHub检查工作流负责，不再配置第二套Cloudflare Git自动发布，以免抢先上线或重复构建。
+本地与CI均以1个worker串行运行Playwright Chromium和WebKit，包括reactions.spec.ts的分章评价加载与保存回归；按实际环境报告结果。生产发布由GitHub检查工作流负责，不再配置第二套Cloudflare Git自动发布，以免抢先上线或重复构建。
 
 ## 本地与线上如何保存值
 

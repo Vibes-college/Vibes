@@ -9,7 +9,8 @@ export default defineConfig({
     'prose.spec.ts',
   ],
   fullyParallel: true,
-  workers: 2,
+  // A single local Worker serves the suite; serialize clients to avoid proxy connection loss.
+  workers: 1,
   forbidOnly: Boolean(process.env.CI),
   use: { baseURL: 'http://127.0.0.1:4322', trace: 'retain-on-failure' },
   projects: [
