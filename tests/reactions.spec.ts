@@ -35,6 +35,7 @@ test('reactions wait for reading idle, save independently and clean up on naviga
   await expect(second.locator('[data-reaction-value]')).toHaveText('🥰');
   await expect(first.locator('[data-reaction-value]')).toHaveText('🤩');
   await page.keyboard.press('Escape');
+  await page.goBack();
   await page.locator('.detail-navigation a').first().click();
   await expect(page.locator('.reaction-menu')).toHaveCount(0);
   await expect(page.locator('.reaction-particles')).toHaveCount(0);
