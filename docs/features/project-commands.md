@@ -89,6 +89,8 @@ flowchart TD
 
 2026-09-06本地verify（52单元、26浏览器通过、2按设计跳过）、budget、Wrangler生产配置dry-run通过；专用worktreecheck再次通过。Draft运行34028631687通过；预览372ced7经ego-browser验证搜索、详情、语言切换及noindex，canonical指向正式域名；Ready运行34028923187和main运行34029233677全部通过；main合并提交bd34b7d已部署至vibes.college，2026-09-06实际浏览搜索、详情、语言与404通过，本任务分支/worktree已清理，证据和回滚版本保留。见[PR #3收尾记录](https://github.com/Vibes-college/Vibes/pull/3#issuecomment-5558821204)。历史证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，仅说明旧流程当时通过。
 
+多媒体交付验收：2026-09-07，release:preview在干净已推送源码上完成完整verify与budget、上传版本并核对发布SHA；内置浏览器实际播放预览中的Sintel并进入正文。该证据仅覆盖阶段预览，原始日志在resources/evidence/010-media-previews/release-preview.log，具体预览SHA和地址见PR #9；不代表main合并或正式网站已更新。
+
 ## 对应的自动化测试
 
 - `tests/unit/check-scope.test.ts`：整个差异范围、未知路径与删除/改名。

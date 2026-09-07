@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '作品的多媒体封面与渐进体验'
-status: 'in-progress'
+status: 'complete'
 feature-ids: ['explore-browse', 'article-read', 'content-maintenance', 'project-commands']
 amends: ['001', '005', '006', '008', '009']
 amended-by: []

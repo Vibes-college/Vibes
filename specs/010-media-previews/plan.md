@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '多媒体封面的技术决定'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

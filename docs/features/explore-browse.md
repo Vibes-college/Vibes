@@ -98,6 +98,8 @@ flowchart TD
 
 最近有效验收：2026-09-06 Playwright桌面Chromium、手机Chromium/WebKit检查浏览、搜索、语言切换、失败重试与历史；ego-browser检查真实页面连续阅读。证据在`resources/evidence/005-continuous-navigation/`。2026-09-05的5000×2容量数据只保留为历史基线，搜索生命周期改动后未重跑该专项，不代表此次规模性能已验收。
 
+媒体卡片验收：2026-09-07，tests/media.spec.ts在桌面Chromium、手机Chromium/WebKit验证静音自动预览、数量上限、音频独占、搜索替换与返回；完整verify/budget通过，范围及原始证据见[阅读作品详情](article-read.md)。内置浏览器已核对小型圆形按钮与卡片布局，真机Safari仍待测。
+
 ## 对应的自动化测试
 
 `tests/explore.spec.ts`：

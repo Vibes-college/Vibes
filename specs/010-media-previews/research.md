@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '媒体生命周期与处理取舍'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

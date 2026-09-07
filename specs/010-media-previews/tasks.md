@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '多媒体封面的三阶段执行清单'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -38,9 +38,9 @@ amended-by: []
 - [x] T015 [US4] 在tests及scripts预算检查中覆盖素材体积和普通页面零媒体请求，保留既有硬门槛。
 - [x] T016 对照最终源码更新docs/features/explore-browse.md、article-read.md、content-maintenance.md、project-commands.md及索引。
 - [x] T017 对照最终源码更新docs/system/content-model.md、rules.md、markdown.md、checks-and-release.md及必要配置说明，最后刷新源码摘要。
-- [ ] T018 执行npm run verify与npm run budget，保存resources/evidence/010-media-previews证据并修复实际失败。
+- [x] T018 执行npm run verify与npm run budget，保存resources/evidence/010-media-previews证据并修复实际失败。
 - [x] T019 用内置浏览器审阅实际桌面/手机尺寸路径并记录表现、真机待测；运行converge，不将未测写成通过。
-- [ ] T020 推送有效进度、更新PR #9、创建可体验阶段预览并核对；完成状态仅按实际任务，未授权不合并。
+- [x] T020 推送有效进度、更新PR #9、创建可体验阶段预览并核对；完成状态仅按实际任务，未授权不合并。
 
 ## 依赖与执行
 

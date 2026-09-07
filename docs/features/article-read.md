@@ -148,6 +148,8 @@ flowchart TD
 
 MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器140项通过及4项按设备适用性跳过；新增英文文章使旧数量断言失败，修正该测试后在三种浏览器专项3项通过，其余代码未变。budget通过。原版十组件、双语调色、无JS、减少动画、320px、加载隔离与MDX横拖禁用均有覆盖；证据在`resources/evidence/009-mdx-articles/`，真机iOS未专项验收。
 
+媒体验收：2026-09-07，本地完整verify通过85项单元与170项浏览器测试，4项按设备适用性跳过；budget全部通过。tests/media.spec.ts覆盖图库、音视频、循环、游戏、数据图表、延迟加载、重试、无JS、搜索/双语、暂停与返回，并保存三环境首次/缓存访问的真实首帧时间。内置浏览器在Cloudflare预览实际播放Sintel并进入正文，另实际验证YouTube、Spotify试听和2048键盘操作。原始截图、日志和时间数据在resources/evidence/010-media-previews；iPhone Safari真机未验，第三方限制见下方已知问题。
+
 ## 对应的自动化测试
 
 `tests/explore.spec.ts`：
