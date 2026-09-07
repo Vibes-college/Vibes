@@ -37,8 +37,8 @@ export function withScriptHashes(headers: string, hashes: string[]): string {
   );
 }
 
-export function writeContentSecurity(out: string) {
-  const hashes = new Set<string>();
+export function writeContentSecurity(out: string, sandboxHashes: string[] = []) {
+  const hashes = new Set<string>(sandboxHashes);
   function scan(directory: string) {
     for (const entry of readdirSync(directory, { withFileTypes: true })) {
       const path = join(directory, entry.name);

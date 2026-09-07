@@ -2,7 +2,7 @@
 Source: https://github.com/gabrielecirulli/2048
 License: MIT (complete notice in LICENSE.txt)
 Vibes adaptation: concatenate/minify original game scripts; system font fallback;
-remove app metadata and official-instance wording; compact page margin.
+remove app metadata and official-instance wording; compact page margin; report initialization to the embedding page without parent DOM access.
 Rules, board, scoring and touch controls remain the upstream implementation.
 Runs in an opaque sandbox; storage falls back to in-memory state.
 Upstream revision: 478b6ec346e3787f589e4af751378d06ded4cbbc

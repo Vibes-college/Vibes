@@ -207,7 +207,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     element.addEventListener(
       'play',
       () => {
-        if (!alive()) {
+        if (!alive() || (!wanted && !controller.manual)) {
           pause();
           return;
         }
@@ -341,7 +341,17 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     element.addEventListener(
       'canplay',
       () => {
-        void seekToPending();
+        if (!wanted) pause();
+        else void seekToPending();
+      },
+      { signal },
+    );
+    // WebKit may restore native playback as an in-flight seek settles. Reapply
+    // the user's pause intent instead of waiting for a later `playing` event.
+    element.addEventListener(
+      'seeked',
+      () => {
+        if (!wanted) pause();
       },
       { signal },
     );

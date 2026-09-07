@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '710bfe6bfc821717aa114f34d809ff105d8894b2ccb67d9deae57c188c1a458b'
+code-revision: 'a4d6f25b65f5e7b9c85ecc0bb29e04b6faa6fc0c3f95a14cc4d5d56ced32dfd7'
 ---
 
 # 检查与发布
@@ -163,6 +163,8 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 英文发布前须核对全文再记录sourceRevision；原文修改使旧译文标待复核，更新摘要前必须再次审核。详细字段见[内容维护](../features/content-maintenance.md)。
 
 `npm run release:restore -- <version-id>`恢复本地已记录的生产版本；记录和门槛见[CI](checks-and-release.md)。不能传任意域名、账户或合成内容。
+
+构建中的scripts/sandbox-game.ts只打包已登记2048模板及其固定CSS/JS，并将确切可执行字节交给CSP摘要流程；旧模板地址保留；64KiB超限、模板引用改变、额外脚本/样式或嵌入闭合标签均使构建失败。tests/unit/sandbox-game.test.ts检查字节保真与拒绝边界；tests/media.spec.ts验证真实站内切换、阻断沙盒子资源仍可操作、退出重开，以及旧CSP缺少摘要时完整刷新恢复。最终域名的浏览器网络策略可能不同于预览，上线验收须实际操作游戏。
 
 ## 源码与说明同步检查
 
