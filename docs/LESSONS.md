@@ -23,4 +23,4 @@ shaped-by: ['004']
 
 - [2026-09-06] 现象：完整E2E多次因本地Wrangler代理中途退出失败｜证据：resources/evidence/008-prose-markdown/verify-repeated-service-failure.log
   原因：代理报告Network connection lost；与上游workers-sdk#15317症状一致，不能据此确定全部内部根因。
-  转化：[browser-test.ts](../tests/browser-test.ts)关闭页面前等待有限资源完成，超时仍失败｜验证：完整verify连续两轮111通过、3设备适用性跳过，日志位于008证据目录｜转化日期：2026-09-06｜状态：已转化
+  转化：[browser-test.ts](../tests/browser-test.ts)及[navigation.spec.ts](../tests/navigation.spec.ts)在普通页面和独立缓存profile关闭前等待有限资源完成，超时仍失败｜验证：008完整verify两轮111通过；后续封面回归发现独立profile未走公共fixture，补齐清理，验证见006的cover-proximity证据目录｜转化日期：2026-09-06｜状态：已转化

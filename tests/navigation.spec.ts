@@ -253,7 +253,14 @@ test('completed prefetch is reused in a persistent browser context', async ({
       ).toBeGreaterThan(0);
     }
   } finally {
-    await context.close();
+    // This independent profile does not use browser-test's page teardown fixture.
+    try {
+      await Promise.all(
+        context.pages().map((page) => page.waitForLoadState('networkidle', { timeout: 10_000 })),
+      );
+    } finally {
+      await context.close();
+    }
   }
 });
 
