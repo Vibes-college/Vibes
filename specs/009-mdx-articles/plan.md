@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'MDX渲染与按需交互技术计划'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

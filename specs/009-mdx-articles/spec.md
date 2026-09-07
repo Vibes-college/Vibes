@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '按需交互的MDX文章'
-status: 'in-progress'
+status: 'complete'
 feature-ids: ['article-read', 'content-maintenance']
 amends: ['001', '006', '007', '008']
 amended-by: []

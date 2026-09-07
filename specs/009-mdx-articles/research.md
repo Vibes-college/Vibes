@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'MDX章节与islands兼容决定'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

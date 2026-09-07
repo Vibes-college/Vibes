@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'MDX执行清单'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -39,7 +39,7 @@ amended-by: []
 - [x] T009 [US3] 在tests/mdx.spec.ts核对普通页不加载React、多实例共享运行时；保存实际构建体积与预算方案至resources/evidence/009-mdx-articles。
 - [x] T010 在docs/features/article-read.md、content-maintenance.md及关联docs/system文档同步完整路径、源码与限制，更新索引。
 - [x] T011 运行verify与budget，浏览器审阅示例并将证据保存resources/evidence/009-mdx-articles，处理预算冲突。
-- [ ] T012 在specs/009-mdx-articles复核converge、同步真实状态，保存推送并更新PR清单与预览。
+- [x] T012 在specs/009-mdx-articles复核converge、同步真实状态，保存推送并更新PR清单与预览。
 
 独立验收：实际请求和预算证明按需加载，必要检查通过，未测与未部署准确列出。
 

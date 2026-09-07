@@ -26,4 +26,4 @@ shaped-by: ['002']
 
 | [008 Markdown完整排版与示例文章](008-prose-markdown/spec.md) | complete | article-read, content-maintenance |
 
-| [009 按需交互的MDX文章](009-mdx-articles/spec.md) | in-progress | article-read, content-maintenance |
+| [009 按需交互的MDX文章](009-mdx-articles/spec.md) | complete | article-read, content-maintenance |
