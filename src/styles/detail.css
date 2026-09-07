@@ -109,9 +109,9 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-/* Only the two page starts snap; a long reading page remains freely scrollable. */
+/* Assist near page entrances without turning a small native scroll into a full page jump. */
 html:has(.is-detail) {
-  scroll-snap-type: y mandatory;
+  scroll-snap-type: y proximity;
   scroll-behavior: smooth;
 }
 html:has(.detail-page[data-free-reading]) {

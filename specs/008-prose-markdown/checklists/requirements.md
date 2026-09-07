@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '排版规格质量'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

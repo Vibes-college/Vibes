@@ -330,6 +330,53 @@ test('detail progress menu preserves anchors, keyboard, reversal and reduced mot
   await expect(page.locator('.reading-section h2').first()).toBeInViewport();
 });
 
+test('a slight cover scroll does not skip to the reading page', async ({
+  page,
+  context,
+  browserName,
+  isMobile,
+}) => {
+  await page.goto('/zh/works/transformers-js/');
+  await page.evaluate(() => document.fonts.ready);
+  if (isMobile && browserName === 'chromium') {
+    const session = await context.newCDPSession(page);
+    await session.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: [{ x: 340, y: 600 }],
+    });
+    for (const y of [592, 584, 576, 568]) {
+      await session.send('Input.dispatchTouchEvent', {
+        type: 'touchMove',
+        touchPoints: [{ x: 340, y }],
+      });
+      await page.waitForTimeout(60);
+    }
+    await page.waitForTimeout(150);
+    await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await session.detach();
+  } else if (isMobile) {
+    // WebKit programmatic scrolling checks layout, not native iPhone flick physics.
+    await page.evaluate(() => window.scrollTo({ top: 32, behavior: 'smooth' }));
+  } else await page.mouse.wheel(0, 32);
+  // Observe the settled result, not the initial position before snap animation starts.
+  await page.waitForTimeout(1200);
+  expect(await page.evaluate(() => scrollY)).toBeLessThan(120);
+  await expect(page.locator('.progress-toggle')).toBeHidden();
+  // Mid-cover scrolling may remain between the two entrances; it must not force a page turn.
+  const entrance = await page
+    .locator('#reading')
+    .evaluate((el) => el.getBoundingClientRect().top + scrollY);
+  await page.evaluate((top) => window.scrollTo({ top, behavior: 'smooth' }), entrance * 0.45);
+  await page.waitForTimeout(1200);
+  const middle = await page.evaluate(() => scrollY);
+  expect(middle).toBeGreaterThan(entrance * 0.25);
+  expect(middle).toBeLessThan(entrance * 0.65);
+  await page.locator('.read-down').click();
+  await expect
+    .poll(async () => Math.abs((await page.locator('#reading').boundingBox())!.y))
+    .toBeLessThan(2);
+});
+
 test('vertical paging lands on reading and long content stays reachable', async ({
   page,
   context,
@@ -343,7 +390,7 @@ test('vertical paging lands on reading and long content stays reachable', async 
       type: 'touchStart',
       touchPoints: [{ x: 340, y: 710 }],
     });
-    for (const y of [650, 550, 430, 310, 190]) {
+    for (const y of [650, 530, 410, 290, 170, 65]) {
       await session.send('Input.dispatchTouchEvent', {
         type: 'touchMove',
         touchPoints: [{ x: 340, y }],
@@ -418,7 +465,7 @@ test('reading bottom stays put after repeated overscroll and viewport changes', 
   await page.locator('.progress-menu a').first().click();
   // The first heading retains its 28px anchor margin; it is not the #reading snap anchor.
   await expect(page.locator('.reading-section h2').first()).toBeInViewport();
-  await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'y mandatory');
+  await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'y');
 });
 
 test('reading controls, selected text and system edges do not change works', async ({ page }) => {
