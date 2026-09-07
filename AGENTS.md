@@ -53,7 +53,7 @@ living只写当前行为；spec开发中可改，合并后冻结，仅允许状�
 
 首版spec确认目标后开Draft PR；描述维护目标、范围、任务摘要、当前进度、阻塞、下一步和预览链接/状态，评论只记录重要决定、阶段证据与阻塞变化。详细任务以tasks.md为准，摘要随阶段同步。用户能打开PR看清单是交付条件，不只报告“已创建”。
 
-本地commit可多次；达到可体验阶段、交接、暂停或结束前保存并推送有效进度，更新PR。不硬性规定每commit push或本地最多领先一个commit。开发中阶段预览由AI按需运行release:preview，不每次push重建。基础设施或重要PR在Ready前，主Agent主动新建独立会话，由另一Agent审查整个PR，重点核对加载、缓存、资源释放、预算及代码质量；修复后由独立审查者复核最终SHA。独立审查通过才转Ready，必要检查通过后通知用户点合并，AI不自动合并。Ready后再改代码须退回Draft、复核变化并重新验收整个PR；具体范围与记录见docs/system/checks-and-release.md。
+本地commit可多次；达到可体验阶段、交接、暂停或结束前保存并推送有效进度，更新PR。不硬性规定每commit push或本地最多领先一个commit。开发中阶段预览由AI按需运行release:preview，不每次push重建。基础设施或重要PR在Ready前，主Agent主动新建独立会话，由另一Agent审查整个PR，按实际差异与风险确定重点，覆盖行为正确性、安全与数据边界、性能与资源、代码可维护性、验证与交付；具体标准见docs/system/checks-and-release.md，修复后由独立审查者复核最终SHA。独立审查通过才转Ready，必要检查通过后通知用户点合并，AI不自动合并。Ready后再改代码须退回Draft、复核变化并重新验收整个PR；具体范围与记录见docs/system/checks-and-release.md。
 
 AI负责真实.dev.vars与线上环境值配置；缺信息问用户，需要本人登录或授权就给入口、步骤、完成标志；秘密不得进入Git/PR/日志。不要要求用户手写配置。
 
