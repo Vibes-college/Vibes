@@ -1,5 +1,5 @@
 import { parseChartData } from '../lib/media/data';
-import { isMediaUrl, mediaLimits } from '../config/media';
+import { isMediaDatasetUrl, mediaLimits } from '../config/media';
 import type { Media, MediaText } from '../lib/media/schema';
 import type { Locale } from '../lib/i18n/routes';
 
@@ -10,7 +10,7 @@ export async function mountChart(
   locale: Locale,
   signal: AbortSignal,
 ) {
-  if (!isMediaUrl(item.dataset)) throw new Error('Invalid dataset source');
+  if (!isMediaDatasetUrl(item.dataset)) throw new Error('Invalid dataset source');
   const response = await fetch(item.dataset, { signal });
   if (!response.ok || Number(response.headers.get('content-length')) > mediaLimits.dataBytes)
     throw new Error('Chart data unavailable or too large');

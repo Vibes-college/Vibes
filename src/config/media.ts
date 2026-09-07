@@ -61,6 +61,11 @@ export function isMediaUrl(value: string): boolean {
   return isHttpsUrl(value) && mediaFileOrigins.includes(new URL(value).origin);
 }
 
+// Datasets are reviewed and shipped with the site; fetch stays within connect-src self.
+export function isMediaDatasetUrl(value: string): boolean {
+  return value.startsWith('/media/') && /\.(json|csv)$/.test(value) && isMediaUrl(value);
+}
+
 export function embedUrl(provider: string, id: string): string {
   if (provider === 'bilibili' && /^BV[a-zA-Z0-9]{10}$/.test(id))
     return `https://player.bilibili.com/player.html?bvid=${id}&autoplay=0`;

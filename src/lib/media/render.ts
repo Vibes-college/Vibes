@@ -38,7 +38,7 @@ export function workCardHtml(work: CardWork, locale: Locale) {
     : '';
   const element =
     card.kind === 'video'
-      ? '<video muted playsinline loop preload="none" tabindex="-1" aria-hidden="true"></video>'
+      ? `<video muted playsinline loop preload="none" tabindex="-1" aria-hidden="true" style="object-fit:${card.fit};object-position:${card.poster.focalPoint[0] * 100}% ${card.poster.focalPoint[1] * 100}%"></video>`
       : card.kind === 'audio'
         ? '<audio preload="none"></audio>'
         : '';

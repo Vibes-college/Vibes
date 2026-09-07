@@ -7,7 +7,13 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { mediaSchema, presentationSchema, mediaTextSchema } from '../../src/lib/media/schema.ts';
 import { validateMedia } from '../../src/lib/media/validate.ts';
-import { isMediaUrl, embedUrl, mediaLimits, mediaFrameOrigins } from '../../src/config/media.ts';
+import {
+  isMediaUrl,
+  isMediaDatasetUrl,
+  embedUrl,
+  mediaLimits,
+  mediaFrameOrigins,
+} from '../../src/config/media.ts';
 
 const provenance = { url: 'https://vibes.college/', credit: 'Vibes', license: 'CC0' };
 const image = {
@@ -223,5 +229,29 @@ test('local files enforce actual bytes, containment and WebVTT content', () => {
     );
   } finally {
     rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('chart datasets stay local and agree with the fetch security boundary', () => {
+  const work = JSON.parse(
+    readFileSync(
+      new URL('../../src/content/works/anscombe-quartet/work.json', import.meta.url),
+      'utf8',
+    ),
+  );
+  const chart = work.media.find((item: { kind: string }) => item.kind === 'chart');
+  for (const dataset of ['/media/chart/data.json', '/media/chart/data.csv']) {
+    assert.equal(isMediaDatasetUrl(dataset), true);
+    assert.equal(mediaSchema.parse({ ...chart, dataset }).kind, 'chart');
+  }
+  for (const dataset of [
+    'https://yaoda.work/data.json',
+    '//yaoda.work/data.json',
+    '/media/../data.json',
+    '/images/data.json',
+    '/media/data.txt',
+  ]) {
+    assert.equal(isMediaDatasetUrl(dataset), false);
+    assert.throws(() => mediaSchema.parse({ ...chart, dataset }), /local.*dataset/);
   }
 });

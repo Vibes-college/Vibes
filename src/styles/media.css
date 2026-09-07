@@ -28,7 +28,6 @@
 }
 [data-context='card'] .media-stage video {
   pointer-events: none;
-  object-fit: cover;
   opacity: 0;
 }
 [data-context='card'].is-playing video {

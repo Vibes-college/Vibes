@@ -1,5 +1,11 @@
 import { z } from 'astro/zod';
-import { isMediaUrl, isHttpsUrl, embedUrl, embedProviders } from '../../config/media.ts';
+import {
+  isMediaUrl,
+  isMediaDatasetUrl,
+  isHttpsUrl,
+  embedUrl,
+  embedProviders,
+} from '../../config/media.ts';
 
 const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 const text = z.string().trim().min(1);
@@ -118,7 +124,7 @@ const chart = z
     ...base,
     kind: z.literal('chart'),
     posterId: id,
-    dataset: url,
+    dataset: z.string().refine(isMediaDatasetUrl, 'Expected a local /media JSON or CSV dataset'),
     columns: z
       .array(z.object({ key: id, unit: z.string().max(40).default('') }).strict())
       .min(2)

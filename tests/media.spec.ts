@@ -322,3 +322,28 @@ test('cold and cached visits record page appearance and actual first video frame
     contentType: 'application/json',
   });
 });
+
+test('video cards keep the configured framing in the directory and search', async ({ page }) => {
+  await useLocalVideoTransport(page);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/zh/page/2/');
+  const card = page
+    .locator('.work-card[data-kind=video]')
+    .filter({ has: page.locator('a[data-work=yaoda-fx]') });
+  for (const search of [false, true]) {
+    if (search) await page.getByRole('searchbox').fill('华丽');
+    await expect(card).toBeVisible();
+    await card.scrollIntoViewIfNeeded();
+    await card.locator('[data-media-toggle]').click();
+    const video = card.locator('video');
+    await expect
+      .poll(() => video.evaluate((el) => (el as HTMLVideoElement).currentTime))
+      .toBeGreaterThan(0);
+    await expect(video).toHaveCSS('object-fit', 'contain');
+    const posterPosition = await card
+      .locator('img')
+      .evaluate((el) => getComputedStyle(el).objectPosition);
+    await expect(video).toHaveCSS('object-position', posterPosition);
+    await card.locator('[data-media-toggle]').click();
+  }
+});

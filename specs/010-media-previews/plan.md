@@ -19,7 +19,7 @@ amended-by: []
 - src/scripts/media-player.ts负责原生音视频、延迟source、字幕、进度/章节与音频文字同步；src/scripts/media-experience.ts点击才加载iframe或登记组件；src/scripts/media-chart.ts以自有SVG加原生表单展现有限数据图表；src/scripts/media-demo.ts提供可调整/拖动的自制演示。异步回调核对连接、可见性与销毁信号。
 - 提供真实YouTube、Spotify、游戏、论文、博客、X及yaoda作品，附原创正文和真实图像。图表使用R的Anscombe数值。2048官方站点拒绝嵌入，改为MIT源码沙盒版，源码计入媒体预算；不修改外站嵌入限制。
 
-素材协议：共有id/kind/provenance；图片有src/width/height/variants/focalPoint/animated/posterId；视频有sources/duration/width/height/hasAudio/posterId/captions/chapters；音频有sources/duration/artworkId/waveform/captions/chapters/transcript；embed限定平台配置；demo限定注册组件及参数；chart有列/单位、数据地址、映射、系列/范围筛选、日期和来源定位。mediaText按素材ID维护alt/caption/title/hint/context等语言说明。图表数据和演示代码只在启动后下载。
+素材协议：共有id/kind/provenance；图片有src/width/height/variants/focalPoint/animated/posterId；视频有sources/duration/width/height/hasAudio/posterId/captions/chapters；音频有sources/duration/artworkId/waveform/captions/chapters/transcript；embed限定平台配置；demo限定注册组件及参数；chart有列/单位、数据地址、映射、系列/范围筛选、日期和来源定位。mediaText按素材ID维护alt/caption/title/hint/context等语言说明。图表数据和演示代码只在启动后下载；dataset限随站发布的/media下JSON/CSV文件，不使用远程URL，保持connect-src self。
 
 ## 宪章检查与预算
 
