@@ -25,7 +25,7 @@ code-sources:
     'src/pages/[locale]/works/[id].astro',
     'tests/explore.spec.ts',
   ]
-code-revision: '71ec76fd84c7bbf9f1fd46f6185064fe1c4f2ce418a5860b7d0a30cd0883612f'
+code-revision: '6686afe3ceb3eb7a6dd56c1bcda96470db87e08d911efb716e56f0f18f6804bd'
 ---
 
 # 功能名：阅读作品详情
@@ -38,7 +38,7 @@ code-revision: '71ec76fd84c7bbf9f1fd46f6185064fe1c4f2ce418a5860b7d0a30cd0883612f
 
 1. 从目录点击卡片，进入`/{locale}/works/{id}/`，先看来源、预览、标题、介绍和已有的作者/类型等信息。
 2. 点击原站链接，在新标签页打开原始作品；预览封面不是内嵌播放器。
-3. 上下滑动或点轻微摆动的向下入口，在概览与正文两屏间停靠；正文全部展开，长正文正常滚动。底部进度胶囊只在正文出现，显示阅读进度与当前章；点击展开目录并跳转，Escape或点外部关闭。
+3. 上下滑动或点轻微摆动的向下入口，在概览与正文两屏间停靠；正文全部展开；进入正文超过32px后关闭强制停靠，底部继续滑动保持普通滚动，回到入口附近恢复停靠。底部进度胶囊只在正文出现，显示阅读进度与当前章；点击展开目录并跳转，Escape或点外部关闭。
 4. 点击有链接的信息项，进入同类作品或对应正文；没有有效目标的信息只显示文字。
 5. 顶部依次为交叉关闭、上一件、下一件，随概览滚走，正文不悬浮保留；电脑可用左右键，手机可横滑。横滑或空白长按显示边缘方向提示，随触点上下移动；明确横移后松手切换，取消或只长按不切换。首尾不循环。
 6. 详情不显示中英切换、缺译提示或查看原文入口；可返回首页选择语言。已有语言网址仍可直接打开，待复核译文保留状态文字。
@@ -80,7 +80,7 @@ flowchart TD
 
 连续阅读的历史滚动、反复搜索与语言切换由`tests/navigation.spec.ts`覆盖；旧页面监听与未完成搜索在切换时失效。
 
-最近有效验收：2026-09-06 Playwright桌面Chromium、手机Chromium/WebKit覆盖常显正文、进度目录、锚点、Escape/外部关闭、减少动画、两屏停靠、相邻切换、首页语言和历史。完整verify通过（52项单元测试、81项浏览器测试，3项设备适用性跳过），budget通过（全站脚本gzip 14,917字节，限额15,000）。内置浏览器核对390px手机正文与目录，并与Rare UI相同视口参考对照。Chromium手机使用原生触摸；WebKit横滑为DOM事件、停靠使用scrollTo。原始截图、加载与滚动比较在`resources/evidence/006-detail-reading/`，性能样本仅代表同机模拟环境，不能证明所有设备零影响；真机与读屏尚未专项验收。005目录历史证据保留原目录。
+最近有效验收：2026-09-06 Playwright桌面Chromium、手机Chromium/WebKit覆盖常显正文、进度目录、锚点、Escape/外部关闭、减少动画、两屏停靠、相邻切换、首页语言和历史。底部连续滚动、视口尺寸变化后保留末章及返回入口恢复停靠由新增回归覆盖。完整verify/budget与发布记录保存在证据目录；脚本体积仍受15,000字节gzip预算限制。内置浏览器核对390px手机正文与目录，并与Rare UI相同视口参考对照。Chromium手机使用原生触摸；WebKit横滑为DOM事件、停靠使用scrollTo。原始截图、加载与滚动比较在`resources/evidence/006-detail-reading/`，性能样本仅代表同机模拟环境，不能证明所有设备零影响；真机与读屏尚未专项验收。005目录历史证据保留原目录。
 
 ## 对应的自动化测试
 
@@ -92,6 +92,7 @@ flowchart TD
 - `homepage switches language and detail omits language controls while routes stay valid`
 - `detail progress menu preserves anchors, keyboard, reversal and reduced motion`
 - `edge feedback follows locked gestures and cancellation never navigates`
+- `reading bottom stays put after repeated overscroll and viewport changes`
 - `no horizontal overflow, no embeds, two-line card descriptions`
 
 `tests/unit/article-sections.test.ts`验证正文结构；`tests/unit/content-relations.test.ts`验证事实/关联；`tests/content-lifecycle.spec.ts`验证译文发布及待复核的真实构建。
@@ -103,4 +104,4 @@ flowchart TD
 
 ## 已知问题 / 待办
 
-手机触摸测试使用Chromium和WebKit模拟；真机Safari和读屏尚未完成专项验收。未提供的事实不会自动补全；来源与内容质量仍需编辑判断。
+用户报告iOS 26 Safari底部每次继续滑动都会回到正文第一节；已将正文内强制停靠关闭。模拟WebKit未重现相同的系统弹性回顶，回归覆盖底部追加滚动与视口变化，修复仍待iPhone真机复测。读屏尚未完成专项验收。未提供的事实不会自动补全；来源与内容质量仍需编辑判断。

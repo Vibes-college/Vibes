@@ -114,6 +114,9 @@ html:has(.is-detail) {
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
 }
+html:has(.detail-page[data-free-reading]) {
+  scroll-snap-type: none;
+}
 .is-detail > .site-footer {
   display: none;
 }

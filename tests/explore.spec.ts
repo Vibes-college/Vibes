@@ -370,6 +370,57 @@ test('vertical paging lands on reading and long content stays reachable', async 
   await expect(lastLink).toBeInViewport();
 });
 
+test('reading bottom stays put after repeated overscroll and viewport changes', async ({
+  page,
+  isMobile,
+  browserName,
+  context,
+}) => {
+  await page.goto('/zh/works/transformers-js/#reading');
+  await expect(page.locator('.progress-toggle')).toBeVisible();
+  // A last-chapter anchor puts the browser into the same long reading region as a reader.
+  await page.locator('.progress-toggle').click();
+  await page.locator('.progress-menu a').last().click();
+  const bottom = () =>
+    page.evaluate(() => document.documentElement.scrollHeight - innerHeight - scrollY);
+  await expect.poll(bottom).toBeLessThan(2);
+  // Explicitly exclude the forced-snap mechanism during rubber-banding, which WebKit's
+  // mobile automation cannot generate as native iPhone touch input.
+  await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'none');
+  for (let i = 0; i < 3; i++) {
+    if (!isMobile) await page.mouse.wheel(0, 600);
+    else if (browserName === 'chromium') {
+      const session = await context.newCDPSession(page);
+      await session.send('Input.dispatchTouchEvent', {
+        type: 'touchStart',
+        touchPoints: [{ x: 340, y: 580 }],
+      });
+      await session.send('Input.dispatchTouchEvent', {
+        type: 'touchMove',
+        touchPoints: [{ x: 340, y: 280 }],
+      });
+      await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      await session.detach();
+    } else
+      await page.evaluate(() =>
+        window.scrollTo({ top: document.documentElement.scrollHeight + 500, behavior: 'smooth' }),
+      );
+    await page.waitForTimeout(250);
+    await expect.poll(bottom).toBeLessThan(2);
+    await expect(page.locator('.reading-section h2').last()).toBeInViewport();
+  }
+  const viewport = page.viewportSize()!;
+  await page.setViewportSize({ width: viewport.width, height: viewport.height - 80 });
+  await page.setViewportSize(viewport);
+  await expect(page.locator('.reading-section h2').last()).toBeInViewport();
+  await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'none');
+  await page.locator('.progress-toggle').click();
+  await page.locator('.progress-menu a').first().click();
+  // The first heading retains its 28px anchor margin; it is not the #reading snap anchor.
+  await expect(page.locator('.reading-section h2').first()).toBeInViewport();
+  await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'y mandatory');
+});
+
 test('reading controls, selected text and system edges do not change works', async ({ page }) => {
   await page.goto('/zh/works/transformers-js/#reading');
   const swipe = async (selector: string, x = 270) => {

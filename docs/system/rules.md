@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '1ef61dac3f47038e675705867f30c7cc1578e855f7855fdf4ed5967cd62c0eb9'
+code-revision: '387488708df64d01254ec41bcf8d900ff63b9a8d4ae65b03ad299210784fd3b2'
 ---
 
 # 常量、规则表与正则
@@ -88,15 +88,15 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 
 ## Explore 手机布局和详情规则
 
-| 规则                                        | 用途                                                                                                                   | 来源                                                                           |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| 分类字号 12px、纵向内边距 10px              | 紧凑英文分类；首页卡片保持原样                                                                                         | src/styles/base.css；src/styles/responsive.css                                 |
-| 详情最大宽780px，两屏至少100svh             | 概览与正文整屏停靠，长内容正常滚动；顶部44px导航，图标15px，点击区域40×44px                                            | src/styles/detail.css                                                          |
-| 每条内容的作者、类型、主题信息              | 作者查同作者；类型查同类；主题进入正文，不编造不存在的 Prompt                                                          | src/data/work-facts.ts                                                         |
-| 相邻作品按works顺序；首尾不循环             | 左右滑动、按钮、键盘切换，短距离方向过渡；浏览器返回仍可用                                                             | src/components/WorkDetail.astro；src/scripts/detail-transition.ts              |
-| 横移14px且超过纵移1.4倍锁方向，松手至少70px | 锁定后纵向跟手；空白长按380ms显现，只长按松手不切换。多指、选文、控件、表格/代码和屏幕边缘24px排除                     | src/scripts/detail-gestures.ts                                                 |
-| 按编译后的二级标题切分正文                  | 全部章节常显，无序号或正文引导语；保留内容与锚点，不是任意HTML清洗器                                                   | src/data/article-sections.ts；src/pages/[locale]/works/[id].astro              |
-| 正文16px/1.85；标题18–20px，进度目录14px    | 接近正文才初始化，底部胶囊仅在正文出现，500ms尺寸回弹、220ms文字交叉淡入、目录逐项显示及圆环追随；减少动态偏好即时完成 | src/styles/article.css；src/styles/detail.css；src/scripts/reading-progress.ts |
+| 规则                                        | 用途                                                                                                                                                               | 来源                                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| 分类字号 12px、纵向内边距 10px              | 紧凑英文分类；首页卡片保持原样                                                                                                                                     | src/styles/base.css；src/styles/responsive.css                                 |
+| 详情最大宽780px，两屏至少100svh             | 概览与正文整屏停靠，长内容正常滚动；顶部44px导航，图标15px，点击区域40×44px                                                                                        | src/styles/detail.css                                                          |
+| 每条内容的作者、类型、主题信息              | 作者查同作者；类型查同类；主题进入正文，不编造不存在的 Prompt                                                                                                      | src/data/work-facts.ts                                                         |
+| 相邻作品按works顺序；首尾不循环             | 左右滑动、按钮、键盘切换，短距离方向过渡；浏览器返回仍可用                                                                                                         | src/components/WorkDetail.astro；src/scripts/detail-transition.ts              |
+| 横移14px且超过纵移1.4倍锁方向，松手至少70px | 锁定后纵向跟手；空白长按380ms显现，只长按松手不切换。多指、选文、控件、表格/代码和屏幕边缘24px排除                                                                 | src/scripts/detail-gestures.ts                                                 |
+| 按编译后的二级标题切分正文                  | 全部章节常显，无序号或正文引导语；保留内容与锚点，不是任意HTML清洗器                                                                                               | src/data/article-sections.ts；src/pages/[locale]/works/[id].astro              |
+| 正文16px/1.85；标题18–20px，进度目录14px    | 接近正文才初始化；进入正文32px后停用根滚动停靠，回到入口恢复；底部胶囊仅在正文出现，500ms尺寸回弹、220ms文字交叉淡入、目录逐项显示及圆环追随；减少动态偏好即时完成 | src/styles/article.css；src/styles/detail.css；src/scripts/reading-progress.ts |
 
 ## 文档治理检查与篇幅提示
 
