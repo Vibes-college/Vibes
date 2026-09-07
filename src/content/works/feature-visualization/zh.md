@@ -1,15 +1,34 @@
 ---
-locale: 'zh'
-status: 'published'
-title: 'Feature Visualization'
-summary: 'Feature Visualization — 神经网络看见的世界，是什么样子？'
-description: 'Distill 的可视化文章探索神经网络内部特征。通过图像与解释，理解如何观察模型学到的表示，以及这些方法的局限。'
-previewText:
-  {
-    'eyebrow': 'DISTILL · 2017',
-    'display': "Looking inside\na neural network",
-    'note': 'Feature Visualization',
-  }
+{
+  'locale': 'zh',
+  'status': 'published',
+  'title': 'Feature Visualization',
+  'summary': 'Feature Visualization — 神经网络看见的世界，是什么样子？',
+  'description': 'Distill 的可视化文章探索神经网络内部特征。通过图像与解释，理解如何观察模型学到的表示，以及这些方法的局限。',
+  'previewText':
+    {
+      'eyebrow': 'DISTILL · 2017',
+      'display': "Looking inside\na neural network",
+      'note': 'Feature Visualization',
+    },
+  'mediaText':
+    {
+      'distill-cover-zoom':
+        { 'title': '文章封面', 'alt': 'Distill Feature Visualization 原文封面' },
+      'distill-channel-zoom':
+        {
+          'title': 'Channel objective',
+          'alt': '原文的通道目标可视化',
+          'caption': '来自原文 Objectives 部分：通道目标。',
+        },
+      'distill-neuron-zoom':
+        {
+          'title': 'Neuron objective',
+          'alt': '原文的神经元目标可视化',
+          'caption': '来自原文 Objectives 部分：神经元目标。',
+        },
+    },
+}
 ---
 
 ## 神经网络究竟在寻找什么
@@ -49,3 +68,5 @@ Distill 的这篇长文讨论特征可视化：通过优化输入，让网络的
 - [Feature Visualization · 原始来源](https://distill.pub/2017/feature-visualization/)
 
 本文为 Vibes 根据公开资料撰写的中文导览；阅读提示、比较角度与练习为编辑整理，并非原作者原话。技术能力与页面内容可能随版本更新，具体以原始来源为准。
+
+图库引用文章的原创封面、channel 与 neuron 目标图；按 CC BY 4.0 缩放并转换为 WebP，作者与来源保留。

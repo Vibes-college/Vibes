@@ -1,0 +1,292 @@
+{
+  "id": "anscombe-quartet",
+  "originalLocale": "zh",
+  "order": 212,
+  "sourceUrl": "https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/anscombe.html",
+  "typeId": "paper",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "F. J. Anscombe · R datasets",
+        "en": "F. J. Anscombe · R datasets"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "stat.ethz.ch",
+        "en": "stat.ethz.ch"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/anscombe.html"
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "plot",
+      "kind": "image",
+      "src": "/media/anscombe/poster.webp",
+      "width": 760,
+      "height": 760,
+      "bytes": 5444,
+      "provenance": {
+        "url": "https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/anscombe.html",
+        "credit": "F. J. Anscombe / R datasets",
+        "license": "数值来自 R datasets；本地图表由 Vibes 绘制"
+      }
+    },
+    {
+      "id": "group-1",
+      "kind": "chart",
+      "posterId": "plot",
+      "dataset": "/media/anscombe/data.json",
+      "columns": [
+        {
+          "key": "x1",
+          "unit": ""
+        },
+        {
+          "key": "x2",
+          "unit": ""
+        },
+        {
+          "key": "x3",
+          "unit": ""
+        },
+        {
+          "key": "x4",
+          "unit": ""
+        },
+        {
+          "key": "y1",
+          "unit": ""
+        },
+        {
+          "key": "y2",
+          "unit": ""
+        },
+        {
+          "key": "y3",
+          "unit": ""
+        },
+        {
+          "key": "y4",
+          "unit": ""
+        }
+      ],
+      "chart": {
+        "kind": "scatter",
+        "x": "x1",
+        "series": ["y1"]
+      },
+      "controls": {
+        "series": true,
+        "range": true
+      },
+      "dataAsOf": "2026-09-07",
+      "sourceLocator": "R datasets::anscombe；经典数据，非 2026 年采集",
+      "provenance": {
+        "url": "https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/anscombe.html",
+        "credit": "F. J. Anscombe / R datasets",
+        "license": "数值来自 R datasets；本地图表由 Vibes 绘制"
+      }
+    },
+    {
+      "id": "group-2",
+      "kind": "chart",
+      "posterId": "plot",
+      "dataset": "/media/anscombe/data.json",
+      "columns": [
+        {
+          "key": "x1",
+          "unit": ""
+        },
+        {
+          "key": "x2",
+          "unit": ""
+        },
+        {
+          "key": "x3",
+          "unit": ""
+        },
+        {
+          "key": "x4",
+          "unit": ""
+        },
+        {
+          "key": "y1",
+          "unit": ""
+        },
+        {
+          "key": "y2",
+          "unit": ""
+        },
+        {
+          "key": "y3",
+          "unit": ""
+        },
+        {
+          "key": "y4",
+          "unit": ""
+        }
+      ],
+      "chart": {
+        "kind": "scatter",
+        "x": "x2",
+        "series": ["y2"]
+      },
+      "controls": {
+        "series": true,
+        "range": true
+      },
+      "dataAsOf": "2026-09-07",
+      "sourceLocator": "R datasets::anscombe；经典数据，非 2026 年采集",
+      "provenance": {
+        "url": "https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/anscombe.html",
+        "credit": "F. J. Anscombe / R datasets",
+        "license": "数值来自 R datasets；本地图表由 Vibes 绘制"
+      }
+    },
+    {
+      "id": "group-3",
+      "kind": "chart",
+      "posterId": "plot",
+      "dataset": "/media/anscombe/data.json",
+      "columns": [
+        {
+          "key": "x1",
+          "unit": ""
+        },
+        {
+          "key": "x2",
+          "unit": ""
+        },
+        {
+          "key": "x3",
+          "unit": ""
+        },
+        {
+          "key": "x4",
+          "unit": ""
+        },
+        {
+          "key": "y1",
+          "unit": ""
+        },
+        {
+          "key": "y2",
+          "unit": ""
+        },
+        {
+          "key": "y3",
+          "unit": ""
+        },
+        {
+          "key": "y4",
+          "unit": ""
+        }
+      ],
+      "chart": {
+        "kind": "scatter",
+        "x": "x3",
+        "series": ["y3"]
+      },
+      "controls": {
+        "series": true,
+        "range": true
+      },
+      "dataAsOf": "2026-09-07",
+      "sourceLocator": "R datasets::anscombe；经典数据，非 2026 年采集",
+      "provenance": {
+        "url": "https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/anscombe.html",
+        "credit": "F. J. Anscombe / R datasets",
+        "license": "数值来自 R datasets；本地图表由 Vibes 绘制"
+      }
+    },
+    {
+      "id": "group-4",
+      "kind": "chart",
+      "posterId": "plot",
+      "dataset": "/media/anscombe/data.json",
+      "columns": [
+        {
+          "key": "x1",
+          "unit": ""
+        },
+        {
+          "key": "x2",
+          "unit": ""
+        },
+        {
+          "key": "x3",
+          "unit": ""
+        },
+        {
+          "key": "x4",
+          "unit": ""
+        },
+        {
+          "key": "y1",
+          "unit": ""
+        },
+        {
+          "key": "y2",
+          "unit": ""
+        },
+        {
+          "key": "y3",
+          "unit": ""
+        },
+        {
+          "key": "y4",
+          "unit": ""
+        }
+      ],
+      "chart": {
+        "kind": "scatter",
+        "x": "x4",
+        "series": ["y4"]
+      },
+      "controls": {
+        "series": true,
+        "range": true
+      },
+      "dataAsOf": "2026-09-07",
+      "sourceLocator": "R datasets::anscombe；经典数据，非 2026 年采集",
+      "provenance": {
+        "url": "https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/anscombe.html",
+        "credit": "F. J. Anscombe / R datasets",
+        "license": "数值来自 R datasets；本地图表由 Vibes 绘制"
+      }
+    }
+  ],
+  "presentation": {
+    "card": {
+      "mediaId": "plot",
+      "mode": "image",
+      "fit": "contain"
+    },
+    "detail": {
+      "items": ["group-1", "group-2", "group-3", "group-4"]
+    },
+    "fallbackId": "plot"
+  }
+}

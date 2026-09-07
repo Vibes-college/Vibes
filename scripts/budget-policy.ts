@@ -1,6 +1,7 @@
 export const budgetLimits = {
   javascriptGzip: 21_000,
   mdxJavascriptGzip: 150_000,
+  mediaJavascriptGzip: 16_000,
   homepageGzip: 40_000,
   interactionSource: 12_000,
   largestOptimizedImage: 200 * 1024,

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '接口与外部服务'
 status: 'current'
-shaped-by: ['001', '003', '004', '005', '009']
+shaped-by: ['001', '003', '004', '005', '009', '010']
 code-sources:
   [
     'src/scripts/search.ts',
@@ -13,7 +13,7 @@ code-sources:
     'scripts/release-policy.ts',
     'src/components/WorkDetail.astro',
   ]
-code-revision: '4270acbcde2e29b76a4d8d0fa11ec4c4541978d6a77dcef11441227d7b7ed33c'
+code-revision: 'd1a2aa63c97c398781d5f7a1e54c99affd710f13f89b8de15e94792149a878ed'
 ---
 
 # 接口与外部服务
@@ -92,6 +92,10 @@ release-utils.ts通过gh api GET读取固定仓库Vibes-college/Vibes的pulls/{n
 
 站内导航和提前准备使用同站详情HTML GET，没有新增业务API。Astro公共`navigate`与`prefetch`接口分别处理导航和HTTP预取；搜索加载器按zh/en返回独立Pagefind实例，创建时核对当前文档语言，过时加载以AbortError终止。
 
-文章图片可引用HTTPS外链，浏览器直接向图源请求；img-src允许HTTPS图片，其余脚本、连接与字体仍同源。第三方图源中断不阻止其余正文阅读，维护者应提供替代文字与尺寸；详见[Markdown排版](markdown.md)。
+文章图片可引用HTTPS外链，浏览器直接向图源请求；img-src允许HTTPS图片，主页面脚本、连接与字体仍同源，媒体文件及iframe按登记来源。第三方图源中断不阻止其余正文阅读，维护者应提供替代文字与尺寸；详见[Markdown排版](markdown.md)。
 
 MDX组件在文章内部按client指令启动，同页共享React模块，从本站加载；没有新增业务接口。构建只执行受信仓库组件，不读取远程MDX。需要后台的组件不能仅靠复制源码接入，须明确新的接口与权限。
+
+## 作品媒体
+
+媒体和平台登记见src/config/media.ts及[媒体规则](rules.md#媒体加载与体积)。浏览器只在点击后创建YouTube、Spotify、B站或已核对原站的iframe；媒体下载、账号和地区限制由平台决定，无平台API密钥。音视频文件只从同源或指定来源加载，图表数据经有界GET读取；完整来源不提前挂到元素。2048从本站读取MIT源码模板与游戏脚本，以不允许同源访问的sandbox运行；其依赖计入媒体预算，不访问父页面或持久存储。

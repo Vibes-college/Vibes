@@ -3,12 +3,17 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { measureScriptBudget } from '../scripts/script-budget.ts';
 import { assertBudget } from '../scripts/budget-policy.ts';
+import { readCatalog } from '../src/lib/content/catalog.ts';
+
+const publishedPapers = readCatalog().works.filter(
+  (work) => work.meta.typeId === 'paper' && work.versions.zh?.data.status === 'published',
+).length;
 
 test('local filtering, empty state, and URL survive refresh', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.work-card:visible')).toHaveCount(24);
   await page.locator('.category-nav a[href="/zh/tags/paper/"]').click();
-  await expect(page.locator('.work-card:visible')).toHaveCount(4);
+  await expect(page.locator('.work-card:visible')).toHaveCount(publishedPapers);
   await page.getByRole('searchbox').fill('LoRA');
   await expect(page.locator('.work-card:visible')).toHaveCount(1);
   await page.reload();
@@ -26,7 +31,7 @@ test('cards navigate directly to a complete article; browser back restores filte
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/?type=paper');
-  await expect(page.locator('.work-card:visible')).toHaveCount(4);
+  await expect(page.locator('.work-card:visible')).toHaveCount(publishedPapers);
   await page
     .getByRole('link', {
       name: 'Explore LoRA: Low-Rank Adaptation of Large Language Models',
@@ -46,7 +51,7 @@ test('cards navigate directly to a complete article; browser back restores filte
   await expect(page.locator('.detail-cover')).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/tags\/paper/);
-  await expect(page.locator('.work-card:visible')).toHaveCount(4);
+  await expect(page.locator('.work-card:visible')).toHaveCount(publishedPapers);
   expect(errors).toEqual([]);
 });
 
@@ -65,11 +70,11 @@ test('standalone detail is readable with JavaScript disabled', async ({ browser 
   await context.close();
 });
 
-test('no horizontal overflow, no embeds, two-line card descriptions', async ({ page }) => {
+test('no horizontal overflow, no eager embeds, two-line card descriptions', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto('/');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await expect(page.locator('iframe, video, audio')).toHaveCount(0);
+  await expect(page.locator('iframe, audio source, video source')).toHaveCount(0);
   expect(
     await page.locator('.card-summary').evaluateAll((elements) =>
       elements.every((el) => {
@@ -82,6 +87,7 @@ test('no horizontal overflow, no embeds, two-line card descriptions', async ({ p
   ).toBe(true);
   await page.getByRole('link', { name: 'Explore Transformers.js', exact: true }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.locator('.read-down').click();
   await expect(page.locator('.prose table')).toBeVisible();
   await page.setViewportSize({ width: 320, height: 700 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -97,7 +103,8 @@ test('static output stays small and content routes exist', async ({ request, pag
   });
   for (const slug of readdirSync('dist/zh/works')) {
     const html = readFileSync(`dist/zh/works/${slug}/index.html`, 'utf8');
-    expect(html).toContain('<table>');
+    expect(html).toContain('id="reading"');
+    expect(html).toMatch(/<h2\b/);
     expect(html).toContain('class="original-site"');
     expect(html).not.toContain('<dialog');
   }
@@ -125,7 +132,7 @@ test('detail overview, continuous reading, and adjacent navigation', async ({ pa
   await page.keyboard.press('ArrowLeft');
   await expect(page).toHaveURL(/attention-is-all-you-need/);
   await page.locator('.work-facts a[href="/zh/tags/paper/"]').click();
-  await expect(page.locator('.work-card:visible')).toHaveCount(4);
+  await expect(page.locator('.work-card:visible')).toHaveCount(publishedPapers);
 });
 
 // 使用浏览器输入事件验证横滑，覆盖原有本地验收的触摸路径。
@@ -207,7 +214,7 @@ test('homepage switches language and detail omits language controls while routes
   await expect(page.locator('[data-direction]')).toHaveCount(1);
   await expect(page.locator('[data-direction="next"]')).toHaveAttribute(
     'href',
-    '/en/works/mdx-interaction-lab/',
+    '/en/works/attention-visualized/',
   );
   await expect(page.locator('.fact-fallback').first()).toBeVisible();
   await page.locator('[data-back-link]').click();
@@ -218,9 +225,9 @@ test('homepage switches language and detail omits language controls while routes
   expect((await request.get('/en/works/lora/')).status()).toBe(404);
   expect((await request.get('/fr/')).status()).toBe(404);
   await page.goto('/en/');
-  await expect(page.locator('.work-card:visible')).toHaveCount(2);
+  await expect(page.locator('.work-card:visible')).toHaveCount(3);
   await page.getByRole('searchbox').fill('attention');
-  await expect(page.locator('[data-search-grid] .work-card')).toHaveCount(1);
+  await expect(page.locator('[data-search-grid] .work-card')).toHaveCount(2);
 });
 
 test('failed search resources can retry and clearing cancels stale results', async ({ page }) => {

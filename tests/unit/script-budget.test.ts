@@ -86,3 +86,53 @@ test('independent MDX articles have separate budgets; repeated instances add no 
     [...scripts.values()].reduce((sum, source) => sum + size(source), 0),
   );
 });
+
+test('only lazy media entry qualifies; eager and shared dependencies remain common', () => {
+  const scripts = new Map([
+    ['/_astro/boot.js', 'import "./shared.js"; import("./media.abc.js");'],
+    ['/_astro/media.abc.js', 'import "./shared.js"; import("./chart.js");'],
+    ['/_astro/shared.js', 'export const shared = 1;'],
+    ['/_astro/chart.js', 'export const chart = 1;'],
+  ]);
+  const html = '<script src="/_astro/boot.js"></script>';
+  const measured = scriptBudget(scripts, [html]);
+  assert.equal(
+    measured.mediaJavascriptGzip,
+    size(scripts.get('/_astro/media.abc.js')!) + size(scripts.get('/_astro/chart.js')!),
+  );
+  assert.equal(
+    measured.javascriptGzip + measured.mediaJavascriptGzip,
+    [...scripts.values()].reduce((sum, source) => sum + size(source), 0),
+  );
+  assert.equal(
+    scriptBudget(scripts, [html + '<link rel="modulepreload" href="/_astro/media.abc.js">'])
+      .mediaJavascriptGzip,
+    0,
+  );
+  scripts.set('/_astro/boot.js', 'import "./media.abc.js";');
+  assert.equal(scriptBudget(scripts, [html]).mediaJavascriptGzip, 0);
+});
+
+test('the on-demand MIT game is budgeted and arbitrary public scripts are not exempt', () => {
+  const scripts = new Map([
+    ['/_astro/boot.js', 'import("./media.abc.js");'],
+    ['/_astro/media.abc.js', 'export const media = true;'],
+    ['/media/2048/game.js', 'const game = "reviewed MIT game";'],
+    ['/unexpected.js', 'const unexpected = true;'],
+  ]);
+  const result = scriptBudget(scripts, ['<script src="/_astro/boot.js"></script>']);
+  assert.equal(
+    result.mediaJavascriptGzip,
+    size(scripts.get('/_astro/media.abc.js')!) + size(scripts.get('/media/2048/game.js')!),
+  );
+  assert.equal(
+    scriptBudget(scripts, [
+      '<script src="/_astro/boot.js"></script><script src="/media/2048/game.js"></script>',
+    ]).mediaJavascriptGzip,
+    size(scripts.get('/_astro/media.abc.js')!),
+  );
+  assert.equal(
+    result.javascriptGzip,
+    size(scripts.get('/_astro/boot.js')!) + size(scripts.get('/unexpected.js')!),
+  );
+});

@@ -1,0 +1,80 @@
+---
+import MediaItem from './MediaItem.astro';
+import type { Work } from '../data/works';
+interface Props {
+  work: Work;
+}
+const { work } = Astro.props;
+const media = work.meta.media || [];
+const presentation = work.meta.presentation!;
+const text = work.mediaText || {};
+const items = presentation.detail.items.map((id) => media.find((item) => item.id === id)!);
+---
+
+<div
+  class="detail-preview media-detail"
+  data-media-gallery
+  data-article-interactive
+  data-locale={work.locale}
+>
+  {
+    items.length > 1 && (
+      <div
+        class="media-tabs"
+        role="group"
+        aria-label={work.locale === 'zh' ? '选择展示素材' : 'Choose media'}
+      >
+        {items.map((item, index) => (
+          <button
+            type="button"
+            data-media-select={index}
+            aria-pressed={index === 0}
+            aria-controls={`media-${work.slug}-${item.id}`}
+          >
+            {text[item.id].title}
+          </button>
+        ))}
+      </div>
+    )
+  }
+  {
+    items.map((item, index) => (
+      <MediaItem
+        item={item}
+        media={media}
+        text={text}
+        locale={work.locale}
+        workId={work.slug}
+        fallbackId={presentation.fallbackId}
+        hidden={index !== 0}
+      />
+    ))
+  }
+  <noscript
+    ><p>
+      {
+        work.locale === 'zh'
+          ? '开启 JavaScript 可播放或操作；也可直接打开素材：'
+          : 'Enable JavaScript to play or interact, or open the files:'
+      }
+    </p><ul>
+      {
+        items.map((item) => (
+          <li>
+            <a
+              href={
+                item.kind === 'image'
+                  ? item.src
+                  : 'sources' in item
+                    ? item.sources[0].src
+                    : work.url
+              }
+            >
+              {text[item.id].title}
+            </a>
+          </li>
+        ))
+      }
+    </ul></noscript
+  >
+</div>

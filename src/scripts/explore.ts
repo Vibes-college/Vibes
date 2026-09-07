@@ -106,6 +106,7 @@ onPageLoad((signal) => {
     browseGrid.hidden = false;
     searchGrid.hidden = true;
     searchGrid.replaceChildren();
+    document.dispatchEvent(new Event('media:refresh'));
     pagination.hidden = paginationHidden;
     more.hidden = true;
     end.hidden = false;
@@ -114,6 +115,7 @@ onPageLoad((signal) => {
     showState('');
     count.textContent = `${root.dataset.total} ${t.selections}`;
     stopPrefetch = watchReadingLinks(browseGrid, signal);
+    document.dispatchEvent(new Event('media:refresh'));
   }
   async function showNext(ticket: number) {
     more.disabled = true;
@@ -125,6 +127,7 @@ onPageLoad((signal) => {
       );
       if (ticket !== sequence) return;
       searchGrid.insertAdjacentHTML('beforeend', html);
+      document.dispatchEvent(new Event('media:refresh'));
       stopPrefetch();
       stopPrefetch = watchReadingLinks(searchGrid, signal);
       shown += Math.min(pageSize, results.length - shown);
@@ -150,6 +153,7 @@ onPageLoad((signal) => {
     browseGrid.hidden = true;
     searchGrid.hidden = false;
     searchGrid.replaceChildren();
+    document.dispatchEvent(new Event('media:refresh'));
     pagination.hidden = true;
     more.hidden = true;
     empty.hidden = true;

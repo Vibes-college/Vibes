@@ -6,8 +6,8 @@ import { inlineScripts } from './content-security.ts';
 
 // Parse emitted JS with the existing TypeScript dependency, including dynamic imports.
 // A chunk shared with ordinary scripts stays in the original budget, not the island allowance.
-function imports(source: string): string[] {
-  const targets: string[] = [];
+function imports(source: string): { path: string; dynamic: boolean }[] {
+  const targets: { path: string; dynamic: boolean }[] = [];
   const tree = ts.createSourceFile(
     'bundle.js',
     source,
@@ -22,7 +22,8 @@ function imports(source: string): string[] {
         : ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword
           ? node.arguments[0]
           : undefined;
-    if (value && ts.isStringLiteral(value)) targets.push(value.text);
+    if (value && (ts.isStringLiteral(value) || ts.isNoSubstitutionTemplateLiteral(value)))
+      targets.push({ path: value.text, dynamic: ts.isCallExpression(node) });
     ts.forEachChild(node, visit);
   }
   visit(tree);
@@ -57,7 +58,7 @@ export function scriptBudget(scripts: Map<string, string>, pages: string[]) {
     }
     for (const body of inlineScripts(html)) {
       if (!islands.length) commonInline.add(body);
-      for (const path of imports(body)) roots.add(path);
+      for (const path of imports(body)) roots.add(path.path);
     }
     if (islands.length) {
       for (const root of roots) islandRoots.add(root);
@@ -65,33 +66,44 @@ export function scriptBudget(scripts: Map<string, string>, pages: string[]) {
     }
   }
   const dependencies = new Map([...scripts].map(([path, source]) => [path, imports(source)]));
-  function closure(roots: Set<string>) {
+  const mediaRoots = new Set<string>();
+  function closure(roots: Set<string>, deferMedia = false) {
     const seen = new Set<string>();
     function visit(reference: string, importer = '/index.html') {
       const url = new URL(reference, `https://build.invalid${importer}`);
-      if (
-        url.origin !== 'https://build.invalid' ||
-        !url.pathname.startsWith('/_astro/') ||
-        !url.pathname.endsWith('.js')
-      )
-        return;
+      if (url.origin !== 'https://build.invalid' || !url.pathname.endsWith('.js')) return;
       const path = decodeURIComponent(url.pathname);
       if (seen.has(path)) return;
       if (!scripts.has(path)) throw new Error(`Missing bundled script: ${path}`);
       seen.add(path);
-      for (const target of dependencies.get(path)!) visit(target, path);
+      for (const target of dependencies.get(path)!) {
+        const resolved = new URL(target.path, `https://build.invalid${path}`).pathname;
+        // Only this reviewed lazy entry may use the media allowance. Static/preloaded
+        // access still makes its complete dependency tree part of the common budget.
+        if (deferMedia && target.dynamic && /^\/_astro\/media\.[\w-]+\.js$/.test(resolved))
+          mediaRoots.add(resolved);
+        else visit(target.path, path);
+      }
     }
     for (const root of roots) visit(root);
     return seen;
   }
-  const common = closure(commonRoots);
+  const common = closure(commonRoots, true);
+  const mediaFiles = [...closure(mediaRoots)].filter((path) => !common.has(path));
+  // The reviewed MIT game is fetched only by media-experience after an explicit click.
+  // Count its complete script in the same allowance; other public JS stays common.
+  if (mediaRoots.size && scripts.has('/media/2048/game.js') && !common.has('/media/2048/game.js'))
+    mediaFiles.push('/media/2048/game.js');
   const islands = closure(islandRoots);
   const islandFiles = [...islands].filter((path) => !common.has(path));
-  const commonFiles = [...scripts.keys()].filter((path) => !islandFiles.includes(path));
+  const commonFiles = [...scripts.keys()].filter(
+    (path) => !islandFiles.includes(path) && !mediaFiles.includes(path),
+  );
   const size = (values: string[]) =>
     values.reduce((total, value) => total + gzipSync(value).length, 0);
   return {
     javascriptGzip: size(commonFiles.map((path) => scripts.get(path)!)) + size([...commonInline]),
+    mediaJavascriptGzip: size(mediaFiles.map((path) => scripts.get(path)!)),
     mdxJavascriptGzip: Math.max(
       0,
       ...interactivePages.map(
@@ -114,7 +126,7 @@ export function measureScriptBudget(out: string) {
       const path = join(directory, entry.name);
       const name = `${relative}/${entry.name}`;
       if (entry.isDirectory()) scan(path, name);
-      else if (name.startsWith('/_astro/') && name.endsWith('.js'))
+      else if (name.endsWith('.js') && !name.startsWith('/pagefind/'))
         scripts.set(name, readFileSync(path, 'utf8'));
       else if (name.endsWith('.html')) pages.push(readFileSync(path, 'utf8'));
     }

@@ -1,0 +1,42 @@
+{
+  "id": "simon-vibe-coding",
+  "originalLocale": "zh",
+  "order": 214,
+  "sourceUrl": "https://simonwillison.net/2025/Mar/19/vibe-coding/",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Simon Willison",
+        "en": "Simon Willison"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "simonwillison.net",
+        "en": "simonwillison.net"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://simonwillison.net/2025/Mar/19/vibe-coding/"
+      }
+    }
+  ]
+}

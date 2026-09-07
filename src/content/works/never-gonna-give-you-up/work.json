@@ -1,0 +1,80 @@
+{
+  "id": "never-gonna-give-you-up",
+  "originalLocale": "zh",
+  "order": 201,
+  "sourceUrl": "https://open.spotify.com/track/4PTG3Z6ehGkBFwjybzWkR8",
+  "typeId": "audio",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Rick Astley",
+        "en": "Rick Astley"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "open.spotify.com",
+        "en": "open.spotify.com"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://open.spotify.com/track/4PTG3Z6ehGkBFwjybzWkR8"
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "cover",
+      "kind": "image",
+      "src": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0215ebbedaacef61af244262a8",
+      "width": 300,
+      "height": 300,
+      "provenance": {
+        "url": "https://open.spotify.com/track/4PTG3Z6ehGkBFwjybzWkR8",
+        "credit": "Rick Astley / Spotify",
+        "license": "外部原作，权利归原作者"
+      },
+      "bytes": 33238
+    },
+    {
+      "id": "player",
+      "kind": "embed",
+      "provider": "spotify",
+      "resourceId": "track/4PTG3Z6ehGkBFwjybzWkR8",
+      "posterId": "cover",
+      "provenance": {
+        "url": "https://open.spotify.com/track/4PTG3Z6ehGkBFwjybzWkR8",
+        "credit": "Rick Astley / Spotify",
+        "license": "外部原作，权利归原作者"
+      }
+    }
+  ],
+  "presentation": {
+    "card": {
+      "mediaId": "player",
+      "mode": "embed",
+      "fit": "contain"
+    },
+    "detail": {
+      "items": ["player"]
+    },
+    "fallbackId": "cover"
+  }
+}

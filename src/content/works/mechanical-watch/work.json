@@ -1,0 +1,80 @@
+{
+  "id": "mechanical-watch",
+  "originalLocale": "zh",
+  "order": 203,
+  "sourceUrl": "https://ciechanow.ski/mechanical-watch/",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Bartosz Ciechanowski",
+        "en": "Bartosz Ciechanowski"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "ciechanow.ski",
+        "en": "ciechanow.ski"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://ciechanow.ski/mechanical-watch/"
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "watch",
+      "kind": "image",
+      "src": "https://ciechanow.ski/images/og/watch.png",
+      "width": 1200,
+      "height": 630,
+      "provenance": {
+        "url": "https://ciechanow.ski/mechanical-watch/",
+        "credit": "Bartosz Ciechanowski",
+        "license": "外部原作，权利归原作者"
+      },
+      "bytes": 120950
+    },
+    {
+      "id": "article",
+      "kind": "embed",
+      "provider": "site",
+      "resourceId": "mechanical-watch",
+      "posterId": "watch",
+      "provenance": {
+        "url": "https://ciechanow.ski/mechanical-watch/",
+        "credit": "Bartosz Ciechanowski",
+        "license": "外部原作，权利归原作者"
+      }
+    }
+  ],
+  "presentation": {
+    "card": {
+      "mediaId": "watch",
+      "mode": "image",
+      "fit": "contain"
+    },
+    "detail": {
+      "items": ["article"]
+    },
+    "fallbackId": "watch"
+  }
+}

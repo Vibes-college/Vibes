@@ -32,11 +32,13 @@ test('continuous lifecycle survives adjacent reading, history, search and langua
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await page.locator('[data-back-link]').click();
   await page.getByRole('searchbox').fill('Transformer');
-  await expect(page.locator('[data-search-grid] .card-link')).toHaveCount(1);
-  await expect(page.locator('[data-search-grid] .card-link')).toHaveAttribute(
-    'href',
-    '/en/works/attention-is-all-you-need/',
-  );
+  await expect(page.locator('[data-search-grid] .card-link')).toHaveCount(2);
+  await expect(
+    page.locator('[data-search-grid] .card-link[href="/en/works/attention-is-all-you-need/"]'),
+  ).toBeVisible();
+  await expect(
+    page.locator('[data-search-grid] .card-link[href="/en/works/attention-visualized/"]'),
+  ).toBeVisible();
   await page.locator('.language-switch a[hreflang="zh"]').click();
   await expect(page.locator('[data-search-grid] .card-link').first()).toBeVisible();
   expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);

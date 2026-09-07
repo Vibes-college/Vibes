@@ -2,10 +2,12 @@
 tense: 'living'
 describes: '数据和内容结构'
 status: 'current'
-shaped-by: ['001', '003', '009']
+shaped-by: ['001', '003', '009', '010']
 code-sources:
   [
     'src/lib/content/',
+    'src/lib/media/',
+    'src/config/media.ts',
     'src/content.config.ts',
     'src/data/',
     'db/',
@@ -13,7 +15,7 @@ code-sources:
     'scripts/validate-content.ts',
     'scripts/migrate-content.ts',
   ]
-code-revision: '7a5c1840663572d1c51a33891291d990a90e4b24ab754fe974a1c2e1a89289b3'
+code-revision: 'c0b57a495afae26ac876c3f69ae97d663b979ff403c52cb103d7dbf29b074703'
 ---
 
 # 数据和内容结构
@@ -48,6 +50,26 @@ src/content/works/<id>/
 | `preview`        | `kind` + `color`                   | 卡片上的抽象预览图类型和背景色             |
 | `facts`          | `Fact[]`                           | 详情页的作者、类型、主题等事实             |
 | `related`        | `RelatedWork[]`                    | 已实现校验与双向读取；当前详情未展示关系区 |
+
+## 多媒体资料与展示
+
+旧preview与previewText继续必填；未配置媒体时渲染原有封面。media、presentation同时提供才启用富媒体，已发布语言必须为所有素材提供mediaText。
+
+| 位置/字段               | 作用                                                                                                                    |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| work.json的media[]      | 带稳定id和provenance（HTTPS来源、credit、license）的素材联合结构                                                        |
+| image                   | src、实际width/height、bytes、variants；focalPoint为0–1坐标；动画需animated和静态posterId                               |
+| video                   | sources（src/type/bytes）、宽高、duration、hasAudio、posterId、loop；可附captions和chapters                             |
+| audio                   | sources、duration、artworkId、从实际PCM提取的waveform；可附captions和chapters                                           |
+| embed                   | provider与resourceId、posterId；YouTube/B站视频ID、Spotify track/album/episode/playlist路径、site登记键                 |
+| demo                    | 仅已登记componentId=orbit及有界config；原站/骨骼动画使用site嵌入，2048登记键加载MIT源码沙盒版                           |
+| chart                   | dataset、columns（key/unit）、chart（line/scatter/bar、x、series）、controls、dataAsOf、sourceLocator、posterId         |
+| presentation            | card（mediaId、image/motion/audio/embed模式、cover/contain）、detail.items顺序、静态fallbackId                          |
+| 语言文件的mediaText[id] | title、图像alt、caption/hint、chapters标签、transcript（可带start）、columns标签、context与keyResults（值/标签/上下文） |
+
+字幕使用zh/en WebVTT；章节ID唯一且时间递增，不能超出duration。图表dataset只接受随站发布的/media/_.json或/media/_.csv本地文件；外部原始数据先核对并保存本地，浏览器不直连远端数据源，保持connect-src self。图表只接受有界的纯数值JSON行数组或CSV（不支持带引号单元格），列名必须与映射一致，拒绝空值、非有限数字、超行数和超体积；keyResults是带上下文的编辑摘要，不能用装饰图替代数值。来源更新日期dataAsOf与原始采集时间分别说明。
+
+本地路径仅允许public下的/media和/images，校验符号链接越界、缺文件、实际字节、字幕头和数值；外站仅允许登记HTTPS来源，远端内容及真实尺寸需编辑实查。搜索只投影卡片所需海报、短源、时长、试听波形或嵌入ID，不投影完整录音、字幕、图表数据、演示配置和全文媒体说明。媒体资料、展示和原文mediaText纳入原文摘要，旧的无媒体作品摘要保持原规则。
 
 ## 相关作品记录
 

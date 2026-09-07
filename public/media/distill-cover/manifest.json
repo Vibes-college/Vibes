@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "input": {
+    "filename": "distill-cover.jpg",
+    "sha256": "db3b712ec4f6ba6ffba9b4f74f2df8658d4d75b88323ec8ccc244b02d4629e2d"
+  },
+  "assets": [
+    {
+      "id": "distill-cover-zoom",
+      "kind": "image",
+      "src": "/media/distill-cover/zoom.webp",
+      "width": 1120,
+      "height": 590,
+      "bytes": 198672,
+      "variants": [
+        {
+          "src": "/media/distill-cover/poster.webp",
+          "width": 480,
+          "height": 253,
+          "bytes": 55808
+        },
+        {
+          "src": "/media/distill-cover/detail.webp",
+          "width": 960,
+          "height": 506,
+          "bytes": 164576
+        }
+      ]
+    },
+    {
+      "id": "distill-cover-poster",
+      "kind": "image",
+      "src": "/media/distill-cover/poster.webp",
+      "width": 480,
+      "height": 253,
+      "bytes": 55808
+    }
+  ]
+}

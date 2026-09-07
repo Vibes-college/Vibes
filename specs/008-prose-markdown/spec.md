@@ -6,7 +6,7 @@ feature-ids: ['article-read', 'content-maintenance']
 amends: ['006', '007']
 research-trigger: '复用独立CSS并在Markdown中提供全部官网组件和交互'
 approved-artifacts: []
-amended-by: ['009']
+amended-by: ['009', '010']
 ---
 
 # Markdown 完整排版与示例文章

@@ -27,3 +27,5 @@ shaped-by: ['002']
 | [008 Markdown完整排版与示例文章](008-prose-markdown/spec.md) | complete | article-read, content-maintenance |
 
 | [009 按需交互的MDX文章](009-mdx-articles/spec.md) | complete | article-read, content-maintenance |
+
+| [010 多媒体作品封面](010-media-previews/spec.md) | complete | article-read, content-maintenance, explore-browse, project-commands |

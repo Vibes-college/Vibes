@@ -1,0 +1,90 @@
+{
+  "id": "yaoda-football",
+  "originalLocale": "zh",
+  "order": 207,
+  "sourceUrl": "https://yaoda.work/works.html",
+  "typeId": "video",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "咬哒叔 Spine 2D Studio",
+        "en": "咬哒叔 Spine 2D Studio"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "yaoda.work",
+        "en": "yaoda.work"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://yaoda.work/works.html"
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "poster",
+      "kind": "image",
+      "src": "/media/yaoda-football/poster.webp",
+      "width": 480,
+      "height": 480,
+      "bytes": 17450,
+      "provenance": {
+        "url": "https://github.com/Vibes-college/Vibes",
+        "credit": "Vibes · 原作导读截图",
+        "license": "原作权利归原作者；截图仅用于作品介绍"
+      }
+    },
+    {
+      "id": "motion",
+      "kind": "video",
+      "sources": [
+        {
+          "src": "https://yaoda.work/video/football.mp4",
+          "type": "video/mp4",
+          "bytes": 617040
+        }
+      ],
+      "width": 800,
+      "height": 800,
+      "duration": 7.583333,
+      "hasAudio": false,
+      "posterId": "poster",
+      "loop": true,
+      "provenance": {
+        "url": "https://yaoda.work/",
+        "credit": "咬哒叔 Spine 2D Studio",
+        "license": "外部原作，权利归原作者"
+      }
+    }
+  ],
+  "presentation": {
+    "card": {
+      "mediaId": "motion",
+      "mode": "motion",
+      "fit": "contain"
+    },
+    "detail": {
+      "items": ["motion"]
+    },
+    "fallbackId": "poster"
+  }
+}

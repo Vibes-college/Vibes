@@ -7,6 +7,7 @@ test('budget rejects each oversized or invalid measurement', () => {
   const small = {
     javascriptGzip: 100,
     mdxJavascriptGzip: 100,
+    mediaJavascriptGzip: 100,
     homepageGzip: 200,
     interactionSource: 300,
     largestOptimizedImage: 400,

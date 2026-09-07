@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '009']
+shaped-by: ['001', '003', '005', '006', '007', '009', '010']
 code-sources:
   [
     'src/lib/content/',
@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '5f2a339f264b1d82fac5da1c9719100cdf5614d95d93919a4a8186c97e9c9616'
+code-revision: '6806b3278c0c6a895641f3edf6326ceb924856edde64b82d86546f80ea0b0fe0'
 ---
 
 # 常量、规则表与正则
@@ -63,7 +63,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 | 页面断言等待    | Playwright自动等待，expect默认5000ms                                                                             | playwright.config.ts                                                         |
 | 手机验收尺寸    | desktop-chromium / mobile-chromium / mobile-webkit，另有320×700检查；不代表真机Safari                            | playwright.config.ts；tests/explore.spec.ts                                  |
 | 阅读验收        | LoRA 正文 >700 字、包含低秩矩阵、表格与来源标题；禁止 dialog                                                     | tests/explore.spec.ts                                                        |
-| 嵌入和卡片      | 不包含 iframe/video/audio；简介最多两行                                                                          | tests/explore.spec.ts；src/styles/base.css                                   |
+| 嵌入和卡片      | iframe只在点击后创建；卡片短视频可延迟静音播放、音频点击加载；简介最多两行                                       | tests/explore.spec.ts；src/styles/base.css                                   |
 | 本地数据库限制  | reset/migrate 是唯一入口，不接受额外参数；固定 --local                                                           | scripts/local-tools.ts；scripts/database.ts                                  |
 | 数据位置        | .wrangler/project-local；重建只删其 v3/d1                                                                        | scripts/local-tools.ts；scripts/database.ts                                  |
 | 测试数据        | local_test_records 的两个固定记录；name 唯一且必填                                                               | db/migrations/0001_local_test_records.sql；db/seed.sql                       |
@@ -119,6 +119,16 @@ scripts/asset-sizes.ts独立报告Pagefind总文件数、原始/gzip字节及全
 scripts/budget-policy.ts及tests/unit/budget.test.ts校验Workers静态资源：Free每版本20,000文件，Paid100,000文件，单文件最多25MiB；默认采用Free，实际账户套餐须发布前核对。依据[Cloudflare官方限制](https://developers.cloudflare.com/workers/platform/limits/)。普通budget报告数量，受控发布按账户容量阻断。
 
 scripts/measure-explore.ts在.scratch隔离生成5000×2语料、构建和系统分配的独立空闲端口验收后清理；scripts/search-performance.ts以390×844、1.6Mbps下行/750Kbps上行/150msRTT/CPU4倍测每语言5次冷/热，目标中位数≤3000/1000ms，失败不放宽。
+
+## 媒体加载与体积
+
+src/config/media.ts统一素材地址和平台登记。短视频≤1MiB且≤12秒并移除音轨，音频试听≤512KiB且≤30秒，图片及每个变体≤200KiB，本地单素材≤25MiB；数值数据≤128KiB、≤2000行。处理工具使用FFmpeg/ffprobe与已有Sharp，先在临时目录完成、检查后移入新输出目录；不覆盖已有素材，不联网。超过图片预算的动画不被静默转成单帧，须人工选择合规动画或视频。
+
+公共脚本保留21000字节gzip硬门槛；仅由媒体启动器动态引用且没有静态/预加载/公共引用的media模块及其独有依赖，另计mediaJavascriptGzip≤16000字节（含MIT 2048游戏脚本）。共享与未归属模块仍计公共；MDX额外依赖仍按每篇150000字节检查，媒体完整依赖不因延迟而免预算。普通无媒体详情通过网络测试验证不请求媒体模块。
+
+可见阈值50%、停留200ms，≤800px最多1个自动动态卡片、桌面最多2个；减少动态、省流量关闭自动。手动音视频/外站体验互斥，失焦后台、离屏、搜索替换、详情翻页和历史切换清理。音视频使用preload=none且启动时才挂source；本地服务没有Range时，明确请求章节跳转才有界读取Blob补足seek，暂停会取消读取，销毁会释放URL。下载失败保留原作入口，外站平台限制不能靠iframe load事件判断。
+
+public/_headers只允许已登记播放器/原站frame来源、指定视频源和本地blob，主页面脚本仍不允许外站或任意内联代码。注册新来源须同步策略并做实际嵌入验收；iframe内容由原平台管理。
 
 ## 可读代码说明的对应规则
 

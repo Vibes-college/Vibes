@@ -95,6 +95,12 @@ export async function optimizeImages(out = 'dist'): Promise<ImageManifest> {
     const metadata = await sharp(sourcePath).metadata();
     if (!metadata.width || !metadata.height)
       throw new Error(`Missing image dimensions: ${sourcePath}`);
+    // Animated images must never silently become their first frame. Media tooling
+    // produces a bounded animation or an explicit video preview before build.
+    if ((metadata.pages || 1) > 1)
+      throw new Error(
+        `Animated image exceeds budget; prepare a smaller animation/video: ${sourcePath}`,
+      );
     const source = sharp(sourcePath);
     const relativePath = relative('public', sourcePath);
     const outputPath = join(out, relativePath);

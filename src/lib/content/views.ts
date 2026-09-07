@@ -1,3 +1,5 @@
+import type { MediaText } from '../media/schema.ts';
+import { projectCard, type CardMedia } from '../media/card.ts';
 import { needsReview } from './revision.ts';
 import type { Catalog, CatalogWork, Locale, WorkMetadata } from './schema.ts';
 import { workPath, browsePath, pageSize } from '../i18n/routes.ts';
@@ -12,6 +14,8 @@ export interface WorkView {
   title: string;
   summary: string;
   description: string;
+  mediaCard?: CardMedia;
+  mediaText?: MediaText;
   preview: WorkMetadata['preview']['kind'];
   color: string;
   eyebrow: string;
@@ -34,6 +38,12 @@ export function viewWork(work: CatalogWork, locale: Locale): WorkView | undefine
     title: version.data.title,
     summary: version.data.summary,
     description: version.data.description,
+    mediaText: version.data.mediaText,
+    mediaCard: projectCard(
+      work.meta.media || [],
+      work.meta.presentation,
+      version.data.mediaText || {},
+    ),
     preview: work.meta.preview.kind,
     color: work.meta.preview.color,
     ...version.data.previewText,

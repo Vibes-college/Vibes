@@ -58,5 +58,99 @@
       }
     }
   ],
-  "related": []
+  "related": [],
+  "media": [
+    {
+      "id": "distill-cover-zoom",
+      "kind": "image",
+      "src": "/media/distill-cover/zoom.webp",
+      "width": 1120,
+      "height": 590,
+      "bytes": 198672,
+      "variants": [
+        {
+          "src": "/media/distill-cover/poster.webp",
+          "width": 480,
+          "height": 253,
+          "bytes": 55808
+        },
+        {
+          "src": "/media/distill-cover/detail.webp",
+          "width": 960,
+          "height": 506,
+          "bytes": 164576
+        }
+      ],
+      "provenance": {
+        "url": "https://distill.pub/2017/feature-visualization/",
+        "credit": "Chris Olah · Alexander Mordvintsev · Ludwig Schubert",
+        "license": "CC BY 4.0；图片缩放与 WebP 转换"
+      }
+    },
+    {
+      "id": "distill-channel-zoom",
+      "kind": "image",
+      "src": "/media/distill-channel/zoom.webp",
+      "width": 144,
+      "height": 144,
+      "bytes": 10596,
+      "variants": [
+        {
+          "src": "/media/distill-channel/poster.webp",
+          "width": 144,
+          "height": 144,
+          "bytes": 10596
+        },
+        {
+          "src": "/media/distill-channel/detail.webp",
+          "width": 144,
+          "height": 144,
+          "bytes": 10596
+        }
+      ],
+      "provenance": {
+        "url": "https://distill.pub/2017/feature-visualization/",
+        "credit": "Chris Olah · Alexander Mordvintsev · Ludwig Schubert",
+        "license": "CC BY 4.0；图片缩放与 WebP 转换"
+      }
+    },
+    {
+      "id": "distill-neuron-zoom",
+      "kind": "image",
+      "src": "/media/distill-neuron/zoom.webp",
+      "width": 144,
+      "height": 144,
+      "bytes": 5072,
+      "variants": [
+        {
+          "src": "/media/distill-neuron/poster.webp",
+          "width": 144,
+          "height": 144,
+          "bytes": 5072
+        },
+        {
+          "src": "/media/distill-neuron/detail.webp",
+          "width": 144,
+          "height": 144,
+          "bytes": 5072
+        }
+      ],
+      "provenance": {
+        "url": "https://distill.pub/2017/feature-visualization/",
+        "credit": "Chris Olah · Alexander Mordvintsev · Ludwig Schubert",
+        "license": "CC BY 4.0；图片缩放与 WebP 转换"
+      }
+    }
+  ],
+  "presentation": {
+    "card": {
+      "mediaId": "distill-cover-zoom",
+      "mode": "image",
+      "fit": "contain"
+    },
+    "detail": {
+      "items": ["distill-cover-zoom", "distill-channel-zoom", "distill-neuron-zoom"]
+    },
+    "fallbackId": "distill-cover-zoom"
+  }
 }
