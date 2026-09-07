@@ -48,6 +48,14 @@ test('search cards preserve navigation, manual audio is exclusive, and replaceme
       .locator('[data-context=card] video')
       .evaluateAll((els) => els.filter((el) => !(el as HTMLVideoElement).paused).length);
   await expect.poll(playing).toBeLessThanOrEqual(max);
+  await page.getByRole('searchbox').fill('Sintel');
+  await expect(page.locator('.work-card:visible')).toHaveCount(1);
+  const autoVideo = page.locator('.work-card:visible video');
+  await autoVideo.scrollIntoViewIfNeeded();
+  await expect
+    .poll(() => autoVideo.evaluate((el) => (el as HTMLVideoElement).currentTime))
+    .toBeGreaterThan(0);
+  await page.goto('/zh/page/2/');
   const audioCard = page.locator('.work-card[data-kind=audio]:visible');
   await audioCard.scrollIntoViewIfNeeded();
   await audioCard.locator('[data-media-toggle]').click();
@@ -197,4 +205,109 @@ test('published English media and no-JS fallback remain readable', async ({ page
   await expect(plain.getByRole('heading', { level: 1 })).toContainText('Sintel');
   await plain.waitForLoadState('networkidle');
   await context.close();
+});
+
+test('cold and cached visits record page appearance and actual first video frame', async ({
+  page,
+}, testInfo) => {
+  await page.addInitScript(() => {
+    const timing = { clickAt: 0, frameAt: 0, frameMethod: '' };
+    Object.assign(window, { mediaPlaybackTiming: timing });
+    document.addEventListener(
+      'click',
+      (event) => {
+        if (!(event.target instanceof Element) || !event.target.closest('[data-media-toggle]'))
+          return;
+        const video = document.querySelector('video');
+        if (!video || timing.clickAt) return;
+        timing.clickAt = performance.now();
+        if ('requestVideoFrameCallback' in video) {
+          timing.frameMethod = 'requestVideoFrameCallback';
+          video.requestVideoFrameCallback(() => {
+            timing.frameAt = performance.now();
+          });
+        } else {
+          timing.frameMethod = 'timeupdate fallback';
+          (video as HTMLVideoElement).addEventListener(
+            'timeupdate',
+            () => {
+              if (!timing.frameAt) timing.frameAt = performance.now();
+            },
+            { once: true },
+          );
+        }
+      },
+      true,
+    );
+  });
+  const samples = [];
+  for (const visit of ['cold', 'cached'] as const) {
+    if (visit === 'cold') await page.goto(detail('video'));
+    else await page.reload();
+    await expect(page.locator('[data-media-image]')).toBeVisible();
+    await page.locator('[data-media-image]').evaluate(async (element) => {
+      await (element as HTMLImageElement).decode();
+    });
+    const posterObservedMs = await page.evaluate(() => performance.now());
+    await page.locator('[data-media-toggle]').click();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            (window as unknown as { mediaPlaybackTiming: { frameAt: number } }).mediaPlaybackTiming
+              .frameAt,
+        ),
+      )
+      .toBeGreaterThan(0);
+    samples.push(
+      await page.evaluate(
+        ({ visit, posterObservedMs }) => {
+          const timing = (
+            window as unknown as {
+              mediaPlaybackTiming: {
+                clickAt: number;
+                frameAt: number;
+                frameMethod: string;
+              };
+            }
+          ).mediaPlaybackTiming;
+          const navigation = performance.getEntriesByType(
+            'navigation',
+          )[0] as PerformanceNavigationTiming;
+          return {
+            visit,
+            domContentLoadedMs: navigation.domContentLoadedEventEnd,
+            firstContentfulPaintMs:
+              performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? null,
+            posterObservedMs,
+            firstVideoFrameMs: timing.frameAt,
+            clickToVideoFrameMs: timing.frameAt - timing.clickAt,
+            frameMethod: timing.frameMethod,
+            transferredBytes: navigation.transferSize,
+          };
+        },
+        { visit, posterObservedMs },
+      ),
+    );
+    expect(samples.at(-1)!.clickToVideoFrameMs).toBeGreaterThanOrEqual(0);
+    await expect
+      .poll(() =>
+        page.locator('video').evaluate((video) => (video as HTMLVideoElement).currentTime),
+      )
+      .toBeGreaterThan(0);
+  }
+  await page.goto('/zh/works/lora/');
+  await testInfo.attach('media-playback-timing', {
+    body: JSON.stringify(
+      {
+        environment: testInfo.project.name,
+        scope:
+          'Local production build; one cold and one same-context cached visit. Mobile is emulation, not physical Safari. Poster is an observation upper bound; unavailable paint timing is null.',
+        samples,
+      },
+      null,
+      2,
+    ),
+    contentType: 'application/json',
+  });
 });

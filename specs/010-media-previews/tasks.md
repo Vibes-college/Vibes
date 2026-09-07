@@ -34,12 +34,12 @@ amended-by: []
 
 独立验收：完整verify/budget通过，实际内置浏览器审阅完成，Safari真机状态单列。
 
-- [ ] T014 [US4] 在tests/media.spec.ts验证六类操作、网络边界、失败/无JS、暂停与自动数量、搜索/切语言/详情切页/历史返回和手势。
-- [ ] T015 [US4] 在tests及scripts预算检查中覆盖素材体积和普通页面零媒体请求，保留既有硬门槛。
-- [ ] T016 对照最终源码更新docs/features/explore-browse.md、article-read.md、content-maintenance.md、project-commands.md及索引。
-- [ ] T017 对照最终源码更新docs/system/content-model.md、rules.md、markdown.md、checks-and-release.md及必要配置说明，最后刷新源码摘要。
+- [x] T014 [US4] 在tests/media.spec.ts验证六类操作、网络边界、失败/无JS、暂停与自动数量、搜索/切语言/详情切页/历史返回和手势。
+- [x] T015 [US4] 在tests及scripts预算检查中覆盖素材体积和普通页面零媒体请求，保留既有硬门槛。
+- [x] T016 对照最终源码更新docs/features/explore-browse.md、article-read.md、content-maintenance.md、project-commands.md及索引。
+- [x] T017 对照最终源码更新docs/system/content-model.md、rules.md、markdown.md、checks-and-release.md及必要配置说明，最后刷新源码摘要。
 - [ ] T018 执行npm run verify与npm run budget，保存resources/evidence/010-media-previews证据并修复实际失败。
-- [ ] T019 用内置浏览器审阅实际桌面/手机尺寸路径并记录表现、真机待测；运行converge，不将未测写成通过。
+- [x] T019 用内置浏览器审阅实际桌面/手机尺寸路径并记录表现、真机待测；运行converge，不将未测写成通过。
 - [ ] T020 推送有效进度、更新PR #9、创建可体验阶段预览并核对；完成状态仅按实际任务，未授权不合并。
 
 ## 依赖与执行
@@ -49,3 +49,8 @@ T001→T002–T005→T006–T013→T014–T020。各媒体呈现共享结构与�
 ## PR工作台与经验复核
 
 重要变化、证据、阻塞与预览在PR描述/评论；tasks保持实际进度。已有搜索返回/iOS手势经验由T008/T011/T014覆盖，不清空旧有效验收，不虚构新经验。
+
+## Phase 4: Convergence
+
+- [x] T021 在src/scripts/media-chart.ts的数据表展开区恢复来源日期、上下文和有条件的关键结果，保持封面下方只有标题；依据FR008/FR016（partial）。
+- [x] T022 在tests/media.spec.ts记录三种浏览器首次/缓存访问的内容出现、首帧与点击开播时间，保存原始结果并区分模拟与真机；依据SC005（missing）。

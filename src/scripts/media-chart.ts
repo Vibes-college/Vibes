@@ -85,7 +85,20 @@ export async function mountChart(
   const summary = document.createElement('summary');
   summary.textContent = locale === 'zh' ? '查看数据表' : 'View data table';
   const table = document.createElement('table');
-  details.append(summary, table);
+  const context = document.createElement('p');
+  context.textContent = `${text.context || ''} ${item.sourceLocator} · ${item.dataAsOf}`;
+  const source = document.createElement('a');
+  source.href = item.provenance.url;
+  source.target = '_blank';
+  source.rel = 'noopener noreferrer';
+  source.textContent = item.provenance.credit;
+  details.append(summary, context, source);
+  for (const result of text.keyResults) {
+    const note = document.createElement('p');
+    note.textContent = `${result.label}: ${result.value} — ${result.context}`;
+    details.append(note);
+  }
+  details.append(table);
   root.append(controls, svg, details);
   function node(tag: string, attributes: Record<string, string | number>, content?: string) {
     const element = document.createElementNS(ns, tag);
