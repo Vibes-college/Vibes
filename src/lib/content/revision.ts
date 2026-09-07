@@ -27,6 +27,13 @@ export function sourceRevision(work: CatalogWork): string {
         summary: original.data.summary,
         description: original.data.description,
         previewText: original.data.previewText,
+        ...(work.meta.media?.length
+          ? {
+              media: work.meta.media,
+              presentation: work.meta.presentation,
+              mediaText: original.data.mediaText,
+            }
+          : {}),
         sourceUrl: work.meta.sourceUrl,
         typeId: work.meta.typeId,
         tagIds: [...work.meta.tagIds].sort(),

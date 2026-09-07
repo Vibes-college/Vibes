@@ -11,6 +11,8 @@ export default [
       '.scratch/**',
       'node_modules/**',
       'resources/references/**',
+      // Minified upstream MIT distribution; reviewed source/attribution lives beside it.
+      'public/media/2048/game.js',
       'resources/evidence/**',
       'test-results/**',
     ],

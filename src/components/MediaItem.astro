@@ -1,0 +1,192 @@
+---
+import type { Media, MediaText, ImageMedia } from '../lib/media/schema';
+import type { Locale } from '../lib/i18n/routes';
+import { mediaMessages, timeLabel, waveformHtml } from '../lib/media/render';
+interface Props {
+  item: Media;
+  media: Media[];
+  text: MediaText;
+  locale: Locale;
+  workId: string;
+  fallbackId: string;
+  hidden: boolean;
+}
+const { item, media, text, locale, workId, fallbackId, hidden } = Astro.props;
+const t = mediaMessages[locale];
+const description = text[item.id];
+const posterId =
+  item.kind === 'audio'
+    ? item.artworkId
+    : item.kind === 'image' && !item.animated
+      ? item.id
+      : 'posterId' in item
+        ? item.posterId
+        : fallbackId;
+const poster = media.find((asset) => asset.id === posterId) as ImageMedia;
+const fallback = media.find((asset) => asset.id === fallbackId) as ImageMedia;
+const timed = item.kind === 'audio' || item.kind === 'video';
+const experience = item.kind === 'embed' || item.kind === 'demo' || item.kind === 'chart';
+const kind = item.kind === 'image' && item.animated ? 'animation' : item.kind;
+const auto = kind === 'animation' || (item.kind === 'video' && item.loop && !item.hasAudio);
+const sources = timed
+  ? item.sources.map(({ src, type }) => ({ src, type }))
+  : item.kind === 'image' && item.animated
+    ? [{ src: item.src, type: 'image/webp' }]
+    : [];
+const srcset = poster.variants.map((v) => `${v.src} ${v.width}w`).join(', ') || undefined;
+const mediaId = `media-${workId}-${item.id}`;
+---
+
+<section
+  id={mediaId}
+  data-media-panel
+  data-media-root
+  data-context="detail"
+  data-kind={kind}
+  data-provider={item.kind === 'embed' ? item.provider : undefined}
+  data-auto={auto || undefined}
+  data-locale={locale}
+  data-sources={JSON.stringify(sources)}
+  data-poster={poster.src}
+  data-fallback={fallback.src}
+  data-experience={experience ? JSON.stringify({ item, text: description }) : undefined}
+  hidden={hidden}
+  aria-label={description.title}
+>
+  <div class:list={['media-stage', { 'media-stage--audio': item.kind === 'audio' }]}>
+    <img
+      src={!hidden ? poster.src : undefined}
+      data-src={hidden ? poster.src : undefined}
+      srcset={!hidden ? srcset : undefined}
+      data-srcset={hidden ? srcset : undefined}
+      sizes="(max-width: 780px) calc(100vw - 24px), 756px"
+      width={poster.width}
+      height={poster.height}
+      alt={text[poster.id].alt}
+      decoding="async"
+      loading={hidden ? 'lazy' : 'eager'}
+      data-media-image
+      style="object-fit:contain"
+    />
+    {
+      item.kind === 'video' && (
+        <video
+          playsinline
+          controls
+          preload="none"
+          muted={!item.hasAudio}
+          loop={item.loop}
+          aria-label={description.title}
+        >
+          {item.captions.map((caption) => (
+            <track
+              kind="subtitles"
+              data-src={caption.src}
+              srclang={caption.locale}
+              label={caption.locale === 'zh' ? '中文' : 'English'}
+              default={caption.locale === locale}
+            />
+          ))}
+        </video>
+      )
+    }
+    {
+      item.kind === 'audio' && (
+        <>
+          <>
+            <Fragment set:html={waveformHtml(item.waveform)} />
+            <audio controls preload="none" aria-label={description.title}>
+              {item.captions.map((caption) => (
+                <track
+                  kind="captions"
+                  data-src={caption.src}
+                  srclang={caption.locale}
+                  label={caption.locale === 'zh' ? '中文' : 'English'}
+                />
+              ))}
+            </audio>
+          </>
+        </>
+      )
+    }
+    {
+      (timed || kind === 'animation') && (
+        <button
+          class="media-toggle"
+          type="button"
+          data-media-toggle
+          aria-label={item.kind === 'audio' ? t.listen : t.play}
+          aria-pressed="false"
+        >
+          {item.kind === 'audio' ? t.listen : t.play}
+        </button>
+      )
+    }
+    {
+      item.kind === 'image' && !item.animated && (
+        <button type="button" class="media-toggle" data-media-zoom aria-label={t.zoom}>
+          {t.zoom}
+        </button>
+      )
+    }
+    {
+      experience && (
+        <>
+          <>
+            <button type="button" class="media-toggle" data-media-launch aria-label={t.start}>
+              {t.start}
+            </button>
+            <div class="media-experience" data-media-mount hidden />
+            <button type="button" class="media-exit" data-media-exit hidden>
+              {t.exit}
+            </button>
+          </>
+        </>
+      )
+    }
+    {timed && <span class="media-duration">{timeLabel(item.duration)}</span>}
+    {
+      timed && (item.chapters.length > 0 || description.transcript.length > 0) && (
+        <details class="media-tools">
+          <summary aria-label={t.chapters}>
+            <span aria-hidden="true">☷</span>
+          </summary>
+          <div class="media-tools-panel">
+            {timed && item.chapters.length > 0 && (
+              <nav class="media-chapters" aria-label={t.chapters}>
+                {item.chapters.map((chapter) => (
+                  <button type="button" data-media-seek={chapter.start}>
+                    {timeLabel(chapter.start)} {description.chapters[chapter.id]}
+                  </button>
+                ))}
+              </nav>
+            )}
+            {description.transcript.length > 0 && (
+              <details class="media-transcript">
+                <>
+                  <summary>{t.transcript}</summary>
+                  <div>
+                    {description.transcript.map((cue) =>
+                      cue.start === undefined ? (
+                        <p>{cue.text}</p>
+                      ) : (
+                        <button
+                          type="button"
+                          data-media-seek={cue.start}
+                          data-media-cue={cue.start}
+                        >
+                          {timeLabel(cue.start)} {cue.text}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                </>
+              </details>
+            )}
+          </div>
+        </details>
+      )
+    }
+    <span class="media-status" data-media-status role="status"></span>
+  </div>
+</section>

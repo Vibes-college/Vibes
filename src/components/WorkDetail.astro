@@ -1,5 +1,6 @@
 ---
 import Preview from './Preview.astro';
+import MediaDetail from './MediaDetail.astro';
 import { catalog, getWorks, type Work } from '../data/works';
 import { workFacts } from '../data/work-facts';
 import { adjacentWorks } from '../lib/content/views';
@@ -22,6 +23,7 @@ const meta = {
   eyebrow: work.eyebrow,
   display: work.display,
   note: work.note,
+  ...(work.mediaCard ? { mediaCard: JSON.stringify(work.mediaCard) } : {}),
 };
 ---
 
@@ -96,14 +98,22 @@ const meta = {
       /><span class="sr-only">{t.source}（{t.external}）</span></a
     >
   </div>
-  <a
-    class="detail-preview"
-    href={work.url}
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label={`${t.experience}：${work.title}（${t.external}）`}
-    data-pagefind-ignore><Preview work={work} /></a
-  >
+  {
+    work.meta.presentation ? (
+      <MediaDetail work={work} />
+    ) : (
+      <a
+        class="detail-preview"
+        href={work.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${t.experience}：${work.title}（${t.external}）`}
+        data-pagefind-ignore
+      >
+        <Preview work={work} />
+      </a>
+    )
+  }
   <header class="article-header">
     <h1 data-pagefind-meta="title">{work.title}</h1>
     <p class="detail-description">{work.description}</p>

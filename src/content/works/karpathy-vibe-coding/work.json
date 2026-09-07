@@ -1,0 +1,42 @@
+{
+  "id": "karpathy-vibe-coding",
+  "originalLocale": "zh",
+  "order": 213,
+  "sourceUrl": "https://x.com/karpathy/status/1886192184808149383",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Andrej Karpathy · X",
+        "en": "Andrej Karpathy · X"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "x.com",
+        "en": "x.com"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://x.com/karpathy/status/1886192184808149383"
+      }
+    }
+  ]
+}

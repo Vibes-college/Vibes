@@ -1,0 +1,142 @@
+{
+  "id": "carefree",
+  "originalLocale": "zh",
+  "order": 211,
+  "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037",
+  "typeId": "audio",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Kevin MacLeod",
+        "en": "Kevin MacLeod"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "incompetech.com",
+        "en": "incompetech.com"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037"
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "artwork",
+      "kind": "image",
+      "src": "/media/carefree-cover/poster.webp",
+      "width": 800,
+      "height": 800,
+      "bytes": 14070,
+      "provenance": {
+        "url": "https://github.com/Vibes-college/Vibes",
+        "credit": "Vibes · 依据实际波形排版",
+        "license": "CC0-1.0；非官方唱片封面"
+      }
+    },
+    {
+      "id": "carefree-sample",
+      "kind": "audio",
+      "sources": [
+        {
+          "src": "/media/carefree/sample.mp3",
+          "type": "audio/mpeg",
+          "bytes": 240018
+        }
+      ],
+      "duration": 19.9,
+      "waveform": [
+        0.101, 0.082, 0.175, 0.093, 0.069, 0.134, 0.152, 0.066, 0.06, 0.151, 0.103, 0.083, 0.085,
+        0.157, 0.082, 0.106, 0.104, 0.233, 0.148, 0.115, 0.12, 0.174, 0.163, 0.161, 0.23, 0.155,
+        0.115, 0.083, 0.238, 0.19, 0.109, 0.106, 0.207, 0.127, 0.108, 0.178, 0.261, 0.103, 0.095,
+        0.189, 0.212, 0.083, 0.084, 0.171, 0.137, 0.128, 0.112, 0.222, 0.145, 0.12, 0.108, 0.263,
+        0.133, 0.114, 0.185, 0.187, 0.108, 0.069, 0.226, 0.123, 0.098, 0.105, 0.211, 0.152, 0.09,
+        0.102, 0.285, 0.095, 0.093, 0.164, 0.215, 0.13, 0.085, 0.199, 0.182, 0.206, 0.112, 0.198,
+        0.139, 0.12, 0.087, 0.199, 0.192, 0.084, 0.085, 0.096, 0.095, 0.07, 0.194, 0.17, 0.066,
+        0.102, 0.144, 0.106, 0.101, 0.087, 0.207, 0.099, 0.092, 0.073, 0.141, 0.065, 0.05, 0.208,
+        0.156, 0.107, 0.127, 0.297, 0.236, 0.126, 0.129, 0.261, 0.201, 0.095, 0.089, 0.23, 0.127,
+        0.13, 0.087, 0.194
+      ],
+      "provenance": {
+        "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037",
+        "credit": "Kevin MacLeod (incompetech.com)",
+        "license": "CC BY 4.0；录音转码、20秒试听与波形提取"
+      },
+      "artworkId": "artwork"
+    },
+    {
+      "id": "carefree-full",
+      "kind": "audio",
+      "sources": [
+        {
+          "src": "/media/carefree/full.mp3",
+          "type": "audio/mpeg",
+          "bytes": 3283596
+        }
+      ],
+      "duration": 205.139592,
+      "waveform": [
+        0.268, 0.188, 0.19, 0.243, 0.247, 0.191, 0.205, 0.238, 0.259, 0.184, 0.235, 0.232, 0.258,
+        0.266, 0.23, 0.276, 0.201, 0.192, 0.211, 0.294, 0.189, 0.209, 0.246, 0.242, 0.246, 0.201,
+        0.246, 0.177, 0.165, 0.219, 0.179, 0.184, 0.195, 0.177, 0.243, 0.203, 0.2, 0.249, 0.27,
+        0.205, 0.259, 0.207, 0.297, 0.269, 0.227, 0.236, 0.294, 0.254, 0.229, 0.178, 0.249, 0.24,
+        0.213, 0.252, 0.227, 0.259, 0.184, 0.271, 0.242, 0.246, 0.218, 0.235, 0.27, 0.166, 0.253,
+        0.171, 0.198, 0.238, 0.153, 0.2, 0.225, 0.202, 0.192, 0.24, 0.233, 0.214, 0.225, 0.19,
+        0.247, 0.31, 0.243, 0.353, 0.243, 0.236, 0.243, 0.288, 0.194, 0.198, 0.208, 0.307, 0.25,
+        0.227, 0.235, 0.367, 0.159, 0.104, 0.124, 0.132, 0.127, 0.126, 0.131, 0.141, 0.118, 0.122,
+        0.15, 0.138, 0.135, 0.105, 0.129, 0.129, 0.104, 0.116, 0.135, 0.134, 0.098, 0.115, 0.141,
+        0.122, 0.049, 0.035
+      ],
+      "provenance": {
+        "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037",
+        "credit": "Kevin MacLeod (incompetech.com)",
+        "license": "CC BY 4.0；录音转码、20秒试听与波形提取"
+      },
+      "artworkId": "artwork",
+      "chapters": [
+        {
+          "id": "start",
+          "start": 0
+        },
+        {
+          "id": "minute",
+          "start": 60
+        },
+        {
+          "id": "two-minutes",
+          "start": 120
+        }
+      ]
+    }
+  ],
+  "presentation": {
+    "card": {
+      "mediaId": "carefree-sample",
+      "mode": "audio",
+      "fit": "contain"
+    },
+    "detail": {
+      "items": ["carefree-full"]
+    },
+    "fallbackId": "artwork"
+  }
+}

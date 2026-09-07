@@ -95,7 +95,10 @@ const summary = description || t.footer;
       <span class="header-note">{t.campus}</span>
     </header>
     <slot />
-    <script src="../scripts/reading-prefetch.ts"></script>
+    <script>
+      import '../scripts/reading-prefetch';
+      import '../scripts/media-boot';
+    </script>
     <footer class="site-footer" data-pagefind-ignore transition:persist={`footer-${locale}`}>
       <span>{t.footer}</span><a href="#main">{t.top}</a>
     </footer>

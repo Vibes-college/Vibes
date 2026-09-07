@@ -2,10 +2,18 @@
 tense: 'living'
 describes: '阅读作品详情'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '008', '009']
+shaped-by: ['001', '003', '005', '006', '007', '008', '009', '010']
 code-sources:
   [
     'src/components/WorkDetail.astro',
+    'src/components/MediaDetail.astro',
+    'src/components/MediaItem.astro',
+    'src/scripts/media.ts',
+    'src/scripts/media-player.ts',
+    'src/scripts/media-experience.ts',
+    'src/scripts/media-demo.ts',
+    'src/scripts/media-chart.ts',
+    'tests/media.spec.ts',
     'src/scripts/prose.ts',
     'src/styles/prose.css',
     'public/icons/prose/',
@@ -42,7 +50,7 @@ code-sources:
     'src/pages/[locale]/works/[id].astro',
     'tests/explore.spec.ts',
   ]
-code-revision: '7d106694788a9975154fe62a8a8b10b251e33c1e1ce0ffcdf3c527d778303b8e'
+code-revision: 'bc8b740efba82784a6df4546bdeb5e82d96c0b68a4cf3ca18305652bf092e0df'
 ---
 
 # 功能名：阅读作品详情
@@ -54,13 +62,23 @@ code-revision: '7d106694788a9975154fe62a8a8b10b251e33c1e1ce0ffcdf3c527d778303b8e
 ## 用户操作路径
 
 1. 从目录点击卡片，进入`/{locale}/works/{id}/`，先看来源、预览、标题、介绍和已有的作者/类型等信息。
-2. 点击原站链接，在新标签页打开原始作品；预览封面不是内嵌播放器。
+2. 点击原站链接，在新标签页打开原始作品；有媒体的封面按下面的路径播放或操作，未配置媒体的作品保留静态预览。
 3. 上下滑动或点轻微摆动的向下入口，在概览与正文两个独立页面之间切换：单指移动至少72px后松手翻页，较短或取消则留在当前页；换页有280ms短幅位移淡入。未显示的页面退出布局，不存在两页之间的位置或滚动吸附。较长概览先正常滚到末尾；正文全部展开并使用浏览器原生滚动，在正文顶部向下滑可返回概览。底部进度胶囊只在正文出现，显示阅读进度与当前章；点击展开目录并跳转，Escape或点外部关闭。
 4. 点击章节标题右上角的小表情，展开五个选项；选择后逐个飘出，第一章向下飘，其他章按顶部空间调整。可按住入口拖到表情松开，或长按表情连续发射。每章选择只在当前浏览器保存，刷新后恢复。点入口、外部或Escape关闭；方向键选择，减少动态偏好不发射。
 5. 点击有链接的信息项，进入同类作品或对应正文；没有有效目标的信息只显示文字。
 6. 顶部依次为交叉关闭、上一件、下一件，仅在概览显示，进入正文后隐藏；电脑可用左右键，手机可横滑。横滑或空白长按显示边缘方向提示，随触点上下移动；明确横移后松手切换，取消或只长按不切换。首尾不循环。
 7. 详情不显示中英切换、缺译提示或查看原文入口；可返回首页选择语言。已有语言网址仍可直接打开，待复核译文保留状态文字。
 8. 在正文时先回到正文顶部向下滑返回概览，或用浏览器返回；再点概览顶部交叉按钮返回同语言目录；同标签页访问时恢复之前的分类和关键词。直接打开不存在的作品或译文地址会得到404。
+
+### 操作作品封面
+
+- 图库：点编号切换原图与说明，再点放大查看；关闭或Escape返回并恢复按钮焦点。
+- 视频与音频：点播放/试听后加载完整来源，用原生进度、音量与字幕控制；封面左上角的列表图标展开章节和文字稿，可直接跳转。音频波形来自实际录音，若附文字稿可展开阅读，带时间的行可跳转；没有歌词或字幕时不会生成假内容。Sintel是完整预告片，不是整部电影；Carefree提供完整录音。
+- 循环动画：可见时按偏好静音播放，点暂停停止；动画图通过静态海报停止循环。
+- YouTube、Spotify、B站与已登记的原站体验：点“开始体验”加载官方播放器或原作，再在其中播放、按键或拖动；点“退出体验”移除它。Spotify可播放范围由平台、地区和账号决定。2048使用作者MIT源码的沙盒版，用方向键/滑动；yaoda忍者可拖动，角色区播放作者骨骼动画，其他角色不宣称支持拖动。
+- 图表：点开始才读取有来源的真实数值；可切换系列或观测数量，展开数据表核对。Anscombe提供四组经典散点数据，采集年份不伪装成更新日期。
+
+封面右下角使用小型半透明圆形播放/暂停图标；下方直接接大标题，不展示素材说明、来源小字或章节栏。来源与许可保留在正文及作品资料中。图库、播放器、iframe和图表控件区域不会触发换篇手势。切换媒体、进入正文、离开作品或进入后台会停止当前体验；浏览器返回后需重新启动手动播放。下载失败保留静态图、重试和原作入口。无JS保留正文、图片、媒体直达链接及原站入口；第三方不能嵌入时用原站打开，iframe加载完成不代表播放成功。
 
 ### 正文中的排版与操作
 
@@ -141,7 +159,7 @@ MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器14
 - `detail progress menu preserves anchors, keyboard, reversal and reduced motion`
 - `edge feedback follows locked gestures and cancellation never navigates`
 - `reading bottom stays put after repeated overscroll and viewport changes`
-- `no horizontal overflow, no embeds, two-line card descriptions`
+- `no horizontal overflow, no eager embeds, two-line card descriptions`
 
 `tests/prose.spec.ts`覆盖排版交互与窄屏/无JS；`tests/unit/prose-markdown.test.ts`使用真实Astro编译器验证语法、错误和全部示例。
 

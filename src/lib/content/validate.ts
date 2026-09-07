@@ -1,3 +1,5 @@
+import { validateMedia } from '../media/validate.ts';
+import { validateMediaFiles } from '../media/files.ts';
 import { locales, type Catalog } from './schema.ts';
 
 // 校验跨文件身份、引用和发布关系，拒绝重复或静默修复坏数据。
@@ -23,6 +25,14 @@ export function validateCatalog(catalog: Catalog): void {
   const pairs = new Set<string>();
   for (const { meta, versions } of catalog.works) {
     const file = `content/works/${meta.id}/work.json`;
+    try {
+      validateMedia(meta.media || [], meta.presentation);
+      validateMediaFiles(meta.media || []);
+    } catch (error) {
+      throw new Error(`${file}: ${error instanceof Error ? error.message : error}`, {
+        cause: error,
+      });
+    }
     const original = versions[meta.originalLocale];
     if (!original) throw new Error(`${file}: missing original language ${meta.originalLocale}`);
     if (tags.get(meta.typeId)?.kind !== 'type')
@@ -31,6 +41,13 @@ export function validateCatalog(catalog: Catalog): void {
       throw new Error(`${file}: duplicate tagIds`);
     for (const id of meta.tagIds) if (!tags.has(id)) throw new Error(`${file}: missing tag ${id}`);
     for (const version of Object.values(versions)) {
+      try {
+        validateMedia(meta.media || [], meta.presentation, version.data.mediaText || {});
+      } catch (error) {
+        throw new Error(`${version.file}: ${error instanceof Error ? error.message : error}`, {
+          cause: error,
+        });
+      }
       if (version.data.locale !== meta.originalLocale && version.data.status === 'published') {
         if (original.data.status !== 'published')
           throw new Error(`${version.file}: cannot publish translation before original`);

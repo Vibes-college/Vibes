@@ -1,0 +1,80 @@
+{
+  "id": "gaussian-splatting",
+  "originalLocale": "zh",
+  "order": 204,
+  "sourceUrl": "https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/",
+  "typeId": "paper",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Kerbl · Kopanas · Leimkühler · Drettakis",
+        "en": "Kerbl · Kopanas · Leimkühler · Drettakis"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "repo-sam.inria.fr",
+        "en": "repo-sam.inria.fr"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/"
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "cover",
+      "kind": "image",
+      "src": "https://i.ytimg.com/vi/T_kXY43VZnk/hqdefault.jpg",
+      "width": 480,
+      "height": 360,
+      "provenance": {
+        "url": "https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/",
+        "credit": "Bernhard Kerbl, Georgios Kopanas, Thomas Leimkühler, George Drettakis",
+        "license": "外部原作，权利归原作者"
+      },
+      "bytes": 23482
+    },
+    {
+      "id": "talk",
+      "kind": "embed",
+      "provider": "youtube",
+      "resourceId": "T_kXY43VZnk",
+      "posterId": "cover",
+      "provenance": {
+        "url": "https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/",
+        "credit": "Bernhard Kerbl, Georgios Kopanas, Thomas Leimkühler, George Drettakis",
+        "license": "外部原作，权利归原作者"
+      }
+    }
+  ],
+  "presentation": {
+    "card": {
+      "mediaId": "talk",
+      "mode": "embed",
+      "fit": "contain"
+    },
+    "detail": {
+      "items": ["talk"]
+    },
+    "fallbackId": "cover"
+  }
+}

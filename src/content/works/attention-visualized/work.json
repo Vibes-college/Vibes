@@ -1,0 +1,80 @@
+{
+  "id": "attention-visualized",
+  "originalLocale": "zh",
+  "order": 200,
+  "sourceUrl": "https://www.youtube.com/watch?v=eMlx5fFNoYc",
+  "typeId": "video",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "3Blue1Brown",
+        "en": "3Blue1Brown"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "www.youtube.com",
+        "en": "www.youtube.com"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://www.youtube.com/watch?v=eMlx5fFNoYc"
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "poster",
+      "kind": "image",
+      "src": "https://i.ytimg.com/vi/eMlx5fFNoYc/hqdefault.jpg",
+      "width": 480,
+      "height": 360,
+      "provenance": {
+        "url": "https://www.youtube.com/watch?v=eMlx5fFNoYc",
+        "credit": "3Blue1Brown",
+        "license": "外部原作，权利归原作者"
+      },
+      "bytes": 25999
+    },
+    {
+      "id": "player",
+      "kind": "embed",
+      "provider": "youtube",
+      "resourceId": "eMlx5fFNoYc",
+      "posterId": "poster",
+      "provenance": {
+        "url": "https://www.youtube.com/watch?v=eMlx5fFNoYc",
+        "credit": "3Blue1Brown",
+        "license": "外部原作，权利归原作者"
+      }
+    }
+  ],
+  "presentation": {
+    "card": {
+      "mediaId": "player",
+      "mode": "embed",
+      "fit": "contain"
+    },
+    "detail": {
+      "items": ["player"]
+    },
+    "fallbackId": "poster"
+  }
+}

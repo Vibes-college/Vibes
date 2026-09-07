@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '浏览与搜索作品'
 status: 'current'
-shaped-by: ['001', '003', '005']
+shaped-by: ['001', '003', '005', '010']
 legacy-feature-ids: ['explore-filter', 'not-found', 'responsive-access']
 code-sources:
   [
@@ -19,6 +19,11 @@ code-sources:
     'tests/navigation.spec.ts',
     'src/lib/i18n/',
     'src/lib/preview.ts',
+    'src/lib/escape.ts',
+    'src/lib/work-card.ts',
+    'src/lib/media/',
+    'src/scripts/media-boot.ts',
+    'tests/media.spec.ts',
     'src/lib/content/views.ts',
     'src/data/works.ts',
     'src/styles/',
@@ -27,7 +32,7 @@ code-sources:
     'public/icons/',
     'tests/explore.spec.ts',
   ]
-code-revision: '7f312b78147fb6d82b7bd897ff7cda0ef246a71fd3a5f2dd5da9bf07dfbbd30b'
+code-revision: '79704dd33b54e52092a1645ac36c030f8f0e124a7d874cd737d14b130965de74'
 ---
 
 # 功能名：浏览与搜索作品
@@ -41,7 +46,7 @@ code-revision: '7f312b78147fb6d82b7bd897ff7cda0ef246a71fd3a5f2dd5da9bf07dfbbd30b
 1. 打开`/zh/`；访问`/`或`/explore/`会进入中文目录。
 2. 浏览卡片，或点击“论文”“代码”等分类；内容超过一页时使用上一页、下一页，每页最多24件。
 3. 输入关键词，搜索当前语言已发布作品的标题、简介与正文；选择了分类时只看该类结果，超过24项可点“加载更多”。
-4. 点击卡片进入[作品详情](article-read.md)；返回Explore或刷新时保留分类与关键词。
+4. 有媒体的卡片可静音预览短视频、点击试听音频或启动已登记的官方播放器；标题/封面链接继续进入详情，播放按钮不会打开文章。点击卡片进入[作品详情](article-read.md)；返回Explore或刷新时保留分类与关键词。
 5. 点English切换英文目录，只显示已发布英文内容；没有该语言内容时显示提示和原文入口。
 6. 无结果时点“清空搜索与筛选”重新浏览；搜索框×只清关键词。加载失败时显示“重试”，不会把失败显示成零结果。
 7. 打开不存在的地址时显示404，可返回中文目录；手机使用相同路径。
@@ -65,6 +70,12 @@ flowchart TD
 ```
 
 普通浏览使用预生成HTML，站内切换保留文档运行环境。列表前6个候选在可见停留后预取详情，其余在悬停、键盘聚焦或触摸时准备；不预先下载全文搜索索引；带q的网址会直接发起搜索。新输入或清空后，旧请求即使返回也不会覆盖当前结果。中英文分别保留独立搜索实例，切换后重新绑定当前页面操作，旧异步结果不修改新页面；浏览器返回等待搜索结果恢复后还原滚动，用户开始滚动则停止自动还原。重试索引失败只重建当前语言实例；搜索程序本身下载失败时会保留q并刷新页面。对应`src/scripts/explore.ts`和`src/scripts/search.ts`。
+
+### 先看、试听，再阅读
+
+播放/暂停使用封面右下角的小型半透明圆形图标；音频播放时实际波形条带节奏运动，暂停后停止，这个视觉提示不是实时频谱。减少动态偏好下保持静态波形。静态图先显示；动态卡片可见至少一半、停留200ms后才尝试静音播放，800px以内最多1个、较宽屏最多2个。减少动态或省流量时只在主动点击后播放。用户暂停后不会因为再次滚入而自动重启；开始有声播放或外部体验会停止其他播放，离屏、进入正文、后台、换页或替换搜索结果时暂停/清理。浏览器拒绝自动播放时保留重试与详情入口。完整音视频、图表数据和外站iframe不在卡片初始阶段下载；官方iframe在点击后由平台决定其内部下载量。
+
+同一套媒体卡片用于目录和搜索。旧作品保持原有文字/装饰封面；没有媒体的普通详情不请求媒体脚本。无JS可通过封面链接进入正文和原作。媒体规则和字段见[内容结构](../system/content-model.md#多媒体资料与展示)。
 
 ## 涉及的文件
 
@@ -93,7 +104,7 @@ flowchart TD
 
 - `local filtering, empty state, and URL survive refresh`
 - `cards navigate directly to a complete article; browser back restores filters`
-- `no horizontal overflow, no embeds, two-line card descriptions`
+- `no horizontal overflow, no eager embeds, two-line card descriptions`
 - `lazy full-text search and detail back link preserve the query`
 - `failed search resources can retry and clearing cancels stale results`
 - `failed result fragments recover after explicit retry`

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '配置和环境变量'
 status: 'current'
-shaped-by: ['001', '004', '005', '009']
+shaped-by: ['001', '004', '005', '009', '010']
 code-sources:
   [
     'package.json',
@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: 'd8033155bad1f9e7cbcba9cfdfcd33c7f2c2010c08e360edde6bec3905f179dc'
+code-revision: '612deb01672bdd91ce0088d8f2cea3a81c364ed4c2f65152b45a6ce57d662a3c'
 ---
 
 # 配置和环境变量
@@ -34,20 +34,20 @@ code-revision: 'd8033155bad1f9e7cbcba9cfdfcd33c7f2c2010c08e360edde6bec3905f179dc
 
 开发流程工具为 Spec Kit 1.0.4，通过 `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@v1.0.4` 安装到本机工具环境，不是 npm 或网站运行依赖。版本与初始化参数见 `.specify/init-options.json`；Codex skills 位于 `.agents/skills/`。升级需明确版本并审查生成文件差异，不能在初始化时覆盖项目决定。`.prettierignore` 排除上游受管理的技能、模板、清单与工作流，以保持安装清单哈希；项目自己维护的宪章和文档仍接受格式检查。使用与验收边界见 [Spec Kit 工作流](../features/document-governance.md)。
 
-| 项目                | 当前配置                                           | 用途 / 修改位置                                                     |
-| ------------------- | -------------------------------------------------- | ------------------------------------------------------------------- |
-| 框架                | Astro 静态输出，TypeScript                         | `astro.config.mjs`、`tsconfig.json`                                 |
-| Node                | 至少 22.20.0；CI 固定 22.20.0                      | `package.json`、`.github/workflows/check.yml`                       |
-| 依赖版本            | `package-lock.json` 锁定，使用 `npm ci`            | 不手改锁文件；新增依赖先询问                                        |
-| 开发地址            | 通常为本机 4321，以终端实际地址为准                | `npm run dev`；端口占用时 Astro 可能使用其他端口                    |
-| Cloudflare 本地预览 | 本机 4322                                          | `npm run preview`、`wrangler.local.jsonc`                           |
-| 本地数据库          | `DB` / `vibes-explore-local`                       | `wrangler.local.jsonc`；标识只供本地模拟使用                        |
-| 本地数据目录        | `.wrangler/project-local/`                         | `scripts/local-tools.ts`；不提交 Git                                |
-| 直接 Worker 部署    | `vibes-explore`，静态资源 `dist`                   | `wrangler.jsonc`；静态资源配置；生产自动部署与PR版本预览            |
-| 既有 Sites 绑定     | 已有托管项目                                       | `.openai/hosting.json`；保留，不写入凭据                            |
-| 页面标准域名        | `SITE_URL`，本地默认127.0.0.1:4322                 | `src/config/site.ts`统一供Astro、布局、sitemap和robots使用          |
-| 正式域名            | `vibes.college`，用户已于2026-09-06授权            | wrangler.jsonc的Custom Domain；已转接上线；发布与恢复结果见交付说明 |
-| 缓存与安全响应头    | 同源限制、精确脚本哈希、禁止嵌入、构建资源缓存一年 | `public/_headers`                                                   |
+| 项目                | 当前配置                                                        | 用途 / 修改位置                                                     |
+| ------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 框架                | Astro 静态输出，TypeScript                                      | `astro.config.mjs`、`tsconfig.json`                                 |
+| Node                | 至少 22.20.0；CI 固定 22.20.0                                   | `package.json`、`.github/workflows/check.yml`                       |
+| 依赖版本            | `package-lock.json` 锁定，使用 `npm ci`                         | 不手改锁文件；新增依赖先询问                                        |
+| 开发地址            | 通常为本机 4321，以终端实际地址为准                             | `npm run dev`；端口占用时 Astro 可能使用其他端口                    |
+| Cloudflare 本地预览 | 本机 4322                                                       | `npm run preview`、`wrangler.local.jsonc`                           |
+| 本地数据库          | `DB` / `vibes-explore-local`                                    | `wrangler.local.jsonc`；标识只供本地模拟使用                        |
+| 本地数据目录        | `.wrangler/project-local/`                                      | `scripts/local-tools.ts`；不提交 Git                                |
+| 直接 Worker 部署    | `vibes-explore`，静态资源 `dist`                                | `wrangler.jsonc`；静态资源配置；生产自动部署与PR版本预览            |
+| 既有 Sites 绑定     | 已有托管项目                                                    | `.openai/hosting.json`；保留，不写入凭据                            |
+| 页面标准域名        | `SITE_URL`，本地默认127.0.0.1:4322                              | `src/config/site.ts`统一供Astro、布局、sitemap和robots使用          |
+| 正式域名            | `vibes.college`，用户已于2026-09-06授权                         | wrangler.jsonc的Custom Domain；已转接上线；发布与恢复结果见交付说明 |
+| 缓存与安全响应头    | 精确脚本哈希、拒绝被嵌入、允许登记媒体/iframe、构建资源缓存一年 | `public/_headers`                                                   |
 
 ## Markdown与排版依赖
 
@@ -102,3 +102,9 @@ wrangler.jsonc使用workers_dev:false、preview_urls:true和唯一vibes.college 
 astro.config.mjs在客户端构建中让动态目标由原生import下载，仅并行准备其依赖，避免WebKit将失败的modulepreload一直留在缓存；现有搜索失败后刷新重试回归覆盖。
 
 Astro在公共布局启用ClientRouter，`prefetchAll:false`关闭全站自动策略，由`src/scripts/reading-prefetch.ts`选取有限阅读目标。`public/_headers`为中英文页面设置60秒公开缓存，构建哈希资源仍缓存一年；详见[系统规则](rules.md)。
+
+## 作品媒体
+
+媒体和平台登记见src/config/media.ts及[媒体规则](rules.md#媒体加载与体积)。浏览器只在点击后创建YouTube、Spotify、B站或已核对原站的iframe；媒体下载、账号和地区限制由平台决定，无平台API密钥。音视频文件只从同源或指定来源加载，图表数据经有界GET读取；完整来源不提前挂到元素。2048从本站读取MIT源码模板与游戏脚本，以不允许同源访问的sandbox运行；其依赖计入媒体预算，不访问父页面或持久存储。
+
+ESLint仅对public/media/2048/game.js这一份带MIT署名的上游压缩分发文件豁免本项目风格规则；自有媒体代码仍完整检查，原始来源版本见同目录SOURCE.txt，实际游戏操作与总脚本预算仍有测试。

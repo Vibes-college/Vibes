@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '维护作品内容'
 status: 'current'
-shaped-by: ['001', '003', '008', '009']
+shaped-by: ['001', '003', '008', '009', '010']
 code-sources:
   [
     'src/lib/content/',
@@ -13,7 +13,7 @@ code-sources:
     'scripts/migrate-content.ts',
     'tests/content-lifecycle.spec.ts',
   ]
-code-revision: 'ba553f5068a60fee4f9ab6e038e4c0ce9a195806688fa5bfa7bb8619aaeadb0e'
+code-revision: '8c9029abd7a90c8d8adba292479487d63de5e674fb641d9d7bac25a10e89dae2'
 ---
 
 # 功能名：维护作品内容
@@ -32,6 +32,15 @@ code-revision: 'ba553f5068a60fee4f9ab6e038e4c0ce9a195806688fa5bfa7bb8619aaeadb0e
 6. 发布译文前核对全文，运行`npm run content:revision -- <id>`取得原文摘要，再填写`sourceRevision`和发布状态；命令不会替你审核或自动修改文件。
 7. 原文更新后，旧译文继续可读但提示待复核；重新核对译文并更新摘要后解除提示。
 8. 进入[检查与发布网站](project-commands.md)，通过检查并发布后再核对线上页面和搜索。
+
+### 添加真实媒体封面
+
+1. 提供实际作品、来源、许可与希望读者完成的动作；AI先核对能否播放/交互及可转载范围，编写原创导读，不复制第三方长文或歌词。真实范例见Sintel、Carefree、Feature Visualization、2048、Attention、Spotify和Anscombe作品目录。
+2. 本地原始素材暂存.scratch；运行`npm run media:prepare -- <image|video|audio> <本地输入文件> <新素材id>`。视频/音频可加`--start 12 --seconds 8`选片段。需要本机FFmpeg/ffprobe，图片使用已有Sharp；命令不会下载外站素材或覆盖输入/已有输出。
+3. 检查public/media/<id>/manifest.json与实际图片、预览、完整文件或波形，补真实来源、许可、字幕和语言说明。视频预览独立静音，音频试听与完整录音分开。命令输出不是可直接发布的作品资料。
+4. 在work.json填media素材与presentation展示引用，在语言文件头填mediaText。只让短预览进入卡片；完整素材、文字稿、数据和配置留详情。媒体和语言字段见[结构](../system/content-model.md#多媒体资料与展示)，限值见[规则](../system/rules.md#媒体加载与体积)。
+5. 外站嵌入只能使用src/config/media.ts中登记的平台/资源ID；新增站点须核对原作和嵌入限制，再同步响应头，不能在内容里写任意iframe或脚本。普通博客、X帖子也可用原创文字封面与正文、保留原始链接，不强行内嵌。
+6. 运行content:validate、verify、budget；实际浏览器核对目录/搜索/详情、暂停、返回、无JS与失败路径。素材或mediaText变化也影响原文摘要，译文需重新审核。
 
 ### 在文章里加入可操作演示
 

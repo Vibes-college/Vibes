@@ -1,0 +1,80 @@
+{
+  "id": "infinity-boli",
+  "originalLocale": "zh",
+  "order": 209,
+  "sourceUrl": "https://store.steampowered.com/app/3446270/_Infinity_Boli/",
+  "typeId": "video",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Infinity Boli · 咬哒叔案例页",
+        "en": "Infinity Boli · 咬哒叔案例页"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "store.steampowered.com",
+        "en": "store.steampowered.com"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://store.steampowered.com/app/3446270/_Infinity_Boli/"
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "poster",
+      "kind": "image",
+      "src": "https://yaoda.work/img/video_cover_blkc.webp",
+      "width": 1054,
+      "height": 593,
+      "provenance": {
+        "url": "https://yaoda.work/",
+        "credit": "咬哒叔 Spine 2D Studio",
+        "license": "外部原作，权利归原作者"
+      },
+      "bytes": 63772
+    },
+    {
+      "id": "trailer",
+      "kind": "embed",
+      "provider": "bilibili",
+      "resourceId": "BV1Mfbzz7E8P",
+      "posterId": "poster",
+      "provenance": {
+        "url": "https://yaoda.work/",
+        "credit": "咬哒叔 Spine 2D Studio",
+        "license": "外部原作，权利归原作者"
+      }
+    }
+  ],
+  "presentation": {
+    "card": {
+      "mediaId": "trailer",
+      "mode": "embed",
+      "fit": "contain"
+    },
+    "detail": {
+      "items": ["trailer"]
+    },
+    "fallbackId": "poster"
+  }
+}

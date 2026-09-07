@@ -1,0 +1,122 @@
+{
+  "id": "sintel-trailer",
+  "originalLocale": "zh",
+  "order": 210,
+  "sourceUrl": "https://durian.blender.org/",
+  "typeId": "video",
+  "tagIds": [],
+  "preview": {
+    "kind": "text",
+    "color": "#f0efe9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "作者",
+        "en": "Creator"
+      },
+      "value": {
+        "zh": "Blender Foundation",
+        "en": "Blender Foundation"
+      }
+    },
+    {
+      "key": "source",
+      "kind": "source",
+      "label": {
+        "zh": "来源",
+        "en": "Source"
+      },
+      "value": {
+        "zh": "durian.blender.org",
+        "en": "durian.blender.org"
+      },
+      "target": {
+        "kind": "link",
+        "url": "https://durian.blender.org/"
+      }
+    }
+  ],
+  "media": [
+    {
+      "id": "sintel-poster",
+      "kind": "image",
+      "src": "/media/sintel/poster.webp",
+      "width": 480,
+      "height": 270,
+      "bytes": 9180,
+      "provenance": {
+        "url": "https://durian.blender.org/",
+        "credit": "© Blender Foundation | durian.blender.org",
+        "license": "CC BY 3.0；预告片转码，封面截帧，卡片片段静音裁切"
+      }
+    },
+    {
+      "id": "sintel-preview",
+      "kind": "video",
+      "sources": [
+        {
+          "src": "/media/sintel/preview.mp4",
+          "type": "video/mp4",
+          "bytes": 218574
+        }
+      ],
+      "width": 640,
+      "height": 360,
+      "duration": 8,
+      "hasAudio": false,
+      "posterId": "sintel-poster",
+      "loop": true,
+      "provenance": {
+        "url": "https://durian.blender.org/",
+        "credit": "© Blender Foundation | durian.blender.org",
+        "license": "CC BY 3.0；预告片转码，封面截帧，卡片片段静音裁切"
+      }
+    },
+    {
+      "id": "sintel-full",
+      "kind": "video",
+      "sources": [
+        {
+          "src": "/media/sintel/full.mp4",
+          "type": "video/mp4",
+          "bytes": 3238971
+        }
+      ],
+      "width": 854,
+      "height": 480,
+      "duration": 52.208333,
+      "hasAudio": true,
+      "posterId": "sintel-poster",
+      "loop": false,
+      "provenance": {
+        "url": "https://durian.blender.org/",
+        "credit": "© Blender Foundation | durian.blender.org",
+        "license": "CC BY 3.0；预告片转码，封面截帧，卡片片段静音裁切"
+      },
+      "chapters": [
+        {
+          "id": "start",
+          "start": 0
+        },
+        {
+          "id": "middle",
+          "start": 30
+        }
+      ]
+    }
+  ],
+  "presentation": {
+    "card": {
+      "mediaId": "sintel-preview",
+      "mode": "motion",
+      "fit": "contain"
+    },
+    "detail": {
+      "items": ["sintel-full"]
+    },
+    "fallbackId": "sintel-poster"
+  }
+}

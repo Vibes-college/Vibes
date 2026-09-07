@@ -1,10 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Preview from './Preview.astro';
+import { legacyCardHtml } from '../lib/work-card';
+import { workCardHtml } from '../lib/media/render';
 import { catalog, getWorks, getBrowsePages } from '../data/works';
 import type { BrowsePage } from '../lib/content/views';
 import { messages } from '../lib/i18n/messages';
-import { browsePath, workPath, locales, htmlLanguages } from '../lib/i18n/routes';
+import { browsePath, locales, htmlLanguages } from '../lib/i18n/routes';
 interface Props {
   page: BrowsePage;
 }
@@ -64,21 +65,9 @@ const alternates = locales.flatMap((other) =>
     <ul class="work-grid" data-browse-grid>
       {
         works.map((work) => (
-          <li class="work-card" data-type={work.type}>
-            <a
-              class="card-link"
-              href={workPath(locale, work.slug)}
-              data-work={work.slug}
-              aria-label={`${t.explore} ${work.title}`}
-            >
-              <>
-                <Preview work={work} />
-                <p class="card-summary" lang={htmlLanguages[locale]}>
-                  {work.summary}
-                </p>
-              </>
-            </a>
-          </li>
+          <Fragment
+            set:html={work.mediaCard ? workCardHtml(work, locale) : legacyCardHtml(work, locale)}
+          />
         ))
       }
     </ul>

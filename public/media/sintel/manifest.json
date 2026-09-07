@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "input": {
+    "filename": "sintel.mp4",
+    "sha256": "b670602fa00934ca27c4351bb0efe7ea7a07fae57284e44226025eeed7c51254"
+  },
+  "assets": [
+    {
+      "id": "sintel-poster",
+      "kind": "image",
+      "src": "/media/sintel/poster.webp",
+      "width": 480,
+      "height": 270,
+      "bytes": 9180
+    },
+    {
+      "id": "sintel-preview",
+      "kind": "video",
+      "sources": [
+        {
+          "src": "/media/sintel/preview.mp4",
+          "type": "video/mp4",
+          "bytes": 218574
+        }
+      ],
+      "width": 640,
+      "height": 360,
+      "duration": 8,
+      "hasAudio": false,
+      "posterId": "sintel-poster",
+      "loop": true
+    },
+    {
+      "id": "sintel-full",
+      "kind": "video",
+      "sources": [
+        {
+          "src": "/media/sintel/full.mp4",
+          "type": "video/mp4",
+          "bytes": 3238971
+        }
+      ],
+      "width": 854,
+      "height": 480,
+      "duration": 52.208333,
+      "hasAudio": true,
+      "posterId": "sintel-poster",
+      "loop": false
+    }
+  ]
+}

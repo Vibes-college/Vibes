@@ -1,4 +1,5 @@
-import { previewHtml, escapeHtml, type PreviewData } from '../lib/preview';
+import { legacyCardHtml } from '../lib/work-card';
+import { type PreviewData } from '../lib/preview';
 import { workPath, htmlLanguages, type Locale } from '../lib/i18n/routes';
 
 interface ResultData {
@@ -65,22 +66,33 @@ export async function searchWorks(
 // 对索引返回值也验证站内语言和身份；所有内容字符串统一转义后才组成卡片。
 export async function renderResults(results: SearchResult[], locale: Locale): Promise<string> {
   const values = await Promise.all(results.map((result) => result.data()));
-  return values
-    .map(({ url, meta }) => {
-      if (!meta.id || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(meta.id))
-        throw new Error('Invalid search result id');
-      const target = new URL(url, location.origin);
-      const path = workPath(locale, meta.id);
-      if (target.origin !== location.origin || target.pathname !== path)
-        throw new Error('Search result is outside the current language');
-      const preview: PreviewData = {
-        preview: meta.preview as PreviewData['preview'],
-        color: meta.color,
-        eyebrow: meta.eyebrow || '',
-        display: meta.display || meta.title,
-        note: meta.note || '',
-      };
-      return `<li class="work-card" data-type="${escapeHtml(meta.type || '')}"><a class="card-link" href="${path}" data-work="${meta.id}" aria-label="Explore ${escapeHtml(meta.title)}">${previewHtml(preview)}<p class="card-summary">${escapeHtml(meta.summary || meta.title)}</p></a></li>`;
-    })
-    .join('');
+  return (
+    await Promise.all(
+      values.map(async ({ url, meta }) => {
+        if (!meta.id || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(meta.id))
+          throw new Error('Invalid search result id');
+        const target = new URL(url, location.origin);
+        const path = workPath(locale, meta.id);
+        if (target.origin !== location.origin || target.pathname !== path)
+          throw new Error('Search result is outside the current language');
+        const preview: PreviewData = {
+          preview: meta.preview as PreviewData['preview'],
+          color: meta.color,
+          eyebrow: meta.eyebrow || '',
+          display: meta.display || meta.title,
+          note: meta.note || '',
+        };
+        const work = {
+          ...preview,
+          slug: meta.id,
+          type: meta.type || '',
+          title: meta.title,
+          summary: meta.summary || meta.title,
+        };
+        if (!meta.mediaCard) return legacyCardHtml(work, locale);
+        const { workCardHtml, parseCard } = await import('./media');
+        return workCardHtml({ ...work, mediaCard: parseCard(meta.mediaCard) }, locale);
+      }),
+    )
+  ).join('');
 }

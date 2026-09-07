@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "input": {
+    "filename": "distill-neuron.png",
+    "sha256": "25834d8501d321c43da060f43c778e60b5ae38f276afc51b0a9a8234da8761b5"
+  },
+  "assets": [
+    {
+      "id": "distill-neuron-zoom",
+      "kind": "image",
+      "src": "/media/distill-neuron/zoom.webp",
+      "width": 144,
+      "height": 144,
+      "bytes": 5072,
+      "variants": [
+        {
+          "src": "/media/distill-neuron/poster.webp",
+          "width": 144,
+          "height": 144,
+          "bytes": 5072
+        },
+        {
+          "src": "/media/distill-neuron/detail.webp",
+          "width": 144,
+          "height": 144,
+          "bytes": 5072
+        }
+      ]
+    },
+    {
+      "id": "distill-neuron-poster",
+      "kind": "image",
+      "src": "/media/distill-neuron/poster.webp",
+      "width": 144,
+      "height": 144,
+      "bytes": 5072
+    }
+  ]
+}

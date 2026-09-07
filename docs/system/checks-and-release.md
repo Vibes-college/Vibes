@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003', '004', '005', '009']
+shaped-by: ['002', '003', '004', '005', '009', '010']
 code-sources:
   [
     'package.json',
@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'b3cc49858a995ac7d9b21e46a45d10e3b398bfb35f2747388abe1ad524cf8384'
+code-revision: '0684b6922cd61272111ad1cbba074041b7aefc8480a77cb383bff1e1ed499eb1'
 ---
 
 # 检查与发布
@@ -110,6 +110,12 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 | `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                        |
 
 按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`verify`始终表示完整验收，不会按路径悄悄缩减。日常工具修改运行check；页面和测试基础设施修改运行verify与budget。
+
+## 媒体处理
+
+`npm run media:prepare -- <image|video|audio> <本地输入> <新id> [--start 秒] [--seconds 秒]`输出到public/media/<id>，已有目录拒绝覆盖。视频产生静态海报、短静音预览及完整转码；音频产生短试听、完整转码及真实波形；图片产生受限WebP尺寸。需要本机FFmpeg/ffprobe，使用现有Sharp，不自动安装依赖。清单记录输入摘要、处理参数与输出大小，原始输入保持不变；AI仍须填写作品来源/许可、文案和展示选择。验证命令及维护路径见[内容维护](../features/content-maintenance.md)。
+
+content:validate核对媒体结构、引用、字节及真实数值；budget另报告mediaJavascriptGzip，保留公共脚本门槛。tests/media.spec.ts覆盖三个浏览器的延迟加载、章节、失败重试、图库、数据、搜索替换与无JS；外站响应在自动化中隔离，实际第三方播放须用内置浏览器另验，不能将测试桩当作原站证据。
 
 ## 浏览器测试
 

@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { mediaSchema, presentationSchema, mediaTextSchema } from '../media/schema.ts';
 
 import { locales, type Locale } from '../i18n/routes.ts';
 export { locales };
@@ -47,6 +48,8 @@ export const workSchema = z
     typeId: idSchema,
     tagIds: z.array(idSchema),
     preview: previewSchema,
+    media: z.array(mediaSchema).max(40).optional(),
+    presentation: presentationSchema.optional(),
     facts: z.array(factSchema).default([]),
     related: z.array(z.object({ targetId: idSchema, reason: localized }).strict()).default([]),
   })
@@ -59,6 +62,7 @@ export const languageSchema = z
     summary: text,
     description: text,
     previewText: z.object({ eyebrow: z.string(), display: text, note: z.string() }).strict(),
+    mediaText: mediaTextSchema.optional(),
     sourceRevision: z
       .string()
       .regex(/^[a-f0-9]{64}$/)

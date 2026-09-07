@@ -23,6 +23,7 @@
     "deploy": "node --experimental-strip-types scripts/release.ts deploy",
     "verify": "npm run check && npm run db:reset && npm run test:e2e",
     "budget": "npm run build && node --experimental-strip-types scripts/budget.ts",
+    "media:prepare": "node --experimental-strip-types scripts/prepare-media.ts",
     "optimize:images": "node --experimental-strip-types scripts/optimize-images.ts",
     "docs:check": "node --experimental-strip-types scripts/docs-check.ts",
     "ci:scope": "node --experimental-strip-types scripts/check-scope.ts",
