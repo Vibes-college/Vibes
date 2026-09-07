@@ -2,14 +2,17 @@
 tense: 'living'
 describes: '阅读作品详情'
 status: 'current'
-shaped-by: ['001', '003', '005']
+shaped-by: ['001', '003', '005', '006']
 code-sources:
   [
     'src/components/WorkDetail.astro',
-    'src/components/LanguageSwitch.astro',
     'src/data/article-sections.ts',
     'src/data/work-facts.ts',
     'src/scripts/detail.ts',
+    'src/scripts/detail-gestures.ts',
+    'src/scripts/detail-disclosure.ts',
+    'src/scripts/detail-transition.ts',
+    'public/icons/x-mark.svg',
     'src/scripts/page-lifecycle.ts',
     'src/scripts/reading-prefetch.ts',
     'tests/navigation.spec.ts',
@@ -20,24 +23,24 @@ code-sources:
     'src/pages/[locale]/works/[id].astro',
     'tests/explore.spec.ts',
   ]
-code-revision: 'e2dc7194fd7684145e8a8af3e132d8f99be523ce8f2d492fddee1253aa045f88'
+code-revision: '92a045abc862f6d7d60e432c573f85b9c32fb116c755ce1332196ca260b83cc7'
 ---
 
 # 功能名：阅读作品详情
 
 ## 一句话说明
 
-访客从作品概览进入正文，查阅来源，并继续阅读相邻作品或同一作品的另一语言版本。
+访客在作品概览与正文之间整屏翻阅，按需展开章节，并继续阅读相邻作品。
 
 ## 用户操作路径
 
 1. 从目录点击卡片，进入`/{locale}/works/{id}/`，先看来源、预览、标题、介绍和已有的作者/类型等信息。
 2. 点击原站链接，在新标签页打开原始作品；预览封面不是内嵌播放器。
-3. 点向下阅读入口，选择章节标题展开或收起正文，阅读文字、表格和来源链接。
+3. 上下滑动或点轻微摆动的向下入口，在概览与正文两屏间停靠；正文第一章默认展开，其余折叠。点击标题展开或收起，长正文可正常滚动阅读。
 4. 点击有链接的信息项，进入同类作品或对应正文；没有有效目标的信息只显示文字。
-5. 通过上一件、下一件按钮继续阅读；电脑可用左右键，手机可横滑。第一件和最后一件不会循环跳转。
-6. 切换语言时仍然阅读同一作品；没有已发布译文时提示暂无译文，原文仍可读。译文待复核时显示提示和原文入口。
-7. 点Explore返回同语言目录；同标签页访问时恢复之前的分类和关键词。直接打开不存在的作品或译文地址会得到404。
+5. 顶部依次为交叉关闭、上一件、下一件，随概览滚走，正文不悬浮保留；电脑可用左右键，手机可横滑。横滑或空白长按显示边缘方向提示，随触点上下移动；明确横移后松手切换，取消或只长按不切换。首尾不循环。
+6. 详情不显示中英切换、缺译提示或查看原文入口；可返回首页选择语言。已有语言网址仍可直接打开，待复核译文保留状态文字。
+7. 点顶部交叉按钮返回同语言目录；同标签页访问时恢复之前的分类和关键词。直接打开不存在的作品或译文地址会得到404。
 
 ### 操作之后发生什么
 
@@ -45,23 +48,21 @@ code-revision: 'e2dc7194fd7684145e8a8af3e132d8f99be523ce8f2d492fddee1253aa045f88
 flowchart TD
   A[点击卡片或打开作品网址] --> B[读取目标详情HTML，优先复用新鲜缓存]
   B --> C{该语言版本是否已发布}
-  C -->|是| D[站内切换更新页面，直接访问加载文档，显示概览与折叠正文]
+  C -->|是| D[站内切换更新页面，直接访问加载文档，显示概览与首章展开的正文]
   C -->|否| E[返回404和目录入口]
   D --> F[点击章节标题]
   F --> G[展开页面里已经存在的正文]
-  D --> H[点击另一语言]
-  H --> I[打开同一作品已发布的语言页面]
   D --> J[按钮、左右键或手机横滑]
   J --> K[打开同语言相邻作品，首尾不循环]
 ```
 
-正文在构建时已转为HTML，展开章节不再向服务器请求正文；原生折叠控件不依赖JavaScript。启用脚本时，站内链接、语言和相邻作品通过Astro ClientRouter保留文档运行环境并更新页面、标题与网址；导航失败回退普通打开，无脚本仍使用真实链接。详情的可见相邻链接会提前准备；规则见[预取与缓存](../system/rules.md)。对应`src/components/WorkDetail.astro`、`src/data/article-sections.ts`和`src/scripts/detail.ts`。
+正文在构建时已转为HTML，展开章节不再请求正文；无脚本保留首章展开、原生折叠、CSS整屏停靠与真实导航。正文不显示序号、引导语或重复的底部原站入口；来源链接仍属于文章内容。启用脚本后开合带可反向取消的高度动画，减少动态偏好关闭动画。站内链接和相邻作品通过Astro ClientRouter保留运行环境并更新页面、标题与网址；相邻切换带短距离方向过渡，导航失败回退普通打开。可见相邻链接会提前准备；见[预取与缓存](../system/rules.md)。
 
 ## 涉及的文件
 
-- 页面：`src/pages/[locale]/works/[id].astro`、`src/components/WorkDetail.astro`、`src/components/LanguageSwitch.astro`。
+- 页面：`src/pages/[locale]/works/[id].astro`、`src/components/WorkDetail.astro`。
 - 正文与信息：`src/data/article-sections.ts`、`src/data/work-facts.ts`、`src/lib/content/relations.ts`。
-- 操作与排版：`src/scripts/detail.ts`、`src/styles/detail.css`、`src/styles/article.css`。
+- 操作与排版：`src/scripts/detail.ts`及其手势、披露与切换模块、`src/styles/detail.css`、`src/styles/article.css`。
 - 语言状态：`src/lib/content/revision.ts`、`src/lib/content/views.ts`；内容来自`src/content/works/`。
 
 ## 验收标准
@@ -71,13 +72,13 @@ flowchart TD
 - [x] 无JavaScript时仍可阅读正文、展开章节和用按钮切换作品。
 - [x] 按钮、左右键和手机横滑能切换同语言的相邻作品，首尾不循环。
 - [ ] 表格、代码和输入区域的操作不误触作品切换（已实现排除规则，缺完整专项验收）。
-- [x] 语言切换保持作品身份；缺失译文不生成假页面。
+- [x] 详情无语言控件，首页可选择语言；已发布译文网址可读，缺译地址404。
 - [x] 旧译文待复核、事实没有译文时有明确提示。
 - [x] 320px宽度无整页横向溢出，宽表格在自身区域滚动。
 
 连续阅读的历史滚动、反复搜索与语言切换由`tests/navigation.spec.ts`覆盖；旧页面监听与未完成搜索在切换时失效。
 
-最近有效验收：2026-09-06 Playwright桌面Chromium、手机Chromium/WebKit覆盖阅读、相邻切换、语言和历史；ego-browser验证目录进入、相邻往返与中英切换，文档身份保持一致。手机Chromium使用原生触摸输入，WebKit横滑为DOM事件模拟。完整键盘路径、读屏和所有手势排除区域尚无专项验收，未覆盖项保持未勾选。证据在`resources/evidence/005-continuous-navigation/`。
+最近有效验收：2026-09-06 Playwright桌面Chromium、手机Chromium/WebKit覆盖首章展开、两屏停靠、相邻切换、首页语言和历史；内置浏览器核对桌面与手机概览、正文、开合及导航滚走。Chromium手机使用原生触摸；WebKit横滑为DOM事件，停靠使用scrollTo。完整verify通过（52项单元测试、81项浏览器测试，3项设备适用性跳过），budget通过。完整键盘路径、读屏和全部手势排除区域仍未覆盖。006证据在`resources/evidence/006-detail-reading/`；005目录历史证据保留原目录。
 
 ## 对应的自动化测试
 
@@ -86,7 +87,9 @@ flowchart TD
 - `standalone detail is readable with JavaScript disabled`
 - `detail overview, disclosure, and adjacent navigation`
 - `touch swipe navigates to the next work and the previous button returns`
-- `published languages switch the same work and missing translations remain absent`
+- `homepage switches language and detail omits language controls while routes stay valid`
+- `detail top controls, snapped reading and reversible disclosure respect reduced motion`
+- `edge feedback follows locked gestures and cancellation never navigates`
 - `no horizontal overflow, no embeds, two-line card descriptions`
 
 `tests/unit/article-sections.test.ts`验证正文结构；`tests/unit/content-relations.test.ts`验证事实/关联；`tests/content-lifecycle.spec.ts`验证译文发布及待复核的真实构建。

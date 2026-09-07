@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005']
+shaped-by: ['001', '003', '005', '006']
 code-sources:
   [
     'src/lib/content/',
@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'd2b94abcf1a7983a2573ef3bc36da8cb2bf058d17df97ab3236d4c09e599e411'
+code-revision: 'ecef296fa9196d3a19de7449dc85c2342a3ecc6fdb8a1de0f663f278c7783371'
 ---
 
 # 常量、规则表与正则
@@ -88,15 +88,15 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 
 ## Explore 手机布局和详情规则
 
-| 规则                                  | 用途                                                                                                      | 来源                                                   |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| 分类字号 12px、纵向内边距 10px        | 紧凑英文分类；首页卡片保持原样                                                                            | src/styles/base.css；src/styles/responsive.css         |
-| 详情最大宽 780px；首屏最小高度 100svh | 手机首屏展示概览，桌面限制阅读宽度                                                                        | src/styles/detail.css                                  |
-| 每条内容的作者、类型、主题信息        | 作者查同作者；类型查同类；主题进入正文，不编造不存在的 Prompt                                             | src/data/work-facts.ts                                 |
-| 相邻作品按 works 顺序；首尾不循环     | 左右滑动、按钮、键盘切换；浏览器返回仍可用                                                                | src/components/WorkDetail.astro；src/scripts/detail.ts |
-| 横移至少 70px 且超过纵移的 1.4 倍     | 区分切换与上下滚动；多指、表格、输入等不触发                                                              | src/scripts/detail.ts                                  |
-| `<h2(?:\s[^>]*)?>[\s\S]*?<\/h2>`      | 对本地已编译可信 Markdown 按二级标题切分，原生 details 默认关闭，保留完整内容和锚点；不是任意 HTML 清洗器 | src/data/article-sections.ts                           |
-| 正文 16px/24px；表格 14px/24px        | 沿用现有 Arena 风格正文，章节目录标题单独使用 19–20px                                                     | src/styles/article.css；src/styles/detail.css          |
+| 规则                                        | 用途                                                                                               | 来源                                                                            |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 分类字号 12px、纵向内边距 10px              | 紧凑英文分类；首页卡片保持原样                                                                     | src/styles/base.css；src/styles/responsive.css                                  |
+| 详情最大宽780px，两屏至少100svh             | 概览与正文整屏停靠，长内容正常滚动；顶部44px导航，图标15px，点击区域40×44px                        | src/styles/detail.css                                                           |
+| 每条内容的作者、类型、主题信息              | 作者查同作者；类型查同类；主题进入正文，不编造不存在的 Prompt                                      | src/data/work-facts.ts                                                          |
+| 相邻作品按works顺序；首尾不循环             | 左右滑动、按钮、键盘切换，短距离方向过渡；浏览器返回仍可用                                         | src/components/WorkDetail.astro；src/scripts/detail-transition.ts               |
+| 横移14px且超过纵移1.4倍锁方向，松手至少70px | 锁定后纵向跟手；空白长按380ms显现，只长按松手不切换。多指、选文、控件、表格/代码和屏幕边缘24px排除 | src/scripts/detail-gestures.ts                                                  |
+| 按编译后的二级标题切分正文                  | 原生details首章展开、其余关闭，无序号或正文引导语；保留内容与锚点，不是任意HTML清洗器              | src/data/article-sections.ts；src/pages/[locale]/works/[id].astro               |
+| 正文16px/1.85；目录17–18px，展开23–26px     | 克制字重、260ms高度披露；减少动态偏好即时完成                                                      | src/styles/article.css；src/styles/detail.css；src/scripts/detail-disclosure.ts |
 
 ## 文档治理检查与篇幅提示
 

@@ -5,6 +5,7 @@
   display: none;
 }
 .detail-page {
+  overflow-x: clip;
   width: 100%;
   max-width: 780px;
   padding: 0 16px;
@@ -14,7 +15,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100svh;
-  padding-top: 10px;
+  padding-top: 0;
   touch-action: pan-y pinch-zoom;
 }
 .original-site {
@@ -108,37 +109,86 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+/* Only the two page starts snap; a long reading page remains freely scrollable. */
+html:has(.is-detail) {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+.is-detail > .site-footer {
+  display: none;
+}
+.detail-cover,
+.reading-page {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
 .detail-navigation {
-  position: relative;
+  flex-shrink: 0;
+  align-self: flex-start;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  padding: 28px 0 16px;
-  min-height: 90px;
-}
-.detail-navigation .back-link {
-  font-size: 12px;
-}
-.read-down {
-  position: absolute;
-  left: calc(50% - 22px);
-  display: grid;
-  place-items: center;
-  width: 44px;
+  gap: 0;
   height: 44px;
-  opacity: 0.65;
 }
-.work-pagination {
-  display: flex;
-  gap: 2px;
-}
+.detail-navigation .back-link,
 .work-pagination a,
 .disabled-direction {
   display: grid;
   place-items: center;
-  width: 36px;
+  width: 40px;
   height: 44px;
+  padding: 0;
+  border-radius: 3px;
+}
+.detail-navigation img {
+  width: 15px;
+  height: 15px;
+  opacity: 0.8;
+}
+.detail-navigation a:hover {
+  background: #eeeee9;
+}
+.detail-navigation a:focus-visible,
+.read-down:focus-visible {
+  outline: 1px solid #525252;
+  outline-offset: 2px;
+}
+.detail-bottom {
+  display: grid;
+  place-items: center;
+  margin-top: auto;
+  min-height: 72px;
+  padding: 12px 0;
+}
+.read-down {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  opacity: 0.6;
+}
+.read-down img {
+  animation: invite-reading 3.6s ease-in-out infinite;
+}
+@keyframes invite-reading {
+  0%,
+  55%,
+  100% {
+    transform: translateY(-2px);
+    opacity: 0.65;
+  }
+  72% {
+    transform: translateY(3px);
+    opacity: 1;
+  }
+  86% {
+    transform: translateY(-2px);
+    opacity: 0.65;
+  }
+}
+.work-pagination {
+  display: flex;
+  gap: 0;
 }
 .disabled-direction {
   opacity: 0.15;
@@ -151,48 +201,133 @@
 }
 .reading-page {
   min-height: 100svh;
-  padding: 32px 0 80px;
-  scroll-margin-top: 16px;
-}
-.reading-note {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 10px;
-  margin: 0 0 26px;
-  font-size: 13px;
-  color: #555;
-}
-.reading-note span {
-  color: #858585;
-  font-size: 12px;
+  padding: 24px 0 80px;
+  scroll-margin-top: 0;
 }
 .reading-section {
-  border-top: 1px solid #e0e0dd;
-  padding: 0 0 4px;
+  border-top: 1px solid #e4e4de;
+}
+.reading-section:last-child {
+  border-bottom: 1px solid #e4e4de;
 }
 .reading-section summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  align-items: baseline;
+  column-gap: 14px;
   cursor: pointer;
-  padding: 20px 0;
-  list-style-position: outside;
-  margin-left: 18px;
+  padding: 26px 0;
+  list-style: none;
 }
-.reading-section summary::marker {
-  font-size: 12px;
-  color: #777;
+.reading-section summary::-webkit-details-marker {
+  display: none;
 }
 .reading-section summary:focus-visible {
-  outline: 2px solid #525252;
+  outline: 1px solid #525252;
   outline-offset: 4px;
 }
+.reading-section [id] {
+  scroll-margin-top: 60px;
+}
+.section-toggle {
+  align-self: center;
+  opacity: 0.45;
+  transition:
+    transform 240ms ease,
+    opacity 240ms ease;
+}
 .prose .reading-section summary h2 {
-  display: inline;
-  font-size: 20px;
+  font-size: 18px;
+  font-weight: 400;
   line-height: 1.5;
   margin: 0;
+  letter-spacing: -0.02em;
+  transition: color 240ms ease;
 }
-.reading-section[open] {
-  padding-bottom: 20px;
+.reading-section summary:hover h2 {
+  color: #77776f;
+}
+.prose .reading-section[data-expanded] summary h2,
+.prose .reading-section[open]:not([data-collapsing]) summary h2 {
+  font-size: 26px;
+  color: #191918;
+}
+.reading-section[open]:not([data-collapsing]) .section-toggle {
+  transform: rotate(180deg);
+  opacity: 0.8;
+}
+.section-content {
+  padding: 0 34px 32px 0;
+  display: flow-root;
+}
+.section-content > :first-child {
+  margin-top: 0;
+}
+.section-content > :last-child {
+  margin-bottom: 0;
+}
+.reading-page .prose {
+  line-height: 1.85;
+  font-size: 16px;
+}
+.edge-navigation {
+  position: fixed;
+  z-index: 30;
+  top: var(--edge-y, 50%);
+  width: 64px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  background: #fafaf8f5;
+  box-shadow: 0 2px 24px #0000000d;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 160ms ease,
+    transform 180ms ease,
+    visibility 160ms;
+}
+.edge-navigation[data-direction='next'] {
+  right: 0;
+  border-radius: 50% 0 0 50%;
+  transform: translate(24px, -50%);
+}
+.edge-navigation[data-direction='previous'] {
+  left: 0;
+  border-radius: 0 50% 50% 0;
+  transform: translate(-24px, -50%);
+}
+.edge-navigation[data-direction='next'] img {
+  transform: rotate(-90deg);
+}
+.edge-navigation[data-direction='previous'] img {
+  transform: rotate(90deg);
+}
+.edge-navigation[data-visible] {
+  opacity: 0.65;
+  visibility: visible;
+  transform: translate(0, -50%);
+}
+.edge-navigation[data-ready] {
+  opacity: 1;
+}
+.detail-page[data-gesturing] {
+  user-select: none;
+  -webkit-user-select: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html:has(.is-detail) {
+    scroll-behavior: auto;
+  }
+  .read-down img {
+    animation: none;
+  }
+  .section-toggle,
+  .prose .reading-section summary h2,
+  .edge-navigation {
+    transition: none;
+  }
 }
 @media (max-width: 560px) {
   .detail-page {
@@ -200,7 +335,7 @@
     margin: 0 auto;
   }
   .detail-cover {
-    padding-top: 6px;
+    padding-top: 0;
   }
   .work-facts > div {
     padding: 1px 0;
@@ -216,6 +351,20 @@
     height: clamp(190px, 36svh, 320px);
   }
   .prose .reading-section summary h2 {
-    font-size: 19px;
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 560px) {
+  .reading-section summary {
+    grid-template-columns: minmax(0, 1fr) 18px;
+    gap: 10px;
+    padding: 23px 0;
+  }
+  .section-content {
+    padding: 0 0 28px;
+  }
+  .prose .reading-section[open]:not([data-collapsing]) summary h2 {
+    font-size: 23px;
   }
 }

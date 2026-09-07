@@ -13,7 +13,7 @@ code-sources:
     'scripts/release-policy.ts',
     'src/components/WorkDetail.astro',
   ]
-code-revision: '5e3a300d4898f4c4233c771cae157c857582d8e8feaa2fe2fbac9fc246424263'
+code-revision: '8ec3621214386468d30c93abc5c58e5ac317987a9a78c26b067d1ddbfee8501e'
 ---
 
 # 接口与外部服务

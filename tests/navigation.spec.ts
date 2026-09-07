@@ -25,7 +25,10 @@ test('continuous lifecycle survives adjacent reading, history, search and langua
   await page.getByRole('searchbox').fill('Transformer');
   await expect(page.locator('[data-search-grid] .card-link').first()).toBeVisible();
   await page.locator(`.card-link[href="${first}"]:visible`).click();
+  await expect(page.locator('.language-switch')).toHaveCount(0);
+  await page.locator('[data-back-link]').click();
   await page.locator('.language-switch a[hreflang="en"]').click();
+  await page.locator('.card-link[href="/en/works/attention-is-all-you-need/"]:visible').click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await page.locator('[data-back-link]').click();
   await page.getByRole('searchbox').fill('Transformer');

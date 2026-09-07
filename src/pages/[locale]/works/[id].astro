@@ -38,12 +38,24 @@ const alternates = locales.flatMap((locale) => {
         {
           sections.map((section) =>
             section.heading ? (
-              <details class="reading-section">
+              <details
+                class="reading-section"
+                open={section === sections.find((entry) => entry.heading)}
+              >
                 <>
                   <summary>
                     <Fragment set:html={section.heading} />
+                    <img
+                      class="section-toggle"
+                      src="/icons/chevron-down.svg"
+                      width="18"
+                      height="18"
+                      alt=""
+                    />
                   </summary>
-                  <Fragment set:html={section.body} />
+                  <div class="section-content">
+                    <Fragment set:html={section.body} />
+                  </div>
                 </>
               </details>
             ) : (
