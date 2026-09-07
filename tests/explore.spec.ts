@@ -52,6 +52,8 @@ test('standalone detail is readable with JavaScript disabled', async ({ browser 
   await page.goto('http://127.0.0.1:4322/zh/works/attention-is-all-you-need/');
   await expect(page.getByRole('heading', { name: 'Attention Is All You Need' })).toBeVisible();
   await expect(page.locator('.detail-description')).toContainText('Transformer');
+  await expect(page.locator('.section-content').last()).toBeVisible();
+  await expect(page.locator('.reading-progress')).toBeHidden();
   await page.getByRole('link', { name: 'Explore', exact: true }).click();
   await expect(page.locator('.work-card')).toHaveCount(24);
   await page.getByRole('link', { name: 'Explore Transformers.js', exact: true }).click();
@@ -76,11 +78,6 @@ test('no horizontal overflow, no embeds, two-line card descriptions', async ({ p
   ).toBe(true);
   await page.getByRole('link', { name: 'Explore Transformers.js', exact: true }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page
-    .locator('details')
-    .filter({ has: page.locator('table') })
-    .locator('summary')
-    .click();
   await expect(page.locator('.prose table')).toBeVisible();
   await page.setViewportSize({ width: 320, height: 700 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -110,17 +107,14 @@ test('static output stays small and content routes exist', async ({ request, pag
 });
 
 // 验证两段式阅读与真实相邻导航，避免折叠或切换破坏内容路径。
-test('detail overview, disclosure, and adjacent navigation', async ({ page }) => {
+test('detail overview, continuous reading, and adjacent navigation', async ({ page }) => {
   await page.goto('/works/attention-is-all-you-need/');
   await expect(page.locator('[data-direction="previous"]')).toHaveCount(0);
-  await expect(page.locator('details[open]')).toHaveCount(1);
+  await expect(page.locator('details')).toHaveCount(0);
+  await expect(page.locator('.section-content')).toHaveCount(4);
   await expect(page.locator('.reading-note, .section-number, .source-link')).toHaveCount(0);
   await page.getByRole('link', { name: '向下阅读正文' }).click();
-  const section = page.locator('details').nth(1);
-  await section.locator('summary').click();
-  await expect(section).toHaveAttribute('open', '');
-  await section.locator('summary').click();
-  await expect(section).not.toHaveAttribute('open', '');
+  await expect(page.locator('.prose table')).toBeVisible();
   await page.locator('[data-direction="next"]').click();
   await expect(page).toHaveURL(/transformers-js/);
   await page.locator('body').click({ position: { x: 1, y: 1 } });
@@ -285,7 +279,7 @@ test('failed lazy search client can recover without losing the query', async ({ 
   await expect(page.getByRole('searchbox')).toHaveValue('LoRA');
 });
 
-test('detail top controls, snapped reading and reversible disclosure respect reduced motion', async ({
+test('detail progress menu preserves anchors, keyboard, reversal and reduced motion', async ({
   page,
 }) => {
   await page.goto('/zh/works/transformers-js/');
@@ -293,35 +287,47 @@ test('detail top controls, snapped reading and reversible disclosure respect red
   expect((await nav.boundingBox())!.y).toBeLessThan(10);
   await expect(nav.locator('img').first()).toHaveCSS('width', '15px');
   expect((await page.locator('.original-site').boundingBox())!.y).toBe(44);
-  await expect(nav.locator('a')).toHaveCount(3);
-  await expect(page.locator('.detail-bottom a')).toHaveCount(1);
+  const progress = page.locator('.reading-progress');
+  const toggle = progress.locator('button');
+  await expect(progress).toBeHidden();
   await page.locator('.read-down').click();
   await expect
     .poll(async () => Math.abs((await page.locator('#reading').boundingBox())!.y))
     .toBeLessThan(2);
   await expect(nav).not.toBeInViewport();
-  const section = page.locator('.reading-section').nth(1);
-  const title = section.locator('h2');
-  const small = await title.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
-  await section.locator('summary').press('Enter');
-  await expect(section).toHaveAttribute('open', '');
+  await expect(toggle).toBeVisible();
+  await toggle.press('Enter');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  const links = progress.getByRole('link');
+  await expect(links).toHaveCount(4);
+  await links.nth(1).press('Escape');
+  await expect(toggle).toBeFocused();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await toggle.click();
+  await page.locator('.reading-section h2').first().click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await toggle.click();
+  const href = await links.last().getAttribute('href');
+  await links.last().click();
+  await expect.poll(() => decodeURIComponent(new URL(page.url()).hash)).toBe(href);
+  await expect(page.locator('.reading-section h2').last()).toBeInViewport();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(progress.locator('.progress-label')).toHaveText('延伸阅读');
   await expect
-    .poll(() => title.evaluate((el) => parseFloat(getComputedStyle(el).fontSize)))
-    .toBeGreaterThan(small);
-  await section.locator('summary').press('Enter');
-  await section.locator('summary').press('Enter');
-  await expect(section).toHaveAttribute('open', '');
-  await expect(section.locator('.section-content')).toBeVisible();
+    .poll(() => progress.locator('[data-progress-ring]').getAttribute('stroke-dashoffset'))
+    .toBe('0');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('.read-down img')).toHaveCSS('animation-name', 'none');
-  await section.locator('summary').press('Enter');
-  await expect(section).not.toHaveAttribute('open', '');
-  await section.locator('summary').press('Enter');
-  await expect(section).toHaveAttribute('open', '');
-  await page.locator('.reading-section').nth(2).locator('summary').click();
-  await page.locator('.reading-section').last().locator('summary').scrollIntoViewIfNeeded();
-  await expect(page.locator('.reading-section').last()).toBeInViewport();
-  expect(await page.evaluate(() => scrollY)).toBeGreaterThan(0);
+  for (let i = 0; i < 3; i++) {
+    await toggle.click();
+    await toggle.press('Escape');
+  }
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await page.setViewportSize({ width: 320, height: 700 });
+  await toggle.click();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await links.first().click();
+  await expect(page.locator('.reading-section h2').first()).toBeInViewport();
 });
 
 test('vertical paging lands on reading and long content stays reachable', async ({
@@ -342,7 +348,10 @@ test('vertical paging lands on reading and long content stays reachable', async 
         type: 'touchMove',
         touchPoints: [{ x: 340, y }],
       });
+      await page.waitForTimeout(40);
     }
+    // Pause before release to test a deliberate page turn rather than a high-speed fling.
+    await page.waitForTimeout(100);
     await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await session.detach();
   } else if (isMobile && browserName === 'webkit') {
@@ -356,8 +365,6 @@ test('vertical paging lands on reading and long content stays reachable', async 
     .poll(async () => Math.abs((await page.locator('#reading').boundingBox())!.y))
     .toBeLessThan(2);
   await expect(page).toHaveURL(/transformers-js/);
-  await page.locator('.reading-section').nth(2).locator('summary').click();
-  await page.locator('.reading-section').last().locator('summary').click();
   const lastLink = page.locator('.section-content a').last();
   await lastLink.scrollIntoViewIfNeeded();
   await expect(lastLink).toBeInViewport();
@@ -365,7 +372,6 @@ test('vertical paging lands on reading and long content stays reachable', async 
 
 test('reading controls, selected text and system edges do not change works', async ({ page }) => {
   await page.goto('/zh/works/transformers-js/#reading');
-  await page.locator('.reading-section').nth(1).locator('summary').click();
   const swipe = async (selector: string, x = 270) => {
     await page
       .locator(selector)
@@ -391,7 +397,7 @@ test('reading controls, selected text and system edges do not change works', asy
     await expect(page).toHaveURL(/transformers-js/);
     await expect(page.locator('.edge-navigation')).toBeHidden();
   };
-  await swipe('summary');
+  await swipe('.progress-toggle');
   await swipe('table');
   await swipe('.detail-cover', 10);
   await page

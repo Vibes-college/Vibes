@@ -1,0 +1,152 @@
+.reading-progress {
+  position: fixed;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  color: #272725;
+  font-size: 14px;
+  font-weight: 500;
+}
+.reading-progress[hidden] {
+  display: none;
+}
+.progress-surface {
+  position: relative;
+  width: 152px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid #deded6aa;
+  background: #fafaf8e8;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 3px 7px #00000005,
+    0 8px 32px #00000014;
+}
+.progress-toggle {
+  position: absolute;
+  inset: auto auto 0 0;
+  width: max-content;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 10px;
+  color: inherit;
+  background: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    opacity 200ms,
+    filter 240ms,
+    transform 240ms;
+}
+.progress-toggle svg {
+  flex: none;
+  transform: rotate(-90deg);
+}
+.progress-outgoing {
+  position: absolute;
+  left: 40px;
+  right: 16px;
+  top: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.progress-label {
+  display: block;
+  max-width: min(14em, calc(100vw - 100px));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.progress-menu {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: max-content;
+  min-width: 180px;
+  max-width: min(300px, calc(100vw - 40px));
+  max-height: min(480px, 70svh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 6px;
+  opacity: 0;
+  filter: blur(4px);
+  pointer-events: none;
+  transition:
+    opacity 240ms,
+    filter 240ms;
+}
+.progress-menu a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  min-height: 40px;
+  border-radius: 14px;
+  color: #74746e;
+  line-height: 1.4;
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(4px);
+  filter: blur(3px);
+  transition:
+    opacity 240ms,
+    transform 300ms cubic-bezier(0.65, 0, 0.35, 1),
+    filter 300ms,
+    background 240ms;
+}
+.progress-menu a > span:last-child {
+  overflow-wrap: anywhere;
+}
+.progress-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+}
+.progress-menu a[aria-current] {
+  background: #25251c0c;
+  color: #272725;
+}
+.progress-menu a[aria-current] .progress-dot {
+  opacity: 1;
+}
+.progress-menu a:hover {
+  background: #25251c08;
+  color: #272725;
+}
+.progress-menu a:focus-visible,
+.progress-toggle:focus-visible {
+  outline: 1px solid #77776c;
+  outline-offset: -3px;
+}
+.reading-progress[data-open] .progress-toggle {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(4px);
+  pointer-events: none;
+}
+.reading-progress[data-open] .progress-menu {
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: auto;
+}
+.reading-progress[data-open] .progress-menu a {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+  transition-delay: calc(40ms + var(--item) * 30ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress *,
+  .reading-progress[data-open] .progress-menu a {
+    transition: none;
+  }
+}

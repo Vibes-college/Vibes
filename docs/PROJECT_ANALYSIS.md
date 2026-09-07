@@ -14,7 +14,7 @@ code-sources:
     'src/scripts/search.ts',
     'scripts/build.ts',
   ]
-code-revision: 'af64b0d8fd15c9a4331fae2daa1fdbd3797d2b0424ce24535e7ad47f7c6ee6d1'
+code-revision: '06d80e6036e9f1d89b484bb72087ad67e5ab91baeeaf0ebe18fb75b22ece6e64'
 ---
 
 # VIBES项目总览
@@ -59,7 +59,7 @@ flowchart TD
   D --> E[main检查后自动发布至vibes.college]
   E --> F[访客浏览完整静态页面]
   F --> G[开始搜索时才加载同站索引]
-  F --> H[点击卡片进入完整详情，展开已有正文]
+  F --> H[点击卡片进入完整详情，连续阅读完整正文]
 ```
 
 构建框架是Astro，语言是TypeScript，样式是普通CSS。站内阅读使用Astro ClientRouter连续切换并有限预取详情，搜索仍按需加载；规则和缓存边界见[系统规则](system/rules.md)。没有React、Tailwind或线上业务数据库；Node与依赖版本以[运行配置](system/configuration.md)所链接的package.json/锁文件为准。
@@ -69,7 +69,7 @@ flowchart TD
 ## 产品要求放在哪里维护
 
 - 发现、分类、搜索、语言目录及手机卡片行为归[浏览与搜索](features/explore-browse.md)。
-- 手机优先的“顶部导航→作品概览→整屏正文”、首章默认展开、其余渐进披露、相邻手势和来源归[阅读详情](features/article-read.md)。
+- 手机优先的“顶部导航→作品概览→整屏正文”、常显正文、进度目录、相邻手势和来源归[阅读详情](features/article-read.md)。
 - 中英发布、可选事实、稳定身份及关联数据归[内容维护](features/content-maintenance.md)与[数据结构](system/content-model.md)。
 - 中文界面显示中文分类，英文界面显示英文分类；“紧凑英文分类”是旧描述，不再当作当前两种语言共同规则。
 - 设计采用系统字体与渐进阅读；借鉴Wikipedia的来源追溯、Are.na的内容关联及roadmap的清晰层级，不复制品牌或源码。参考图已移除，当前行为以功能文档和源码为准。

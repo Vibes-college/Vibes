@@ -1,7 +1,7 @@
 import { onPageLoad } from './page-lifecycle';
 import { watchReadingLinks } from './reading-prefetch';
 import { installDetailGestures } from './detail-gestures';
-import { enhanceDisclosures } from './detail-disclosure';
+import { installReadingProgress } from './reading-progress';
 import { detailNavigation } from './detail-transition';
 
 onPageLoad((signal) => {
@@ -22,7 +22,17 @@ onPageLoad((signal) => {
     );
   }
   installDetailGestures(detail, navigateWork, signal);
-  enhanceDisclosures(detail, signal);
+  // The cover needs no progress measurements; initialize only as reading approaches.
+  const readingObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (!entry.isIntersecting) return;
+      readingObserver.disconnect();
+      installReadingProgress(detail, signal);
+    },
+    { rootMargin: '80px' },
+  );
+  readingObserver.observe(detail.querySelector('#reading')!);
+  signal.addEventListener('abort', () => readingObserver.disconnect(), { once: true });
 
   // 桌面方向键提供等价导航，不截取输入、选择或带修饰键的操作。
   document.addEventListener(
@@ -44,25 +54,6 @@ onPageLoad((signal) => {
     },
     { signal },
   );
-  // 打开深层标题链接前先展开其所在章节，支持复制正文锚点。
-  function revealHash() {
-    if (!location.hash) return;
-    let id: string;
-    try {
-      id = decodeURIComponent(location.hash.slice(1));
-    } catch {
-      return;
-    }
-    const target = document.getElementById(id);
-    const section = target?.closest('details');
-    if (section) {
-      section.open = true;
-      target?.scrollIntoView();
-    }
-  }
-  window.addEventListener('hashchange', revealHash, { signal });
-  revealHash();
-
   // 从当前标签页保留的同语言目录恢复返回入口，拒绝外部或作品详情地址。
   const back = document.querySelector<HTMLAnchorElement>('[data-back-link]');
   try {

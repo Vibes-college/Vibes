@@ -2,6 +2,7 @@
 import { getEntry } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import WorkDetail from '../../../components/WorkDetail.astro';
+import ReadingProgress from '../../../components/ReadingProgress.astro';
 import { catalog, getWorks } from '../../../data/works';
 import { articleSections } from '../../../data/article-sections';
 import { validateFactAnchors } from '../../../data/work-facts';
@@ -38,26 +39,12 @@ const alternates = locales.flatMap((locale) => {
         {
           sections.map((section) =>
             section.heading ? (
-              <details
-                class="reading-section"
-                open={section === sections.find((entry) => entry.heading)}
-              >
-                <>
-                  <summary>
-                    <Fragment set:html={section.heading} />
-                    <img
-                      class="section-toggle"
-                      src="/icons/chevron-down.svg"
-                      width="18"
-                      height="18"
-                      alt=""
-                    />
-                  </summary>
-                  <div class="section-content">
-                    <Fragment set:html={section.body} />
-                  </div>
-                </>
-              </details>
+              <section class="reading-section">
+                <Fragment set:html={section.heading} />
+                <div class="section-content">
+                  <Fragment set:html={section.body} />
+                </div>
+              </section>
             ) : (
               <Fragment set:html={section.body} />
             ),
@@ -65,5 +52,6 @@ const alternates = locales.flatMap((locale) => {
         }
       </WorkDetail>
     </article>
+    <ReadingProgress sections={sections} locale={work.locale} />
   </main>
 </Layout>

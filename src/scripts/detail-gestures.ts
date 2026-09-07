@@ -1,6 +1,6 @@
 type Direction = 'previous' | 'next';
 const excluded =
-  'button, input, textarea, select, summary, table, pre, [contenteditable], video, audio';
+  '.reading-progress, button, input, textarea, select, summary, table, pre, [contenteditable], video, audio';
 
 export function installDetailGestures(
   root: HTMLElement,

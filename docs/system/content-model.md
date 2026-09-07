@@ -120,7 +120,7 @@ front matter 后面的 Markdown 正文会被编译成 HTML；代码会保留表�
 
 ### `ArticleSection`
 
-折叠章节：
+正文章节（始终展开）：
 
 `heading`、`body`。
 

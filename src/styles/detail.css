@@ -204,60 +204,28 @@ html:has(.is-detail) {
   padding: 24px 0 80px;
   scroll-margin-top: 0;
 }
+.reading-page:focus {
+  outline: none;
+}
 .reading-section {
-  border-top: 1px solid #e4e4de;
-}
-.reading-section:last-child {
-  border-bottom: 1px solid #e4e4de;
-}
-.reading-section summary {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 20px;
-  align-items: baseline;
-  column-gap: 14px;
-  cursor: pointer;
-  padding: 26px 0;
-  list-style: none;
-}
-.reading-section summary::-webkit-details-marker {
-  display: none;
-}
-.reading-section summary:focus-visible {
-  outline: 1px solid #525252;
-  outline-offset: 4px;
+  padding: 0 0 32px;
 }
 .reading-section [id] {
-  scroll-margin-top: 60px;
+  scroll-margin-top: 28px;
 }
-.section-toggle {
-  align-self: center;
-  opacity: 0.45;
-  transition:
-    transform 240ms ease,
-    opacity 240ms ease;
-}
-.prose .reading-section summary h2 {
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.5;
-  margin: 0;
+.prose .reading-section h2 {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.6;
+  margin: 0 0 16px;
   letter-spacing: -0.02em;
-  transition: color 240ms ease;
+  text-wrap: pretty;
 }
-.reading-section summary:hover h2 {
-  color: #77776f;
-}
-.prose .reading-section[data-expanded] summary h2,
-.prose .reading-section[open]:not([data-collapsing]) summary h2 {
-  font-size: 26px;
-  color: #191918;
-}
-.reading-section[open]:not([data-collapsing]) .section-toggle {
-  transform: rotate(180deg);
-  opacity: 0.8;
+.prose .reading-section h3 {
+  font-size: 16px;
+  font-weight: 500;
 }
 .section-content {
-  padding: 0 34px 32px 0;
   display: flow-root;
 }
 .section-content > :first-child {
@@ -323,8 +291,6 @@ html:has(.is-detail) {
   .read-down img {
     animation: none;
   }
-  .section-toggle,
-  .prose .reading-section summary h2,
   .edge-navigation {
     transition: none;
   }
@@ -350,21 +316,7 @@ html:has(.is-detail) {
   .detail-preview .preview {
     height: clamp(190px, 36svh, 320px);
   }
-  .prose .reading-section summary h2 {
-    font-size: 17px;
-  }
-}
-
-@media (max-width: 560px) {
-  .reading-section summary {
-    grid-template-columns: minmax(0, 1fr) 18px;
-    gap: 10px;
-    padding: 23px 0;
-  }
-  .section-content {
-    padding: 0 0 28px;
-  }
-  .prose .reading-section[open]:not([data-collapsing]) summary h2 {
-    font-size: 23px;
+  .prose .reading-section h2 {
+    font-size: 18px;
   }
 }
