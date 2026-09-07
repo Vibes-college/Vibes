@@ -49,7 +49,7 @@
       "provenance": {
         "url": "https://gabrielecirulli.github.io/2048/",
         "credit": "Gabriele Cirulli",
-        "license": "原版游戏：MIT；原站运行"
+        "license": "MIT；本站使用作者开源源码运行独立沙盒，退出不保留分数"
       },
       "bytes": 47770
     },
@@ -62,7 +62,7 @@
       "provenance": {
         "url": "https://gabrielecirulli.github.io/2048/",
         "credit": "Gabriele Cirulli",
-        "license": "原版游戏：MIT；原站运行"
+        "license": "MIT；本站使用作者开源源码运行独立沙盒，退出不保留分数"
       }
     }
   ],
