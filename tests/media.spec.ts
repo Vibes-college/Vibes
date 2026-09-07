@@ -129,6 +129,9 @@ test('ordinary pages request no media and full video waits for click, supports c
   await page.goBack();
   await expect(page.locator('[data-media-panel]')).toBeVisible();
   await expect(video).toHaveJSProperty('paused', true);
+  // A paused full download may remain buffered; leave the player so its lifecycle
+  // releases the request before the shared local-Worker teardown drains traffic.
+  await page.goto('/zh/works/lora/');
 });
 
 test('search cards preserve navigation, manual audio is exclusive, and replacement releases players', async ({
