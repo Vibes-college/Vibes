@@ -92,6 +92,8 @@ test('static output stays small and content routes exist', async ({ request, pag
     ...measureScriptBudget('dist'),
     homepageGzip: gzipSync(readFileSync('dist/zh/index.html')).length,
     interactionSource: statSync('src/scripts/explore.ts').size,
+    largestOptimizedImage: JSON.parse(readFileSync('dist/image-manifest.json', 'utf8'))
+      .largestOutputBytes,
   });
   for (const slug of readdirSync('dist/zh/works')) {
     const html = readFileSync(`dist/zh/works/${slug}/index.html`, 'utf8');

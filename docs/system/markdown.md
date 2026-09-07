@@ -11,7 +11,7 @@ code-sources:
     'tests/unit/prose-markdown.test.ts',
     'public/images/prose/',
   ]
-code-revision: '677f16226c7c372ddd31e7b5651862e0ba81b6bf815bfef5bb41b2d64e5bbced'
+code-revision: 'ea2a7ac0e8b9be58af9b1c673a0f93beb73239cbcc3629d56c787cb301ab1524'
 ---
 
 # Markdown正文排版
@@ -52,7 +52,7 @@ code-revision: '677f16226c7c372ddd31e7b5651862e0ba81b6bf815bfef5bb41b2d64e5bbced
 
 布尔属性接受不带值或`true`，明确关闭用`false`。Card图标来自`public/icons/prose/`的既有白名单；未知图标、属性、组件、枚举或危险URL会使构建失败。代码围栏支持`title="example.ts" showLineNumbers`，默认无标题、无行号；复制由浏览器增强。未知语法高亮语言沿Astro默认回退，不改变代码内容。数学使用`$行内公式$`或独立行`$$`块；KaTeX编译错误使构建失败。
 
-本地图片放public，正文以`/images/...`引用。构建读取原始尺寸，只给宽或高时补齐等比例尺寸；外链图片不在构建时下载，应显式提供尺寸；图片内容策略允许HTTPS图源，浏览器直连来源。图片默认lazy与async解码；展示文章的Juno原图保持上游清晰度，文件较大，浏览器缓存复用。截图示例的图片、字体、图标许可证随静态资源保存。
+本地图片放public，正文以`/images/...`引用。构建读取原始尺寸，只给宽或高时补齐等比例尺寸；超过200KB的栅格图片在dist生成不改源文件的优化fallback与WebP响应式变体，并为本地图片补上`srcset`；正文放大请求优化fallback。外链图片不在构建时下载，应显式提供尺寸；图片内容策略允许HTTPS图源，浏览器直连来源。图片默认lazy与async解码。截图示例的图片、字体、图标许可证随静态资源保存。
 
 ## MDX互动文章
 

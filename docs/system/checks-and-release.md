@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'a624244261d2fbda534655f86e4a85f25908a4da37388f9e5af274b55ca2446c'
+code-revision: 'b3cc49858a995ac7d9b21e46a45d10e3b398bfb35f2747388abe1ad524cf8384'
 ---
 
 # 检查与发布
@@ -100,7 +100,8 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 | `npm run check`                     | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                                 |
 | `npm run test:e2e`                  | 构建→Playwright启动专用本地Worker→桌面Chromium及手机Chromium/WebKit测试→清理服务 |
 | `npm run verify`                    | check→db:reset→test:e2e，完整验收，失败停止；不部署                              |
-| `npm run budget`                    | 构建并检查脚本和首页体积；限值见[常量](../system/rules.md)                       |
+| `npm run budget`                    | 构建并检查脚本、首页和优化图片体积；限值见[常量](../system/rules.md)             |
+| `npm run optimize:images`           | 对已有dist单独生成图片变体和manifest；通常由build自动调用                        |
 | `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/full，不执行检查                   |
 | `npm run db:reset`                  | 删除本项目本机测试D1数据，迁移并填入固定样例                                     |
 | `npm run db:migrate`                | 只应用本地未执行迁移；不接受线上参数                                             |
@@ -132,7 +133,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 - `npm run content:validate`检查整个目录并报告各语言发布数量，不写文件。
 - `npm run content:revision -- <id>`报告当前原文摘要、语言状态与待复核标记，不批准或发布翻译。
-- `npm run build`先校验内容，再Astro完整重编译内容缓存并构建，为dist/_headers补齐精确内联脚本哈希，最后生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容或校验失败停止。
+- `npm run build`先校验内容，再Astro完整重编译内容缓存并构建，扫描public/images中超过200KB的栅格图片并在dist生成WebP响应式变体、manifest和srcset，再为dist/_headers补齐精确内联脚本哈希，最后生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容、图片预算或校验失败停止。
 - `node --experimental-strip-types scripts/measure-explore.ts`在.scratch生成隔离5000×2样例、构建、验证分页/正文搜索并测冷/热延迟；会使用系统分配的独立空闲端口，结束清理。真实内容和dist不覆盖，不部署样例；报告位于resources/evidence/001-multilingual-explore/。
 
 普通.md与互动.mdx使用同一内容校验和发布命令；MDX语法、import与组件构建错误必须修复，不能把内容校验通过当作交互验收。

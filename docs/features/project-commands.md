@@ -31,7 +31,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '22486096a694e39dadc7799114166e684a736e9611caba68b4f1a2dca41629fb'
+code-revision: '3c1cee4e04597a9356e06d226df3a26a11ddcabe1a081f10e3c25a64cdef904d'
 ---
 
 # 功能名：检查与发布网站
@@ -73,10 +73,10 @@ flowchart TD
 - 检查和触发：`.github/workflows/check.yml`、`scripts/check-scope.ts`、`scripts/ci-policy.ts`。
 - 发布：`scripts/release.ts`、`scripts/release-ci.ts`、`scripts/release-policy.ts`、`scripts/release-utils.ts`、`scripts/release-artifact.ts`、`scripts/release-smoke.ts`、`wrangler.jsonc`。
 - 清理：`scripts/cleanup-task.ts`、`scripts/cleanup-policy.ts`；服务占用由本机AI核对。
-- 构建、容量和本地测试：`scripts/build.ts`、`scripts/budget.ts`、`scripts/budget-policy.ts`、`scripts/asset-sizes.ts`、`scripts/test-e2e.ts`、`scripts/database.ts`、`scripts/local-tools.ts`、`playwright.config.ts`、`wrangler.local.jsonc`。
+- 构建、容量和本地测试：`scripts/build.ts`、`scripts/optimize-images.ts`、`scripts/budget.ts`、`scripts/budget-policy.ts`、`scripts/asset-sizes.ts`、`scripts/test-e2e.ts`、`scripts/database.ts`、`scripts/local-tools.ts`、`playwright.config.ts`、`wrangler.local.jsonc`。
 - 来源与静态元数据：`src/config/site.ts`、`astro.config.mjs`、`src/layouts/Layout.astro`、`src/pages/sitemap.xml.ts`、`src/pages/robots.txt.ts`；测试D1并非网站数据源，见[数据模型](../system/content-model.md)。
 
-构建为MDX启动脚本写入精确CSP哈希；预算分别检查公共脚本与每篇MDX的完整额外模块，包含延迟加载。通过体积门槛不等于组件已在真机验收，具体限制见[规则](../system/rules.md)。
+构建先把public/images中超过200KB的栅格图片生成到dist的WebP响应式变体和manifest，再为本地图片补充srcset；原始文件不被普通build改写。预算分别检查公共脚本、每篇MDX的完整额外模块和优化图片最大输出，包含延迟加载。通过体积门槛不等于组件已在真机验收，具体限制见[规则](../system/rules.md)。
 
 ## 验收标准
 
