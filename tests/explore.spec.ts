@@ -87,6 +87,7 @@ test('no horizontal overflow, no eager embeds, two-line card descriptions', asyn
   ).toBe(true);
   await page.getByRole('link', { name: 'Explore Transformers.js', exact: true }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.locator('.read-down').click();
   await expect(page.locator('.prose table')).toBeVisible();
   await page.setViewportSize({ width: 320, height: 700 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
