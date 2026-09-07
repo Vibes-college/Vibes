@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Markdown完整排版与示例文章'
-status: 'in-progress'
+status: 'complete'
 feature-ids: ['article-read', 'content-maintenance']
 amends: ['006', '007']
 research-trigger: '复用独立CSS并在Markdown中提供全部官网组件和交互'

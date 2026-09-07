@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '独立样式与Markdown编译的取舍'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

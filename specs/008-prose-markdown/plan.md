@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Markdown组件渲染技术决定'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

@@ -109,7 +109,7 @@ flowchart TD
 
 分章评价有效验收：2026-09-06完整发布检查通过52项单测、96项浏览器测试（3项设备适用性跳过）及budget；内置浏览器在Cloudflare预览390px宽度实际选择与刷新，已恢复原表情、无整页溢出和控制台错误。表情主体约2.1KB延后，首开脚本增量约1.35KB；详细测量与限制见[007研究](../../specs/007-section-reactions/research.md)，原始证据在`resources/evidence/007-section-reactions/`。
 
-排版专项验收：2026-09-06，编译单测覆盖所有组件、属性错误、错误公式、图像尺寸与章节完整性；Playwright专项覆盖同步/复制、禁用JS、320px、图片键盘关闭与存储受限。最终整站检查及预览证据见PR和`resources/evidence/008-prose-markdown/`。
+排版专项验收：2026-09-06，编译单测覆盖所有组件、属性错误、错误公式、图像尺寸与章节完整性；Playwright专项覆盖同步/复制、禁用JS、320px、图片键盘关闭与存储受限。完整verify通过61项单测、111项浏览器测试（3项设备适用性跳过），budget通过；Cloudflare预览已实际核对复制、同步、图片关闭、暖白背景与控制台。截图对照与限制见`resources/evidence/008-prose-markdown/design-qa.md`，发布证据见同目录及PR。
 
 ## 对应的自动化测试
 
