@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '详情滚动与手势取舍'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

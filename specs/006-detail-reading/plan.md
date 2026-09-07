@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '详情交互实施方案'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
