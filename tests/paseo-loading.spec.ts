@@ -128,9 +128,12 @@ test('explicit exit reloads without reopening or changing native device storage'
   page,
 }) => {
   let requestsAfterExit = 0;
+  let documentsAfterExit = 0;
   let exiting = false;
   page.on('request', (request) => {
     if (exiting && request.url().includes('/vendor/paseo/')) requestsAfterExit++;
+    if (exiting && request.isNavigationRequest() && request.frame() === page.mainFrame())
+      documentsAfterExit++;
   });
   await page.goto('/zh/');
   await page.locator('[data-paseo-open]').click();
@@ -166,6 +169,7 @@ test('explicit exit reloads without reopening or changing native device storage'
   await expect(page.locator('[data-paseo-open]')).toBeEnabled();
   await expect(page.locator(panel)).toBeHidden();
   expect(requestsAfterExit).toBe(0);
+  expect(documentsAfterExit).toBe(1);
   expect(await storageDigest()).toBe(before);
 });
 test('outside search keeps native shortcuts and styles out of Explore', async ({ page }) => {

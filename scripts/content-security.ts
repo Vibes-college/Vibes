@@ -37,7 +37,20 @@ export function withScriptHashes(headers: string, hashes: string[]): string {
   );
 }
 
-export function writeContentSecurity(out: string, sandboxHashes: string[] = []) {
+export function withAssistantConnections(headers: string, enabled: boolean): string {
+  if (!enabled) return headers;
+  // The native pairing flow uses only this fixed official WSS relay. Ordinary
+  // builds keep connect-src self; never accept a user-supplied host or wildcard.
+  if ([...headers.matchAll(/connect-src 'self'(?=;)/g)].length !== 1)
+    throw new Error('Expected the reviewed same-origin connection policy.');
+  return headers.replace("connect-src 'self';", "connect-src 'self' wss://relay.paseo.sh;");
+}
+
+export function writeContentSecurity(
+  out: string,
+  sandboxHashes: string[] = [],
+  assistantEnabled = false,
+) {
   const hashes = new Set<string>(sandboxHashes);
   function scan(directory: string) {
     for (const entry of readdirSync(directory, { withFileTypes: true })) {
@@ -51,6 +64,12 @@ export function writeContentSecurity(out: string, sandboxHashes: string[] = []) 
   // ClientRouter retains the first document's response policy. Use the same finite
   // hash set on every route so navigating from plain Markdown can initialize islands.
   const path = join(out, '_headers');
-  writeFileSync(path, withScriptHashes(readFileSync(path, 'utf8'), [...hashes].sort()));
+  writeFileSync(
+    path,
+    withAssistantConnections(
+      withScriptHashes(readFileSync(path, 'utf8'), [...hashes].sort()),
+      assistantEnabled,
+    ),
+  );
   console.log(`CSP: authorized ${hashes.size} exact inline script hashes from this build.`);
 }

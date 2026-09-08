@@ -10,7 +10,7 @@ code-sources:
     'src/features/paseo-webui/host.ts',
     'src/layouts/Layout.astro',
   ]
-code-revision: '9ccba667f703396b99bbf7e188fc8bdabe8456dce24676287f172d7b7f3d7257'
+code-revision: 'b119504126c5cdc4c02b8cb0458a22e8f9c99e0509192f63c1dec09afeb861e7'
 ---
 
 # 本地助手：打开、收起与继续浏览
@@ -58,7 +58,8 @@ flowchart TD
 - [x] 退出刷新后不自动打开、不改设备registry；320px容器适配及搜索焦点隔离通过。
 - [ ] 真实iPhone后台、锁屏、切网与软键盘完整验收。
 - [ ] 公开作品草稿、聊天/停止/审批、恢复及忘记设备的完整H验收。
-- [ ] 正式CSP、中继、最终A/B选择、资源预算及上线验收。
+- [x] 本地Worker的实际CSP、官方TLS中继配对、已有会话恢复及禁止来源拒绝通过。
+- [ ] 最终A/B选择、资源预算及上线验收。
 
 ## 对应的自动化测试
 
@@ -72,3 +73,5 @@ flowchart TD
 ## 已知问题 / 待办
 
 H仅验证嵌入基础，不代表原生全部能力、恢复、语音或最终性能通过。未完成项以[012任务](../../specs/012-paseo-webui-loading/tasks.md)为准；缺少真机证据不能以模拟替代。当前没有公开作品附带入口，也没有选定可正式发布的配置。
+
+中继专项有效证据：2026-09-08，tests/paseo-csp.spec.ts三配置通过实际配对、历史、换语言、刷新恢复、原生JS/CSS MIME/不可变缓存及禁止来源拒绝。内置浏览器中gpt-5.6-luna经中继回复PASEO_RELAY_OK；不计最终重任务或完整恢复矩阵。

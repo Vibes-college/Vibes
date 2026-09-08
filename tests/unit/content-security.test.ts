@@ -25,3 +25,16 @@ test('CSP adds exact hashes without relaxing origins, eval, style or framing rul
     /reviewed same-origin/,
   );
 });
+
+test('only an assistant build adds the fixed TLS relay and all other policy remains unchanged', async () => {
+  const { withAssistantConnections } = await import('../../scripts/content-security.ts');
+  const policy = "script-src 'self'; connect-src 'self'; font-src 'self'; frame-ancestors 'none'";
+  assert.equal(withAssistantConnections(policy, false), policy);
+  const enabled = withAssistantConnections(policy, true);
+  assert.equal(
+    enabled,
+    policy.replace("connect-src 'self';", "connect-src 'self' wss://relay.paseo.sh;"),
+  );
+  assert.throws(() => withAssistantConnections('connect-src *;', true), /reviewed/);
+  assert.throws(() => withAssistantConnections(policy + '; ' + policy, true), /reviewed/);
+});

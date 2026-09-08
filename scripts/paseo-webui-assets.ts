@@ -4,7 +4,7 @@ import { getPaseoBuild } from '../src/features/paseo-webui/build-config.ts';
 
 export function copyPaseoAssets(output: string) {
   const build = getPaseoBuild();
-  if (!build) return;
+  if (!build) return false;
   const target = join(output, build.config.basePath.slice(1));
   for (const file of build.files) {
     mkdirSync(dirname(join(target, file.path)), { recursive: true });
@@ -12,4 +12,5 @@ export function copyPaseoAssets(output: string) {
   }
   for (const name of ['PASEO-LICENSE', 'THIRD_PARTY_NOTICES.json'])
     cpSync(join(build.directory, name), join(target, name));
+  return true;
 }

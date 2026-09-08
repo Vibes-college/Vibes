@@ -153,3 +153,13 @@ T007将W0—W5生成器、输出大小/哈希与协议版本固定；W1/W2事件
 预算从匹配源码/补丁的真实资源清单验证每个脚本哈希，拒绝未知资源和静态泄漏；原生全部JS、宿主独有依赖总量4690654字节gzip。首次打开暂采用同一总量的保守上界，不使用未绑定的单次网络样本推导收益。因此完整H仍超过冻结初开2343691目标及总量4690481最大值，正确返回失败；不放宽基线，不把H选为交付候选。A/B完成后须绑定各自首开证据才能报告实际拆包收益。
 
 原始日志在resources/evidence/012-paseo-webui-loading/host/：h-loading-grouped-final.log、h-exit-storage-nonempty.log、h-budget-grouped-second.log及默认构建预算日志。受H补丁影响的上游10组/294项单元测试通过（h-native-unit.log），测试后检查来源/补丁已恢复；这不替代真实运行或全量上游测试。源码配置拒绝发布H、错误摘要/未知格式/符号链接的独立临时目录测试见paseo-build-config.test.ts。已有WebKit原生音频继续播放回归失败仍须在整体交付前定位，不能清空已有失败证据。
+
+## R12：同版中继与实际安全头
+
+2026-09-08，仅本任务专用daemon启用官方relay.paseo.sh:443的TLS中继；主目录服务保留。固定H放到本地Worker后，原生欢迎页正常，配对被connect-src self拒绝，CDP确认是CSP阻断。构建仅在助手启用时添加固定wss://relay.paseo.sh，普通构建不扩大连接来源；未添加任意WS、eval、frame或worker许可。版本化资源使用一年immutable缓存。
+
+真实内置浏览器经原生配对表单成功连接，恢复已有会话/审批结果，gpt-5.6-luna回复PASEO_RELAY_OK。实际请求中的原生入口、IndexedDB附件chunk均为200 JavaScript，xterm样式为200 text/css，缓存头正确；本路径没有独立WASM、字体或worker下载，不冒称外围能力已验证。脱敏证据在host/h-csp-relay-connected.json、h-csp-resource-responses.json及h-relay-restored-session.png。
+
+三配置中继自动回归通过配对、历史、语言导航、整页刷新后恢复及对blocked.invalid的CSP拒绝。最初把旧Playwright WebSocket对象仍留在Set误判为未关闭；真实CDP也未收到旧文档的close事件，但daemon对应relay_data_disconnected已出现。现在同时核对daemon对应通道已关闭、新文档零新连接，再验证重开，未取消关闭门槛。私有日志/配对文件不进入产物，记录只保存原生资源路径、公开中继origin和结果。
+
+中继恢复仅是基础路径，不完成T003完整恢复或最终100次矩阵。实验daemon展示目录改为独立probes/web，保留B0根入口与H站点，避免后续上游构建覆盖体验页。真正退出由原生dispose执行刷新，宿主只在失败时兜底，避免双重刷新；对应测试额外要求一次主文档请求。

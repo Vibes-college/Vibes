@@ -13,7 +13,7 @@ code-sources:
     'scripts/paseo-webui-assets.ts',
     'third_party/paseo-webui/',
   ]
-code-revision: '9f8b54b443ff7b3b91c8462a244c3fa848d08e5260789ab39c827febef177ad2'
+code-revision: '1a67927c206a8133ec3bd96b222c25c08549a804a3a9a1226f83abfe8d5ec67d'
 ---
 
 # 原生Paseo嵌入边界
@@ -31,7 +31,7 @@ VIBES_PASEO_PROFILE=H VIBES_OUT_DIR=.scratch/paseo-webui/h-site npm run build
 
 未设`VIBES_PASEO_PROFILE`时Astro在构建图形成前将入口替换为空组件，不输出助手客户端chunk、入口或原生资源；仅在页面条件中不渲染组件仍会遗留chunk，因此不能作为构建排除。H必须显式指定`.scratch/`内输出，发布模式VIBES_DEPLOY=1及其他配置拒绝。构建期间`build-config.ts`核对固定提交、锁文件、完整source/dependency补丁记录、摘要前缀及每个声明资源的大小、哈希和真实路径；不接受符号链接或越界路径。页面只接受一个入口JS及最多20项CSS，路径必须属于同一16位摘要前缀，携带SHA256完整性值。未知字段不向运行时复制。
 
-原生补丁为Metro设置`/vendor/paseo/{摘要}`前缀；摘要来自固定提交、H配置与补丁清单。Astro完成后`paseo-webui-assets.ts`将声明资源及Paseo许可、第三方许可说明复制到该前缀。H使用完整原生产物。脚本预算从已核验清单读取全部原生JS，宿主仅允许动态加载；静态引用/预加载原生入口、漏列脚本或摘要改变都失败，共享宿主依赖保留在公共预算。首次打开暂以全部原生JS加宿主独有依赖作保守上界，不能据此宣称拆包收益；冻结目标来自budget-baseline.json，H目前不满足最终门槛。最终不可变缓存发布验收仍未完成。隔离daemon托管H测试站时不自动应用Cloudflare的`_headers`，不能据此声称正式CSP已通过。
+原生补丁为Metro设置`/vendor/paseo/{摘要}`前缀；摘要来自固定提交、H配置与补丁清单。Astro完成后`paseo-webui-assets.ts`将声明资源及Paseo许可、第三方许可说明复制到该前缀。H使用完整原生产物。脚本预算从已核验清单读取全部原生JS，宿主仅允许动态加载；静态引用/预加载原生入口、漏列脚本或摘要改变都失败，共享宿主依赖保留在公共预算。首次打开暂以全部原生JS加宿主独有依赖作保守上界，不能据此宣称拆包收益；冻结目标来自budget-baseline.json，H目前不满足最终门槛。最终不可变缓存发布验收仍未完成。隔离daemon托管H测试站时不自动应用Cloudflare的`_headers`；CSP另用本地Worker实际响应验证。启用助手的构建仅为connect-src增加固定`wss://relay.paseo.sh`，普通构建仍同源；版本化vendor路径缓存一年且immutable，不新增任意脚本、frame或worker来源。当前欢迎/聊天路径没有独立WASM、字体或worker请求，不据此认定未来外围能力通过。
 
 ## 加载与长期实例
 
@@ -51,6 +51,8 @@ H在G1直接挂载适配上增加契约和presentation边界；保留上游根pr
 
 `PASEO_HOST_URL=http://127.0.0.1:6792 npx playwright test tests/paseo-loading.spec.ts`要求已由AI准备的H本地站及同版daemon；只接受本机地址，未指定明确跳过。测试使用实际生产资源，记录请求、挂载及连接计数；离线和404为受控浏览器故障。真实浏览器截图与本地原始日志存host/证据目录，性能统计另按冻结实验执行。
 
-当前未通过正式中继/CSP、最终资源门槛、完整恢复、真机或上线验收。完整原生语音与外围入口仍需按A/B能力矩阵验证，不能以显示按钮证明可用。
+本地Worker的真实CSP与官方TLS中继配对、已有会话及简单文字回复已验证；最终资源门槛、完整恢复、真机或上线验收未完成。完整原生语音与外围入口仍需按A/B能力矩阵验证，不能以显示按钮证明可用。
 
 Astro客户端将原本公共的小型启动/辅助模块合并到site-boot，减少逐文件gzip开销，保留原生及媒体动态边界；`includeDependenciesRecursively:false`不把延迟依赖拉入该组。入口导出使用allow-extension保留既有导出，完整MDX/媒体回归仍是交付必需检查。
+
+`tests/paseo-csp.spec.ts`另需PASEO_CSP_URL（本机Worker）、PASEO_PAIRING_FILE及PASEO_RELAY_LOG（均为.scratch内私有路径）；AI准备，不打印配对值。测试关闭后才生成失败上下文，不保存配对trace。整页刷新可能没有Playwright旧socket关闭事件，因此同时要求daemon对应连接关闭，不能把旧观察对象当实际泄漏；随后核对新页面零新连接及展开恢复。

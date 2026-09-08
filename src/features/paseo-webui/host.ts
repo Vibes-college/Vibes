@@ -267,8 +267,9 @@ export async function exitAssistant() {
   if (stage === 'disposed') return;
   try {
     if (handle) await handle.dispatch({ version: 1, type: 'dispose' });
-  } finally {
-    // A full document exit also recovers from a partially initialized native runtime.
+    else location.reload();
+  } catch {
+    // Native dispose normally reloads; only recover here if it failed to exit.
     location.reload();
   }
 }

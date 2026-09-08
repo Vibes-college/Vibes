@@ -28,7 +28,7 @@ amended-by: []
 - [x] T008 [P] [US1] 在tests/paseo-loading.spec.ts先覆盖普通浏览零专用请求、无JS提示、并发点击、离线首次打开、失败重试、加载中关闭及重开；基于生产导出检查网络，不只看DOM。
 - [x] T009 [US1] 在src/components/LocalAssistant.astro、src/scripts/paseo-boot.ts与src/layouts/Layout.astro加入轻量入口与首次主动加载边界，保持原Explore布局、页面导航及普通脚本预算。
 - [x] T010 [US1] 在src/features/paseo-webui/host.ts及third_party/paseo-webui/patches/落实G1选定接入、单个长期容器、官方初始化顺序和重试；隐藏/导航不调用dispose，history与React运行时隔离。
-- [ ] T011 [US1] 在public/_headers与scripts/content-security.ts落实固定资源前缀、实际中继及选定容器的最小CSP，tests/unit/content-security.test.ts覆盖不扩大普通页面权限；浏览器验证真实MIME、WASM/worker/字体及禁用源失败。
+- [x] T011 [US1] 在public/_headers与scripts/content-security.ts落实固定资源前缀、实际中继及选定容器的最小CSP，tests/unit/content-security.test.ts覆盖不扩大普通页面权限；浏览器验证真实MIME、WASM/worker/字体及禁用源失败。
 - [x] T012 [US1] 在scripts/paseo-webui-manifest.ts、scripts/script-budget.ts、scripts/budget-policy.ts及scripts/budget.ts增加受控助手初开/总量分类；tests/unit/script-budget.test.ts及tests/unit/paseo-webui-manifest.test.ts覆盖未知资源、静态泄漏、共享依赖和懒加载资源漏计，保持main现有门槛。
 - [ ] T013 [US1] 在scripts/build.ts、scripts/paseo-webui-build.ts与tests/paseo-loading.spec.ts验证正式构建资源前缀、版本化缓存、旧运行页面跨发布后首次打开可选功能及404可见恢复；部署清单不混入实验配置。
 - [ ] T014 [US1] 运行tests/paseo-loading.spec.ts及整站浏览/阅读回归，保存H与B0首开/重开和零加载证据至resources/evidence/012-paseo-webui-loading/host/，核对焦点返回、320px、手机与桌面滚动。

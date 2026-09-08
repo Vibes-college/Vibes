@@ -13,7 +13,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '75de1d8448a709b550dd877bdb0bcdc7b1ba064dc326da40b199249f5ecb9319'
+code-revision: '43bca224c34f2996cbefb8848ef98399b44aa3420696caba7981f9a9a56858d1'
 ---
 
 # 检查与发布
@@ -194,3 +194,5 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 budget-baseline.json记录统一gzip的B0初开4687382 B、总量4690481 B，候选首开减半目标2343691 B、总量上限4690481 B，700000 B仍是附加研究目标；主站原有门槛不变，当前尚未把助手预算接入正式发布。采样覆盖摘要只检查预定cohort是否齐全，保留失败数，空/部分数据不能变成通过；完整覆盖也仅表示可以分析，不代表正确性或性能过关。
 
 H以`node --experimental-strip-types scripts/paseo-webui-build.ts H`导出，显式`VIBES_PASEO_PROFILE=H VIBES_OUT_DIR=.scratch/paseo-webui/h-site npm run build`生成带入口的隔离站；只接受已匹配来源/补丁/资源摘要的H，不改变默认构建。`PASEO_HOST_URL`供`tests/paseo-loading.spec.ts`使用，地址必须是本机且已经托管该产物；未指定明确跳过。源码与测试细节、当前限制见[助手系统说明](local-assistant.md)。
+
+H的真实安全头/中继回归用`PASEO_CSP_URL=http://127.0.0.1:4392 PASEO_PAIRING_FILE=.scratch/paseo-webui/h-pairing-url.txt PASEO_RELAY_LOG=.scratch/paseo-webui/daemon-home/startup-relay.log npx playwright test tests/paseo-csp.spec.ts`，要求AI已准备独立Worker与同版中继实例；文件留本机，不把配对值或原始连接日志写入测试产物。此项不替代最终恢复/真机和部署验收。
