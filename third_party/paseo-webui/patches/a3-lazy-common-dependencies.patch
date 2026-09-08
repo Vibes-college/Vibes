@@ -1,0 +1,96 @@
+diff --git a/node_modules/@expo/metro-config/build/serializer/serializeChunks.js b/node_modules/@expo/metro-config/build/serializer/serializeChunks.js
+--- a/node_modules/@expo/metro-config/build/serializer/serializeChunks.js
++++ b/node_modules/@expo/metro-config/build/serializer/serializeChunks.js
+@@ -54,11 +54,16 @@
+         }
+         const toCompare = [...chunks.values()];
+         const commonDependencies = [];
++        const commonConsumers = new Set();
+         while (toCompare.length) {
+             const chunk = toCompare.shift();
+             for (const chunk2 of toCompare) {
+                 if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
+                     const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
++                    if (commonDeps.length) {
++                        commonConsumers.add(chunk);
++                        commonConsumers.add(chunk2);
++                    }
+                     for (const dep of commonDeps) {
+                         chunk.deps.delete(dep);
+                         chunk2.deps.delete(dep);
+@@ -71,8 +76,13 @@
+         // If common dependencies were found, extract them to the shared chunk.
+         if (commonDependencies.length) {
+             const commonDependenciesUnique = [...new Set(commonDependencies)];
+-            commonChunk = new Chunk('/__common.js', commonDependenciesUnique, graph, options, false, true);
+-            entryChunk.requiredChunks.add(commonChunk);
++            // This profile only exports web. Workers need their own runtime and are
++            // intentionally rejected rather than given an incomplete shared graph.
++            if ([...chunks].some((chunk) => chunk.isAsync && chunk.isEntry)) {
++                throw new Error('Vibes lazy common chunks do not support worker entries');
++            }
++            commonChunk = new Chunk('/__common.js', commonDependenciesUnique, graph, options, true, true);
++            for (const consumer of commonConsumers) consumer.requiredChunks.add(commonChunk);
+             chunks.add(commonChunk);
+         }
+         // TODO: Optimize this pass more.
+@@ -80,6 +90,7 @@
+         for (const chunk of [...chunks.values()]) {
+             if (!chunk.isEntry && chunk !== commonChunk) {
+                 for (const dep of chunk.deps) {
++                    if (commonChunk?.deps.has(dep)) chunk.requiredChunks.add(commonChunk);
+                     if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
+                         chunk.deps.delete(dep);
+                     }
+@@ -92,20 +103,7 @@
+                 chunks.delete(chunk);
+             }
+         }
+-        // Create runtime chunk
+-        if (commonChunk) {
+-            const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
+-            // All premodules (including metro-runtime) should load first
+-            for (const preModule of entryChunk.preModules) {
+-                runtimeChunk.preModules.add(preModule);
+-            }
+-            entryChunk.preModules = new Set();
+-            for (const chunk of chunks) {
+-                // Runtime chunk has to load before any other a.k.a all chunks require it.
+-                chunk.requiredChunks.add(runtimeChunk);
+-            }
+-            chunks.add(runtimeChunk);
+-        }
++        // Keep the runtime in the entry; deferred chunks execute only after it loads.
+     }
+     const jsAssets = await serializeChunksAsync(chunks, config.serializer ?? {}, serializeChunkOptions);
+     // TODO: Can this be anything besides true?
+@@ -226,7 +224,13 @@
+                     // helper doesn't reload and reevaluate the entrypoint.
+                     if (chunkContainingModule.isAsync) {
+                         const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+-                        computedAsyncModulePaths[dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
++                        const prerequisites = [...chunkContainingModule.requiredChunks]
++                            .filter((chunk) => chunk.isAsync)
++                            .map((chunk) => (baseUrl ?? '/') + chunk.getFilenameForConfig(serializerConfig));
++                        const target = (baseUrl ?? '/') + moduleIdName;
++                        computedAsyncModulePaths[dependency.absolutePath] = prerequisites.length
++                            ? [...prerequisites, target]
++                            : target;
+                     }
+                 }
+             });
+diff --git a/node_modules/expo/src/async-require/asyncRequireModule.ts b/node_modules/expo/src/async-require/asyncRequireModule.ts
+--- a/node_modules/expo/src/async-require/asyncRequireModule.ts
++++ b/node_modules/expo/src/async-require/asyncRequireModule.ts
+@@ -54,6 +54,11 @@
+       const bundlePath = paths[stringModuleID];
+       if (bundlePath != null) {
+         // NOTE: Errors will be swallowed by asyncRequire.prefetch
++        // All definitions must be available before importAll evaluates the target.
++        // The native loader still owns URL caching and eviction after a failure.
++        if (Array.isArray(bundlePath)) {
++          return Promise.all(bundlePath.map((path) => loadBundle(path))).then(() => {});
++        }
+         return loadBundle(bundlePath);
+       }
+     }

@@ -17,6 +17,10 @@ shaped-by: ['004']
 
 ## 已转化
 
+- [2026-09-08] 现象：3倍像素Chromium的终端为空白，远端输出和加载提示检查却通过｜证据：012 probe-mermaid/a3-terminal-os-blank.png、a3-xterm-pixel-observer-before.json
+  原因：context模拟DPR为3，进程的devicePixelContentBoxSize仍为1倍，WebGL观察器因此缩小画布；独立固定xterm也复现。
+  转化：[检查与发布](system/checks-and-release.md)要求匹配进程密度，终端测试校验像素比例及画面对比度｜验证：a3-terminal-calibrated.log三配置通过，保留WebGL与手机DPR｜转化日期：2026-09-08｜状态：已转化
+
 - [2026-09-08] 现象：两次浏览器验收期间重建正在消费的产物，分别造成原生回执缺失和正文404｜证据：012 probe-mermaid/a1-browser-all.log、a2-prose-failure/trace.zip
   原因：未把间接执行build的命令纳入互斥范围；npm run budget也会重建dist，不能与消费同一目录的E2E并行。
   转化：在[检查与发布](system/checks-and-release.md)明确串行范围｜验证：a2-e2e-serial.log为185通过、88明确跳过，独立A2专项另行通过｜转化日期：2026-09-08｜状态：已转化
@@ -31,7 +35,7 @@ shaped-by: ['004']
 
 - [2026-09-06] 现象：完整E2E多次因本地Wrangler代理中途退出失败｜证据：resources/evidence/008-prose-markdown/verify-repeated-service-failure.log
   原因：代理报告Network connection lost；与上游workers-sdk#15317症状一致，不能据此确定全部内部根因。
-  转化：[browser-test.ts](../tests/browser-test.ts)及[navigation.spec.ts](../tests/navigation.spec.ts)在普通页面和独立缓存profile关闭前等待有限资源完成，超时仍失败｜验证：008完整verify两轮111通过；后续封面回归补齐独立profile清理仍复现；改为单worker串行以降低并发压力，验证见006的cover-proximity证据目录｜转化日期：2026-09-06｜状态：已转化
+  转化：[browser-test.ts](../tests/browser-test.ts)及独立缓存profile只等待本地同源请求排空并稳定500ms，10秒未完成仍失败；外部封面不作为本地代理活动｜验证：012 a3-drain-targeted.log三配置6项通过，受控本地请求会等待、远端请求不会阻塞；保留单worker串行｜转化日期：2026-09-08｜状态：已转化
 
 - [2026-09-07] 现象：iOS 26 Safari反复报告正文回第一节或封面｜证据：resources/evidence/006-detail-reading/bounce-investigation/findings.md
   原因：旧实现同时使用CSS吸附与脚本滚动；模拟浏览器未完整复现真机回跳，不能把模拟通过当作真机修复确认。

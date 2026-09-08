@@ -14,6 +14,7 @@ interface FixtureClient {
     agent: { id: string; model: string; cwd: string; workspaceId: string; status: string };
   } | null>;
   cancelAgent(id: string): Promise<void>;
+  captureTerminal(id: string, options?: { stripAnsi?: boolean }): Promise<{ lines: string[] }>;
   archiveAgent(id: string): Promise<unknown>;
   archiveWorkspace(id: string): Promise<unknown>;
   listTerminals(

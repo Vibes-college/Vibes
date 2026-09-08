@@ -1,0 +1,632 @@
+diff --git a/packages/app/src/appearance/apply.ts b/packages/app/src/appearance/apply.ts
+index 4d84026..d5ae710 100644
+--- a/packages/app/src/appearance/apply.ts
++++ b/packages/app/src/appearance/apply.ts
+@@ -1,5 +1,5 @@
+ import { UnistylesRuntime } from "react-native-unistyles";
+-import { resolveSyntaxColors, type SyntaxThemeId } from "@getpaseo/highlight";
++import { resolveSyntaxColors, type SyntaxThemeId } from "@getpaseo/highlight/appearance";
+ import {
+   DEFAULT_UI_FONT_STACK,
+   DEFAULT_MONO_FONT_STACK,
+diff --git a/packages/app/src/components/diff-viewer.tsx b/packages/app/src/components/diff-viewer.tsx
+index 8d14eff..a61e040 100644
+--- a/packages/app/src/components/diff-viewer.tsx
++++ b/packages/app/src/components/diff-viewer.tsx
+@@ -4,7 +4,7 @@ import { View, Text, ScrollView as RNScrollView } from "react-native";
+ import { ScrollView as GHScrollView } from "react-native-gesture-handler";
+ import { StyleSheet } from "react-native-unistyles";
+ import type { DiffLine } from "@/utils/tool-call-parsers";
+-import { diffLinePrefix } from "@/utils/diff-highlight";
++import { diffLinePrefix } from "@/utils/diff-line-prefix";
+ import { syntaxTokenStyleFor } from "@/styles/syntax-token-styles";
+ import { inlineUnistylesStyle } from "@/styles/unistyles-inline-style";
+ import { getCodeInsets } from "./code-insets";
+diff --git a/packages/app/src/components/highlight-retry.tsx b/packages/app/src/components/highlight-retry.tsx
+new file mode 100644
+index 0000000..1782d40
+--- /dev/null
++++ b/packages/app/src/components/highlight-retry.tsx
+@@ -0,0 +1,24 @@
++import { Text, View } from "react-native";
++import { useTranslation } from "react-i18next";
++import { StyleSheet } from "react-native-unistyles";
++import { Button } from "./ui/button";
++import { markdownCopyDataSet } from "@/assistant-selection-copy/markup";
++
++export function HighlightRetry({ failed, retry }: { failed: boolean; retry: () => void }) {
++  const { t } = useTranslation();
++  if (!failed) return null;
++  return (
++    <View dataSet={markdownCopyDataSet.ignore} style={styles.notice} testID="paseo-highlight-error">
++      <Text accessibilityLiveRegion="polite" style={styles.text}>
++        {t("common.states.downloadFailed")}
++      </Text>
++      <Button variant="secondary" onPress={retry} testID="paseo-highlight-retry">
++        {t("common.actions.retry")}
++      </Button>
++    </View>
++  );
++}
++const styles = StyleSheet.create((theme) => ({
++  notice: { gap: 8, padding: 8 },
++  text: { color: theme.colors.foregroundMuted },
++}));
+diff --git a/packages/app/src/components/highlighted-code-block.tsx b/packages/app/src/components/highlighted-code-block.tsx
+index 86fc380..7f75a1e 100644
+--- a/packages/app/src/components/highlighted-code-block.tsx
++++ b/packages/app/src/components/highlighted-code-block.tsx
+@@ -1,3 +1,4 @@
++import { isHighlightExtensionSupported } from "@getpaseo/highlight/language-info";
+ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+ import { Pressable, View, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
+ import { StyleSheet } from "react-native-unistyles";
+@@ -10,7 +11,10 @@ import { isNative, isWeb } from "@/constants/platform";
+ import { useIsCompactFormFactor } from "@/constants/layout";
+ import { syntaxTokenStyleFor } from "@/styles/syntax-token-styles";
+ import { CODE_SURFACE_DATASET } from "@/styles/code-surface";
+-import { highlightToKeyedLines, type KeyedLine } from "@/utils/highlight-cache";
++import type { KeyedLine } from "@/utils/highlight-cache";
++import { MAX_HIGHLIGHT_CHARS } from "@/utils/highlight-limits";
++import { useHighlightRuntime } from "@/hooks/use-highlight-runtime";
++import { HighlightRetry } from "./highlight-retry";
+ import {
+   markdownCopyCodeBlockDataSet,
+   markdownCopyDataSet,
+@@ -73,9 +77,14 @@ export const HighlightedCodeBlock = React.memo(function HighlightedCodeBlock({
+     [language],
+   );
+ 
++  const extension = fenceLanguageToExtension(language);
++  const highlighter = useHighlightRuntime(
++    renderedCode,
++    isHighlightExtensionSupported(extension) && renderedCode.length <= MAX_HIGHLIGHT_CHARS,
++  );
+   const keyedLines = useMemo<KeyedLine[] | null>(
+-    () => highlightToKeyedLines(renderedCode, fenceLanguageToExtension(language)),
+-    [renderedCode, language],
++    () => highlighter.runtime?.highlightToKeyedLines(renderedCode, extension) ?? null,
++    [renderedCode, extension, highlighter.runtime],
+   );
+ 
+   const isCompact = useIsCompactFormFactor();
+@@ -105,6 +114,7 @@ export const HighlightedCodeBlock = React.memo(function HighlightedCodeBlock({
+         </MarkdownTextSpan>
+       )}
+       <CopyButton getCode={getCode} visible={controlsVisible} />
++      <HighlightRetry failed={highlighter.failed} retry={highlighter.retry} />
+     </View>
+   );
+ });
+diff --git a/packages/app/src/components/tool-call-details.tsx b/packages/app/src/components/tool-call-details.tsx
+index 50e4052..6c77f18 100644
+--- a/packages/app/src/components/tool-call-details.tsx
++++ b/packages/app/src/components/tool-call-details.tsx
+@@ -1,3 +1,4 @@
++import { isHighlightExtensionSupported } from "@getpaseo/highlight/language-info";
+ import React, { useMemo, type ReactNode } from "react";
+ import {
+   View,
+@@ -16,11 +17,13 @@ import {
+   type PaseoToolDetailSection,
+ } from "@getpaseo/protocol/paseo-tool-call-detail";
+ import { buildLineDiff, parseUnifiedDiff, type DiffLine } from "@/utils/tool-call-parsers";
+-import { highlightDiffLines } from "@/utils/diff-highlight";
++import { useHighlightRuntime } from "@/hooks/use-highlight-runtime";
++import { HighlightRetry } from "./highlight-retry";
+ import { hasMeaningfulToolCallDetail } from "@/utils/tool-call-detail-state";
+ import { inlineUnistylesStyle } from "@/styles/unistyles-inline-style";
+ import { CODE_SURFACE_DATASET } from "@/styles/code-surface";
+-import { extensionFromPath, highlightToKeyedLines } from "@/utils/highlight-cache";
++import { extensionFromPath } from "@/utils/highlight-language";
++import { MAX_HIGHLIGHT_CHARS } from "@/utils/highlight-limits";
+ import { HighlightedLines } from "./highlighted-content";
+ import { DiffViewer } from "./diff-viewer";
+ import { getCodeInsets } from "./code-insets";
+@@ -137,14 +140,17 @@ function useDetailStyles(
+   };
+ }
+ 
+-function useDiffLines(detail: ToolCallDetail | undefined): DiffLine[] | undefined {
++function useDiffLines(
++  detail: ToolCallDetail | undefined,
++  runtime: ReturnType<typeof useHighlightRuntime>["runtime"],
++): DiffLine[] | undefined {
+   return useMemo(() => {
+     if (!detail || detail.type !== "edit") return undefined;
+     const diffLines = detail.unifiedDiff
+       ? parseUnifiedDiff(detail.unifiedDiff)
+       : buildLineDiff(detail.oldString ?? "", detail.newString ?? "");
+-    return highlightDiffLines(diffLines, detail.filePath);
+-  }, [detail]);
++    return runtime?.highlightDiffLines(diffLines, detail.filePath) ?? diffLines;
++  }, [detail, runtime]);
+ }
+ 
+ interface ShellDetailProps {
+@@ -443,9 +449,14 @@ function ScrollableTextSection({
+   filePath,
+   startLine,
+ }: ScrollableContentProps) {
++  const highlighter = useHighlightRuntime(
++    content,
++    isHighlightExtensionSupported(extensionFromPath(filePath)) &&
++      content.length <= MAX_HIGHLIGHT_CHARS,
++  );
+   const keyedLines = useMemo(
+-    () => (filePath ? highlightToKeyedLines(content, extensionFromPath(filePath)) : null),
+-    [content, filePath],
++    () => highlighter.runtime?.highlightToKeyedLines(content, extensionFromPath(filePath)) ?? null,
++    [content, filePath, highlighter.runtime],
+   );
+   const body = (
+     <ScrollView
+@@ -465,8 +476,14 @@ function ScrollableTextSection({
+       </ScrollView>
+     </ScrollView>
+   );
+-  if (!wrapInSectionFill) return body;
+-  return <View style={ds.sectionFillStyle}>{body}</View>;
++  const result = (
++    <>
++      {body}
++      <HighlightRetry failed={highlighter.failed} retry={highlighter.retry} />
++    </>
++  );
++  if (!wrapInSectionFill) return result;
++  return <View style={ds.sectionFillStyle}>{result}</View>;
+ }
+ 
+ interface FetchDetailProps {
+@@ -791,7 +808,11 @@ export function ToolCallDetailsContent({
+   const { t } = useTranslation();
+   const resolvedMaxHeight = fillAvailableHeight ? undefined : (maxHeight ?? 300);
+   const ds = useDetailStyles(detail, resolvedMaxHeight, fillAvailableHeight);
+-  const diffLines = useDiffLines(detail);
++  const highlighter = useHighlightRuntime(
++    detail,
++    detail?.type === "edit" && isHighlightExtensionSupported(extensionFromPath(detail.filePath)),
++  );
++  const diffLines = useDiffLines(detail, highlighter.runtime);
+ 
+   const sections: ReactNode[] = buildDetailSections(toolName, detail, diffLines, ds, t);
+ 
+@@ -806,7 +827,12 @@ export function ToolCallDetailsContent({
+     return <Text style={styles.emptyStateText}>{t("toolCallDetails.empty")}</Text>;
+   }
+ 
+-  return <View style={ds.fullBleedContainerStyle}>{sections}</View>;
++  return (
++    <View style={ds.fullBleedContainerStyle}>
++      {sections}
++      <HighlightRetry failed={highlighter.failed} retry={highlighter.retry} />
++    </View>
++  );
+ }
+ 
+ // ---- Styles ----
+diff --git a/packages/app/src/hooks/use-highlight-runtime.ts b/packages/app/src/hooks/use-highlight-runtime.ts
+new file mode 100644
+index 0000000..02346f6
+--- /dev/null
++++ b/packages/app/src/hooks/use-highlight-runtime.ts
+@@ -0,0 +1,55 @@
++import { useCallback, useEffect, useState } from "react";
++import { useRetainedPanelActive } from "@/components/retained-panel";
++import { useAppActivelyVisible } from "@/hooks/use-app-visible";
++
++type Runtime = typeof import("@/utils/highlight-runtime");
++let loaded: Runtime | null = null;
++let pending: Promise<Runtime> | undefined;
++function load() {
++  pending ??= import("@/utils/highlight-runtime").then(
++    (runtime) => (loaded = runtime),
++    (error: unknown) => {
++      pending = undefined;
++      throw error;
++    },
++  );
++  return pending;
++}
++
++// Raw content stays synchronous. Grammars are requested only for a visible,
++// stable value; the original cache and size guards still own tokenization.
++export function useHighlightRuntime(key: unknown, enabled: boolean) {
++  const active = useRetainedPanelActive();
++  const visible = useAppActivelyVisible();
++  const [ready, setReady] = useState<{ key: unknown; runtime: Runtime } | null>(null);
++  const [failed, setFailed] = useState(false);
++  const [attempt, setAttempt] = useState(0);
++  const retry = useCallback(() => {
++    setFailed(false);
++    setAttempt((n) => n + 1);
++  }, []);
++  useEffect(() => {
++    if (!enabled || !active || !visible || failed) return;
++    let current = true;
++    const timer = setTimeout(() => {
++      const promise = loaded ? Promise.resolve(loaded) : load();
++      void promise.then(
++        (runtime) => {
++          if (current) setReady({ key, runtime });
++        },
++        () => {
++          if (current) setFailed(true);
++        },
++      );
++    }, 160);
++    return () => {
++      current = false;
++      clearTimeout(timer);
++    };
++  }, [key, enabled, active, visible, failed, attempt]);
++  return {
++    runtime: enabled && active && visible && ready && ready.key === key ? ready.runtime : null,
++    failed,
++    retry,
++  };
++}
+diff --git a/packages/app/src/hooks/use-settings/storage.ts b/packages/app/src/hooks/use-settings/storage.ts
+index 087be61..658b8a1 100644
+--- a/packages/app/src/hooks/use-settings/storage.ts
++++ b/packages/app/src/hooks/use-settings/storage.ts
+@@ -1,4 +1,4 @@
+-import { isSyntaxThemeId, type SyntaxThemeId } from "@getpaseo/highlight";
++import { isSyntaxThemeId, type SyntaxThemeId } from "@getpaseo/highlight/appearance";
+ import type { ActiveTurnBehavior } from "@getpaseo/protocol/messages";
+ import type { QueryClient } from "@tanstack/react-query";
+ import type { DesktopSettings } from "@/desktop/settings/desktop-settings";
+diff --git a/packages/app/src/screens/settings/appearance/appearance-preview.tsx b/packages/app/src/screens/settings/appearance/appearance-preview.tsx
+index 01699b6..519c1e7 100644
+--- a/packages/app/src/screens/settings/appearance/appearance-preview.tsx
++++ b/packages/app/src/screens/settings/appearance/appearance-preview.tsx
+@@ -8,7 +8,8 @@ import { CODE_SURFACE_DATASET } from "@/styles/code-surface";
+ import { syntaxTokenStyleFor } from "@/styles/syntax-token-styles";
+ import { DEFAULT_MONO_FONT_STACK } from "@/styles/theme";
+ import { inlineUnistylesStyle } from "@/styles/unistyles-inline-style";
+-import { tokenizeToLines } from "@/utils/highlight-cache";
++import { useHighlightRuntime } from "@/hooks/use-highlight-runtime";
++import { HighlightRetry } from "@/components/highlight-retry";
+ import { CHANGED_LINE_INDICES, PREVIEW_AFTER, PREVIEW_BEFORE } from "./preview-snippet";
+ 
+ // Snippets are TypeScript; the cache keys grammar selection off the extension.
+@@ -106,9 +107,11 @@ function makeRow(
+ // appear once as context; a changed line emits a "-" removed row (from BEFORE)
+ // followed by a "+" added row (from AFTER). Tokens are precomputed with stable
+ // keys so the renderer never keys off an array index.
+-function buildUnifiedRows(): UnifiedRow[] {
+-  const beforeLines = tokenizeToLines(PREVIEW_BEFORE.join("\n"), PREVIEW_EXTENSION);
+-  const afterLines = tokenizeToLines(PREVIEW_AFTER.join("\n"), PREVIEW_EXTENSION);
++function buildUnifiedRows(
++  runtime: ReturnType<typeof useHighlightRuntime>["runtime"],
++): UnifiedRow[] {
++  const beforeLines = runtime?.tokenizeToLines(PREVIEW_BEFORE.join("\n"), PREVIEW_EXTENSION);
++  const afterLines = runtime?.tokenizeToLines(PREVIEW_AFTER.join("\n"), PREVIEW_EXTENSION);
+   const rows: UnifiedRow[] = [];
+   for (let index = 0; index < PREVIEW_BEFORE.length; index += 1) {
+     if (CHANGED_LINE_INDICES.has(index)) {
+@@ -143,7 +146,8 @@ function markerStyle(type: RowType) {
+ // inline styles for live-while-typing feedback on the code font.
+ export function AppearancePreview({ overrides }: AppearancePreviewProps) {
+   const { t } = useTranslation();
+-  const rows = useMemo(() => buildUnifiedRows(), []);
++  const highlighter = useHighlightRuntime(PREVIEW_BEFORE, true);
++  const rows = useMemo(() => buildUnifiedRows(highlighter.runtime), [highlighter.runtime]);
+   const contentOverride = useMemo(() => buildContentOverride(overrides), [overrides]);
+   const codeOverride = useMemo(() => buildCodeOverride(overrides), [overrides]);
+   const contentStyle = useMemo(() => [styles.contentSample, contentOverride], [contentOverride]);
+@@ -158,31 +162,34 @@ export function AppearancePreview({ overrides }: AppearancePreviewProps) {
+   }
+ 
+   return (
+-    <View
+-      accessibilityRole="image"
+-      accessibilityLabel={t("settings.appearance.syntax.previewAccessibility")}
+-      dataSet={CODE_SURFACE_DATASET}
+-      style={styles.card}
+-    >
+-      <Text style={contentStyle}>{t("settings.appearance.syntax.previewContent")}</Text>
+-      {rows.map((row) => (
+-        <View key={row.key} style={rowStyle(row.type)}>
+-          <Text style={codeStyle}>
+-            <Text style={markerStyle(row.type)}>{row.marker}</Text>
+-            {row.tokens
+-              ? row.tokens.map((token) => (
+-                  <Text
+-                    key={token.key}
+-                    style={token.style ? syntaxTokenStyleFor(token.style) : undefined}
+-                  >
+-                    {token.text}
+-                  </Text>
+-                ))
+-              : row.fallbackText}
+-          </Text>
+-        </View>
+-      ))}
+-    </View>
++    <>
++      <View
++        accessibilityRole="image"
++        accessibilityLabel={t("settings.appearance.syntax.previewAccessibility")}
++        dataSet={CODE_SURFACE_DATASET}
++        style={styles.card}
++      >
++        <Text style={contentStyle}>{t("settings.appearance.syntax.previewContent")}</Text>
++        {rows.map((row) => (
++          <View key={row.key} style={rowStyle(row.type)}>
++            <Text style={codeStyle}>
++              <Text style={markerStyle(row.type)}>{row.marker}</Text>
++              {row.tokens
++                ? row.tokens.map((token) => (
++                    <Text
++                      key={token.key}
++                      style={token.style ? syntaxTokenStyleFor(token.style) : undefined}
++                    >
++                      {token.text}
++                    </Text>
++                  ))
++                : row.fallbackText}
++            </Text>
++          </View>
++        ))}
++      </View>
++      <HighlightRetry failed={highlighter.failed} retry={highlighter.retry} />
++    </>
+   );
+ }
+ 
+diff --git a/packages/app/src/screens/settings/appearance/appearance-section.tsx b/packages/app/src/screens/settings/appearance/appearance-section.tsx
+index 93e5e50..25ea3bf 100644
+--- a/packages/app/src/screens/settings/appearance/appearance-section.tsx
++++ b/packages/app/src/screens/settings/appearance/appearance-section.tsx
+@@ -8,7 +8,7 @@ import {
+   SYNTAX_THEME_OPTIONS,
+   type SyntaxThemeId,
+   type SyntaxThemeOption,
+-} from "@getpaseo/highlight";
++} from "@getpaseo/highlight/appearance";
+ import {
+   DropdownMenu,
+   DropdownMenuContent,
+diff --git a/packages/app/src/styles/theme.ts b/packages/app/src/styles/theme.ts
+index 918c83b..3597aaf 100644
+--- a/packages/app/src/styles/theme.ts
++++ b/packages/app/src/styles/theme.ts
+@@ -1,5 +1,5 @@
+ import { Platform } from "react-native";
+-import { darkHighlightColors, lightHighlightColors } from "@getpaseo/highlight";
++import { darkHighlightColors, lightHighlightColors } from "@getpaseo/highlight/appearance";
+ 
+ export const baseColors = {
+   // Base colors
+@@ -815,8 +815,7 @@ export const PLUGIN_THEME_NAMES = {
+ } as const;
+ 
+ export type ThemePreference =
+-  | (typeof THEME_OPTIONS)[number]["name"]
+-  | typeof PLUGIN_THEME_PREFERENCE;
++  (typeof THEME_OPTIONS)[number]["name"] | typeof PLUGIN_THEME_PREFERENCE;
+ export type ThemeName = Exclude<ThemePreference, "auto" | typeof PLUGIN_THEME_PREFERENCE>;
+ type ConcreteThemeOption = Exclude<(typeof THEME_OPTIONS)[number], { name: "auto" }>;
+ export type Theme = ConcreteThemeOption["theme"];
+diff --git a/packages/app/src/utils/diff-highlight.ts b/packages/app/src/utils/diff-highlight.ts
+index cba5778..3c982ff 100644
+--- a/packages/app/src/utils/diff-highlight.ts
++++ b/packages/app/src/utils/diff-highlight.ts
+@@ -2,21 +2,7 @@ import { isLanguageSupported, type HighlightToken } from "@getpaseo/highlight";
+ import { extensionFromPath, tokenizeToLines } from "@/utils/highlight-cache";
+ import type { DiffLine } from "@/utils/tool-call-parsers";
+ 
+-// The leading diff marker glyph for a line. The code on the line is the content
+-// with this prefix removed; we render the glyph separately so token colors
+-// apply only to the code.
+-export function diffLinePrefix(line: DiffLine): string {
+-  switch (line.type) {
+-    case "add":
+-      return "+";
+-    case "remove":
+-      return "-";
+-    case "context":
+-      return " ";
+-    default:
+-      return "";
+-  }
+-}
++export { diffLinePrefix } from "./diff-line-prefix";
+ 
+ function diffLineCode(line: DiffLine): string {
+   const { content, type } = line;
+diff --git a/packages/app/src/utils/diff-line-prefix.ts b/packages/app/src/utils/diff-line-prefix.ts
+new file mode 100644
+index 0000000..fbd28e7
+--- /dev/null
++++ b/packages/app/src/utils/diff-line-prefix.ts
+@@ -0,0 +1,17 @@
++import type { DiffLine } from "./tool-call-parsers";
++
++// The leading diff marker glyph for a line. The code on the line is the content
++// with this prefix removed; we render the glyph separately so token colors
++// apply only to the code.
++export function diffLinePrefix(line: DiffLine): string {
++  switch (line.type) {
++    case "add":
++      return "+";
++    case "remove":
++      return "-";
++    case "context":
++      return " ";
++    default:
++      return "";
++  }
++}
+diff --git a/packages/app/src/utils/highlight-cache.ts b/packages/app/src/utils/highlight-cache.ts
+index 548d6e6..e2c838f 100644
+--- a/packages/app/src/utils/highlight-cache.ts
++++ b/packages/app/src/utils/highlight-cache.ts
+@@ -18,7 +18,8 @@ export interface KeyedLine {
+ // Above this, highlighting a whole document on the main thread risks a visible
+ // stall when a large Read/Write block is expanded. Callers fall back to plain
+ // monospace text. Generous enough to cover the vast majority of real blocks.
+-export const MAX_HIGHLIGHT_CHARS = 100_000;
++import { MAX_HIGHLIGHT_CHARS } from "./highlight-limits";
++export { MAX_HIGHLIGHT_CHARS } from "./highlight-limits";
+ 
+ class LRUCache<K, V> {
+   private readonly map = new Map<K, V>();
+@@ -78,12 +79,4 @@ export function highlightToKeyedLines(code: string, ext: string | null): KeyedLi
+   return lines ? lines.map(toKeyedLine) : null;
+ }
+ 
+-// Extension for grammar selection from a file path. We only need the suffix —
+-// absolute vs relative paths are equivalent here.
+-export function extensionFromPath(filePath: string | null | undefined): string | null {
+-  if (!filePath) return null;
+-  const name = filePath.split(/[\\/]/).pop() ?? filePath;
+-  const dot = name.lastIndexOf(".");
+-  if (dot <= 0 || dot === name.length - 1) return null;
+-  return name.slice(dot + 1).toLowerCase();
+-}
++export { extensionFromPath } from "./highlight-language";
+diff --git a/packages/app/src/utils/highlight-language.ts b/packages/app/src/utils/highlight-language.ts
+new file mode 100644
+index 0000000..5150588
+--- /dev/null
++++ b/packages/app/src/utils/highlight-language.ts
+@@ -0,0 +1,9 @@
++// Extension for grammar selection from a file path. We only need the suffix —
++// absolute vs relative paths are equivalent here.
++export function extensionFromPath(filePath: string | null | undefined): string | null {
++  if (!filePath) return null;
++  const name = filePath.split(/[\\/]/).pop() ?? filePath;
++  const dot = name.lastIndexOf(".");
++  if (dot <= 0 || dot === name.length - 1) return null;
++  return name.slice(dot + 1).toLowerCase();
++}
+diff --git a/packages/app/src/utils/highlight-limits.ts b/packages/app/src/utils/highlight-limits.ts
+new file mode 100644
+index 0000000..751478a
+--- /dev/null
++++ b/packages/app/src/utils/highlight-limits.ts
+@@ -0,0 +1 @@
++export const MAX_HIGHLIGHT_CHARS = 100_000;
+diff --git a/packages/app/src/utils/highlight-runtime.ts b/packages/app/src/utils/highlight-runtime.ts
+new file mode 100644
+index 0000000..fe9e6c9
+--- /dev/null
++++ b/packages/app/src/utils/highlight-runtime.ts
+@@ -0,0 +1,2 @@
++export { highlightToKeyedLines, tokenizeToLines } from "./highlight-cache";
++export { highlightDiffLines } from "./diff-highlight";
+diff --git a/packages/highlight/package.json b/packages/highlight/package.json
+index fc017fd..2ea472a 100644
+--- a/packages/highlight/package.json
++++ b/packages/highlight/package.json
+@@ -14,6 +14,16 @@
+       "types": "./dist/index.d.ts",
+       "source": "./src/index.ts",
+       "default": "./dist/index.js"
++    },
++    "./appearance": {
++      "types": "./dist/appearance.d.ts",
++      "source": "./src/appearance.ts",
++      "default": "./dist/appearance.js"
++    },
++    "./language-info": {
++      "types": "./dist/language-info.d.ts",
++      "source": "./src/language-info.ts",
++      "default": "./dist/language-info.js"
+     }
+   },
+   "publishConfig": {
+diff --git a/packages/highlight/src/appearance.ts b/packages/highlight/src/appearance.ts
+new file mode 100644
+index 0000000..287709e
+--- /dev/null
++++ b/packages/highlight/src/appearance.ts
+@@ -0,0 +1,2 @@
++export { darkHighlightColors, lightHighlightColors } from "./colors.js";
++export * from "./themes.js";
+diff --git a/packages/highlight/src/language-info.ts b/packages/highlight/src/language-info.ts
+new file mode 100644
+index 0000000..c459cfa
+--- /dev/null
++++ b/packages/highlight/src/language-info.ts
+@@ -0,0 +1,45 @@
++export const HIGHLIGHT_EXTENSIONS = [
++  "js",
++  "jsx",
++  "ts",
++  "tsx",
++  "mjs",
++  "cjs",
++  "c",
++  "h",
++  "cc",
++  "cpp",
++  "cxx",
++  "hpp",
++  "hxx",
++  "m",
++  "mm",
++  "json",
++  "css",
++  "scss",
++  "html",
++  "htm",
++  "svelte",
++  "astro",
++  "xml",
++  "java",
++  "py",
++  "go",
++  "php",
++  "yaml",
++  "yml",
++  "rs",
++  "swift",
++  "dart",
++  "cs",
++  "nix",
++  "ex",
++  "exs",
++  "md",
++  "mdx",
++] as const;
++export type HighlightExtension = (typeof HIGHLIGHT_EXTENSIONS)[number];
++const supported = new Set<string>(HIGHLIGHT_EXTENSIONS);
++export function isHighlightExtensionSupported(extension: string | null | undefined): boolean {
++  return extension != null && supported.has(extension.toLowerCase());
++}
+diff --git a/packages/highlight/src/parsers.ts b/packages/highlight/src/parsers.ts
+index 9ccb312..3288258 100644
+--- a/packages/highlight/src/parsers.ts
++++ b/packages/highlight/src/parsers.ts
+@@ -1,3 +1,4 @@
++import type { HighlightExtension } from "./language-info.js";
+ import { defineLanguageFacet, Language, StreamLanguage } from "@codemirror/language";
+ import { dart } from "@codemirror/legacy-modes/mode/clike";
+ import { swift } from "@codemirror/legacy-modes/mode/swift";
+@@ -26,7 +27,7 @@ function language(parser: Parser): Language {
+   return new Language(defineLanguageFacet(), parser);
+ }
+ 
+-const languagesByExtension: Record<string, Language> = {
++const languagesByExtension = {
+   // JavaScript/TypeScript
+   js: language(jsParser),
+   jsx: language(jsParser.configure({ dialect: "jsx" })),
+@@ -85,12 +86,12 @@ const languagesByExtension: Record<string, Language> = {
+   // Markdown
+   md: language(markdownParser),
+   mdx: language(markdownParser),
+-};
++} satisfies Record<HighlightExtension, Language>;
+ 
+ export function getLanguageForFile(filename: string): Language | null {
+   const ext = filename.split(".").pop()?.toLowerCase();
+   if (!ext) return null;
+-  return languagesByExtension[ext] ?? null;
++  return languagesByExtension[ext as HighlightExtension] ?? null;
+ }
+ 
+ export function getParserForFile(filename: string): Parser | null {

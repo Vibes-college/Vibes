@@ -13,7 +13,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'a356f5185af1b79590d7d03237bdf8a79ccf470d6c0251c89a55f09e587443f0'
+code-revision: '5b765b711d5ddd6ca2eddad7bec48e33ecc1922b3cfb5defbdd91e5f84721f2c'
 ---
 
 # 检查与发布
@@ -201,6 +201,10 @@ H的真实安全头/中继回归用`PASEO_CSP_URL=http://127.0.0.1:4392 PASEO_PA
 
 同一PASEO_MOCK_URL还可用于聊天选择及recovery文件中的展示状态组；不传grep即可运行相应文件。缺少私有配对文件时，中继组仍明确跳过；这些协议夹具不调用真实模型。统一准备和收尾由tests/fixtures/paseo-webui/mock-session.ts承担，不能把合成或模拟覆盖当作真实工具执行、实际手机后台或最终100次恢复验收。
 
-A1为Mermaid生产拆包探针，A2在此基础上延迟终端与文件编辑器，构建及协议夹具方法见[助手系统说明](local-assistant.md)。仅允许隔离输出，未选定正式候选；精确沙箱脚本哈希与默认网站CSP同批构建，不增加任意脚本来源。
+A1为Mermaid生产拆包探针，A2在此基础上延迟终端与文件编辑器，A3累计加入共享高亮与编辑器位置恢复，构建及协议夹具方法见[助手系统说明](local-assistant.md)。仅允许隔离输出，未选定正式候选；精确沙箱脚本哈希与默认网站CSP同批构建，不增加任意脚本来源。
 
 构建与消费同一输出目录的浏览器测试必须串行；`npm run budget`包含build，`verify`中的E2E也会构建。运行中不能重建dist或当前原生回执；需要只读体积检查时，在产物稳定后单独运行`node scripts/budget.ts`。独立目录的协议夹具测试不改dist，但不用于并发性能采样。
+
+Playwright的mobile-chromium保持iPhone 13的3倍像素模拟，同时以`--force-device-scale-factor=3`匹配Chromium进程像素密度。仅设置context会让ResizeObserver的devicePixelContentBoxSize仍报告1倍，原生WebGL画布因此空白；此配置不关闭WebGL或改写页面API。终端测试核对设备像素与CSS像素比例、远端输出和实际截图对比度。模拟仍不能替代真实iPhone验收；诊断与前后证据见012 research R19。
+
+测试页关闭前追踪本地同源请求，待全部结束并稳定500ms后关闭，10秒未完成仍失败；独立缓存profile使用同一收尾。整页HTTP导航提交后按Playwright生命周期移除旧文档计数，同文档导航不重置；非HTTP的blob及外部媒体不属于本地代理保护范围，其加载/错误仍由对应功能测试断言，不用全页面networkidle作为收尾条件。

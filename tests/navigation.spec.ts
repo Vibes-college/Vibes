@@ -1,4 +1,5 @@
-import { test, expect } from './browser-test.ts';
+import { test, expect, watchLocalRequests } from './browser-test.ts';
+import type { Route } from '@playwright/test';
 
 const first = '/zh/works/attention-is-all-you-need/';
 const second = '/zh/works/transformers-js/';
@@ -201,8 +202,9 @@ test('completed prefetch is reused in a persistent browser context', async ({
       hasTouch,
     },
   );
+  const page = await context.newPage();
+  const drain = watchLocalRequests(page, 'http://127.0.0.1:4322');
   try {
-    const page = await context.newPage();
     await page.goto('/zh/');
     await expect
       .poll(() =>
@@ -257,9 +259,7 @@ test('completed prefetch is reused in a persistent browser context', async ({
   } finally {
     // This independent profile does not use browser-test's page teardown fixture.
     try {
-      await Promise.all(
-        context.pages().map((page) => page.waitForLoadState('networkidle', { timeout: 10_000 })),
-      );
+      await drain();
     } finally {
       await context.close();
     }
@@ -302,4 +302,46 @@ test('new-tab and external links preserve native navigation semantics', async ({
   expect(uncancelled).toEqual([true, true]);
   await expect(page).toHaveURL(new RegExp(first));
   expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+});
+
+test('local proxy drain waits for local responses without waiting for remote media', async ({
+  page,
+}) => {
+  const drain = watchLocalRequests(page, 'http://127.0.0.1:4322');
+  let local: Route | undefined;
+  let remote: Route | undefined;
+  await page.route('http://127.0.0.1:4322/drain-probe.svg', (route) => {
+    local = route;
+  });
+  await page.route('https://example.invalid/drain-probe.svg', (route) => {
+    remote = route;
+  });
+  await page.evaluate(() => {
+    for (const src of [
+      'http://127.0.0.1:4322/drain-probe.svg',
+      'https://example.invalid/drain-probe.svg',
+    ]) {
+      const image = new Image();
+      image.src = src;
+      document.body.append(image);
+    }
+  });
+  await expect.poll(() => Boolean(local && remote)).toBe(true);
+  await page.evaluate(() => {
+    location.hash = 'pending';
+  });
+  let complete = false;
+  const completion = drain().then(() => {
+    complete = true;
+  });
+  await page.waitForTimeout(600);
+  expect(complete).toBe(false);
+  const response = {
+    contentType: 'image/svg+xml',
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>',
+  };
+  await local!.fulfill(response);
+  await completion;
+  expect(complete).toBe(true);
+  await remote!.fulfill(response);
 });

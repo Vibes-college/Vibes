@@ -221,3 +221,35 @@ a2-features-all.json三配置18项通过，包含Mermaid回归、终端/编辑�
 A2资源补充：a2-resource-all.json三配置6项通过，首次打开前无terminal订阅；隐藏时renderer和stream仍保留，整页退出后renderer消失且原生模块未加载，远端terminal和Agent身份仍在，重新主动打开恢复。故不能声称隐藏已经释放renderer或stream。阻断fs.file.write.request后，未保存内容/光标跨隐藏及工作区切换保留；切换后hiddenEditors=1，属于原生保留，不作为编辑器真正卸载的证据。原生stream controller、editor/live file/preview模型及文件链接6组90项单元通过。T029的完整卸载边界仍未关闭。
 
 A2整站verify首次184通过、82跳过、1项正文图片测试失败；trace显示该正文请求404。当时错误地并行执行npm run budget，它隐含build并替换了正在被测试消费的dist。此失败不能归于正文逻辑或跳过。串行重跑test:e2e为185通过、88跳过；新增A2测试需要显式夹具配置，已另行通过。检查含119项单元通过，默认预算通过。先前WebKit音频间歇失败在本轮未复现，保留裸audio对照和全部失败记录，不声称已修复。
+
+## R18：共享语法按需与构建器的实际闭包
+
+A3是累计工程探针，在A2上拆出语法高亮运行时，并加入编辑器位置恢复；这些阶段产物不直接当作冻结实验配置中的单变量A1—A6样本。最终消融必须按各自功能开关重建，校对完整补丁/输入/回执，不能把累计探针的差值声称为单项收益。
+
+首次拆分仍因设置页AppearancePreview静态引用tokenizer把语法带入主包；移除后，Expo又把FilePane和高亮异步块的共有依赖升为首开`__common`，HTML含runtime/common/index三条脚本。两次均未达到按需边界，不通过放宽单入口校验或忽略共享资源来处理。a3-lazy-common-dependencies.patch使纯异步交集成为单份异步资源，消费者的路径表携带前置资源列表；原生asyncRequire在全部定义到达后才执行importAll，既有URL缓存负责去重及失败清除。worker入口尚未适配，遇到时构建拒绝。这个维护成本涉及序列化器和加载器两个精确版本文件，升级必须成对复核，不表示任意Expo版本兼容。
+
+颜色/主题、语言支持信息与语法执行分离。支持列表与原生parser映射受Record类型约束；不支持的代码语言不加载语法。当前可见、激活内容稳定160ms后才请求运行时，原文同步可读，失败可重试；保留LRU 200项、100000字符限制、完整旧/新diff语法上下文及复制原文。设置预览也使用同一边界，不让外围设置反向拖入初始包。
+
+生产导出44文件，初始HTML只有入口脚本；浏览器实际证明入口/普通聊天不请求共有语法，聊天代码或工具详情使用时才加载，文件编辑器复用已取得的共有定义。a3-editor-layout-build.log、a3-final-native-checks.log及a3-language-guard-build.log保留阶段回执；最终原生tsgo、7组89项单元及实际安装版Expo加载器的前置顺序、并发去重、失败/重试、字符串路径兼容检查通过。源码及依赖在构建退出后恢复原始字节。
+
+三配置专项证据在probe-mermaid：a3-features-resources-all.log为36项，a3-highlight-all.log为9项，含原文复制到剪贴板API、工具120000字符内容、工具差异展开和文件共享。内置浏览器真实呈现彩色代码，点击复制后用系统剪贴板读取核对原文，截图a3-cua-highlight.png；只使用隔离mock及自建文件，不计Luna重任务。原生聊天本身在32000字符截断呈现并显示提示，所以不能拿100000字符聊天测试代替高亮器上限测试；最初错误假设导致的a3-highlight-copy-limit.log保留。完整长消息查看路径仍属于后续持续输出验收。
+
+静态体积按冻结node:zlib默认逐文件gzip计算：A2原生JS总量4692991字节，A3为4689880，A3入口2934336、共有语法416452字节。记录a3-static-sizes.json；未含宿主，也不是实际冷暖样本。入口单项已经超过冻结初开2343691目标，因此不声称当前A3通过最终预算或减半。
+
+## R19：真实卸载位置与浏览器像素密度校准
+
+A2编辑器源码/预览切换会真正移除CodeMirror节点：草稿由原生模型保留，但光标和滚动重置。a2-editor-unmount-before.log保存失败。a2-editor-lifecycle.patch用原生模型作WeakMap弱键，仅记录选择、滚动快照和导航代次；layout清理在DOM移除前保存并destroy。首次用普通effect清理虽恢复光标，仍偏354px（a3-editor-unmount.log）；改为layout阶段后，80行未保存草稿、第45行光标和滚动差≤2px通过。新行定位优先，不新增草稿仓库或持久存储。
+
+终端测试通过真实输入执行固定printf、核对daemon capture、退出后模块/renderer消失、远端terminal和Agent身份保留，再打开复核输出。初期仅检查加载提示和远端输出会漏掉空白画面；桌面及WebKit截图可读，3倍像素的Chromium截图空白，可见浏览器的OS截图也为空白（a3-terminal-os-blank.png）。禁用WebGL的诊断恢复文字，但未据此修改生产渲染；普通像素密度正常，桌面改为3倍同样失败。
+
+独立固定xterm、无Paseo/宿主、带或不带ImageAddon均复现；保留绘图缓冲也无效。a3-xterm-pixel-observer-before.json记录devicePixelRatio=3而280×112 CSS画布的devicePixelContentBoxSize仍为280×112，原生WebGL观察器据此缩小画布。仅给Chromium进程加`--force-device-scale-factor=3`后，device box变为840×336，独立及真实终端均显示文字。最终只校准Playwright进程与context像素密度，不关闭WebGL、不改写页面API，也不降低手机DPR。a3-terminal-calibrated.log三配置通过，终端测试增加像素比例和截图对比度断言，保留截图人工核对固定输出；原生控制器/文件模型的卸载测试在89项中通过。真实iPhone和100次资源/恢复循环仍未计入通过。
+
+## R20：本地代理收尾与外部媒体分离
+
+A3整站verify的类型、lint、格式、文档及单元通过，浏览器180通过、109明确跳过、5项收尾失败；五项均为browser-test的全页面networkidle超时，其中Chromium trace明确显示YouTube/Spotify/Prose远端封面超过10秒。本地请求与业务断言已完成，不能把外部请求是否结束当作本地Wrangler代理的退出条件。原始trace保存在probe-mermaid/a3-drain-before/；没有把失败当通过。
+
+browser-test及独立缓存profile改为从请求开始追踪本地同源请求，完成或失败后移除，全部排空并稳定500ms才关闭；10秒仍未排空继续失败，其他功能断言不变。新增真实浏览器路由探针同时挂住本地与远端图片，证明本地未结束必须等待、仅远端未结束时可收尾。与原搜索历史用例三配置共6项通过，a3-drain-targeted.log；整站需在此修正后重跑。语言草稿只在.scratch准备，未混入A3生产包。
+
+首次同源计数实现又在视频冷暖测试收尾失败；a3-drain-own-diagnostic.log显示旧文档的full.mp4仍留在计数中，真实HTTP trace已完成。检查固定Playwright的_onClearLifecycle发现新文档提交会重置旧文档请求。修正为只在真实顶层HTTP导航提交后移除替换前的请求，保留新请求；同文档hash/ClientRouter导航不重置，子frame销毁清除其旧请求，非HTTP的blob不算代理活动。视频冷暖、搜索历史及受控排空三配置9项通过（a3-drain-navigation-fixed.log）。有已知失败的整站重跑已主动中止并保存结果，必须再完成一轮全量验收。
+
+最终A3整站verify通过类型、lint、格式、文档及122项单元，浏览器188通过、109按设备或实验配置明确跳过（a3-phase-verify-lifecycle.log）；单独A3最终生产包48项全通过，默认Explore的budget通过（a3-phase-budget.log）。这一轮WebKit音频恢复通过，仍保留既有间歇失败与裸audio对照，不宣称根因已修复；A3本身仍未达到最终首开预算。

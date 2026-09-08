@@ -1,0 +1,101 @@
+diff --git a/packages/app/src/file-pane/editor/view.web.tsx b/packages/app/src/file-pane/editor/view.web.tsx
+index 03ab27a..49744ea 100644
+--- a/packages/app/src/file-pane/editor/view.web.tsx
++++ b/packages/app/src/file-pane/editor/view.web.tsx
+@@ -1,4 +1,4 @@
+-import { useEffect, useRef, useSyncExternalStore } from "react";
++import { useEffect, useLayoutEffect, useRef, useSyncExternalStore } from "react";
+ import { Annotation, Compartment, EditorState, Transaction } from "@codemirror/state";
+ import { EditorView } from "@codemirror/view";
+ import { getLanguageForFile } from "@getpaseo/highlight";
+@@ -19,6 +19,18 @@ interface FileEditorViewProps {
+   onVimModeChange(mode: string | null): void;
+ }
+ 
++// The native model owns the draft. This weak entry only preserves renderer position
++// while source/preview swaps destroy CodeMirror, and cannot keep a closed model alive.
++const positions = new WeakMap<
++  FileEditorModel,
++  {
++    anchor: number;
++    head: number;
++    scroll: ReturnType<EditorView["scrollSnapshot"]>;
++    navigationKey: string;
++  }
++>();
++
+ const languageCompartment = new Compartment();
+ const wrappingCompartment = new Compartment();
+ const themeCompartment = new Compartment();
+@@ -38,6 +50,10 @@ export function FileEditorView({
+   onCursorChange,
+   onVimModeChange,
+ }: FileEditorViewProps) {
++  const navigationKey = JSON.stringify([navigationRevision, location.lineStart, location.lineEnd]);
++  const navigationKeyRef = useRef(navigationKey);
++  navigationKeyRef.current = navigationKey;
++  const lastNavigationKey = useRef(positions.get(model)?.navigationKey);
+   const hostRef = useRef<HTMLDivElement>(null);
+   const viewRef = useRef<EditorView | null>(null);
+   const snapshot = useSyncExternalStore(model.subscribe, model.getSnapshot, model.getSnapshot);
+@@ -45,10 +61,13 @@ export function FileEditorView({
+   const onCursorChangeRef = useRef(onCursorChange);
+   onCursorChangeRef.current = onCursorChange;
+ 
+-  useEffect(() => {
++  useLayoutEffect(() => {
+     if (!hostRef.current) return;
+     const values = initial.current;
++    const position = positions.get(values.model);
++    const restore = position?.navigationKey === navigationKeyRef.current ? position : undefined;
+     const view = new EditorView({
++      scrollTo: restore?.scroll,
+       parent: hostRef.current,
+       state: EditorState.create({
+         doc: values.content,
+@@ -76,8 +95,24 @@ export function FileEditorView({
+       }),
+     });
+     viewRef.current = view;
+-    onCursorChangeRef.current({ line: 1, column: 1 });
++    if (restore) {
++      view.dispatch({
++        selection: {
++          anchor: Math.min(restore.anchor, view.state.doc.length),
++          head: Math.min(restore.head, view.state.doc.length),
++        },
++      });
++    }
++    const head = view.state.selection.main.head;
++    const line = view.state.doc.lineAt(head);
++    onCursorChangeRef.current({ line: line.number, column: head - line.from + 1 });
+     return () => {
++      positions.set(values.model, {
++        anchor: view.state.selection.main.anchor,
++        head: view.state.selection.main.head,
++        scroll: view.scrollSnapshot(),
++        navigationKey: navigationKeyRef.current,
++      });
+       view.destroy();
+       viewRef.current = null;
+     };
+@@ -98,7 +133,9 @@ export function FileEditorView({
+ 
+   useEffect(() => {
+     const view = viewRef.current;
+-    if (!view || !location.lineStart) return;
++    if (!view || lastNavigationKey.current === navigationKey) return;
++    lastNavigationKey.current = navigationKey;
++    if (!location.lineStart) return;
+     const lineStart = Math.min(location.lineStart, view.state.doc.lines);
+     const lineEnd = Math.min(location.lineEnd ?? lineStart, view.state.doc.lines);
+     const from = view.state.doc.line(lineStart).from;
+@@ -107,7 +144,7 @@ export function FileEditorView({
+       selection: { anchor: from, head: lineEnd > lineStart ? to : from },
+       effects: EditorView.scrollIntoView(from, { y: "center" }),
+     });
+-  }, [location.lineEnd, location.lineStart, navigationRevision]);
++  }, [location.lineEnd, location.lineStart, navigationKey]);
+ 
+   useEffect(() => {
+     viewRef.current?.dispatch({

@@ -10,8 +10,8 @@ for (const failFirst of [false, true]) {
     browser,
   }, info) => {
     test.skip(
-      !['A1', 'A2'].includes(process.env.PASEO_MOCK_PROFILE || ''),
-      'Requires an A1/A2 production fixture host.',
+      !['A1', 'A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+      'Requires an A1/A2/A3 production fixture host.',
     );
     test.setTimeout(90000);
     const receipt = JSON.parse(
@@ -121,10 +121,20 @@ for (const failFirst of [false, true]) {
   test(`terminal body loads on activation${failFirst ? ' with retry' : ''}`, async ({
     browser,
   }, info) => {
-    test.skip(process.env.PASEO_MOCK_PROFILE !== 'A2', 'Requires the A2 production fixture host.');
+    test.skip(
+      !['A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+      'Requires an A2/A3 production fixture host.',
+    );
     test.setTimeout(90000);
     const receipt = JSON.parse(
-      readFileSync(resolve('.scratch/paseo-webui/artifacts/A2/build-receipt.json'), 'utf8'),
+      readFileSync(
+        resolve(
+          '.scratch/paseo-webui/artifacts',
+          process.env.PASEO_MOCK_PROFILE!,
+          'build-receipt.json',
+        ),
+        'utf8',
+      ),
     );
     const chunk = receipt.files.filter((file: { path: string }) =>
       /\/terminal-pane-[a-f0-9]+\.js$/.test(file.path),
@@ -177,10 +187,20 @@ for (const failFirst of [false, true]) {
   test(`file editor body loads on activation${failFirst ? ' with retry' : ''}`, async ({
     browser,
   }, info) => {
-    test.skip(process.env.PASEO_MOCK_PROFILE !== 'A2', 'Requires the A2 production fixture host.');
+    test.skip(
+      !['A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+      'Requires an A2/A3 production fixture host.',
+    );
     test.setTimeout(90000);
     const receipt = JSON.parse(
-      readFileSync(resolve('.scratch/paseo-webui/artifacts/A2/build-receipt.json'), 'utf8'),
+      readFileSync(
+        resolve(
+          '.scratch/paseo-webui/artifacts',
+          process.env.PASEO_MOCK_PROFILE!,
+          'build-receipt.json',
+        ),
+        'utf8',
+      ),
     );
     const chunk = receipt.files.filter((file: { path: string }) =>
       /\/pane-[a-f0-9]+\.js$/.test(file.path),
@@ -229,7 +249,10 @@ for (const failFirst of [false, true]) {
 test('native assistant file deep link activates the lazy editor at its target line', async ({
   browser,
 }, info) => {
-  test.skip(process.env.PASEO_MOCK_PROFILE !== 'A2', 'Requires the A2 production fixture host.');
+  test.skip(
+    !['A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+    'Requires an A2/A3 production fixture host.',
+  );
   test.setTimeout(90000);
   await withMockSession(browser, info, async ({ page, createSession, open }) => {
     const session = await createSession({
@@ -248,3 +271,71 @@ test('native assistant file deep link activates the lazy editor at its target li
     await expect(page.locator('[contenteditable=true]:visible')).toContainText('Fixture line 18');
   });
 });
+
+for (const failFirst of [false, true]) {
+  test(`shared highlighter keeps raw code readable${failFirst ? ' through failure and retry' : ' while loading'}`, async ({
+    browser,
+  }, info) => {
+    test.skip(process.env.PASEO_MOCK_PROFILE !== 'A3', 'Requires the A3 production fixture host.');
+    test.setTimeout(90000);
+    const receipt = JSON.parse(
+      readFileSync(resolve('.scratch/paseo-webui/artifacts/A3/build-receipt.json'), 'utf8'),
+    );
+    const pathFor = (pattern: RegExp) => {
+      const files = receipt.files.filter((file: { path: string }) => pattern.test(file.path));
+      expect(files).toHaveLength(1);
+      return receipt.publicPath + '/' + files[0].path;
+    };
+    const shared = pathFor(/\/__common-[a-f0-9]+\.js$/);
+    const runtime = pathFor(/\/highlight-runtime-[a-f0-9]+\.js$/);
+    const code = 'const fixtureColor = 42;';
+    await withMockSession(browser, info, async ({ page, open, createSession }) => {
+      const session = await createSession({
+        featureValues: { mockAssistantResponse: '```javascript\n' + code + '\n```' },
+      });
+      const downloads: string[] = [];
+      page.on('request', (r) => downloads.push(new URL(r.url()).pathname));
+      let release!: () => void;
+      const gate = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      let attempts = 0;
+      await page.route('**' + shared, async (route) => {
+        attempts++;
+        if (attempts === 1) {
+          if (failFirst) return route.abort('failed');
+          await gate;
+        }
+        await route.continue();
+      });
+      try {
+        await open(session);
+        expect(downloads).not.toContain(shared);
+        expect(downloads).not.toContain(runtime);
+        await page.locator('#root textarea:visible').fill('Return the configured code.');
+        await page.getByRole('button', { name: '发送消息', exact: true }).click();
+        const block = page.locator(
+          '[data-paseo-markdown-tag=pre][data-paseo-markdown-language=javascript]',
+        );
+        const raw = block.locator('[data-paseo-markdown-tag=code]');
+        await expect(raw).toHaveText(code);
+        await expect.poll(() => attempts).toBe(1);
+        await expect(raw.locator('span')).toHaveCount(0);
+        if (failFirst) {
+          await expect(page.getByTestId('paseo-highlight-error')).toBeVisible();
+          await expect(raw).toHaveText(code);
+          await page.getByTestId('paseo-highlight-retry').click();
+        } else release();
+        await expect.poll(() => raw.locator('span').count()).toBeGreaterThan(0);
+        await expect(raw).toHaveText(code);
+        expect(attempts).toBe(failFirst ? 2 : 1);
+        await info.attach('shared-highlight-loading', {
+          body: JSON.stringify({ shared, runtime, attempts, downloads }),
+          contentType: 'application/json',
+        });
+      } finally {
+        release();
+      }
+    });
+  });
+}

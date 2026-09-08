@@ -4,18 +4,17 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import {
   applyDependencyPatches,
   type DependencyPatch,
 } from '../../scripts/paseo-webui-dependencies.ts';
 
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
-function fixture() {
+function fixture(name = 'node_modules/expo-router/example.js') {
   const source = mkdtempSync(join(tmpdir(), 'paseo-deps-'));
   execFileSync('git', ['init', '-q'], { cwd: source });
-  const name = 'node_modules/expo-router/example.js';
-  mkdirSync(join(source, 'node_modules/expo-router'), { recursive: true });
+  mkdirSync(dirname(join(source, name)), { recursive: true });
   writeFileSync(join(source, name), 'original\n');
   const content = `diff --git a/${name} b/${name}\n--- a/${name}\n+++ b/${name}\n@@ -1 +1 @@\n-original\n+adapted\n`;
   const patch: DependencyPatch = {
@@ -70,5 +69,37 @@ test('a later patch failure restores earlier patches; unexpected subsequent edit
     assert.equal(readFileSync(join(f.source, f.name), 'utf8'), 'concurrent change\n');
   } finally {
     rmSync(f.source, { recursive: true, force: true });
+  }
+});
+
+for (const name of [
+  'node_modules/@expo/metro-config/build/serializer/serializeChunks.js',
+  'node_modules/expo/src/async-require/asyncRequireModule.ts',
+]) {
+  test(`the declared lazy-loader dependency can be patched and restored: ${name}`, () => {
+    const f = fixture(name);
+    try {
+      const restore = applyDependencyPatches(f.source, [f.patch]);
+      assert.equal(readFileSync(join(f.source, name), 'utf8'), 'adapted\n');
+      restore();
+      assert.equal(readFileSync(join(f.source, name), 'utf8'), 'original\n');
+    } finally {
+      rmSync(f.source, { recursive: true, force: true });
+    }
+  });
+}
+
+test('adding lazy-loader paths does not grant edits to the rest of those packages', () => {
+  for (const name of [
+    'node_modules/expo/other.ts',
+    'node_modules/@expo/metro-config/build/other.js',
+  ]) {
+    const f = fixture(name);
+    try {
+      assert.throws(() => applyDependencyPatches(f.source, [f.patch]), /outside the approved/);
+      assert.equal(readFileSync(join(f.source, name), 'utf8'), 'original\n');
+    } finally {
+      rmSync(f.source, { recursive: true, force: true });
+    }
   }
 });

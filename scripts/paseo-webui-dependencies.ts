@@ -20,7 +20,11 @@ const apply = (source: string, args: string[]) =>
 function checkFiles(source: string, patch: DependencyPatch, state: 'before' | 'after') {
   for (const file of patch.files) {
     if (
-      !/^node_modules\/(expo-router|react-native-web|react-native-unistyles)\//.test(file.path) ||
+      (!/^node_modules\/(expo-router|react-native-web|react-native-unistyles)\//.test(file.path) &&
+        ![
+          'node_modules/@expo/metro-config/build/serializer/serializeChunks.js',
+          'node_modules/expo/src/async-require/asyncRequireModule.ts',
+        ].includes(file.path)) ||
       file.path.split('/').some((part) => !part || part === '.' || part === '..') ||
       file.path.includes('\\')
     )

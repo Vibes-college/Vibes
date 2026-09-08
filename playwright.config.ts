@@ -18,6 +18,7 @@ export default defineConfig({
     'paseo-recovery.spec.ts',
     'paseo-features.spec.ts',
     'paseo-resources.spec.ts',
+    'paseo-highlight.spec.ts',
   ],
   fullyParallel: true,
   // A single local Worker serves the suite; serialize clients to avoid proxy connection loss.
@@ -26,7 +27,16 @@ export default defineConfig({
   use: { baseURL: 'http://127.0.0.1:4322', trace: 'retain-on-failure' },
   projects: [
     { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile-chromium', use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
+    {
+      name: 'mobile-chromium',
+      use: {
+        ...devices['iPhone 13'],
+        defaultBrowserType: 'chromium',
+        // Match the process pixel density to emulated DPR. Otherwise Chromium's
+        // devicePixelContentBoxSize reports 1x and clears the native WebGL canvas.
+        launchOptions: { args: ['--force-device-scale-factor=3'] },
+      },
+    },
     { name: 'mobile-webkit', use: { ...devices['iPhone 13'] } },
   ],
   webServer: {
