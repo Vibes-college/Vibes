@@ -11,13 +11,13 @@ amended-by: []
 
 ## 基础与阻塞关卡
 
-目的：可重现官方版本与实验环境；G0/G1未通过不铺开产品。关联FR001—FR002、FR007—FR008、FR011及SC001—SC008。
+目的：可重现官方版本与实验环境；已有B0与同版部分运行证据允许先做G1直接挂载，完整基线在拆包比较前补齐，中继和完整恢复在接入后验收。关联FR001—FR002、FR007—FR008、FR011及SC001—SC008。
 
 - [x] T001 盘点上游锁文件依赖、postinstall/prepare和实验实例/端口，向用户说明新增安装必要性并取得许可后才安装；固定官方SHA及锁文件摘要到third_party/paseo-webui/upstream.json，实验配置写resources/evidence/012-paseo-webui-loading/environment.json，不覆盖现有daemon。
 - [x] T002 在scripts/paseo-webui-build.ts与third_party/paseo-webui/patches/建立源码获取、严格补丁重放、官方生产导出、许可保存与来源校验；在tests/unit/paseo-webui-build.test.ts覆盖错误SHA、补丁不匹配与失败不复用旧产物。
-- [ ] T003 在resources/evidence/012-paseo-webui-loading/compatibility/验证WebUI0.7.2对现有daemon及同版隔离daemon的实际配对/会话/工具/审批/恢复，固定主实验版本配对；失败先定位，结论写specs/012-paseo-webui-loading/research.md。
-- [ ] T004 在scripts/paseo-webui-manifest.ts生成B0全量文件、哈希、同步/异步依赖与压缩清单，记录源码图和实际请求到resources/evidence/012-paseo-webui-loading/baseline/；生成前后配置不得混用旧版本数据。
-- [ ] T005 在.scratch/paseo-webui/probes/验证受控模块挂载入口、独立React、官方providers、history/CSS/焦点/滚动/动态前缀；有限适配不成立时试同源文档容器及Astro不重载条件，选择唯一接入方式并将证据/补丁路径写specs/012-paseo-webui-loading/research.md。
+- [ ] T003 在resources/evidence/012-paseo-webui-loading/compatibility/验证WebUI0.7.2对同版隔离daemon的实际配对/会话/工具/审批/恢复，固定主实验版本配对；旧daemon兼容取消，保留已验证项，中继及完整恢复在接入后验收；失败先定位，结论写specs/012-paseo-webui-loading/research.md。
+- [ ] T004 在scripts/paseo-webui-manifest.ts生成B0全量文件、哈希、同步/异步依赖与压缩清单，记录源码图和实际请求到resources/evidence/012-paseo-webui-loading/baseline/；可在G1后补齐，拆包比较前必须完成，不覆盖已保存的B0，不混算H与B0。
+- [x] T005 在.scratch/paseo-webui/probes/验证受控模块挂载入口、独立React、官方providers、history/CSS/焦点/滚动/动态前缀；有限适配不成立时试同源文档容器及Astro不重载条件，选择唯一接入方式并将证据/补丁路径写specs/012-paseo-webui-loading/research.md。
 - [ ] T006 在src/features/paseo-webui/contract.ts定义幂等挂载、展示状态、公开作品草稿、可操作/错误/收起及真正退出边界；在tests/unit/paseo-webui-contract.test.ts覆盖字段/长度/未知事件及禁止秘密/任意RPC，独立文档模式额外验证source/origin。
 - [ ] T007 在scripts/paseo-webui-experiment.ts与tests/fixtures/paseo-webui/冻结B0/H/A1—A6/A/B/P配置、W0—W5输入及哈希、冷暖缓存、版本和采样规则，输出审核资源上限与基线摘要到third_party/paseo-webui/budget-baseline.json，原始证据存resources/evidence/012-paseo-webui-loading/baseline/；验证无结果数据不得生成通过结论。
 
@@ -90,7 +90,7 @@ amended-by: []
 
 ## 依赖、并行与交付策略
 
-依赖主线：T001→T002→T003/T004→T005→T006/T007→US1→US2基础→US3基础→G2/US4→US5最终实验→文档/整体验证/独立审查。T019—T020先测共同运行机制，最终P需在A/B复核；T024—T026先验证核心，T039明确要求最终两候选重跑，不以先前SHA证据替代。
+依赖主线：T001→T002及已保存的同版部分运行证据→T005直接挂载→T006及US1接入；T004/T007在拆包消融前完成，T003中继和完整恢复在接入后验收；随后US2基础→US3基础→G2/US4→US5最终实验→文档/整体验证/独立审查。T019—T020先测共同运行机制，最终P需在A/B复核；T024—T026先验证核心，T039明确要求最终两候选重跑，不以先前SHA证据替代。
 
 安全并行只表示任务依赖允许，不授权额外Agent：T008与T009可分别准备测试/入口，T015与原生接入可分文件推进，T021与展示信号适配可分文件推进；T035可在T007冻结数据格式后与US4并行。US4大多修改同一补丁集合/测试文件，顺序执行；真实模型和浏览器性能采样串行，不能并发竞争同一会话/设备。
 

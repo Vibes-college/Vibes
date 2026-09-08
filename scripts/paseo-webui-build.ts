@@ -16,6 +16,7 @@ import { dirname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { root } from './local-tools.ts';
 import { collectPaseoLicenses } from './paseo-webui-licenses.ts';
+import { applyDependencyPatches, type DependencyPatch } from './paseo-webui-dependencies.ts';
 
 export interface UpstreamSource {
   repository: string;
@@ -85,6 +86,8 @@ export function buildWebUI(options: {
   identity: UpstreamSource;
   output: string;
   patches: SourcePatch[];
+  dependencyPatches?: DependencyPatch[];
+  exportDirectory?: string;
   exportWeb: () => void;
 }) {
   const { source, identity, output, patches, exportWeb } = options;
@@ -99,14 +102,16 @@ export function buildWebUI(options: {
   const applied: SourcePatch[] = [];
   const staging = `${output}.staging-${process.pid}`;
   if (existsSync(staging)) throw new Error('Staging already exists; inspect before retrying.');
-  const dist = join(source, 'packages/app/dist');
+  const dist = options.exportDirectory ?? join(source, 'packages/app/dist');
   let failure: unknown;
+  let restoreDependencies: (() => void) | undefined;
   try {
     for (const patch of patches) {
       git(source, ['apply', '--check', '--index', '--whitespace=error-all', patch.path]);
       git(source, ['apply', '--index', '--whitespace=error-all', patch.path]);
       applied.push(patch);
     }
+    restoreDependencies = applyDependencyPatches(source, options.dependencyPatches ?? []);
     const stagedDiff = git(source, ['diff', '--cached', '--binary']);
     if (existsSync(dist) && lstatSync(dist).isSymbolicLink())
       throw new Error('Export directory is a symlink.');
@@ -139,6 +144,10 @@ export function buildWebUI(options: {
           schemaVersion: 1,
           source: identity,
           patches: patches.map((patch) => ({ sha256: patch.sha256 })),
+          dependencyPatches: (options.dependencyPatches ?? []).map((patch) => ({
+            sha256: patch.sha256,
+            files: patch.files,
+          })),
           node: process.version,
           files,
         },
@@ -148,6 +157,13 @@ export function buildWebUI(options: {
     );
   } catch (error) {
     failure = error;
+  }
+  try {
+    restoreDependencies?.();
+  } catch (error) {
+    failure = failure
+      ? new AggregateError([failure, error], 'Export and dependency restoration failed.')
+      : error;
   }
   // Reverse only our staged patches while the worktree still matches the index.
   // Never reset an unexpected edit made by another process or a failing build.
@@ -174,8 +190,8 @@ export function buildWebUI(options: {
 
 function main() {
   const [action, ...extra] = process.argv.slice(2);
-  if (!['fetch', 'B0'].includes(action) || extra.length)
-    throw new Error('Usage: paseo-webui-build.ts fetch | B0');
+  if (!['fetch', 'B0', 'G1'].includes(action) || extra.length)
+    throw new Error('Usage: paseo-webui-build.ts fetch | B0 | G1');
   const identity: UpstreamSource = JSON.parse(
     readFileSync(join(root, 'third_party/paseo-webui/upstream.json'), 'utf8'),
   );
@@ -192,26 +208,40 @@ function main() {
     console.log('Fixed source verified. Install only under the approved dependency procedure.');
     return;
   }
-  const series: { B0: SourcePatch[] } = JSON.parse(
-    readFileSync(join(root, 'third_party/paseo-webui/patches/series.json'), 'utf8'),
-  );
+  const series: {
+    B0: SourcePatch[];
+    G1?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
+  } = JSON.parse(readFileSync(join(root, 'third_party/paseo-webui/patches/series.json'), 'utf8'));
+  if (action === 'G1' && !series.G1) throw new Error('G1 probe patches are not configured.');
+  const probeExport =
+    action === 'G1' ? join(root, '.scratch/paseo-webui/probes/g1-export') : undefined;
   const receipt = buildWebUI({
     source,
     identity,
-    patches: series.B0,
-    output: join(root, '.scratch/paseo-webui/artifacts/B0'),
+    patches: (action === 'G1' ? series.G1!.source : series.B0).map((patch) => ({
+      ...patch,
+      path: resolve(root, patch.path),
+    })),
+    dependencyPatches:
+      action === 'G1'
+        ? series.G1!.dependencies.map((patch) => ({ ...patch, path: resolve(root, patch.path) }))
+        : [],
+    output: join(root, '.scratch/paseo-webui/artifacts', action),
+    exportDirectory: probeExport,
     exportWeb: () => {
       const env = { ...process.env };
       for (const key of Object.keys(env))
         if (key.startsWith('EXPO_PUBLIC_') || key.startsWith('PASEO_')) delete env[key];
-      execFileSync('npm', ['run', 'build:web', '--workspace=@getpaseo/app'], {
+      const args = ['run', 'build:web', '--workspace=@getpaseo/app'];
+      if (probeExport) args.push('--', '--output-dir', probeExport);
+      execFileSync('npm', args, {
         cwd: source,
         env,
         stdio: 'inherit',
       });
     },
   });
-  console.log(`Verified B0 export: ${receipt.files.length} files.`);
+  console.log(`Verified ${action} export: ${receipt.files.length} files.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) main();

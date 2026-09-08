@@ -1,0 +1,93 @@
+---
+import { ClientRouter } from 'astro:transitions';
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh">
+  <head
+    ><meta charset="utf-8" /><meta
+      name="viewport"
+      content="width=device-width,initial-scale=1"
+    /><title>{title}</title><ClientRouter /></head
+  >
+  <body>
+    <header>
+      <a href="/probe/one/">Article one</a>
+      <a href="/probe/two/">Article two</a><input
+        aria-label="Host keyboard input"
+        placeholder="Host input"
+      />
+    </header>
+    <main><h1>{title}</h1><p>Astro navigation and native Paseo mounting probe.</p><slot /></main>
+    <section id="paseo-probe" transition:persist="paseo-probe">
+      <nav>
+        <button id="mount">Mount native app</button><button id="toggle">Hide / show</button><button
+          id="resize">Narrow / wide</button
+        ><output id="probe-status">Not loaded</output>
+      </nav><div id="root"></div>
+    </section>
+    <script is:inline src="/probe-controls.js"></script>
+    <style is:global>
+      body {
+        margin: 0;
+        background: #fff;
+        color: #222;
+        font: 16px system-ui;
+      }
+      header {
+        padding: 16px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        border-bottom: 1px solid #aaa;
+      }
+      main {
+        padding: 24px;
+        min-height: 160vh;
+        width: 40%;
+      }
+      #paseo-probe {
+        position: fixed;
+        right: 12px;
+        top: 78px;
+        bottom: 12px;
+        width: 420px;
+        max-width: 95vw;
+        border: 1px solid #777;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        isolation: isolate;
+      }
+      #paseo-probe.wide {
+        width: 720px;
+      }
+      #paseo-probe > nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px;
+        background: #eee;
+        color: #222;
+      }
+      #root {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        overflow: hidden;
+        position: relative;
+        contain: layout paint;
+        container-type: inline-size;
+        container-name: paseo;
+      }
+      #root[hidden] {
+        display: none;
+      }
+      #root > div {
+        flex: 1;
+        min-width: 0;
+      }
+    </style>
+  </body>
+</html>

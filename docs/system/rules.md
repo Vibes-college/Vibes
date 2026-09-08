@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '643ea1a6f153e4c5d2d48520515a7df08938f09833deab54579da8bfc598aaf7'
+code-revision: 'fa4049a74ec7e1d939cd05de0e69a576f387d94e0752b9842f8abab1e91e527e'
 ---
 
 # 常量、规则表与正则
@@ -46,6 +46,8 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 `/zh/*`和`/en/*`使用`public, max-age=60, must-revalidate`，页面更新最多可能有60秒新鲜缓存窗口；过期后由HTTP缓存规则重新读取或验证。禁用缓存及部分隐私环境可能重复下载，不能保证预取收益。WebKit自动化以独立空持久profile验证普通缓存，不使用用户profile。
 
 ## 检查与运行规则
+
+Playwright清单包含独立G1挂载探针，只有显式提供本机实验地址才执行；普通验证中的跳过不算Paseo验收。步骤见[实验构建](checks-and-release.md#paseo实验构建边界)。
 
 | 名称 / 规则     | 当前值或行为                                                                                                     | 定义位置                                                                     |
 | --------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |

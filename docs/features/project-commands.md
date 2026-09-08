@@ -19,6 +19,8 @@ code-sources:
     'scripts/build.ts',
     'scripts/paseo-webui-build.ts',
     'scripts/paseo-webui-licenses.ts',
+    'scripts/paseo-webui-dependencies.ts',
+    'scripts/paseo-webui-probe.ts',
     'third_party/paseo-webui/',
     'scripts/budget.ts',
     'scripts/budget-policy.ts',
@@ -34,7 +36,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '714ce23073dff69cbf1df93f11f8167d16729c25a563d34585d9b6a1cf18bb68'
+code-revision: 'bcbd35edef33d506e0b93b16c7c5af12f0e9f312ebdd3acc8b3a927b36d24fd9'
 ---
 
 # 功能名：检查与发布网站
@@ -117,4 +119,4 @@ flowchart TD
 
 ## Paseo原生基线实验
 
-维护者可按[012技术取舍](../../specs/012-paseo-webui-loading/research.md)在隔离目录准备已获授权的固定依赖，再运行`node --experimental-strip-types scripts/paseo-webui-build.ts fetch`核对源码，以及同命令的`B0`动作重放官方生产导出。成功输出位于`.scratch/paseo-webui/artifacts/B0`，包含版本、资源哈希和许可；失败不保留可复用的旧成功产物，遇到未知目录或源码改动须先检查。当前仅支持B0，尚未接入网站助手入口、正式构建或发布；详情见[检查与发布](../system/checks-and-release.md)。
+维护者可按[012技术取舍](../../specs/012-paseo-webui-loading/research.md)准备已获授权的固定依赖，用`node --experimental-strip-types scripts/paseo-webui-build.ts fetch`核对源码；`B0`重放官方原始导出，`G1`重放直接挂载探针，分别输出到`.scratch/paseo-webui/artifacts/`下对应目录。记录含版本、资源哈希和许可；失败不复用旧成功产物，意外改动保留待查，依赖补丁按精确摘要恢复。`scripts/paseo-webui-probe.ts`生成本地Astro导航宿主页，供同版隔离daemon托管和Playwright验证；AI负责实验实例配置，不要求用户改配置。尚未接入网站助手入口、正式构建或发布；命令与边界见[检查与发布](../system/checks-and-release.md)。

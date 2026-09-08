@@ -432,7 +432,6 @@
   },
   "build": {
     "webCommand": "npm run build:web --workspace=@getpaseo/app",
-    "daemonCommand": "npm run build:server",
-    "status": "not-run"
+    "daemonCommand": "npm run build:server"
   }
 }

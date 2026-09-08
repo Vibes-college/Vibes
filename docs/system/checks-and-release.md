@@ -13,7 +13,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '6c6b3a28b9bf1309bc4e5cd44c46ce548cf6aa62c8f55d7b2f48d06e2557dbff'
+code-revision: '98b4e3b7b199e9aa5eb853252a57785e74a61832d63bf1e17d93b6b32f27fe62'
 ---
 
 # 检查与发布
@@ -180,3 +180,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 `node --experimental-strip-types scripts/paseo-webui-build.ts fetch`只取得并核对`third_party/paseo-webui/upstream.json`固定的官方来源、提交、锁文件和许可；已有源码不重置。上游依赖安装按该清单的已授权工作区及脚本审阅流程单独执行，不使用主站node_modules。`B0`要求干净源码，校验`patches/series.json`中的补丁摘要并严格应用后运行官方Web导出；当前B0补丁为空，不代表已选定生产候选。该目录的JSON配置与patch补丁纳入docs:check的源码对应检查，改变它们须复核对应说明。
 
 导出必须有index.html及JS，资源不得为符号链接；随后保存原始资源哈希、Paseo许可、固定锁文件和实际安装包的许可文本，核对并恢复源码后才提交到`.scratch/paseo-webui/artifacts/B0`。失败会使旧的受控成功目录失效，未知输出目录与意外源码改动保留待查。构建记录不是网络请求或性能验收；实际依赖体积、许可缺失及运行路径另由实验核对。主站build、verify、预算分类和发布流程目前均不包含此实验产物。
+
+同一构建命令的`G1`动作按series中的source/dependencies两类补丁重放直接挂载探针，输出独立的artifacts/G1。依赖补丁只允许列出的Expo Router、React Native Web、Unistyles文件，检查补丁及每个文件改前/改后摘要，构建后恢复原始依赖；意外改动不覆盖。G1导出使用独立临时目录，不覆盖已保存B0，也不作为性能收益结果。
+
+`node --experimental-strip-types scripts/paseo-webui-probe.ts`校验B0/G1原始资源并生成`.scratch/paseo-webui/probes/web`：根路径保留B0，`/probe/one/`和`/probe/two/`为Astro换页测试，G1资源位于`/vendor/paseo/g1-direct/`。这是本地实验前缀，不是最终发布摘要或新增产品入口。AI在同版隔离daemon托管该目录；`PASEO_PROBE_URL=http://127.0.0.1:6792 npx playwright test tests/paseo-mount.spec.ts`用现有Playwright配置执行探针；地址仅允许本机。未指定地址时这些测试明确跳过，不把跳过算验收；手机项目是浏览器模拟，不能替代真实iPhone。正式接入与发布仍需012剩余验证。
