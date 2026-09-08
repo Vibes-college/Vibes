@@ -21,7 +21,7 @@ code-sources:
     'tests/unit/assistant.test.ts',
     'tests/unit/assistant-store.test.ts',
   ]
-code-revision: '4440c8482cd299659bfeaad50047fdb0074cb7b3562d6bcb19e6bc02b5c3ea04'
+code-revision: '8c2f433af09ef3459c0517de9559ef638af11e922ea05119e2db126d6a6a7846'
 ---
 
 # 本地助手连接与状态
@@ -63,6 +63,14 @@ App把消息及会话交给runtime，将发送、停止和审批交回Paseo。�
 作品资料由WorkDetail公开数据属性提供，经客户端限制为标题300、原作链接2000、规范链接2000、简介4000字符；作为引用资料附在用户文字后，不成为系统指令。发送前可展开查看并取消附带；切换作品重置附带选项。不会读取私有文件或抓取链接正文。
 
 `timeline.ts`按canonical序号合并文本与工具生命周期，工具参数/结果预览有界。Markdown禁原始HTML，图片只显示替代文字，链接仅允许HTTP(S)，新标签加noopener/noreferrer。无前端工具执行、iframe、附件下载或消息指定的交互UI。有效作品引用段转为来源标签，发送原文仍保留完整引用。聊天界面与SDK只在点开后加载：assistant-boot→assistant.ts→assistant-app.tsx两级显式导入让大依赖预加载表留在点击之后；范围和独立硬预算见[系统规则](rules.md)。
+
+## 代码下载、压缩与缓存
+
+首次点击立即显示加载提示并阻止重复点击，然后动态导入官方界面与SDK；加载失败可重新点击。页面尚未刷新时模块和React root复用，收起/再打开或站内导航不重建连接。刷新后从设备恢复信息重新连接、同步权威历史；代码缓存与会话恢复是两回事。
+
+构建JS/CSS文件名带内容指纹，`public/_headers`对`/_astro/*`设置`public, max-age=31536000, immutable`；中英文HTML为`public, max-age=60, must-revalidate`。新HTML引用新指纹，未改变文件可复用浏览器缓存。缓存可能被浏览器清理，Cloudflare边缘缓存与浏览器缓存各自生效，不保证第二次永不联网。
+
+本地budget统计完整助手依赖的gzip总量，不代表线上实际传输、执行时间或内存。Cloudflare按客户端能力协商传输压缩，浏览器自动解压；解压后的代码仍需解析和执行。预览验收记录实际Content-Encoding、Cache-Control和浏览器首次/重复加载，不能把单独SDK测量当作完整聊天界面大小。依据：[Cloudflare压缩](https://developers.cloudflare.com/speed/optimization/content/compression/)、[HTTP缓存](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching)。
 
 ## 电脑端准备与真实验收
 

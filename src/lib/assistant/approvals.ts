@@ -1,8 +1,8 @@
 import type { ThreadMessageLike, RespondToToolApprovalOptions } from '@assistant-ui/react';
 import type { AgentPermissionRequest } from '@getpaseo/protocol/agent-types';
-import type { AssistantStore } from './store';
-import type { Labels } from './labels';
-import { preview } from './timeline';
+import type { AssistantStore } from './store.ts';
+import type { Labels } from './labels.ts';
+import { preview } from './timeline.ts';
 export function permissionMessages(
   requests: readonly AgentPermissionRequest[],
   t: Labels,
@@ -40,9 +40,9 @@ export async function respondToApproval(
   store: AssistantStore,
   options: RespondToToolApprovalOptions,
 ) {
-  const { agent, connection, loading, busy } = store.getSnapshot();
+  const { agent, connection, loading, busy, error } = store.getSnapshot();
   const request = agent?.pendingPermissions.find((value) => value.id === options.approvalId);
-  if (!agent || !request || connection !== 'ready' || loading || busy)
+  if (!agent || !request || connection !== 'ready' || loading || busy || error?.endsWith('Unknown'))
     throw new Error('Approval unavailable. Refresh status.');
   const action = request.actions?.find((value) => value.id === options.optionId);
   if (request.actions?.length && !action) throw new Error('Unknown approval action.');
@@ -50,6 +50,9 @@ export async function respondToApproval(
     behavior: action?.behavior ?? (options.approved ? 'allow' : 'deny'),
     ...(action ? { selectedActionId: action.id } : {}),
   });
-  if (store.getSnapshot().error?.startsWith('permission'))
+  if (
+    store.getSnapshot().error?.startsWith('permission') ||
+    store.getSnapshot().error?.endsWith('Unknown')
+  )
     throw new Error('Approval was not confirmed. Refresh status.');
 }

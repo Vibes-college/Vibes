@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { PaseoAgent } from '@getpaseo/client';
 import { AssistantStore } from '../../src/lib/assistant/store.ts';
+import { respondToApproval } from '../../src/lib/assistant/approvals.ts';
 import type { Connection, DaemonEvent } from '../../src/lib/assistant/paseo-client.ts';
 import type { TimelinePage } from '../../src/lib/assistant/timeline.ts';
 const memory = (): Storage => {
@@ -142,6 +143,34 @@ function fixture() {
     counts: () => ({ sends, cancels, permissions, subscriptions }),
   };
 }
+test('a stop with unknown outcome cannot falsely confirm a subsequent approval', async () => {
+  const f = fixture();
+  f.current({
+    ...agent(),
+    status: 'running',
+    pendingPermissions: [{ id: 'p', provider: 'codex', kind: 'tool', name: 'Write' }],
+  });
+  await f.store.pair(offer, false);
+  await f.store.select('a');
+  f.driver.cancel = async () => {
+    throw new Error('timeout');
+  };
+  await f.store.cancel();
+  assert.equal(f.store.getSnapshot().error, 'cancelUnknown');
+  await assert.rejects(
+    respondToApproval(f.store, {
+      approvalId: 'p',
+      approved: true,
+      optionId: 'allow',
+    }),
+    /Approval unavailable/,
+  );
+  assert.equal(f.counts().permissions, 0);
+  assert.equal(f.store.getSnapshot().agent?.pendingPermissions.length, 1);
+  await f.store.resync();
+  await respondToApproval(f.store, { approvalId: 'p', approved: true, optionId: 'allow' });
+  assert.equal(f.counts().permissions, 1);
+});
 test('running or pending approval cannot send; unknown outcome requires authoritative refresh', async () => {
   const f = fixture();
   await f.store.pair(offer, false);

@@ -50,7 +50,7 @@ code-sources:
     'src/pages/[locale]/works/[id].astro',
     'tests/explore.spec.ts',
   ]
-code-revision: '422b2e0201ad0f9f505d6bdda85c1b653a0a1412f6914930d2753ba6209bf499'
+code-revision: '8d23513e63abeb949adba34e8bd1d72a5a3f8ab9d37e4e1989ba7ea220cd9c28'
 ---
 
 # 功能名：阅读作品详情

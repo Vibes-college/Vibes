@@ -17,6 +17,10 @@ shaped-by: ['004']
 
 ## 已转化
 
+- [2026-09-07] 现象：用户两次指出本地助手没有采用完整官方聊天界面｜证据：本需求对话及resources/evidence/011-local-paseo-assistant/official-visual-desktop.png
+  原因：把使用底层runtime误当作复用完整UI，自行拼接外壳和工具卡偏离了用户要求。
+  转化：[011 FR005](../specs/011-local-paseo-assistant/spec.md)明确完整官方Elements与能力边界，[本地助手](features/local-assistant.md)记录源码和真实UI验收｜验证：官方组件真实配对、来源、工具和允许/拒绝截图及official-final-browser.json｜转化日期：2026-09-07｜状态：已转化
+
 - [2026-09-06] 现象：连续导航返回搜索结果两次出现约123px滚动偏差｜证据：resources/evidence/005-continuous-navigation/verify-initial-failures.log及专项回归
   原因：异步结果短暂令页面变矮，换页后的scrollend可能先覆盖目标history滚动值，page-load才读取已太迟。
   转化：[explore.ts](../src/scripts/explore.ts)在before-preparation保存目标位置，结果恢复后再对齐｜验证：[navigation.spec.ts](../tests/navigation.spec.ts)覆盖，WebKit连续5次专项通过｜转化日期：2026-09-06｜状态：已转化

@@ -169,7 +169,14 @@ export function App({
         return request?.kind === 'question' ? (
           <QuestionForm request={request} store={store} t={t} {...props} />
         ) : (
-          <fieldset disabled={snapshot.busy || snapshot.loading || snapshot.connection !== 'ready'}>
+          <fieldset
+            disabled={
+              snapshot.busy ||
+              snapshot.loading ||
+              snapshot.connection !== 'ready' ||
+              !!snapshot.error?.endsWith('Unknown')
+            }
+          >
             <ToolFallback {...props} />
           </fieldset>
         );

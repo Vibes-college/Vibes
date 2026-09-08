@@ -72,12 +72,19 @@ export function toMessages(rows: readonly TimelineRow[], running: boolean): Thre
             toolName: item.name,
             args: {},
             argsText: preview(item.detail),
-            ...(item.status === 'running'
-              ? {}
-              : { result: preview(item.error ?? item.detail), isError: item.status === 'failed' }),
+            ...(item.status === 'completed' ? { result: preview(item.detail) } : {}),
           },
         ],
-        status: { type: 'complete', reason: 'stop' },
+        // Official runtime treats any tool result as success; failed/canceled calls
+        // carry message status without a result so its Elements retain the real outcome.
+        status:
+          item.status === 'running'
+            ? { type: 'running' }
+            : item.status === 'failed'
+              ? { type: 'incomplete', reason: 'error', error: preview(item.error ?? item.detail) }
+              : item.status === 'canceled'
+                ? { type: 'incomplete', reason: 'cancelled' }
+                : { type: 'complete', reason: 'stop' },
       };
       if (prior === undefined) {
         tools.set(toolKey, messages.length);
@@ -115,7 +122,12 @@ export function toMessages(rows: readonly TimelineRow[], running: boolean): Thre
     previous = row;
   }
   const last = messages.at(-1);
-  if (running && last?.role === 'assistant')
+  if (
+    running &&
+    last?.role === 'assistant' &&
+    typeof last.content !== 'string' &&
+    !last.content.some((part) => typeof part !== 'string' && part.type === 'tool-call')
+  )
     messages[messages.length - 1] = { ...last, status: { type: 'running' } };
   return messages;
 }

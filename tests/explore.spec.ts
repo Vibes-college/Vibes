@@ -107,7 +107,8 @@ test('static output stays small and content routes exist', async ({ request, pag
     expect(html).toMatch(/<h2\b/);
     expect(html).toContain('class="original-site"');
     expect(html).not.toMatch(/<dialog\b[^>]*\sopen(?:\s|=|>)/);
-    expect(html).toContain('id="assistant-dialog"');
+    expect(html).toContain('id="assistant-root"');
+    expect(html).not.toContain('id="assistant-dialog"');
   }
   const response = await request.get('/sitemap.xml');
   expect(response.ok()).toBe(true);

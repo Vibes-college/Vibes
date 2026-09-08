@@ -9,6 +9,9 @@ const zh = locale === 'zh';
     >{zh ? '本地助手' : 'Local assistant'}</button
   >
   <div transition:persist="local-assistant" id="assistant-root"></div>
+  <p id="assistant-loading" role="status">
+    {zh ? '正在加载聊天组件…' : 'Loading chat…'}
+  </p>
   <p id="assistant-load-error" role="alert" hidden>
     {zh ? '加载失败，请重试。' : 'Could not load. Please retry.'}
   </p>
@@ -35,6 +38,13 @@ const zh = locale === 'zh';
   body:has(#assistant-root[data-mounted]) .assistant-launch {
     display: none;
   }
+  #assistant-loading {
+    display: none;
+  }
+  #assistant-host:has(#assistant-open:disabled) #assistant-loading {
+    display: block;
+  }
+  #assistant-loading,
   #assistant-load-error:not([hidden]) {
     position: fixed;
     right: 16px;

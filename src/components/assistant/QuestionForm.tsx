@@ -25,7 +25,11 @@ export function QuestionForm({
   const items = questions(request);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [free, setFree] = useState<Record<string, string>>({});
-  const disabled = state.busy || state.loading || state.connection !== 'ready';
+  const disabled =
+    state.busy ||
+    state.loading ||
+    state.connection !== 'ready' ||
+    !!state.error?.endsWith('Unknown');
   const answered =
     items.length > 0 && items.every((q) => answers[q.header]?.length || free[q.header]?.trim());
   return (

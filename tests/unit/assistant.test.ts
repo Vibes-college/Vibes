@@ -118,6 +118,42 @@ test('tool lifecycle updates one card and errors remain visible', () => {
   assert.ok(JSON.stringify(messages[1]).includes('failed'));
 });
 
+test('official tool rendering preserves all outcomes and concurrent running tools', () => {
+  const statuses = ['running', 'completed', 'failed', 'canceled'] as const;
+  const rows = statuses.map((status, index) =>
+    row(index, {
+      type: 'tool_call',
+      callId: `c${index}`,
+      name: 'Read',
+      detail: { type: 'read', filePath: 'README.md', content: 'ok' },
+      ...(status === 'failed' ? { status, error: 'Permission denied' } : { status, error: null }),
+    }),
+  );
+  const messages = toMessages(
+    [...rows, row(4, { type: 'assistant_message', text: 'Other progress' })],
+    true,
+  );
+  assert.deepEqual(
+    messages.slice(0, 4).map((message) => message.status),
+    [
+      { type: 'running' },
+      { type: 'complete', reason: 'stop' },
+      { type: 'incomplete', reason: 'error', error: 'Permission denied' },
+      { type: 'incomplete', reason: 'cancelled' },
+    ],
+  );
+  // Official runtime treats a tool with result as complete, regardless of message status.
+  assert.deepEqual(
+    messages.slice(0, 4).map((message) => {
+      const part = message.content[0];
+      assert.ok(typeof part !== 'string' && part.type === 'tool-call');
+      return part.result !== undefined;
+    }),
+    [false, true, false, false],
+  );
+  assert.equal(toMessages([rows[3]], true)[0].status?.type, 'incomplete');
+});
+
 test('public work context is displayed as a source without losing the wire text, and malformed suffixes stay literal', () => {
   const work = {
     title: 'Title',
