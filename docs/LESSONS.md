@@ -17,6 +17,10 @@ shaped-by: ['004']
 
 ## 已转化
 
+- [2026-09-08] 现象：两次浏览器验收期间重建正在消费的产物，分别造成原生回执缺失和正文404｜证据：012 probe-mermaid/a1-browser-all.log、a2-prose-failure/trace.zip
+  原因：未把间接执行build的命令纳入互斥范围；npm run budget也会重建dist，不能与消费同一目录的E2E并行。
+  转化：在[检查与发布](system/checks-and-release.md)明确串行范围｜验证：a2-e2e-serial.log为185通过、88明确跳过，独立A2专项另行通过｜转化日期：2026-09-08｜状态：已转化
+
 - [2026-09-08] 现象：原生助手手机历史页多次保留连接前错误，运行时已经在线｜证据：resources/evidence/012-paseo-webui-loading/host/h-history-before-fix.log及h-history-after-fix.log
   原因：生产React编译器丢弃可变外部状态的版本依赖；普通单元测试未经过该编译器，不能发现此问题。
   转化：[确定性延迟恢复测试](../tests/paseo-recovery.spec.ts)覆盖真实生产导出，[窄范围编译边界](../third_party/paseo-webui/patches/h-reactive-history.patch)保留依赖｜验证：修正前失败，修正后三配置通过；升级移除边界前重跑同场景｜转化日期：2026-09-08｜状态：已转化

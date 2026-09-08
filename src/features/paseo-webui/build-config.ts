@@ -23,15 +23,15 @@ export function getPaseoBuild(): PaseoBuild | null {
   if (cached !== undefined) return cached;
   const profile = process.env.VIBES_PASEO_PROFILE;
   if (!profile) return (cached = null);
-  // Until the final candidate is selected, integration is only an isolated H/A1 build.
+  // Until the final candidate is selected, integration is only an isolated H/A1/A2 build.
   if (
     process.env.VIBES_DEPLOY === '1' ||
-    !['H', 'A1'].includes(profile) ||
+    !['H', 'A1', 'A2'].includes(profile) ||
     !process.env.VIBES_OUT_DIR ||
     !resolve(process.env.VIBES_OUT_DIR).startsWith(resolve('.scratch') + '/')
   )
     throw new Error(
-      'H/A1 requires an explicit isolated .scratch output; no production candidate is selected.',
+      'H/A1/A2 requires an explicit isolated .scratch output; no production candidate is selected.',
     );
   const directory = resolve('.scratch/paseo-webui/artifacts', profile);
   const receipt = JSON.parse(readFileSync(join(directory, 'build-receipt.json'), 'utf8'));
@@ -71,7 +71,7 @@ export function getPaseoBuild(): PaseoBuild | null {
     sandboxScriptHashes.some(
       (hash) => typeof hash !== 'string' || !/^'sha256-[A-Za-z0-9+/]{43}='$/.test(hash),
     ) ||
-    (profile === 'A1' && sandboxScriptHashes.length !== 1)
+    (profile !== 'H' && sandboxScriptHashes.length !== 1)
   )
     throw new Error('Invalid native sandbox script hashes.');
   const files: ArtifactFile[] = receipt.files;

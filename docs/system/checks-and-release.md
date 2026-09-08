@@ -13,7 +13,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '2a3cece60c9d1ec4db8370ac471b4c79e4b0b3445db3b8be77d732cd89abfe0b'
+code-revision: 'a356f5185af1b79590d7d03237bdf8a79ccf470d6c0251c89a55f09e587443f0'
 ---
 
 # 检查与发布
@@ -201,4 +201,6 @@ H的真实安全头/中继回归用`PASEO_CSP_URL=http://127.0.0.1:4392 PASEO_PA
 
 同一PASEO_MOCK_URL还可用于聊天选择及recovery文件中的展示状态组；不传grep即可运行相应文件。缺少私有配对文件时，中继组仍明确跳过；这些协议夹具不调用真实模型。统一准备和收尾由tests/fixtures/paseo-webui/mock-session.ts承担，不能把合成或模拟覆盖当作真实工具执行、实际手机后台或最终100次恢复验收。
 
-A1为Mermaid生产拆包探针，构建及协议夹具方法见[助手系统说明](local-assistant.md)。仅允许隔离输出，未选定正式候选；精确沙箱脚本哈希与默认网站CSP同批构建，不增加任意脚本来源。
+A1为Mermaid生产拆包探针，A2在此基础上延迟终端与文件编辑器，构建及协议夹具方法见[助手系统说明](local-assistant.md)。仅允许隔离输出，未选定正式候选；精确沙箱脚本哈希与默认网站CSP同批构建，不增加任意脚本来源。
+
+构建与消费同一输出目录的浏览器测试必须串行；`npm run budget`包含build，`verify`中的E2E也会构建。运行中不能重建dist或当前原生回执；需要只读体积检查时，在产物稳定后单独运行`node scripts/budget.ts`。独立目录的协议夹具测试不改dist，但不用于并发性能采样。

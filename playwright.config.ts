@@ -17,6 +17,7 @@ export default defineConfig({
     'paseo-chat.spec.ts',
     'paseo-recovery.spec.ts',
     'paseo-features.spec.ts',
+    'paseo-resources.spec.ts',
   ],
   fullyParallel: true,
   // A single local Worker serves the suite; serialize clients to avoid proxy connection loss.

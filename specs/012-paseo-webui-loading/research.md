@@ -207,3 +207,17 @@ T022沿用已存在的宿主AppState/document/focus适配，新增三配置协�
 高度布局修正后，`a1-height-browser-all.log`和`a1-height-report.json`记录三配置6项全部通过，含请求路径/次数/预期失败；`a1-cua-readable-diagram.png`是内置浏览器实际显示并操作源码往返的证据。上游源策略/渲染模型/请求驱动/HTML四组16项单元通过；本站解析及构建测试6项通过。受控mock自定义响应在刷新后可能作为合成历史再次呈现，故本组只作为图表呈现/加载验收，不用于权威历史去重结论。
 
 A1阶段整站`verify`的类型、格式、文档和119项单元通过；E2E为184通过、67跳过、1失败，仍是WebKit原生音频暂停后恢复测试。默认Explore预算通过（公开JS gzip 20,288字节）。音频单项附加pause调用追踪后5次中3次失败、2次通过，失败的第二个pause事件没有站点JavaScript的pause调用，不能据此声称已确定根因或豁免验收。完整证据保存在probe-mermaid/audio-diagnostic/。原生app额外类型检查发现早期宿主补丁3处类型问题，仍待修复；本站类型通过不代表原生app类型已通过。当前保持Draft，不构成整站验收完成。
+
+附加音频诊断：原生play/playing之后，duration从205.1657秒降为60秒、ended变为true，随后pause/ended事件到达，没有站点pause调用。裸audio对照移除了本站播放器；通过标准206 Range响应并直接调用原生play后，3次中1次仍停在60秒、2次通过，故不能仅归因于本地服务无Range，也不能认定已修复。早一组裸audio采用未经验证的坐标点击，5次失败只作诊断过程，不作为根因证据。临时诊断测试及trace保存在audio-diagnostic/，正式测试断言保持原样。真实iPhone尚未验证此现象；该失败仍阻止最终验收，不以继续独立实现任务视为豁免。
+
+## R17：终端与文件的激活边界
+
+A2在A1上保留同步注册/描述和原生provider，只把TerminalPane与FilePane放进按激活加载的主体；失败清除模块Promise，显示重试，卸载或隐藏期间迟到响应不挂入界面。生产导出42文件，独立terminal-pane约943kB、pane约368kB原始体积；共享语法/图标仍在初始包，不能将局部拆分当作最终预算通过。
+
+原生完整tsgo检查发现早期H补丁的Web unmount DOM类型、共享.ts导入规则与测试mock签名三处类型问题；h-native-types.patch在A2中修正，不改原生运行行为。固定react-native-web AppRegistry实现调用unmountComponentAtNode，故按HTMLElement做局部类型桥接而不伪造numeric root。A2草稿源码完整类型检查通过。
+
+a2-features-all.json三配置18项通过，包含Mermaid回归、终端/编辑器按需、首次失败后重试、隐藏复用、刷新布局恢复、实际写文件；a2-file-deeplink-all.log另3项通过聊天文件链接打开第18行。最初终端测试误用宽屏tab按钮而超时，改为实际窄面板Workspace菜单；随后比较整份终端信息因原生shell补充title失败，改为核对同一个terminal id，没有忽略终端丢失。内置浏览器在自建隔离目录实际执行固定printf并看到输出，编辑fixture.txt后核对磁盘内容，截图a2-cua-terminal.png/a2-cua-file.png。均为mock-only daemon及自建文件，不计真实Luna重任务。卸载/未保存草稿和完整资源释放尚未验收，T029保持未完成。
+
+A2资源补充：a2-resource-all.json三配置6项通过，首次打开前无terminal订阅；隐藏时renderer和stream仍保留，整页退出后renderer消失且原生模块未加载，远端terminal和Agent身份仍在，重新主动打开恢复。故不能声称隐藏已经释放renderer或stream。阻断fs.file.write.request后，未保存内容/光标跨隐藏及工作区切换保留；切换后hiddenEditors=1，属于原生保留，不作为编辑器真正卸载的证据。原生stream controller、editor/live file/preview模型及文件链接6组90项单元通过。T029的完整卸载边界仍未关闭。
+
+A2整站verify首次184通过、82跳过、1项正文图片测试失败；trace显示该正文请求404。当时错误地并行执行npm run budget，它隐含build并替换了正在被测试消费的dist。此失败不能归于正文逻辑或跳过。串行重跑test:e2e为185通过、88跳过；新增A2测试需要显式夹具配置，已另行通过。检查含119项单元通过，默认预算通过。先前WebKit音频间歇失败在本轮未复现，保留裸audio对照和全部失败记录，不声称已修复。

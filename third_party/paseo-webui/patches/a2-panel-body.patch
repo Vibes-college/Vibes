@@ -1,0 +1,132 @@
+diff --git a/packages/app/src/panels/file-panel.tsx b/packages/app/src/panels/file-panel.tsx
+index 1d51123..d402bf5 100644
+--- a/packages/app/src/panels/file-panel.tsx
++++ b/packages/app/src/panels/file-panel.tsx
+@@ -2,12 +2,16 @@ import { Text, View } from "react-native";
+ import { useMemo } from "react";
+ import invariant from "tiny-invariant";
+ import { useTranslation } from "react-i18next";
+-import { FilePane } from "@/file-pane/pane";
++import { lazyPanelBody } from "@/panels/lazy-panel-body";
+ import { usePaneContext } from "@/panels/pane-context";
+ import { definePanel } from "@/panels/panel-registry";
+ import { useWorkspaceDirectory } from "@/stores/session-store-hooks";
+ import { createMaterialFileIcon } from "@/components/material-file-icon";
+ 
++const FilePane = lazyPanelBody("file", () =>
++  import("@/file-pane/pane").then((module) => module.FilePane),
++);
++
+ const CENTERED_PADDED_STYLE = {
+   flex: 1,
+   alignItems: "center",
+diff --git a/packages/app/src/panels/lazy-panel-body.tsx b/packages/app/src/panels/lazy-panel-body.tsx
+new file mode 100644
+index 0000000..c392154
+--- /dev/null
++++ b/packages/app/src/panels/lazy-panel-body.tsx
+@@ -0,0 +1,80 @@
++import { useEffect, useState, type ComponentType } from 'react';
++import { Text, View } from 'react-native';
++import { StyleSheet, useUnistyles } from 'react-native-unistyles';
++import { useTranslation } from 'react-i18next';
++import { Button } from '@/components/ui/button';
++import { LoadingSpinner } from '@/components/ui/loading-spinner';
++import { useRetainedPanelActive } from '@/components/retained-panel';
++
++/** Registration and descriptors stay synchronous; only an active body starts its download. */
++export function lazyPanelBody<Props extends object>(
++  name: string,
++  loader: () => Promise<ComponentType<Props>>,
++): ComponentType<Props> {
++  let loaded: ComponentType<Props> | null = null;
++  let pending: Promise<ComponentType<Props>> | undefined;
++  const load = () => {
++    pending ??= loader().then(
++      (component) => (loaded = component),
++      (error: unknown) => {
++        pending = undefined;
++        throw error;
++      },
++    );
++    return pending;
++  };
++  function LazyPanelBody(props: Props) {
++    const { t } = useTranslation();
++    const { theme } = useUnistyles();
++    const active = useRetainedPanelActive();
++    const [Component, setComponent] = useState<ComponentType<Props> | null>(() => loaded);
++    const [failed, setFailed] = useState(false);
++    useEffect(() => {
++      if (!active || Component || failed) return;
++      let current = true;
++      void load().then(
++        (component) => {
++          if (current) setComponent(() => component);
++        },
++        () => {
++          if (current) setFailed(true);
++        },
++      );
++      return () => {
++        current = false;
++      };
++    }, [active, Component, failed]);
++    // After loading, the native retained-panel lifecycle still owns subscriptions and state.
++    if (Component) return <Component {...props} />;
++    if (!active) return null;
++    return (
++      <View style={styles.placeholder} testID={`paseo-lazy-${name}`}>
++        {failed ? (
++          <>
++            <Text accessibilityLiveRegion="polite" style={styles.text}>
++              {t('common.states.downloadFailed')}
++            </Text>
++            <Button
++              variant="secondary"
++              onPress={() => setFailed(false)}
++              testID={`paseo-lazy-${name}-retry`}
++            >
++              {t('common.actions.retry')}
++            </Button>
++          </>
++        ) : (
++          <>
++            <LoadingSpinner color={theme.colors.foregroundMuted} />
++            <Text style={styles.text}>{t('common.loading')}</Text>
++          </>
++        )}
++      </View>
++    );
++  }
++  return LazyPanelBody;
++}
++
++const styles = StyleSheet.create((theme) => ({
++  placeholder: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 16 },
++  text: { color: theme.colors.foregroundMuted },
++}));
+diff --git a/packages/app/src/panels/terminal-panel.tsx b/packages/app/src/panels/terminal-panel.tsx
+index 32dd1f1..b71e233 100644
+--- a/packages/app/src/panels/terminal-panel.tsx
++++ b/packages/app/src/panels/terminal-panel.tsx
+@@ -6,7 +6,7 @@ import { Text, View } from "react-native";
+ import invariant from "tiny-invariant";
+ import type { ListTerminalsResponse } from "@getpaseo/protocol/messages";
+ import { deriveTerminalActivityStatusBucket } from "@getpaseo/protocol/terminal-activity";
+-import { TerminalPane } from "@/components/terminal-pane";
++import { lazyPanelBody } from "@/panels/lazy-panel-body";
+ import { usePaneContext, usePaneFocus } from "@/panels/pane-context";
+ import { definePanel, type PanelDescriptor } from "@/panels/panel-registry";
+ import { queryClient } from "@/data/query-client";
+@@ -17,6 +17,10 @@ import { useWorkspaceDirectory, useWorkspaceFields } from "@/stores/session-stor
+ 
+ type ListTerminalsPayload = ListTerminalsResponse["payload"];
+ 
++const TerminalPane = lazyPanelBody("terminal", () =>
++  import("@/components/terminal-pane").then((module) => module.TerminalPane),
++);
++
+ const CENTERED_PADDED_STYLE = {
+   flex: 1,
+   alignItems: "center",

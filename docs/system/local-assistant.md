@@ -14,7 +14,7 @@ code-sources:
     'scripts/paseo-webui-sandbox.ts',
     'third_party/paseo-webui/',
   ]
-code-revision: 'e46ee60d1ae10ec6c068bbe93d3102e69e5ec32c7e146d45e5eaf50cc7bf8964'
+code-revision: '8304d3c1c188e9744a76e92c82a061ed37fa03991008046b7a7a6197c5ae9d95'
 ---
 
 # 原生Paseo嵌入边界
@@ -75,3 +75,7 @@ Astro客户端将原本公共的小型启动/辅助模块合并到site-boot，�
 `tests/paseo-chat.spec.ts`的操作反馈组需`PASEO_MOCK_URL=http://localhost:4393`，由AI先准备固定源码编译的6793开发mock daemon（所有真实provider禁用）、`.scratch/paseo-webui/h-site`生产H站，再运行`node tests/fixtures/paseo-webui/mock-host.mjs`。该测试宿主保留产物CSP，将同源`/ws`转发给mock服务；原生会把127.0.0.1规范为localhost，因此页面也使用localhost。连接注册仅注入无密钥的夹具地址，不作为配对验收。用例在独立Git目录创建mock会话，只丢弃指定请求并断线，不伪造成功回执；检查原生提示和实际发送次数，结束时取消并归档夹具。此组验证协议与界面正确性，不计真实模型性能、子进程停止或最终恢复矩阵。
 
 A1专项由AI完成生产构建后，以`PASEO_MOCK_PROFILE=A1 node tests/fixtures/paseo-webui/mock-host.mjs`启动4393，随后运行`PASEO_MOCK_PROFILE=A1 PASEO_MOCK_URL=http://localhost:4393 npx playwright test tests/paseo-features.spec.ts`。构建与消费同一产物的浏览器测试必须串行，避免严格构建器清除旧回执时破坏在测样本；A1和H不能同时占用4393。
+
+A2以相同命令选择A2、输出`.scratch/paseo-webui/a2-site`，协议夹具也选择A2。`a2-panel-body.patch`保留同步注册、描述与原生上下文，仅在RetainedPanel激活时下载终端或FilePane；下载失败保留明确重试入口，成功模块共享，隐藏不重新下载。已加载实例仍由原生生命周期持有；当前不能把隐藏等同资源已卸载。测试夹具按自己创建的目录终止测试终端后再归档，不能清理其他目录。
+
+A2的`h-native-types.patch`补足Web专用unmount的HTMLElement类型桥接，依据固定react-native-web实际接收DOM根节点；允许导入`.ts`扩展以保持共享契约源码一致，并具体声明测试mock签名。原生app完整tsgo检查通过；H/A1旧探针回执保持原样，不把本站检查冒称原生类型检查。

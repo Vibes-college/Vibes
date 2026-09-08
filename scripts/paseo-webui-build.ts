@@ -204,8 +204,8 @@ export function buildWebUI(options: {
 
 function main() {
   const [action, ...extra] = process.argv.slice(2);
-  if (!['fetch', 'B0', 'G1', 'H', 'A1', 'B0-graph'].includes(action) || extra.length)
-    throw new Error('Usage: paseo-webui-build.ts fetch | B0 | G1 | H | A1 | B0-graph');
+  if (!['fetch', 'B0', 'G1', 'H', 'A1', 'A2', 'B0-graph'].includes(action) || extra.length)
+    throw new Error('Usage: paseo-webui-build.ts fetch | B0 | G1 | H | A1 | A2 | B0-graph');
   const identity: UpstreamSource = JSON.parse(
     readFileSync(join(root, 'third_party/paseo-webui/upstream.json'), 'utf8'),
   );
@@ -228,6 +228,7 @@ function main() {
     G1?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
     H?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
     A1?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
+    A2?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
   } = JSON.parse(readFileSync(join(root, 'third_party/paseo-webui/patches/series.json'), 'utf8'));
   const mountedProfile =
     action === 'G1'
@@ -236,13 +237,15 @@ function main() {
         ? series.H
         : action === 'A1'
           ? series.A1
-          : undefined;
-  if ((action === 'G1' || action === 'H' || action === 'A1') && !mountedProfile)
+          : action === 'A2'
+            ? series.A2
+            : undefined;
+  if ((action === 'G1' || action === 'H' || action === 'A1' || action === 'A2') && !mountedProfile)
     throw new Error('Mount profile is not configured.');
   const publicPath =
     action === 'G1'
       ? '/vendor/paseo/g1-direct'
-      : action === 'H' || action === 'A1'
+      : action === 'H' || action === 'A1' || action === 'A2'
         ? '/vendor/paseo/' +
           sha256(
             Buffer.from(
@@ -281,7 +284,7 @@ function main() {
     graphFile: action === 'B0-graph' ? graphFile : undefined,
     publicPath,
     mermaidSandboxSource:
-      action === 'A1'
+      action === 'A1' || action === 'A2'
         ? 'packages/app/src/components/markdown/fence/mermaid/runtime/html.gen.ts'
         : undefined,
     exportWeb: () => {
@@ -294,7 +297,8 @@ function main() {
         )
           delete env[key];
       if (action === 'B0-graph') env.VIBES_PASEO_GRAPH_FILE = graphFile;
-      if (action === 'H' || action === 'A1') env.VIBES_PASEO_BASE_URL = publicPath;
+      if (action === 'H' || action === 'A1' || action === 'A2')
+        env.VIBES_PASEO_BASE_URL = publicPath;
       const args = ['run', 'build:web', '--workspace=@getpaseo/app'];
       if (probeExport) args.push('--', '--output-dir', probeExport);
       execFileSync('npm', args, {

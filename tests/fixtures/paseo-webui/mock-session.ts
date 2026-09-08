@@ -16,6 +16,12 @@ interface FixtureClient {
   cancelAgent(id: string): Promise<void>;
   archiveAgent(id: string): Promise<unknown>;
   archiveWorkspace(id: string): Promise<unknown>;
+  listTerminals(
+    cwd?: string,
+    requestId?: string,
+    options?: { workspaceId?: string },
+  ): Promise<{ terminals: { id: string }[] }>;
+  killTerminal(id: string): Promise<unknown>;
 }
 export interface MockSession {
   agentId: string;
@@ -70,6 +76,7 @@ export async function withMockSession(
   });
   const agents: string[] = [];
   const workspaces: string[] = [];
+  const directories: string[] = [];
   let failure: unknown;
   try {
     await client.connect();
@@ -77,6 +84,7 @@ export async function withMockSession(
       options: { model?: string; featureValues?: Record<string, unknown> } = {},
     ): Promise<MockSession> => {
       const cwd = mkdtempSync(root + '/run-');
+      directories.push(cwd);
       // Native directory discovery must stop here rather than reaching the parent checkout.
       execFileSync('git', ['init'], { cwd, stdio: 'ignore' });
       const created = await client.createWorkspace({ source: { kind: 'directory', path: cwd } });
@@ -140,6 +148,11 @@ export async function withMockSession(
       ...agents.map((id) => async () => {
         await client.cancelAgent(id);
         await client.archiveAgent(id);
+      }),
+      ...directories.map((cwd) => async () => {
+        // Every directory is created by this fixture; never inspect or kill unrelated terminals.
+        const { terminals } = await client.listTerminals(cwd);
+        for (const terminal of terminals) await client.killTerminal(terminal.id);
       }),
       ...workspaces.map((id) => async () => {
         await client.archiveWorkspace(id);

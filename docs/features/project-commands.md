@@ -39,7 +39,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '26032846513b28977661fd5549bc476206a6364c38ea5b48052685f528d6ce34'
+code-revision: 'e95845f3e9540923b568b9d6945676e792a818a161360e0b8a09b13b1259593b'
 ---
 
 # 功能名：检查与发布网站
@@ -122,7 +122,7 @@ flowchart TD
 
 ## Paseo原生基线实验
 
-维护者可按[012技术取舍](../../specs/012-paseo-webui-loading/research.md)准备已获授权的固定依赖，用`node --experimental-strip-types scripts/paseo-webui-build.ts fetch`核对源码；`B0`重放官方原始导出，`G1`重放直接挂载探针，分别输出到`.scratch/paseo-webui/artifacts/`下对应目录。记录含版本、资源哈希和许可；失败不复用旧成功产物，意外改动保留待查，依赖补丁按精确摘要恢复。`scripts/paseo-webui-probe.ts`生成本地Astro导航宿主页，供同版隔离daemon托管和Playwright验证；AI负责实验实例配置，不要求用户改配置。H和Mermaid探针A1可通过显式隔离构建启用[网站助手入口](local-assistant.md)，普通构建不启用，尚无正式发布候选；命令与边界见[检查与发布](../system/checks-and-release.md)。
+维护者可按[012技术取舍](../../specs/012-paseo-webui-loading/research.md)准备已获授权的固定依赖，用`node --experimental-strip-types scripts/paseo-webui-build.ts fetch`核对源码；`B0`重放官方原始导出，`G1`重放直接挂载探针，分别输出到`.scratch/paseo-webui/artifacts/`下对应目录。记录含版本、资源哈希和许可；失败不复用旧成功产物，意外改动保留待查，依赖补丁按精确摘要恢复。`scripts/paseo-webui-probe.ts`生成本地Astro导航宿主页，供同版隔离daemon托管和Playwright验证；AI负责实验实例配置，不要求用户改配置。H、Mermaid探针A1和终端/文件探针A2可通过显式隔离构建启用[网站助手入口](local-assistant.md)，普通构建不启用，尚无正式发布候选；命令与边界见[检查与发布](../system/checks-and-release.md)。
 
 基线盘点先运行`node --experimental-strip-types scripts/paseo-webui-build.ts B0-graph`，只读观察Metro完整依赖图并单独导出；再运行`node --experimental-strip-types scripts/paseo-webui-manifest.ts`，要求观察构建与原B0所有资源哈希完全一致，才保存文件、压缩及同步/异步源依赖清单。实际首次请求由`PASEO_BASELINE_URL=http://127.0.0.1:6792 npx playwright test tests/paseo-baseline.spec.ts --project=desktop-chromium`记录，逐个核对所下载JS确为原B0。结果在resources/evidence/012-paseo-webui-loading/baseline/；单次请求盘点不是冷暖性能实验通过结论。
 

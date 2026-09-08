@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { withMockSession } from './fixtures/paseo-webui/mock-session.ts';
 
@@ -9,10 +9,20 @@ for (const failFirst of [false, true]) {
   test(`Mermaid waits for explicit expansion and retains native isolation${failFirst ? ' after a failed chunk and retry' : ''}`, async ({
     browser,
   }, info) => {
-    test.skip(process.env.PASEO_MOCK_PROFILE !== 'A1', 'Requires the A1 production fixture host.');
+    test.skip(
+      !['A1', 'A2'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+      'Requires an A1/A2 production fixture host.',
+    );
     test.setTimeout(90000);
     const receipt = JSON.parse(
-      readFileSync(resolve('.scratch/paseo-webui/artifacts/A1/build-receipt.json'), 'utf8'),
+      readFileSync(
+        resolve(
+          '.scratch/paseo-webui/artifacts',
+          process.env.PASEO_MOCK_PROFILE!,
+          'build-receipt.json',
+        ),
+        'utf8',
+      ),
     );
     const chunks = receipt.files.filter((file: { path: string }) =>
       /\/host-[a-f0-9]+\.js$/.test(file.path),
@@ -106,3 +116,135 @@ for (const failFirst of [false, true]) {
     });
   });
 }
+
+for (const failFirst of [false, true]) {
+  test(`terminal body loads on activation${failFirst ? ' with retry' : ''}`, async ({
+    browser,
+  }, info) => {
+    test.skip(process.env.PASEO_MOCK_PROFILE !== 'A2', 'Requires the A2 production fixture host.');
+    test.setTimeout(90000);
+    const receipt = JSON.parse(
+      readFileSync(resolve('.scratch/paseo-webui/artifacts/A2/build-receipt.json'), 'utf8'),
+    );
+    const chunk = receipt.files.filter((file: { path: string }) =>
+      /\/terminal-pane-[a-f0-9]+\.js$/.test(file.path),
+    );
+    expect(chunk).toHaveLength(1);
+    const chunkPath = receipt.publicPath + '/' + chunk[0].path;
+    await withMockSession(browser, info, async ({ page, open, client, cwd }) => {
+      let attempts = 0;
+      await page.route('**' + chunkPath, async (route) => {
+        attempts++;
+        if (failFirst && attempts === 1) await route.abort('failed');
+        else await route.continue();
+      });
+      await open();
+      expect(attempts).toBe(0);
+      await page.getByTestId('workspace-header-menu-trigger').click();
+      await page.getByTestId('workspace-header-new-terminal').click();
+      if (failFirst) {
+        await expect(page.getByTestId('paseo-lazy-terminal-retry')).toBeVisible();
+        await page.getByTestId('paseo-lazy-terminal-retry').click();
+      }
+      await expect(page.getByTestId('terminal-surface')).toBeVisible();
+      await expect(page.getByTestId('terminal-attach-loading')).toBeHidden();
+      expect(attempts).toBe(failFirst ? 2 : 1);
+      const before = await client.listTerminals(cwd);
+      expect(before.terminals).toHaveLength(1);
+      await page.locator('[data-paseo-close]').click();
+      expect((await client.listTerminals(cwd)).terminals.map((terminal) => terminal.id)).toEqual(
+        before.terminals.map((terminal) => terminal.id),
+      );
+      await page.locator('[data-paseo-open]').click();
+      await expect(page.getByTestId('terminal-surface')).toBeVisible();
+      expect(attempts).toBe(failFirst ? 2 : 1);
+      await page.reload();
+      await page.locator('[data-paseo-open]').click();
+      await expect(page.getByTestId('terminal-surface')).toBeVisible({ timeout: 45000 });
+      await expect(page.getByTestId('terminal-attach-loading')).toBeHidden();
+      expect((await client.listTerminals(cwd)).terminals.map((terminal) => terminal.id)).toEqual(
+        before.terminals.map((terminal) => terminal.id),
+      );
+      await info.attach('terminal-production-boundary', {
+        body: JSON.stringify({ chunkPath, attempts }),
+        contentType: 'application/json',
+      });
+    });
+  });
+}
+
+for (const failFirst of [false, true]) {
+  test(`file editor body loads on activation${failFirst ? ' with retry' : ''}`, async ({
+    browser,
+  }, info) => {
+    test.skip(process.env.PASEO_MOCK_PROFILE !== 'A2', 'Requires the A2 production fixture host.');
+    test.setTimeout(90000);
+    const receipt = JSON.parse(
+      readFileSync(resolve('.scratch/paseo-webui/artifacts/A2/build-receipt.json'), 'utf8'),
+    );
+    const chunk = receipt.files.filter((file: { path: string }) =>
+      /\/pane-[a-f0-9]+\.js$/.test(file.path),
+    );
+    expect(chunk).toHaveLength(1);
+    const chunkPath = receipt.publicPath + '/' + chunk[0].path;
+    await withMockSession(browser, info, async ({ page, open, cwd }) => {
+      writeFileSync(resolve(cwd, 'fixture.txt'), 'Paseo native editor fixture\nSecond line\n');
+      let attempts = 0;
+      await page.route('**' + chunkPath, async (route) => {
+        attempts++;
+        if (failFirst && attempts === 1) await route.abort('failed');
+        else await route.continue();
+      });
+      await open();
+      expect(attempts).toBe(0);
+      await page.getByRole('button', { name: '打开侧边面板', exact: true }).click();
+      await page.getByText('文件', { exact: true }).click();
+      await page.getByText('fixture.txt', { exact: true }).click();
+      if (failFirst) {
+        await expect(page.getByTestId('paseo-lazy-file-retry')).toBeVisible();
+        await page.getByTestId('paseo-lazy-file-retry').click();
+      }
+      const editor = page.locator('[contenteditable=true]:visible');
+      await expect(editor).toContainText('Paseo native editor fixture');
+      expect(attempts).toBe(failFirst ? 2 : 1);
+      await editor.fill('Paseo editor saved fixture\nSecond line\n');
+      await expect
+        .poll(() => readFileSync(resolve(cwd, 'fixture.txt'), 'utf8'))
+        .toBe('Paseo editor saved fixture\nSecond line\n');
+      await page.locator('[data-paseo-close]').click();
+      await page.locator('[data-paseo-open]').click();
+      await expect(editor).toContainText('Paseo editor saved fixture');
+      expect(attempts).toBe(failFirst ? 2 : 1);
+      await page.reload();
+      await page.locator('[data-paseo-open]').click();
+      await expect(editor).toContainText('Paseo editor saved fixture', { timeout: 45000 });
+      await info.attach('file-production-boundary', {
+        body: JSON.stringify({ chunkPath, attempts }),
+        contentType: 'application/json',
+      });
+    });
+  });
+}
+
+test('native assistant file deep link activates the lazy editor at its target line', async ({
+  browser,
+}, info) => {
+  test.skip(process.env.PASEO_MOCK_PROFILE !== 'A2', 'Requires the A2 production fixture host.');
+  test.setTimeout(90000);
+  await withMockSession(browser, info, async ({ page, createSession, open }) => {
+    const session = await createSession({
+      featureValues: { mockAssistantResponse: '[Open fixture line](fixture.txt#L18)' },
+    });
+    writeFileSync(
+      resolve(session.cwd, 'fixture.txt'),
+      Array.from({ length: 30 }, (_, i) => `Fixture line ${i + 1}`).join('\n'),
+    );
+    await open(session);
+    await page.locator('#root textarea:visible').fill('Show the configured file link.');
+    await page.getByRole('button', { name: '发送消息', exact: true }).click();
+    await page.getByText('Open fixture line', { exact: true }).click();
+    await expect(page.getByTestId('workspace-file-pane')).toBeVisible();
+    await expect(page.getByLabel('第 18 行，第 1 列', { exact: true })).toBeVisible();
+    await expect(page.locator('[contenteditable=true]:visible')).toContainText('Fixture line 18');
+  });
+});
