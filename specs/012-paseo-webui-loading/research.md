@@ -1,43 +1,81 @@
 ---
 tense: 'frozen'
-describes: 'Paseo原生助手版本与加载候选边界'
+describes: 'Paseo原生助手版本与加载技术取舍'
 status: 'draft'
 amended-by: []
 ---
 
-# 版本与候选边界
+# Paseo原生助手版本与加载技术取舍
 
-## 已确认的选择
+## R1 固定版本与两候选
 
-2026-09-08用户确认保留Paseo聊天及完整运行机制，外围功能分为核心、可选加载、构建排除三级；整个助手延迟加载和减少每次更新的工作量是两个候选共同要求。比较范围仅为完整WebUI按需加载版与构建精简版。另建012及独立PR，011及PR #10保留为暂停历史，不作为构建依赖。
+**决定**：官方v0.7.2，提交`9400a49af670fdb5db4af58e73f8df98588dbea9`。只比较完整WebUI按需加载与构建精简；两者共同延后整个助手并减少更新工作。不继承011实现，PR #10保持暂停。
 
-## 固定官方版本
+**理由与证据**：2026-09-08核对官方release与固定源码。发布说明包含手机流式输出、复杂diff及超长消息修复；这是选版理由，不是当前设备验收。源码在本任务`.scratch/paseo-v0.7.2`只读克隆，HEAD核对一致，未安装、构建或运行。旧项目4.79 MB gzip和功能归因只供排查方向，新版必须重新建立基线。
 
-2026-09-08通过GitHub releases/latest与commits/v0.7.2核实官方最新发布为v0.7.2，固定提交9400a49af670fdb5db4af58e73f8df98588dbea9。官方说明包含手机流式输出卡顿、多文件diff卡顿/崩溃、超长消息崩溃修复；它们是选择依据，不是本项目验收证据。[发布说明](https://github.com/getpaseo/paseo/releases/tag/v0.7.2)。
+**替代方案**：旧fork有定制挂载便利，但版本与上游修复不同；assistant-ui + SDK已被用户排除。当前daemon0.5.0与新版WebUI的运行兼容性留给G0；主实验优先同版daemon独立实例，两个候选固定一致，不把服务端升级效果归因于前端。
 
-当前既有测试daemon为0.5.0。新WebUI与其兼容性尚未验证；先验证协议与官方版本配对。如需升级，使用独立daemon配置并对两候选保持同样版本；不能混用旧定制服务端或将服务端升级收益归因于前端裁剪。
+来源：[官方发布说明](https://github.com/getpaseo/paseo/releases/tag/v0.7.2)、[固定源码](https://github.com/getpaseo/paseo/tree/9400a49af670fdb5db4af58e73f8df98588dbea9)。
 
-## 两候选的公平比较
+## R2 保留Metro构建，先做生产拆包探针
 
-- 完整按需加载：保留同版兼容Web功能，按使用路径延迟加载及挂载外围功能。
-- 构建精简：相同核心机制与加载要求，构建时排除明确不需要的外围能力；具体清单在计划阶段根据依赖和用户路径制定。
-- 未优化的同版完整构建只作基线，不算第三个交付候选；assistant-ui方案不再参与实验。
-- 两候选同样延后整个助手，同样降低流式更新的重复工作。先测单因素，再组合；对未使用共享依赖、按需资源和预加载分别计数。
+**决定**：沿官方Expo54/Router6/Metro生产导出，优先用已有`PASEO_WEB_PLATFORM`覆盖能力构建两个配置。先验证Mermaid动态边界，成功再铺开；不先搬到Vite，也不手改导出JS。
 
-## 下一阶段需解答
+**理由与证据**：`packages/app/package.json`的`build:web`先构建工作区依赖，再`expo export --platform web`；`app.config.js:134-137`的`web.output: single`表示SPA输出，不代表只有一个JS文件。`metro.config.cjs:54-76`支持自定义web扩展覆盖，且34-39固定React解析。Expo54官方文档确认生产web支持动态import拆包，但项目残留静态引用、资源前缀和实际网络时机仍需实测。
 
-1. 官方构建链的动态加载粒度、共享依赖、模块初始化副作用及可重复生产构建方式；不假设改成动态导入就能实际拆包。
-2. 原生挂载与独立路由的最小宿主适配；单实例连接所有权、Astro导航、前后台、缓存/凭据保存和忘记设备的真实行为。旧项目mountPaseoApp是定制接口，不能假设官方版已有。
-3. 长历史与流式更新的性能记录，定位全历史重算、未变化内容解析、复杂工具卡等实际热点，优先保留官方新版已有优化，按证据修改。
-4. 功能依赖清单：图表、终端、编辑器、语法解析、语言、图标和外围路由分别做独立变化；支持按需加载不等于关闭后自动释放内存。
-5. 预算口径：main的既有整站门槛继续有效；011独立助手700000 B预算尚未合并，不把它称为main现行规则。计划需明确助手入口、初开、可选功能和总资源预算，不以延迟加载规避总成本说明。
+**替代方案**：一次性迁移构建器增加原生模块、别名、Router和样式兼容工作；仅加React.lazy或仅隐藏面板无法证明模块退出入口闭包。框架能力已确认，具体生产结果是有明确成功/失败条件的G2任务，不伪称已完成。
 
-## 证据与测试设计约束
+来源：[Metro配置](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/metro.config.cjs)、[Expo54拆包文档](https://docs.expo.dev/versions/v54.0.0/config/metro/)。
 
-旧项目20.86 MB原始JS、4.79 MB逐文件gzip及模块归因属于旧版本研究，不能作为v0.7.2实测结果或预计节省量。新实验先生成同版基线和源码归因，保留原始trace、构建清单与版本信息。
+## R3 接入先验证，运行所有权完整保留
 
-每组先用固定长历史、密集工具、多文件diff和超长消息回放；冷启动至少10次、热启动至少20次，交错次序并报告小样本局限。最终两个候选各先3次真实Luna任务与100次受控恢复循环，真实手机补充后台/锁屏/切网。固定设备、网络、daemon、数据和权限，独立会话顺序执行；模型耗时、token与前端开销分开。
+**决定**：G1先验证受控模块入口及外层history隔离；若需侵入核心路由/providers，则验证同源独立文档容器，按计划门槛择一。两个功能候选共享接入结果；旧fork的`mountPaseoApp`仅作经验，不能声称官方已提供。
 
-停止同时核对UI、daemon及实际子进程。此前已见本轮中断后shell仍继续的现象，不用界面状态证明进程终止；本轮未重新复现，不推断v0.7.2是否修复。
+**理由与证据**：`packages/app/index.ts:1-11`初始化polyfill和Unistyles后进入`expo-router/entry`，官方app中未找到挂载API。`src/runtime/host-runtime.ts:2377-2393`保持模块/globalThis单例；`src/app/_layout.tsx:269-321,376-388,667`分别承担ManagedDaemonSession/SessionProvider、bootstrap及HostSessionManager。保留SDK单例却卸掉provider并不等于保留完整运行机制。
 
-本文件目前只有选择依据与待研究问题，没有消融、兼容性或性能测试通过结论。详细计划、任务依赖、最终阈值与实验资源范围在plan/tasks阶段落实。
+`src/contexts/session-context.tsx:253-312`共同管理focused agent/terminal、viewed timeline、恢复核对、活动与push。`src/utils/app-visibility.ts:14-44`只看AppState/document/focus，所以宿主CSS隐藏不能自动代表上游后台状态，必须有显式展示信号。
+
+**替代方案**：直接重复挂载根、宿主自建连接、只靠display:none或把整个根随弹层卸载都会使所有权或后台成本不明。iframe保留路由的收益要与Astro导航是否重载、焦点、消息桥和CSP代价实测比较；它不保证连接稳定。
+
+来源：[官方入口](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/index.ts)、[根布局](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/src/app/_layout.tsx)、[可见性](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/src/utils/app-visibility.ts)。
+
+## R4 外围功能按真实依赖切分
+
+**决定**：先拆图表，再面板注册与重实现，再处理共享语法、语言、图标；B在A相同边界上构建排除，功能差异明确列出。按需加载与卸载运行资源分别验收。
+
+| 功能        | 固定版本源码证据（相对packages/app，另注明者除外）                                                                                     | 对计划的约束                                                                                               |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Mermaid     | `src/components/markdown/fence/index.tsx:4,12`，`mermaid/host.web.tsx:11,95`，`mermaid/build-runtime.mjs:12-19,69-75`                  | 当前静态携带生成HTML字符串，须把重实现置于异步边界；保留原隔离与桥接校验                                   |
+| 终端/编辑器 | `src/panels/register-panels.ts:9-38`，`src/terminal/runtime/terminal-emulator-runtime.ts:1-9`，`src/file-pane/editor/view.web.tsx:2-9` | 同步注册列表分离元数据和重实现；审计路径点击、旧保存布局、草稿与回退                                       |
+| 语法        | `src/utils/highlight-cache.ts:1-6,18-21,45`，仓库`packages/highlight/src/parsers.ts:1-23`                                              | 聊天/工具/预览共用；删编辑器不等于删解析器；已有100k退化与LRU，不盲目重复实现                              |
+| 语言        | `src/i18n/i18next.ts:4-12,21-30`                                                                                                       | 九语言静态导入；A按需保留，B中英及回退                                                                     |
+| 图标        | `src/plugins/icons.ts:2,6-18`                                                                                                          | namespace+Reflect.get支持插件动态图标，A不能用固定白名单偷偷破坏兼容；B未知图标给具名回退且不影响工具/审批 |
+| 运行资源    | `src/components/terminal-pane.tsx:548-572`，`src/terminal/runtime/terminal-emulator-runtime.ts:548-606`                                | 已有controller/renderer dispose；验证隐藏、卸载、重新打开的差别，UI卸载不得结束远端进程                    |
+
+**替代方案**：全量删除基础富文本会牺牲可读性；运行时布尔开关不能证明退出构建；把每个小图标拆成请求会产生碎片网络成本。采用功能级边界，实验清单记录共享依赖，不用模块分组gzip直接预测净节省。
+
+来源：[面板注册](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/src/panels/register-panels.ts)、[动态图标](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/src/plugins/icons.ts)。
+
+## R5 更新优化先测已有机制
+
+**决定**：保留既有虚拟化、文字呈现与diff优化；用回放和浏览器trace定位仍存在的重复工作，改动仅针对已确认热点，同时应用到A/B，零额外补丁也是可接受研究结果。
+
+**理由与证据**：`src/agent-stream/strategy-web.tsx:10,403-404,1245-1261`已用TanStack虚拟列表；`text-reveal.ts:1-29`与`hooks/use-revealed-text.ts:25-85`按rAF控制呈现并在结束清理；官方server的`agent-stream-coalescer.ts:3`默认60ms合并，当前旧daemon不一定具有相同行为。`src/git/diff-document/surface.web.tsx:132-244`有窗口化与rAF绘制，`workspace-cache.tsx`有有界缓存，`text-measurement.ts`有分块测量。`src/components/assistant-message-render-limit.ts:3`有32000字符呈现上限，`message.tsx`实际导入；代码点确认不等于手机回归通过。
+
+**替代方案**：重写虚拟列表、删canonical事件、扩大截断或只提高更新节流间隔可能损伤审批/状态和信息完整性。先复用上游`e2e/browser/agent-stream-smoothness.spec.ts`及`diff-performance.spec.ts`负载与断言，接入现有Playwright链路。
+
+来源：[流式实现](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/src/agent-stream/strategy-web.tsx)、[消息呈现上限](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/src/components/assistant-message-render-limit.ts)。
+
+## R6 缓存、预算与真实证据
+
+**决定**：保留原生缓存恢复，同时明确存储范围和忘记设备验收；版本/配置隔离。主站预算不放宽，新增助手预算分类必须验证完整资源清单，初开与总量分别约束，具体实验及门槛见[plan.md](plan.md)。
+
+**理由与证据**：`host-runtime.ts:1319`使用`@paseo:daemon-registry`，`replica-cache/row-store.web.ts:14-18`使用IndexedDB。host删除在`host-runtime.ts:1924-1935,2032-2047`停止controller并清运行数据，`replica-cache/index.ts:1054-1065`异步排队删除持久行；还需核对迟到事件与其他草稿/布局存储，不能声称所有本地数据已清除。
+
+Vibes当前`scripts/script-budget.ts`将未分类脚本计入普通预算；`scripts/budget-policy.ts`普通脚本21000 B等门槛不含尚未合并011的700000 B助手预算。`public/_headers`当前connect-src仅同源，且不允许本站iframe；无论采用哪种接入都须测实际CSP，不能靠开发服务器可达宣布上线可用。
+
+**替代方案**：把所有vendor排除预算、清空原生缓存以省内存、用同一profile交叉测试不同版本、只验UI停止而不核对子进程，都会使结论失真。CPU与堆指标不是耗电测量，模拟手机不是真机。
+
+## 研究边界
+
+本轮已解决技术路线与实验设计的选择，没有消融构建、兼容运行或性能通过结论。G0/G1/G2是实施前有明确门槛的验证任务；失败路径见plan，不留需要用户补写的技术占位。详细任务见[tasks.md](tasks.md)，执行需先完成依赖授权和实验实例盘点。
