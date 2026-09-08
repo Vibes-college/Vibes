@@ -7,6 +7,7 @@ import { featurePattern } from './docs-policy.ts';
 export function isImplementation(path: string): boolean {
   return (
     /^(src|scripts|tests)\/.*\.(ts|tsx|js|mjs|astro|css)$/.test(path) ||
+    /^third_party\/paseo-webui\/.*\.(json|patch)$/.test(path) ||
     path === 'src/data/taxonomy.json' ||
     /^db\/.*\.sql$/.test(path) ||
     /^public\/(?:.*\.svg|_headers|_redirects)$/.test(path) ||

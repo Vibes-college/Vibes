@@ -1,8 +1,9 @@
 ---
 tense: 'frozen'
 describes: '按需打开并稳定使用Paseo原生助手'
-status: 'draft'
-feature-ids: ['local-assistant', 'article-read', 'explore-browse', 'project-commands']
+status: 'in-progress'
+feature-ids:
+  ['local-assistant', 'article-read', 'explore-browse', 'project-commands', 'document-governance']
 amends: []
 amended-by: []
 research-trigger: '官方WebUI版本兼容性、完整按需加载与构建精简的取舍、流式更新成本及完整运行机制边界'
@@ -44,7 +45,7 @@ approved-artifacts: []
 
 ## 明确不做
 
-不继续实现或对比assistant-ui路线；不合并、删除或清理暂停的PR #10。新需求从main独立开展，不把未合并011代码作为依赖。不开放投稿、公众编辑、云端Agent、账号付费或模型代理；不重写官方连接/同步机制，不因体积关闭协议校验与加密，不默认增加语音、相机或远程桌面功能。版本固定后不随上游滚动升级；新增依赖仍遵守项目授权要求。当前规划阶段只建立规格、研究、技术计划和实验任务，不进行产品改造、消融运行或部署。
+不继续实现或对比assistant-ui路线；不合并、删除或清理暂停的PR #10。本需求已从main独立建立012分支，实施复用已有工作区与PR #11，不把未合并011代码作为依赖。不开放投稿、公众编辑、云端Agent、账号付费或模型代理；不重写官方连接/同步机制，不因体积关闭协议校验与加密，不默认增加语音、相机或远程桌面功能。版本固定后不随上游滚动升级；新增依赖仍遵守项目授权要求。当前进入实施阶段，按G0/G1/G2关卡推进；新增依赖安装仍须取得具体授权，未通过关卡不展开后续改造。
 
 ## 端差异
 
@@ -56,4 +57,4 @@ research记录固定版本、待验证兼容性、两候选实验边界及量化
 
 ## PR工作台与经验复核
 
-本需求独立于未合并011，来源及暂停关系以[PR #10](https://github.com/Vibes-college/Vibes/pull/10)追溯，不把它标成已完成或已废弃。首版规格建立新Draft PR，描述持续维护目标、阶段清单、阻塞、下一步和预览范围。落实LESSONS中的异步导航、代理稳定性和iOS误切页经验：隔离过期结果，复用健康测试服务，真实手机核验独立滚动与返回。交付时同步local-assistant及受影响功能/系统文档；当前尚无新功能实现，不提前写入living现状。
+本需求独立于未合并011，来源及暂停关系以[PR #10](https://github.com/Vibes-college/Vibes/pull/10)追溯，不把它标成已完成或已废弃。实施复用已有Draft PR #11，描述持续维护目标、阶段清单、阻塞、下一步和预览范围。落实LESSONS中的异步导航、代理稳定性和iOS误切页经验：隔离过期结果，复用健康测试服务，真实手机核验独立滚动与返回。交付时同步local-assistant及受影响功能/系统文档；当前尚无新功能实现，不提前写入living现状。

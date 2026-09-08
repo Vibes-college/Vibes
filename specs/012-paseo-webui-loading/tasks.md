@@ -1,20 +1,20 @@
 ---
 tense: 'frozen'
 describes: 'Paseo原生助手分层加载实验与交付任务'
-status: 'draft'
+status: 'in-progress'
 amended-by: []
 ---
 
 # Paseo原生助手分层加载任务
 
-依据：[规格](spec.md)、[技术计划](plan.md)、[技术取舍](research.md)。所有框均为待执行，制定计划不表示安装、实现或实验通过。以下新文件是拟建路径，按任务创建；UP指按固定SHA取得的`.scratch/paseo-webui/upstream/`，对UP的变更须保存到`third_party/paseo-webui/patches/`，不提交整个上游源码。
+依据：[规格](spec.md)、[技术计划](plan.md)、[技术取舍](research.md)。复选框按完整任务的实际证据更新；T001已获依赖安装授权并完成隔离安装；后续任务仍按各自完整证据勾选。以下新文件是拟建路径，按任务创建；UP指按固定SHA取得的`.scratch/paseo-webui/upstream/`，对UP的变更须保存到`third_party/paseo-webui/patches/`，不提交整个上游源码。
 
 ## 基础与阻塞关卡
 
 目的：可重现官方版本与实验环境；G0/G1未通过不铺开产品。关联FR001—FR002、FR007—FR008、FR011及SC001—SC008。
 
-- [ ] T001 盘点上游锁文件依赖、postinstall/prepare和实验实例/端口，向用户说明新增安装必要性并取得许可后才安装；固定官方SHA及锁文件摘要到third_party/paseo-webui/upstream.json，实验配置写resources/evidence/012-paseo-webui-loading/environment.json，不覆盖现有daemon。
-- [ ] T002 在scripts/paseo-webui-build.ts与third_party/paseo-webui/patches/建立源码获取、严格补丁重放、官方生产导出、许可保存与来源校验；在tests/unit/paseo-webui-build.test.ts覆盖错误SHA、补丁不匹配与失败不复用旧产物。
+- [x] T001 盘点上游锁文件依赖、postinstall/prepare和实验实例/端口，向用户说明新增安装必要性并取得许可后才安装；固定官方SHA及锁文件摘要到third_party/paseo-webui/upstream.json，实验配置写resources/evidence/012-paseo-webui-loading/environment.json，不覆盖现有daemon。
+- [x] T002 在scripts/paseo-webui-build.ts与third_party/paseo-webui/patches/建立源码获取、严格补丁重放、官方生产导出、许可保存与来源校验；在tests/unit/paseo-webui-build.test.ts覆盖错误SHA、补丁不匹配与失败不复用旧产物。
 - [ ] T003 在resources/evidence/012-paseo-webui-loading/compatibility/验证WebUI0.7.2对现有daemon及同版隔离daemon的实际配对/会话/工具/审批/恢复，固定主实验版本配对；失败先定位，结论写specs/012-paseo-webui-loading/research.md。
 - [ ] T004 在scripts/paseo-webui-manifest.ts生成B0全量文件、哈希、同步/异步依赖与压缩清单，记录源码图和实际请求到resources/evidence/012-paseo-webui-loading/baseline/；生成前后配置不得混用旧版本数据。
 - [ ] T005 在.scratch/paseo-webui/probes/验证受控模块挂载入口、独立React、官方providers、history/CSS/焦点/滚动/动态前缀；有限适配不成立时试同源文档容器及Astro不重载条件，选择唯一接入方式并将证据/补丁路径写specs/012-paseo-webui-loading/research.md。

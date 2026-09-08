@@ -70,6 +70,8 @@ test('implementation scope separates content entries from behavior and configura
     'package-lock.json',
     '.github/workflows/check.yml',
     'public/_headers',
+    'third_party/paseo-webui/upstream.json',
+    'third_party/paseo-webui/patches/0001-host.patch',
   ])
     assert.equal(isImplementation(path), true, path);
   for (const path of [

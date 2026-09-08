@@ -30,4 +30,4 @@ shaped-by: ['002']
 
 | [010 多媒体作品封面](010-media-previews/spec.md) | complete | article-read, content-maintenance, explore-browse, project-commands |
 
-| [012 Paseo原生助手分层加载](012-paseo-webui-loading/spec.md) | draft | article-read, explore-browse, local-assistant, project-commands |
+| [012 Paseo原生助手分层加载](012-paseo-webui-loading/spec.md) | in-progress | article-read, document-governance, explore-browse, local-assistant, project-commands |

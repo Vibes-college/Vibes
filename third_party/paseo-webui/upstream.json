@@ -1,0 +1,438 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/getpaseo/paseo.git",
+  "version": "0.7.2",
+  "commit": "9400a49af670fdb5db4af58e73f8df98588dbea9",
+  "lockfile": {
+    "path": "package-lock.json",
+    "sha256": "0e8d199c6c1b4f6ed99cc0cf524bb589602d0996466ef80e3a4ec62f29d77e8f",
+    "lockfileVersion": 3,
+    "repositoryEntryCount": 3005
+  },
+  "license": {
+    "spdx": "Apache-2.0",
+    "path": "LICENSE",
+    "sha256": "79d5aedce6aa0adc547336dc1bd34c5cc9308ba110fac7079ed97515ee573ad3"
+  },
+  "installation": {
+    "status": "authorized",
+    "workspaces": [
+      "@getpaseo/app",
+      "@getpaseo/server",
+      "@getpaseo/cli",
+      "@getpaseo/client",
+      "@getpaseo/protocol",
+      "@getpaseo/relay",
+      "@getpaseo/highlight",
+      "@getpaseo/plugin",
+      "@getpaseo/expo-two-way-audio"
+    ],
+    "includeWorkspaceRoot": true,
+    "initialCommand": "npm ci --ignore-scripts --no-audit --no-fund --include-workspace-root --workspace=@getpaseo/app --workspace=@getpaseo/server --workspace=@getpaseo/cli --workspace=@getpaseo/client --workspace=@getpaseo/protocol --workspace=@getpaseo/relay --workspace=@getpaseo/highlight --workspace=@getpaseo/plugin --workspace=@getpaseo/expo-two-way-audio",
+    "scriptPolicy": "Inspect installed lifecycle scripts before enabling only build-required native/binary setup and upstream postinstall patches. Do not run root prepare (lefthook install --force), Electron install, browser downloads, or speech model downloads.",
+    "excludedWorkspaces": ["@getpaseo/desktop", "@getpaseo/website"],
+    "rootScripts": {
+      "postinstall": "node scripts/postinstall-patches.mjs",
+      "prepare": "lefthook install --force"
+    },
+    "lockfileInstallScriptEntries": [
+      {
+        "path": "",
+        "version": "0.7.2",
+        "optional": false
+      },
+      {
+        "path": "node_modules/dtrace-provider",
+        "version": "0.8.8",
+        "optional": true
+      },
+      {
+        "path": "node_modules/electron",
+        "version": "41.2.0",
+        "optional": false
+      },
+      {
+        "path": "node_modules/esbuild",
+        "version": "0.27.3",
+        "optional": false
+      },
+      {
+        "path": "node_modules/fsevents",
+        "version": "2.3.3",
+        "optional": true
+      },
+      {
+        "path": "node_modules/lefthook",
+        "version": "2.1.6",
+        "optional": false
+      },
+      {
+        "path": "node_modules/playwright/node_modules/fsevents",
+        "version": "2.3.2",
+        "optional": true
+      },
+      {
+        "path": "node_modules/sharp",
+        "version": "0.34.5",
+        "optional": false
+      },
+      {
+        "path": "node_modules/unrs-resolver",
+        "version": "1.11.1",
+        "optional": false
+      },
+      {
+        "path": "node_modules/workerd",
+        "version": "1.20260507.1",
+        "optional": false
+      },
+      {
+        "path": "packages/app/node_modules/esbuild",
+        "version": "0.28.1",
+        "optional": false
+      },
+      {
+        "path": "packages/app/node_modules/workerd",
+        "version": "1.20260625.1",
+        "optional": false
+      },
+      {
+        "path": "packages/server/node_modules/esbuild",
+        "version": "0.25.12",
+        "optional": false
+      },
+      {
+        "path": "packages/server/node_modules/node-pty",
+        "version": "1.2.0-beta.15",
+        "optional": false
+      },
+      {
+        "path": "packages/website/node_modules/esbuild",
+        "version": "0.28.1",
+        "optional": false
+      },
+      {
+        "path": "packages/website/node_modules/workerd",
+        "version": "1.20260625.1",
+        "optional": false
+      }
+    ],
+    "workspaceManifests": [
+      {
+        "path": "packages/app/package.json",
+        "sha256": "9811a19bdae879b3e42246f0b255a6b33991ffa2c8ed117ebb654cfc56c624e0",
+        "dependencies": {
+          "@codemirror/commands": "6.10.4",
+          "@codemirror/language": "6.12.4",
+          "@codemirror/search": "6.7.1",
+          "@codemirror/state": "6.7.1",
+          "@codemirror/view": "6.43.6",
+          "@dnd-kit/core": "^6.3.1",
+          "@dnd-kit/sortable": "^10.0.0",
+          "@dnd-kit/utilities": "^3.2.2",
+          "@floating-ui/react-native": "^0.10.7",
+          "@getpaseo/client": "*",
+          "@getpaseo/expo-two-way-audio": "*",
+          "@getpaseo/highlight": "*",
+          "@getpaseo/plugin": "*",
+          "@getpaseo/protocol": "*",
+          "@gorhom/bottom-sheet": "^5.2.14",
+          "@gorhom/portal": "^1.0.14",
+          "@marijn/find-cluster-break": "^1.0.2",
+          "@mattermost/react-native-paste-input": "2.0.1",
+          "@react-native-async-storage/async-storage": "2.2.0",
+          "@react-native-masked-view/masked-view": "^0.3.2",
+          "@react-native/normalize-colors": "^0.81.5",
+          "@react-navigation/native": "^7.1.8",
+          "@replit/codemirror-vim": "6.3.0",
+          "@shopify/react-native-skia": "2.2.12",
+          "@tanstack/react-query": "^5.90.11",
+          "@tanstack/react-virtual": "^3.13.21",
+          "@xterm/addon-clipboard": "^0.3.0-beta.213",
+          "@xterm/addon-fit": "^0.12.0-beta.213",
+          "@xterm/addon-image": "^0.10.0-beta.213",
+          "@xterm/addon-ligatures": "^0.11.0-beta.213",
+          "@xterm/addon-search": "^0.17.0-beta.213",
+          "@xterm/addon-unicode11": "^0.10.0-beta.213",
+          "@xterm/addon-web-links": "^0.13.0-beta.213",
+          "@xterm/addon-webgl": "^0.20.0-beta.212",
+          "@xterm/xterm": "^6.1.0-beta.213",
+          "buffer": "^6.0.3",
+          "expo": "^54.0.18",
+          "expo-asset": "~12.0.12",
+          "expo-audio": "~1.0.13",
+          "expo-build-properties": "^1.0.9",
+          "expo-camera": "~17.0.10",
+          "expo-clipboard": "~8.0.7",
+          "expo-constants": "~18.0.9",
+          "expo-crypto": "^15.0.8",
+          "expo-dev-client": "^6.0.15",
+          "expo-document-picker": "~14.0.8",
+          "expo-file-system": "~19.0.17",
+          "expo-haptics": "~15.0.7",
+          "expo-image": "~3.0.10",
+          "expo-image-manipulator": "~14.0.8",
+          "expo-image-picker": "^17.0.8",
+          "expo-keep-awake": "^15.0.7",
+          "expo-linking": "~8.0.8",
+          "expo-localization": "~17.0.9",
+          "expo-notifications": "^0.32.16",
+          "expo-router": "~6.0.13",
+          "expo-sharing": "^14.0.8",
+          "expo-splash-screen": "~31.0.10",
+          "expo-sqlite": "~16.0.10",
+          "expo-system-ui": "~6.0.7",
+          "fast-deep-equal": "^3.1.3",
+          "htmlparser2": "^12.0.0",
+          "i18next": "^26.3.0",
+          "lucide-react-native": "^0.546.0",
+          "markdown-it": "^10.0.0",
+          "mermaid": "^11.16.0",
+          "mnemonic-id": "^3.2.7",
+          "qrcode": "^1.5.4",
+          "react": "19.1.0",
+          "react-dom": "19.1.0",
+          "react-i18next": "^17.0.8",
+          "react-native": "0.81.5",
+          "react-native-draggable-flatlist": "^4.0.3",
+          "react-native-edge-to-edge": "^1.7.0",
+          "react-native-gesture-handler": "~2.28.0",
+          "react-native-keyboard-controller": "1.21.12",
+          "react-native-markdown-display": "^7.0.2",
+          "react-native-nitro-modules": "0.35.5",
+          "react-native-reanimated": "~4.3.1",
+          "react-native-safe-area-context": "~5.6.0",
+          "react-native-screens": "~4.16.0",
+          "react-native-svg": "^15.14.0",
+          "react-native-uitextview": "^2.2.0",
+          "react-native-unistyles": "^3.2.4",
+          "react-native-web": "~0.21.0",
+          "react-native-webview": "^13.16.0",
+          "react-native-worklets": "~0.8.3",
+          "tiny-invariant": "^1.3.3",
+          "turndown": "^7.2.4",
+          "turndown-plugin-gfm": "^1.0.2",
+          "use-sync-external-store": "^1.6.0",
+          "yaml": "^2.8.4",
+          "zod": "^4.4.3",
+          "zustand": "^5.0.9"
+        },
+        "devDependencies": {
+          "@playwright/test": "^1.56.1",
+          "@testing-library/dom": "^10.4.1",
+          "@testing-library/react": "^16.3.2",
+          "@types/markdown-it": "^14.1.2",
+          "@types/node": "~22.19.0",
+          "@types/qrcode": "^1.5.6",
+          "@types/react": "~19.2.0",
+          "@types/turndown": "^5.0.6",
+          "@types/ws": "^8.18.1",
+          "@vitest/browser": "^4.1.7",
+          "@vitest/browser-playwright": "^4.1.7",
+          "@xterm/headless": "^6.1.0-beta.213",
+          "dotenv": "^17.2.3",
+          "eas-cli": "^16.24.1",
+          "esbuild": "0.28.1",
+          "eslint": "^9.25.0",
+          "eslint-config-expo": "~10.0.0",
+          "expo-gradle-jvmargs": "^1.1.2",
+          "fake-indexeddb": "^6.2.5",
+          "jsdom": "^20.0.3",
+          "material-icon-theme": "^5.32.0",
+          "playwright": "^1.56.1",
+          "serve-sim": "^0.1.40",
+          "typescript": "~5.9.2",
+          "vitest": "^4.1.6",
+          "wrangler": "^4.105.0",
+          "ws": "^8.20.0"
+        }
+      },
+      {
+        "path": "packages/server/package.json",
+        "sha256": "90159d37661f4017e0e2b2179af3ce637cd25eab6f404cf164fa0fb86c2b5cce",
+        "dependencies": {
+          "@agentclientprotocol/sdk": "^0.17.1",
+          "@anthropic-ai/claude-agent-sdk": "0.3.246",
+          "@anthropic-ai/sdk": "^0.104.2",
+          "@babel/parser": "^7.29.8",
+          "@getpaseo/client": "0.7.2",
+          "@getpaseo/highlight": "0.7.2",
+          "@getpaseo/plugin": "0.7.2",
+          "@getpaseo/protocol": "0.7.2",
+          "@getpaseo/relay": "0.7.2",
+          "@isaacs/ttlcache": "^2.1.4",
+          "@modelcontextprotocol/sdk": "1.29.0",
+          "@opencode-ai/sdk": "1.14.46",
+          "@xterm/headless": "^6.0.0",
+          "ai": "5.0.78",
+          "ajv": "^8.20.0",
+          "bcryptjs": "^3.0.3",
+          "dotenv": "^17.2.3",
+          "esbuild": "^0.25.12",
+          "express": "^4.18.2",
+          "fast-deep-equal": "^3.1.3",
+          "lru-cache": "^11.5.1",
+          "mnemonic-id": "^3.2.7",
+          "node-pty": "1.2.0-beta.15",
+          "openai": "^6.44.0",
+          "p-limit": "^7.3.0",
+          "p-memoize": "^8.0.0",
+          "p-throttle": "^8.1.0",
+          "pino": "^10.2.0",
+          "pino-pretty": "^13.1.3",
+          "qrcode": "^1.5.4",
+          "rotating-file-stream": "^3.2.9",
+          "sherpa-onnx-node": "1.12.28",
+          "strip-ansi": "^7.1.2",
+          "tree-kill": "^1.2.2",
+          "uuid": "^9.0.1",
+          "which": "^5.0.0",
+          "ws": "^8.14.2",
+          "zod": "^4.4.3"
+        },
+        "devDependencies": {
+          "@playwright/test": "^1.56.1",
+          "@types/express": "^4.17.20",
+          "@types/node": "^20.9.0",
+          "@types/qrcode": "^1.5.6",
+          "@types/uuid": "^9.0.7",
+          "@types/ws": "^8.5.8",
+          "@vitest/ui": "^4.1.6",
+          "cross-env": "^10.1.0",
+          "tsx": "^4.6.0",
+          "typescript": "^5.2.2",
+          "vitest": "^4.1.6"
+        }
+      },
+      {
+        "path": "packages/cli/package.json",
+        "sha256": "813d36c47df2268ce97525adfd2a0924f1c4494151f97559c2107722fb5ae145",
+        "dependencies": {
+          "@clack/prompts": "^1.0.0",
+          "@getpaseo/client": "0.7.2",
+          "@getpaseo/protocol": "0.7.2",
+          "@getpaseo/server": "0.7.2",
+          "chalk": "^5.3.0",
+          "commander": "^12.0.0",
+          "mime-types": "^2.1.35",
+          "tree-kill": "^1.2.2",
+          "ws": "^8.14.2",
+          "yaml": "^2.8.4",
+          "zod": "^4.4.3"
+        },
+        "devDependencies": {
+          "@types/mime-types": "^3.0.1",
+          "@types/ws": "^8.5.8",
+          "tsx": "^4.6.0",
+          "typescript": "^5.2.2",
+          "vitest": "^4.1.6",
+          "zx": "^8.8.5"
+        }
+      },
+      {
+        "path": "packages/client/package.json",
+        "sha256": "d709063eaff6708dfe3a0fd9a093ffb02635b0092ab0bc5e33ccdc4726efc65e",
+        "dependencies": {
+          "@getpaseo/protocol": "0.7.2",
+          "@getpaseo/relay": "0.7.2",
+          "zod": "^4.4.3"
+        },
+        "devDependencies": {
+          "@types/node": "^20.9.0",
+          "typescript": "^5.2.2",
+          "vitest": "^4.1.6"
+        }
+      },
+      {
+        "path": "packages/protocol/package.json",
+        "sha256": "7717ed6f0cab0f7c0c27d8a276f77c7620e1bebb834da1e5f85582666bc7cd6d",
+        "dependencies": {
+          "zod": "^4.4.3"
+        },
+        "devDependencies": {
+          "@types/node": "^20.9.0",
+          "typescript": "^5.2.2",
+          "vitest": "^4.1.6",
+          "zod-aot": "0.20.4"
+        }
+      },
+      {
+        "path": "packages/relay/package.json",
+        "sha256": "0730f6d0c4a0b64b2440579fc4e88766decb042e5b7931125dfaddeca9f89f7b",
+        "dependencies": {
+          "base64-js": "^1.5.1",
+          "tweetnacl": "^1.0.3",
+          "ws": "^8.14.2"
+        },
+        "devDependencies": {
+          "@types/node": "^20.9.0",
+          "@types/ws": "^8.5.8",
+          "typescript": "^5.2.2",
+          "vitest": "^4.1.6"
+        }
+      },
+      {
+        "path": "packages/highlight/package.json",
+        "sha256": "b02511accb1b71db55084acf73d7391b1b0c4c635eb7e34dc86b91015af3c990",
+        "dependencies": {
+          "@codemirror/language": "6.12.4",
+          "@codemirror/legacy-modes": "^6.5.3",
+          "@lezer/common": "^1.5.0",
+          "@lezer/cpp": "^1.1.5",
+          "@lezer/css": "^1.3.0",
+          "@lezer/go": "^1.0.1",
+          "@lezer/highlight": "^1.2.3",
+          "@lezer/html": "^1.3.13",
+          "@lezer/java": "^1.1.3",
+          "@lezer/javascript": "^1.5.4",
+          "@lezer/json": "^1.0.3",
+          "@lezer/lr": "^1.4.8",
+          "@lezer/markdown": "^1.6.2",
+          "@lezer/php": "^1.0.5",
+          "@lezer/python": "^1.1.18",
+          "@lezer/rust": "^1.0.2",
+          "@lezer/xml": "^1.0.6",
+          "@lezer/yaml": "^1.0.4",
+          "lezer-elixir": "^1.1.2"
+        },
+        "devDependencies": {
+          "typescript": "^5.9.2",
+          "vitest": "^4.1.6"
+        }
+      },
+      {
+        "path": "packages/plugin/package.json",
+        "sha256": "17f99b5bacf0beab0de98f1b06aba5883d1ac2c061109f6f0c094692a938334d",
+        "dependencies": {
+          "use-sync-external-store": "^1.6.0"
+        },
+        "devDependencies": {
+          "@getpaseo/client": "0.7.2",
+          "@getpaseo/protocol": "0.7.2",
+          "@types/node": "^20.9.0",
+          "@types/react": "~19.2.0",
+          "react": "19.1.0",
+          "typescript": "^5.9.3",
+          "vitest": "^4.1.6",
+          "zod": "^4.4.3"
+        }
+      },
+      {
+        "path": "packages/expo-two-way-audio/package.json",
+        "sha256": "28dc73e4340acacc434288686a3d7791bcb398a0685fdce44b67aae6cff878c8",
+        "dependencies": {},
+        "devDependencies": {
+          "@types/jest": "^29.5.14",
+          "@types/react": "^18.0.25",
+          "expo-module-scripts": "^5.0.8",
+          "expo-modules-core": "^2.0.4"
+        }
+      }
+    ]
+  },
+  "build": {
+    "webCommand": "npm run build:web --workspace=@getpaseo/app",
+    "daemonCommand": "npm run build:server",
+    "status": "not-run"
+  }
+}

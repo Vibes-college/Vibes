@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '规划开发与维护文档'
 status: 'current'
-shaped-by: ['002', '003', '004']
+shaped-by: ['002', '003', '004', '012']
 legacy-feature-ids: ['spec-kit-workflow']
 code-sources:
   [
@@ -13,7 +13,7 @@ code-sources:
     'scripts/docs-sources.ts',
     'scripts/docs-lessons.ts',
   ]
-code-revision: '8fafe9c34619f2ebb5ed22511d4df925494ed45e4bc0a8a0c36f4cdd7a12d27b'
+code-revision: 'cd24df6b5c44b86180418a8bf7a8a146cebb6a303eac51c3070fed569b8d09d2'
 ---
 
 # 功能名：规划开发与维护文档
@@ -30,7 +30,7 @@ code-revision: '8fafe9c34619f2ebb5ed22511d4df925494ed45e4bc0a8a0c36f4cdd7a12d27b
 4. 更新功能现状与索引；技术配置和完整命令链接到docs/system，历史原因从shaped-by找到specs。
 5. 运行`npm run docs:check`与`npm run format:check`。遇到缺标签、索引不一致或冻结改写时，按错误定位修正，不通过就不称文档检查完成。
 6. 采用Spec Kit的需求在实现和验收完成后同步spec/plan/tasks及索引为complete，再提交一批完整相关改动供审阅，用户决定合并。合并后规格正文冻结，下一次决定另写规格并关联旧规格；当前功能说明原地维护。
-7. 功能及系统说明用code-sources对应源码文件，源码改动后复核文字、流程和验收再填写code-revision；只读候选摘要用npm run docs:check -- --revisions查看，正常检查会验证覆盖和摘要。
+7. 功能及系统说明用code-sources对应源码文件，源码改动后复核文字、流程和验收再填写code-revision；Paseo上游版本JSON与patch补丁也属于此检查范围；只读候选摘要用npm run docs:check -- --revisions查看，正常检查会验证覆盖和摘要。
 8. 合并或重命名功能说明时，使用`legacy-feature-ids`接续旧编号，保留历史规格原文；一个旧编号只能对应一个当前文档。
 
 ### 操作之后发生什么

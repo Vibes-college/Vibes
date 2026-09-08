@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '检查与发布网站'
 status: 'current'
-shaped-by: ['001', '002', '003', '004', '005', '009', '010']
+shaped-by: ['001', '002', '003', '004', '005', '009', '010', '012']
 legacy-feature-ids: ['delivery-setup', 'local-database', 'site-metadata']
 code-sources:
   [
@@ -17,6 +17,9 @@ code-sources:
     'scripts/cleanup-task.ts',
     'scripts/cleanup-policy.ts',
     'scripts/build.ts',
+    'scripts/paseo-webui-build.ts',
+    'scripts/paseo-webui-licenses.ts',
+    'third_party/paseo-webui/',
     'scripts/budget.ts',
     'scripts/budget-policy.ts',
     'scripts/script-budget.ts',
@@ -31,7 +34,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: 'a87f903d7dbfa64de35dd9bdc5d47d6458ca26dfd88f0c2507aa1ecb461c0933'
+code-revision: '714ce23073dff69cbf1df93f11f8167d16729c25a563d34585d9b6a1cf18bb68'
 ---
 
 # 功能名：检查与发布网站
@@ -111,3 +114,7 @@ flowchart TD
 ## 已知问题 / 待办
 
 合并、自动发布、线上体验和本机清理是不同状态；未发生的步骤不能提前勾选。GitHub main保护和production仅main准入已于2026-09-06实查配置，首次生产发布及收尾已按上述记录验证；以后每次发布仍须验收对应版本。5000件双语规模样例超过免费档文件数，小目录能上线不代表大目录容量已解决，不自动升级套餐。
+
+## Paseo原生基线实验
+
+维护者可按[012技术取舍](../../specs/012-paseo-webui-loading/research.md)在隔离目录准备已获授权的固定依赖，再运行`node --experimental-strip-types scripts/paseo-webui-build.ts fetch`核对源码，以及同命令的`B0`动作重放官方生产导出。成功输出位于`.scratch/paseo-webui/artifacts/B0`，包含版本、资源哈希和许可；失败不保留可复用的旧成功产物，遇到未知目录或源码改动须先检查。当前仅支持B0，尚未接入网站助手入口、正式构建或发布；详情见[检查与发布](../system/checks-and-release.md)。

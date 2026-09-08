@@ -2,17 +2,18 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003', '004', '005', '009', '010']
+shaped-by: ['002', '003', '004', '005', '009', '010', '012']
 code-sources:
   [
     'package.json',
     'scripts/',
+    'third_party/paseo-webui/',
     'tests/',
     '.github/workflows/',
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '8046ad89664330d3bddf420d70cc6e6a7d90d423e63e45714591e41ed5218909'
+code-revision: '6c6b3a28b9bf1309bc4e5cd44c46ce548cf6aa62c8f55d7b2f48d06e2557dbff'
 ---
 
 # 检查与发布
@@ -173,3 +174,9 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 `npm run docs:check -- --revisions`只打印当前源码的候选摘要，不写文件，不表示说明正确，也不替代正常docs:check。先对照改动核对文案、流程和验收，再记录摘要并运行正常检查。测试见tests/unit/docs-sources.test.ts；内容正文及work.json不在结构代码摘要里，数量从content:validate读取。
 
 新规格complete表示实现及验收完成，不等于已合并或已部署。全部任务已勾选而状态仍in-progress会失败；main中的complete与历史merged同样保护正文。合并后核对无需再创建状态补丁PR。
+
+## Paseo实验构建边界
+
+`node --experimental-strip-types scripts/paseo-webui-build.ts fetch`只取得并核对`third_party/paseo-webui/upstream.json`固定的官方来源、提交、锁文件和许可；已有源码不重置。上游依赖安装按该清单的已授权工作区及脚本审阅流程单独执行，不使用主站node_modules。`B0`要求干净源码，校验`patches/series.json`中的补丁摘要并严格应用后运行官方Web导出；当前B0补丁为空，不代表已选定生产候选。该目录的JSON配置与patch补丁纳入docs:check的源码对应检查，改变它们须复核对应说明。
+
+导出必须有index.html及JS，资源不得为符号链接；随后保存原始资源哈希、Paseo许可、固定锁文件和实际安装包的许可文本，核对并恢复源码后才提交到`.scratch/paseo-webui/artifacts/B0`。失败会使旧的受控成功目录失效，未知输出目录与意外源码改动保留待查。构建记录不是网络请求或性能验收；实际依赖体积、许可缺失及运行路径另由实验核对。主站build、verify、预算分类和发布流程目前均不包含此实验产物。

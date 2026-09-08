@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Paseo原生助手分层加载技术计划'
-status: 'draft'
+status: 'in-progress'
 amended-by: []
 ---
 
@@ -11,11 +11,11 @@ amended-by: []
 
 ### 底座、源码与构建
 
-固定官方v0.7.2 / `9400a49af670fdb5db4af58e73f8df98588dbea9`，从当前main开发；不引用011未合并代码，不以旧20.86 MB构建作新版基线。官方使用Expo54、Router6、React19.1及Metro，Vibes使用Astro/Vite与React19.2；两个构建保持独立，不把官方依赖塞进Vibes的React依赖图，也不先改造上游为Vite。
+固定官方v0.7.2 / `9400a49af670fdb5db4af58e73f8df98588dbea9`，复用已从main建立的codex/012-paseo-webui-loading分支及PR #11实施；不引用011未合并代码，不以旧20.86 MB构建作新版基线。官方使用Expo54、Router6、React19.1及Metro，Vibes使用Astro/Vite与React19.2；两个构建保持独立，不把官方依赖塞进Vibes的React依赖图，也不先改造上游为Vite。
 
 自有文件以下均为拟建路径，按对应任务需要才创建。`third_party/paseo-webui/upstream.json`保存仓库、提交、锁文件摘要、许可和构建输入；`third_party/paseo-webui/patches/`保存有序补丁及新增overlay文件。优先利用官方`PASEO_WEB_PLATFORM`解析覆盖，保留`.web`默认回退，不在产物上手工删代码。完整源码与中间构建位于`.scratch/paseo-webui/`，不提交整个上游仓库；保留上游Apache-2.0及依赖许可，构建来源说明写入`docs/system/local-assistant.md`。
 
-`scripts/paseo-webui-build.ts`按固定提交和已审阅锁文件重建：先校验来源、再严格应用补丁、执行官方`build:web`，生成资源清单和哈希，最后接入`scripts/build.ts`。CI只发布选定配置。失败、补丁不匹配、资源缺失、未知配置均中止，不能回退到旧产物或继续发布。官方安装含postinstall/prepare，应先列明锁文件依赖与脚本必要性并取得新增依赖授权；本轮不安装。自有编排尽量用现有Node工具与测试，不新增压测框架。
+`scripts/paseo-webui-build.ts`按固定提交和已审阅锁文件重建：先校验来源、再严格应用补丁、执行官方`build:web`，生成资源清单和哈希，最后接入`scripts/build.ts`。CI只发布选定配置。失败、补丁不匹配、资源缺失、未知配置均中止，不能回退到旧产物或继续发布。官方安装含postinstall/prepare，应先列明锁文件依赖与脚本必要性并取得新增依赖授权；安装盘点及待授权命令见research的R7；获许可后执行。自有编排尽量用现有Node工具与测试，不新增压测框架。
 
 ### 接入前置关卡G1
 
@@ -116,6 +116,6 @@ G0版本/基线→G1接入→G2 Mermaid生产拆包探针→G3单项与组合→
 
 ## PR工作台与经验复核
 
-复用[PR #11](https://github.com/Vibes-college/Vibes/pull/11)，保持Draft；本轮仅计划与任务，所有实现复选框保持未完成。阶段进度、证据、阻塞、预览与SHA同步PR。遵循LESSONS的异步导航隔离、复用健康服务和真实iOS验收；实验前盘点listener/实例归属，只停止本任务进程。
+复用[PR #11](https://github.com/Vibes-college/Vibes/pull/11)，保持Draft；当前进入实施，T001盘点与获授权的隔离安装已完成；任务仅按实际完成证据勾选。阶段进度、证据、阻塞、预览与SHA同步PR。遵循LESSONS的异步导航隔离、复用健康服务和真实iOS验收；实验前盘点listener/实例归属，只停止本任务进程。
 
 重要基础设施按仓库要求由独立Agent审查最终SHA，修复复核后才Ready；用户决定合并。合并后逐commit与最终差异复核文档，必要检查与正式部署验收通过再同步main和清理本任务资源，不改动暂停PR #10及其工作区。状态、正式发布和清理证据记PR，不预填冻结日期。

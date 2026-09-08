@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '009', '010']
+shaped-by: ['001', '003', '005', '006', '007', '009', '010', '012']
 code-sources:
   [
     'src/lib/content/',
@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '85324e5fc9c7134369d36262bf2352a5df9a2a0ed5969e728a2d817d21cd1de4'
+code-revision: '643ea1a6f153e4c5d2d48520515a7df08938f09833deab54579da8bfc598aaf7'
 ---
 
 # 常量、规则表与正则
@@ -132,7 +132,7 @@ public/_headers只允许已登记播放器/原站frame来源、指定视频源�
 
 ## 可读代码说明的对应规则
 
-scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序与样式、taxonomy、SQL、静态代码资产、根配置与工作流），作品正文和work.json不重复当作架构说明。code-sources是实际文件或以斜杠结束的目录，禁止越界路径、空列表和无匹配条目；code-revision是路径与字节的SHA256。全体结构代码必须有说明覆盖，当前文档本地链接必须存在。
+scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序与样式、taxonomy、SQL、静态代码资产、根配置与工作流、third_party/paseo-webui下的JSON及patch），作品正文和work.json不重复当作架构说明。code-sources是实际文件或以斜杠结束的目录，禁止越界路径、空列表和无匹配条目；code-revision是路径与字节的SHA256。全体结构代码必须有说明覆盖，当前文档本地链接必须存在。
 
 新规格实现完成状态为complete，保留旧merged兼容；complete进入main后同样冻结，已完成任务不允许继续in-progress。实现/合并/发布是不同事实；测试与完整命令见checks-and-release.md。
 
