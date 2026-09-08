@@ -1,3 +1,4 @@
+import { registerPresentationTests } from './fixtures/paseo-webui/mock-presentation.ts';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -7,15 +8,15 @@ if (hostUrl && !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(hostUrl))
   throw new Error('Recovery tests require the isolated local Worker.');
 if (pairingFile && !resolve(pairingFile).startsWith(resolve('.scratch') + '/'))
   throw new Error('Pairing fixture must remain private under .scratch/.');
-test.skip(
-  !hostUrl || !pairingFile,
-  'Requires the same-version isolated relay and private pairing offer.',
-);
 test.use({ trace: 'off', screenshot: 'off', video: 'off' });
 
 test('history opened before connection readiness refreshes from the authoritative runtime', async ({
   browser,
 }, testInfo) => {
+  test.skip(
+    !hostUrl || !pairingFile,
+    'Requires the same-version isolated relay and private pairing offer.',
+  );
   test.setTimeout(60000);
   const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = testInfo.project.use;
   const context = await browser.newContext({
@@ -105,3 +106,5 @@ test('history opened before connection readiness refreshes from the authoritativ
   }
   if (failure) throw failure;
 });
+
+registerPresentationTests();

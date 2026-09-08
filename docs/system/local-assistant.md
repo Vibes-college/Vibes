@@ -57,6 +57,8 @@ h-operation-feedback.patch只观察原生取消Promise，并在审批mutation明
 
 ## 测试与限制
 
+`mock-session.ts`为聊天和展示状态测试统一准备同版SDK、独立Git目录、临时浏览器上下文与取消/归档收尾。`mock-chat-selection.ts`通过服务端读取核对模型变更，并在两个目录间检查草稿隔离；工具错误借鉴固定上游工具UI夹具，仅修改一次合成timeline事件，保留真实身份和序号，不作为真实命令失败证据。`mock-presentation.ts`观察原生heartbeat和流式消息：收起不取消、不新增socket，展开复用同一HostRuntime；受控visibilitychange由宿主和原生AppState共同接收，恢复后核对连接及目录就绪。它不模拟实际Safari挂起或锁屏，不替代真机与100次矩阵。
+
 `PASEO_HOST_URL=http://127.0.0.1:6792 npx playwright test tests/paseo-loading.spec.ts`要求已由AI准备的H本地站及同版daemon；只接受本机地址，未指定明确跳过。测试使用实际生产资源，记录请求、挂载及连接计数；离线和404为受控浏览器故障。真实浏览器截图与本地原始日志存host/证据目录，性能统计另按冻结实验执行。
 
 本地Worker的真实CSP与官方TLS中继配对、已有会话及简单文字回复已验证；最终资源门槛、完整恢复、真机或上线验收未完成。完整原生语音与外围入口仍需按A/B能力矩阵验证，不能以显示按钮证明可用。

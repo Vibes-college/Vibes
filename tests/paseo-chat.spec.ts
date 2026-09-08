@@ -1,3 +1,4 @@
+import { registerMockSelectionTests } from './fixtures/paseo-webui/mock-chat-selection.ts';
 import { registerMockOperationTests } from './fixtures/paseo-webui/mock-operations.ts';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
@@ -89,3 +90,5 @@ test('public work reference uses the editable native draft and survives article 
 });
 
 registerMockOperationTests();
+
+registerMockSelectionTests();

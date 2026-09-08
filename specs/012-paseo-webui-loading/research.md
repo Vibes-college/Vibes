@@ -183,3 +183,13 @@ T007将W0—W5生成器、输出大小/哈希与协议版本固定；W1/W2事件
 固定0.7.2开发mock daemon禁用全部真实provider，独立Git夹具避免项目发现越界；同源测试宿主保留H的生产CSP，转发本机6793的真实协议。初始127.0.0.1页面被上游连接地址规范为localhost后触发CSP拒绝；将测试页面使用相同localhost域名后通过，不扩大站点CSP。初版临时探针未建内层Git时曾由原生项目发现读到父仓库；正式夹具在创建workspace前先git init，模型不操作父目录。
 
 三配置测试通过真实mock停止响应、审批允许/拒绝；在原生WebSocket上丢弃一次请求并断线，恢复后停止/审批显示未知，请求计数证明没有自动重发。旧停止反馈在新回合消失，收起没有发送取消；错误回合仍由原生界面显示。测试使用生产导出及手机模拟参数，未将合成回合算作Luna重任务、真实子进程结束或最终100次恢复；日志host/h-operation-browser-complete.log。
+
+## R15：原生会话、工具与展示状态矩阵
+
+2026-09-08，T015在真实同版mock协议上补齐模型选择（SDK读取实际model值）、两个独立Git工作区间的会话/目录选择和草稿隔离、工具完成及错误详情。资料附带/取消沿用三配置真实中继回归；审批允许/拒绝/未知沿用R14。工具错误仅改变一次mock timeline事件，保留真实seq/callId，采用固定上游tool-call-overview-sheet的协议夹具方式；只证明呈现，不宣称执行了失败命令。
+
+测试定位按真实操作收窄：原生保留隐藏工作区，历史条目按agent-row定位；手机先打开模型设置再点模型子页，选完用设置页关闭按钮；工具行的文件入口与展开详情不同，WebKit鼠标悬停会显示文件按钮，因此使用左侧展开图标和手机触控。误点文件入口所得ENOENT及此前失败日志保留，均不是模型或文件读取功能通过证据。上游历史查询staleTime为30秒，跨客户端新建后已有列表可能短暂不含新会话；选择夹具在初次打开前准备两组会话，完整跨客户端恢复仍待T021/T024。
+
+T022沿用已存在的宿主AppState/document/focus适配，新增三配置协议观察：收起时heartbeat appVisible=false、focusedAgentId=null，仍接收agent_stream；展开恢复焦点、复用同一HostRuntime且socket数不变，无cancel请求。受控document.visibilityState与visibilitychange验证组合通知和恢复后online/目录ready，不冒充实际浏览器挂起或iPhone后台证据。8项共同回归及修正定位后的3项工具选择回归均通过；日志host/h-chat-presentation-all.log（含旧WebKit误点失败）和h-selection-tools-final.log。
+
+阶段检查：`h-chat-presentation-verify.log`的类型、lint、格式、文档及118项单元通过；整站E2E为184通过、61明确跳过、1失败。失败是既有WebKit原生音频暂停/恢复在60秒后再次暂停；trace显示play/playing后约124ms出现pause，原因尚未定位。原始trace保存在host/audio-recurrence；相同代码单独连续3次复测均通过，不将偶发未复现解释为已修复，整站首次失败保留。默认产物budget通过；助手专项选择/工具三配置和展示三配置证据独立有效。

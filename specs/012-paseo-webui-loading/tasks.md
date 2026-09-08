@@ -37,7 +37,7 @@ amended-by: []
 
 独立验收：原生配对、会话/模型/目录、公开作品资料、文字流、工具、审批与停止可实际完成；没有另建客户端。依赖US1。
 
-- [ ] T015 [P] [US2] 在tests/paseo-chat.spec.ts覆盖会话/模型/目录选择、作品附带与取消、工具完成/失败、审批拒绝/允许及结果未知；测试只使用受控夹具，不记录配对秘密。
+- [x] T015 [P] [US2] 在tests/paseo-chat.spec.ts覆盖会话/模型/目录选择、作品附带与取消、工具完成/失败、审批拒绝/允许及结果未知；测试只使用受控夹具，不记录配对秘密。
 - [x] T016 [US2] 在third_party/paseo-webui/patches/保留官方根providers、HostRuntime、SessionProvider与聊天呈现，接通src/features/paseo-webui/host.ts；对照UP/packages/app/src/app/_layout.tsx与src/contexts/session-context.tsx核验未被外围拆包切断。
 - [x] T017 [US2] 在src/features/paseo-webui/page-context.ts与third_party/paseo-webui/patches/实现发送前可查看/取消的公开作品草稿，保持原生composer发送路径；在tests/unit/paseo-page-context.test.ts验证长度、链接和资料不提升为指令。
 - [x] T018 [US2] 在tests/paseo-chat.spec.ts与third_party/paseo-webui/patches/核对真实停止确认、错误、结果未知和子进程可能继续的提示；关闭面板/断开不伪称停止，不自动重发权限请求。
@@ -49,7 +49,7 @@ amended-by: []
 独立验收：宿主收起/导航/刷新/网络变化后权威状态正确，零串会话/重复操作；主动断开不自动连接，忘记设备不会被迟到事件恢复。依赖US1、US2基础路径。
 
 - [ ] T021 [P] [US3] 在tests/paseo-recovery.spec.ts建立乱序、缺口、回执丢失、订阅/历史失败、旧代迟到及审批切会话夹具，区分socket连接与权威核对完成；断开与忘记成功标准单独定义。
-- [ ] T022 [US3] 在third_party/paseo-webui/patches/和src/features/paseo-webui/host.ts将宿主presentation与上游AppState/document/focus合成，保留官方恢复/活动规则；验证收起不停止同步，展开不新增provider/runtime。
+- [x] T022 [US3] 在third_party/paseo-webui/patches/和src/features/paseo-webui/host.ts将宿主presentation与上游AppState/document/focus合成，保留官方恢复/活动规则；验证收起不停止同步，展开不新增provider/runtime。
 - [ ] T023 [US3] 在tests/paseo-storage.spec.ts盘点registry、IndexedDB副本、草稿/布局存储边界，验证忘记后异步删除、刷新不连接、迟到事件不复活及另一host不受影响；必要呈现修正置third_party/paseo-webui/patches/。
 - [ ] T024 [US3] 在tests/paseo-recovery.spec.ts执行每候选100次适用恢复循环及额外20次断开/忘记检查，保存场景、耗时、失败与资源计数至resources/evidence/012-paseo-webui-loading/recovery/；最终A/B配置就绪后重跑，不把早期结果算最终验收。
 - [ ] T025 [US3] 在resources/evidence/012-paseo-webui-loading/iphone/执行计划中的真实Safari后台、锁屏、切网及长离开矩阵，记录设备/OS/网络/版本/覆盖与视频或截图；缺真机标未测，不能用模拟勾选。
