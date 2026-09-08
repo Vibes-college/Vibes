@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '本地助手规格质量核对'
-status: 'complete'
+status: 'in-progress'
 amended-by: []
 ---
 

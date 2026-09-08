@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '在Explore内与自己的本地Agent协作'
-status: 'complete'
+status: 'in-progress'
 feature-ids: ['local-assistant', 'article-read', 'explore-browse', 'project-commands']
 amends: ['001', '005', '006']
 amended-by: []

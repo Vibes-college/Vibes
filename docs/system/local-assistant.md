@@ -58,6 +58,10 @@ App把消息及会话交给runtime，将发送、停止和审批交回Paseo。�
 
 审批以agentId和requestId绑定待审批，远端确认后刷新状态。工具审批支持allow/deny；已识别的question支持选项、多个问题、多选与自由文字，答案按问题header提交到updatedInput.answers。未知格式不猜答案，保留拒绝并提示到电脑处理；不调用assistant-ui的本地addToolResult来伪造远端批准。
 
+## 手机恢复的适用边界
+
+当前返回前台的visibilitychange与菜单“刷新状态”都调用resync，driver不是connected时直接返回；离线重建由“重新连接”调用connect。发布SDK已有10秒探活调度、15秒单次超时、连续两次失败重连及1.5秒至30秒退避；不能把SDK支持重连等同真机所有恢复场景已通过。应用没有pageshow/online恢复编排，连接失败统一提示且SDK日志关闭，尚无分阶段的去秘密诊断。用户已报告Safari离开后返回失败，根因待复现；源码风险、工具权限区分及对照项目见[研究](../../specs/011-local-paseo-assistant/research.md)。
+
 ## 上下文与输出
 
 作品资料由WorkDetail公开数据属性提供，经客户端限制为标题300、原作链接2000、规范链接2000、简介4000字符；作为引用资料附在用户文字后，不成为系统指令。发送前可展开查看并取消附带；切换作品重置附带选项。不会读取私有文件或抓取链接正文。

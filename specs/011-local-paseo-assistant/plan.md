@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '本地助手的浏览器适配与恢复设计'
-status: 'complete'
+status: 'in-progress'
 amended-by: []
 ---
 
