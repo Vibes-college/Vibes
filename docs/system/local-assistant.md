@@ -72,6 +72,8 @@ App把消息及会话交给runtime，将发送、停止和审批交回Paseo。�
 
 本地budget统计完整助手依赖的gzip总量，不代表线上实际传输、执行时间或内存。Cloudflare按客户端能力协商传输压缩，浏览器自动解压；解压后的代码仍需解析和执行。预览验收记录实际Content-Encoding、Cache-Control和浏览器首次/重复加载，不能把单独SDK测量当作完整聊天界面大小。依据：[Cloudflare压缩](https://developers.cloudflare.com/speed/optimization/content/compression/)、[HTTP缓存](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching)。
 
+[Cloudflare实测](../../specs/011-local-paseo-assistant/research.md)记录完整聊天JS的压缩正文、解压大小、点击至表单及浏览器重启后的缓存；它是单次桌面测量，未代表真机手机性能。浏览器缓存用fromDiskCache与transferSize核对，边缘命中用首次网络响应的CF-Cache-Status核对，不把缓存保存的旧响应头当作再次联网证据。
+
 ## 电脑端准备与真实验收
 
 常见CLI路径是`paseo daemon start`启动、`paseo daemon pair`取得配对信息，实际命令以已安装版本帮助为准。首次必须在电脑完成受支持Agent的安装与登录；后续手机连接仍需要电脑联网且唤醒，不要求公网开放本地监听端口。不会自动升级或改写用户已有Agent配置。

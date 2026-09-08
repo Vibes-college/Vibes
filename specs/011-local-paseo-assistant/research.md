@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '发布SDK与本地助手接入取舍'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -30,3 +30,7 @@ relay@0.7.2的浏览器/import入口指向tarball不存在的src/e2ee.ts，Node�
 ## 懒加载与交付
 
 复用现有Astro持久节点和动态import，普通浏览不加载SDK或React聊天；assistant-boot→assistant.ts→assistant-app.tsx两级显式导入让大依赖预加载表留在点击之后；不增加每卡片React island。完整官方UI和SDK依赖实测约644KB gzip，以700KB设首次发布独立硬预算，不修改已存在的普通脚本/MDX门槛，静态引入不能逃逸。完整SDK包含多种daemon方法和协议验证，首版保留官方实现，不复制裁剪内部代码。无需新增托管服务：现有Cloudflare预览/生产流程仍是交付权威。模拟协议、真实daemon和真机证据分别验收。
+
+2026-09-07在Cloudflare PR预览b2b458b使用独立Chromium持久profile测量，未拦截请求、未配对电脑。点击前助手入口请求为0；点击后9个JS响应采用zstd，压缩正文628553字节、Resource Timing传输量631253字节、解压正文3891313字节。首次点击至配对表单约1393ms；同页收起再开无新JS响应。关闭并重启浏览器后，9个JS均fromDiskCache，传输量0，点击至表单约315ms；ScriptDuration仍约71ms，缓存没有消除执行成本。计量范围为点击后JS，不含CSS、整个页面或网络/设备性能承诺。
+
+JS响应均为`public, max-age=31536000, immutable`；首次浏览器加载时Cloudflare边缘7个HIT、2个MISS，说明浏览器冷缓存与边缘冷缓存不同。HTML实测`public, max-age=60, must-revalidate`。重启后的响应头是缓存保存的元数据，不据此声称新增边缘命中；以fromDiskCache及transferSize=0确认浏览器复用。原始去秘密数据在resources/evidence/011-local-paseo-assistant/cloudflare-cache.json，正式gzip预算为644514字节；单独SDK估算不能替代完整聊天依赖的实际传输。

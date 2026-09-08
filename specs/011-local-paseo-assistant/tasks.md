@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Explore本地助手执行清单'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -27,12 +27,12 @@ US4独立验收：刷新、断线、跨页、换会话后无串流/重发，恢�
 
 ## 验证与现状同步
 
-- [ ] T011 在tests/assistant.spec.ts及受控协议夹具覆盖完整成功/失败/恢复，运行完整verify与budget。
+- [x] T011 在tests/assistant.spec.ts及受控协议夹具覆盖完整成功/失败/恢复，运行完整verify与budget。
 - [x] T012 用官方daemon完成真实配对、会话与受控任务，保存去秘密的版本/结果证据；内置浏览器审阅桌面和手机布局，真机待测单列。
 - [x] T013 更新docs/features/local-assistant.md、article-read.md、explore-browse.md、project-commands.md、docs/system/local-assistant.md及受影响检查/配置说明与索引，逐项复核文字再更新源码摘要。
-- [ ] T014 按speckit-converge核对spec/plan/tasks与实现，全部完成后状态及索引同步complete，提交推送并更新PR预览/证据。
-- [ ] T015 新会话独立Agent审查整个PR，修复并复核最终SHA，必要检查通过后转Ready并交付用户合并入口。
-- [ ] T016 在Cloudflare预览分别记录点击后加载、同页模块复用、压缩响应与重启浏览器后的缓存，区分本地gzip预算、实际传输和代码执行；同步结果及限制。
+- [x] T014 按speckit-converge核对spec/plan/tasks与实现，全部完成后状态及索引同步complete，提交推送并更新PR预览/证据。
+- [x] T015 新会话独立Agent审查整个PR，修复并复核最终SHA，必要检查通过后转Ready并交付用户合并入口。
+- [x] T016 在Cloudflare预览分别记录点击后加载、同页模块复用、压缩响应与重启浏览器后的缓存，区分本地gzip预算、实际传输和代码执行；同步结果及限制。
 
 ## PR工作台与经验复核
 

@@ -71,6 +71,7 @@ flowchart TD
 - [x] 2026-09-07真实Chromium UI停止运行任务；刷新及断开重连恢复同一会话。
 - [x] 2026-09-07真实Chromium UI用官方审批分别拒绝、允许隔离目录写文件，核对拒绝未写入、允许后文件存在。协议夹具另验多问题/多选回答及结果未知保护；真实模型问题表单未触发。
 - [x] 2026-09-07桌面、移动Chromium/WebKit及320px回归通过；内置浏览器在构建版复核桌面、390px布局及关闭焦点恢复。
+- [x] 2026-09-07Cloudflare预览验证首次点击才加载、zstd压缩、同页复用和重启浏览器磁盘缓存；真实daemon连接及390px无横向溢出，数据见[加载测量](../../specs/011-local-paseo-assistant/research.md)。
 - [ ] 真机iPhone Safari及手机断网/锁屏后的恢复验收通过。
 
 真实证据为resources/evidence/011-local-paseo-assistant/official-final-browser.json及对应截图，检查配对/来源/工具/审批/忘记，浏览器未报告运行错误；创建、执行、停止及恢复见official-real-browser.json的已通过步骤。自动化设备模拟不等于真机通过。
