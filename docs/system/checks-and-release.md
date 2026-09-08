@@ -13,7 +13,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '0784edf6a9829cf109dbdecc2258a52073bfd3f7917d712fe46539f6cfbbbb60'
+code-revision: '4d4bbb31b9fc1f2508b584b425d04a1f33df6dc0fddba33e18043a09d8d3b70f'
 ---
 
 # 检查与发布
@@ -197,4 +197,4 @@ H以`node --experimental-strip-types scripts/paseo-webui-build.ts H`导出，显
 
 H的真实安全头/中继回归用`PASEO_CSP_URL=http://127.0.0.1:4392 PASEO_PAIRING_FILE=.scratch/paseo-webui/h-pairing-url.txt PASEO_RELAY_LOG=.scratch/paseo-webui/daemon-home/startup-relay.log npx playwright test tests/paseo-csp.spec.ts`，要求AI已准备独立Worker与同版中继实例；文件留本机，不把配对值或原始连接日志写入测试产物。此项不替代最终恢复/真机和部署验收。
 
-相同Worker/配对文件可运行`tests/paseo-chat.spec.ts`，验证公开作品资料进入原生草稿、取消、跨文章与刷新恢复；自动化不因此发送模型请求。手动创建的私有测试context显式继承项目的视口、触控、缩放与userAgent，关闭配对trace；不能只换项目名称就声称完成手机覆盖。中继连接计数验收期间不另开或刷新其他实验客户端，避免污染daemon侧差值。
+相同Worker/配对文件可运行`tests/paseo-chat.spec.ts`，验证公开作品资料进入原生草稿、取消、跨文章与刷新恢复；该资料组不发送模型请求。独立的停止/审批组使用`PASEO_MOCK_URL=http://localhost:4393 npx playwright test tests/paseo-chat.spec.ts --grep "native stop"`，由AI按[助手系统说明](local-assistant.md)准备无真实provider的同版mock服务与生产站点；此组会向合成provider发送固定输入，不调用真实模型。手动创建的私有测试context显式继承项目的视口、触控、缩放与userAgent，关闭配对trace；不能只换项目名称就声称完成手机覆盖。中继连接计数验收期间不另开或刷新其他实验客户端，避免污染daemon侧差值。

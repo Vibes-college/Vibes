@@ -13,7 +13,7 @@ code-sources:
     'scripts/paseo-webui-assets.ts',
     'third_party/paseo-webui/',
   ]
-code-revision: '7cee8588b9ffcb586b90204a6e59d7f064dfcd33ea572eda9f56056b5c2adcec'
+code-revision: '5ca63a942e9d0f648cc435131a4cae5fc981a6b9071d8e5e0ccc76bf5a4faa7e'
 ---
 
 # 原生Paseo嵌入边界
@@ -45,6 +45,8 @@ H在G1直接挂载适配上增加契约和presentation边界；保留上游根pr
 
 `h-public-work.patch`只在原生composer加入公开资料按钮，通过原有replaceUserInput编辑原生草稿。资料使用有标签的JSON文本，不添加系统消息、任意RPC、自动发送或第二套消息队列；用户仍通过原生提交、错误恢复与审批流程操作。完整资料后缀可移除并保留之前输入；手动改写后不自动删除。新文章不会替换旧草稿，锁定/只读输入不允许附带；未发送资料随原生草稿存储，宿主不另存副本。
 
+h-operation-feedback.patch只观察原生取消Promise，并在审批mutation明确关闭自动重试；不另发请求、不覆盖原生错误处理。停止反馈按host/agent和请求代次隔离，切会话、卸载或新回合使旧回执失效。收到取消响应只说明请求被处理，不能承诺子进程结束；无回执显示未知，等待权威状态恢复。
+
 容器跨Astro页面持久化；原生React Native、Unistyles和Reanimated的具名样式节点及CSS链接同样保留。原生history使用内部路由，不改变Explore的地址。收起、导航不dispose；退出命令最终整页刷新，网页内单例、监听器与连接随文档销毁，不删除设备。
 
 ## 焦点、页面状态与存储
@@ -62,3 +64,5 @@ H在G1直接挂载适配上增加契约和presentation边界；保留上游根pr
 Astro客户端将原本公共的小型启动/辅助模块合并到site-boot，减少逐文件gzip开销，保留原生及媒体动态边界；`includeDependenciesRecursively:false`不把延迟依赖拉入该组。入口导出使用allow-extension保留既有导出，完整MDX/媒体回归仍是交付必需检查。
 
 `tests/paseo-csp.spec.ts`另需PASEO_CSP_URL（本机Worker）、PASEO_PAIRING_FILE及PASEO_RELAY_LOG（均为.scratch内私有路径）；AI准备，不打印配对值。测试关闭后才生成失败上下文，不保存配对trace。整页刷新可能没有Playwright旧socket关闭事件，因此同时要求daemon对应连接关闭，不能把旧观察对象当实际泄漏；随后核对新页面零新连接及展开恢复。
+
+`tests/paseo-chat.spec.ts`的操作反馈组需`PASEO_MOCK_URL=http://localhost:4393`，由AI先准备固定源码编译的6793开发mock daemon（所有真实provider禁用）、`.scratch/paseo-webui/h-site`生产H站，再运行`node tests/fixtures/paseo-webui/mock-host.mjs`。该测试宿主保留产物CSP，将同源`/ws`转发给mock服务；原生会把127.0.0.1规范为localhost，因此页面也使用localhost。连接注册仅注入无密钥的夹具地址，不作为配对验收。用例在独立Git目录创建mock会话，只丢弃指定请求并断线，不伪造成功回执；检查原生提示和实际发送次数，结束时取消并归档夹具。此组验证协议与界面正确性，不计真实模型性能、子进程停止或最终恢复矩阵。

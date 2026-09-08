@@ -175,3 +175,11 @@ T007将W0—W5生成器、输出大小/哈希与协议版本固定；W1/W2事件
 最小修正h-reactive-history.patch只对上述两个读取可变外部状态的hook加函数级use no memo，保留既有手动依赖；不关闭全局编译优化，不重写运行时或同步协议。这是[React官方支持的函数级退出机制](https://react.dev/reference/react-compiler/directives/use-no-memo)，升级时只有相同生产延迟恢复用例通过才可移除。修正后生产函数保留useSyncExternalStore返回值及useMemo版本依赖，三配置的草稿/中继/确定性延迟恢复共9项通过（host/h-history-after-fix.log）；相关上游13组/321项单元通过。没有把普通Vitest当作编译产物验证。
 
 根providers层级保留；SessionProvider及composer/submit.ts与固定上游字节一致。HostRuntime的变化只有嵌入模式跳过隐式localhost发现，以及聚合连接状态hook的上述编译边界；原有显式配置/配对、注册、单例与同步保留。chat/provider-boundary.json记录源码核验范围，chat/history-compiled-after.json记录生产函数；T016通过不代表T003/T024完整恢复完成。
+
+## R14：停止与审批的请求反馈
+
+2026-09-08，h-operation-feedback.patch保留原生cancelComposerAgent及respondToPermissionAndWait路径，仅补充请求反馈：取消响应不宣称进程全部结束，未确认显示未知，审批禁止自动重试。新回合、切会话和卸载隔离迟到回执；4项组件边界测试与原生actions等15组/368项通过，来源补丁恢复检查通过（host/h-operation-native-unit.log）。
+
+固定0.7.2开发mock daemon禁用全部真实provider，独立Git夹具避免项目发现越界；同源测试宿主保留H的生产CSP，转发本机6793的真实协议。初始127.0.0.1页面被上游连接地址规范为localhost后触发CSP拒绝；将测试页面使用相同localhost域名后通过，不扩大站点CSP。初版临时探针未建内层Git时曾由原生项目发现读到父仓库；正式夹具在创建workspace前先git init，模型不操作父目录。
+
+三配置测试通过真实mock停止响应、审批允许/拒绝；在原生WebSocket上丢弃一次请求并断线，恢复后停止/审批显示未知，请求计数证明没有自动重发。旧停止反馈在新回合消失，收起没有发送取消；错误回合仍由原生界面显示。测试使用生产导出及手机模拟参数，未将合成回合算作Luna重任务、真实子进程结束或最终100次恢复；日志host/h-operation-browser-complete.log。

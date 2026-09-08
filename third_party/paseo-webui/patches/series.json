@@ -84,6 +84,10 @@
       {
         "path": "third_party/paseo-webui/patches/h-reactive-history.patch",
         "sha256": "29efd984229da68ef57293a239e2c7bdb49d6a3d41457037cb20fa7e63b8e43f"
+      },
+      {
+        "path": "third_party/paseo-webui/patches/h-operation-feedback.patch",
+        "sha256": "3316c12f1437717832b779b9c15a20cc9ec3a2405befc6aa511798881daea432"
       }
     ],
     "dependencies": [

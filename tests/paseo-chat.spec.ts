@@ -1,3 +1,4 @@
+import { registerMockOperationTests } from './fixtures/paseo-webui/mock-operations.ts';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -7,15 +8,15 @@ if (hostUrl && !/^http:\/\/(127\.0\.0\.1|localhost):\d+\/?$/.test(hostUrl))
   throw new Error('Native chat tests require the isolated local Worker.');
 if (pairingFile && !resolve(pairingFile).startsWith(resolve('.scratch') + '/'))
   throw new Error('Pairing fixture must remain private under .scratch/.');
-test.skip(
-  !hostUrl || !pairingFile,
-  'Requires the same-version isolated relay and private pairing offer.',
-);
 test.use({ trace: 'off', screenshot: 'off', video: 'off' });
 
 test('public work reference uses the editable native draft and survives article navigation and reload', async ({
   browser,
 }, testInfo) => {
+  test.skip(
+    !hostUrl || !pairingFile,
+    'Requires the same-version isolated relay and private pairing offer.',
+  );
   test.setTimeout(90000);
   const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = testInfo.project.use;
   const context = await browser.newContext({
@@ -86,3 +87,5 @@ test('public work reference uses the editable native draft and survives article 
   }
   if (failure) throw failure;
 });
+
+registerMockOperationTests();

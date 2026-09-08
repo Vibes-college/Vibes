@@ -39,7 +39,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: 'fd6600906c36608600c6a7f80e698f7b5fd284f48791fdd2f891c22151d99929'
+code-revision: 'f7b8e9c72af0daeb9cde9703c22b60c2a8ff6bbfbef28c6f16afecdfd7fd681f'
 ---
 
 # 功能名：检查与发布网站
@@ -127,3 +127,5 @@ flowchart TD
 基线盘点先运行`node --experimental-strip-types scripts/paseo-webui-build.ts B0-graph`，只读观察Metro完整依赖图并单独导出；再运行`node --experimental-strip-types scripts/paseo-webui-manifest.ts`，要求观察构建与原B0所有资源哈希完全一致，才保存文件、压缩及同步/异步源依赖清单。实际首次请求由`PASEO_BASELINE_URL=http://127.0.0.1:6792 npx playwright test tests/paseo-baseline.spec.ts --project=desktop-chromium`记录，逐个核对所下载JS确为原B0。结果在resources/evidence/012-paseo-webui-loading/baseline/；单次请求盘点不是冷暖性能实验通过结论。
 
 `node --experimental-strip-types scripts/paseo-webui-experiment.ts prepare`根据已核对的B0生成6组固定负载和720条交错采样顺序，用固定上游协议校验timeline事件；将输入哈希、配置和规则冻结于tests/fixtures/paseo-webui/frozen.json及third_party/paseo-webui/budget-baseline.json。重复执行只允许相同内容，不覆盖不同基线或降低负载。实际输入文件放.scratch/paseo-webui/experiment-inputs；此命令不运行模型、采样或宣布候选通过。
+
+原生停止、审批和故障反馈可按[助手系统说明](../system/local-assistant.md)运行同版mock协议夹具；需要AI先准备隔离实例和实际H资源，默认整站回归明确跳过此可选组，不把缺实例当作通过。
