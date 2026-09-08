@@ -472,17 +472,39 @@ export class AssistantStore {
     this.epoch = page.epoch;
     this.cursor = page.startCursor;
     this.update({ agent: page.agent, rows: page.entries, hasOlder: page.hasOlder, loading: false });
+    // Timeline sequence numbers are ordered; status/permission events are not. A buffered
+    // status may precede this snapshot, so confirm current state instead of replaying it.
+    for (let round = 0; ; round++) {
+      const buffered = this.buffered;
+      this.buffered = [];
+      let needsState = false;
+      for (const event of buffered) {
+        if (event.type === 'agent_stream' && event.event.type === 'timeline') this.event(event);
+        else needsState = true;
+      }
+      if (!valid()) return;
+      if (!needsState) break;
+      if (round >= 3) throw new RecoveryFault('history', 'unavailable');
+      this.update({ loading: true });
+      const result = await this.stage('history', () => driver.refresh(id), signal);
+      if (!valid()) return;
+      if (!result || result.agent.id !== id) throw new RecoveryFault('history', 'unavailable');
+      const current = this.state.agent;
+      const older = current && Date.parse(result.agent.updatedAt) < Date.parse(current.updatedAt);
+      this.update({ agent: older ? current : result.agent, loading: false });
+    }
     if (this.device) {
-      for (const operation of this.ledger.reconcile(this.device.offer.serverId, page))
+      for (const operation of this.ledger.reconcile(this.device.offer.serverId, {
+        ...page,
+        agent: this.state.agent,
+      }))
         this.diagnostics.record('operation', {
           status: 'confirmed',
           operation: this.diagnostics.alias(operation),
         });
     }
-    const buffered = this.buffered;
-    this.buffered = [];
-    for (const event of buffered) this.event(event);
   }
+
   older = async () => {
     const driver = this.driver,
       id = this.state.selectedId,
@@ -524,12 +546,16 @@ export class AssistantStore {
       this.buffered = [];
       for (const event of buffered) this.event(event);
     } catch {
-      if (generation === this.generation && selection === this.selection)
+      if (generation === this.generation && selection === this.selection) {
         this.update({ loading: false, error: 'history' });
+        const buffered = this.buffered;
+        this.buffered = [];
+        for (const event of buffered) this.event(event);
+      }
     }
   };
   private event(event: DaemonEvent) {
-    // A snapshot and a live update can cross in flight; replay selected-agent updates afterwards.
+    // Buffer selected-agent events while reading; recovery confirms unordered state separately.
     if (this.state.loading && 'agentId' in event && event.agentId === this.state.selectedId) {
       this.buffered.push(event);
       if (this.buffered.length > maximumRows) void this.select(this.state.selectedId);

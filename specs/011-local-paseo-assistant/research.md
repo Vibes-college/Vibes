@@ -352,3 +352,5 @@ E2E必须补齐以下故障时序，验证真实动作与数据而非只断言�
 - `lifecycle.ts`、阶段诊断、当前SDK端口与去正文操作账本是自写适配。Cindy/Lody仅作为时序/状态设计依据，未复制其协议或原生模块。许可保留于public/licenses/paseo-recovery.txt。
 
 基础版本的真实Chromium/Cloudflare与用户口述Safari证据仍保存在resources/evidence/011-local-paseo-assistant/official-*.json及截图，范围见此前研究与PR；由于恢复/操作代码已改变，需重新验证对应路径。首轮新增浏览器回归发现身份错误被包装层提前close产生的断开事件掩盖；修正为先向唯一owner返回terminal身份错误，再释放实例。另纠正两处测试把可编辑草稿误当成可发送，实际门控以发送/审批及服务端请求次数断言。失败记录保留，不当作通过证据。
+
+独立审查59e96fb发现快照后重播旧状态、before失败滞留实时事件两个P2。修复将无序状态事件转换为有界权威重读，保留时间线seq归并，并在before失败时消费有效实时事件；两项复现已进入store单元回归。首次完整预览验证为修复主动中断，不能记作通过，最终SHA重新运行完整验证。

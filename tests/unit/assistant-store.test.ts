@@ -426,3 +426,50 @@ test('a probe failure invalidates the client and identity faults never retry aut
   await other.store.forget();
   assert.equal(JSON.parse(other.store.exportDiagnostics()).events.length, 0);
 });
+
+test('review: buffered pre-snapshot status must not overwrite newer snapshot', async () => {
+  const f = fixture();
+  await f.store.pair(offer, false);
+  await f.store.select('a');
+  const pending = deferred<TimelinePage>();
+  f.driver.timeline = async () => pending.promise;
+  const sync = f.store.resync();
+  await new Promise((r) => setImmediate(r));
+  f.emit({
+    type: 'agent_update',
+    agentId: 'a',
+    payload: {
+      kind: 'upsert',
+      agent: { ...agent(), status: 'running', updatedAt: '2026-09-07T00:00:01Z' },
+    },
+  });
+  pending.resolve({
+    ...page(),
+    agent: { ...agent(), status: 'idle', updatedAt: '2026-09-07T00:00:02Z' },
+  });
+  await sync;
+  assert.equal(f.store.getSnapshot().agent?.status, 'idle');
+  await f.store.disconnect();
+});
+test('review: older request failure must not discard buffered live status', async () => {
+  const f = fixture();
+  await f.store.pair(offer, false);
+  f.driver.timeline = async () => ({
+    ...page(),
+    startCursor: { epoch: 'e1', seq: 4 },
+    hasOlder: true,
+  });
+  await f.store.select('a');
+  const pending = deferred<TimelinePage>();
+  f.driver.timeline = async () => pending.promise;
+  const older = f.store.older();
+  f.emit({
+    type: 'agent_update',
+    agentId: 'a',
+    payload: { kind: 'upsert', agent: { ...agent(), status: 'running' } },
+  });
+  pending.reject(new Error('transient'));
+  await older;
+  assert.equal(f.store.getSnapshot().agent?.status, 'running');
+  await f.store.disconnect();
+});
