@@ -452,6 +452,9 @@ test('lost subscription confirmation and a resolved approval heal without repeat
   await expect(page.getByRole('button', { name: '允许本次', exact: true })).toHaveCount(0);
   await expect(page.locator('#assistant-dialog header [role=status]')).toContainText('已连接');
   await page.getByLabel('发送给本地 Agent').fill('审批核对后的草稿');
+  await expect(page.getByRole('button', { name: '停止', exact: true })).toBeVisible();
+  await daemon.complete();
+  await expect(page.locator('#assistant-dialog header [role=status]')).toContainText('空闲');
   await expect(page.getByRole('button', { name: '发送', exact: true })).toBeEnabled();
   expect(daemon.requests.filter((m) => m.type === 'agent_permission_response')).toHaveLength(1);
 });
