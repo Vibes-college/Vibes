@@ -13,7 +13,7 @@ code-sources:
     'scripts/docs-sources.ts',
     'scripts/docs-lessons.ts',
   ]
-code-revision: 'cd24df6b5c44b86180418a8bf7a8a146cebb6a303eac51c3070fed569b8d09d2'
+code-revision: '577c5ac3616ccf0e11ecd99611eee597d131a7566695893c26bd534e3fe16785'
 ---
 
 # 功能名：规划开发与维护文档
@@ -51,7 +51,7 @@ flowchart TD
   I -->|否| K[直接提交小改动，不单独开PR]
 ```
 
-当前文档可归并重写，旧规格正文仍保留。检查器通过当前文档的legacy-feature-ids找到旧功能编号对应的现状，不要求为历史编号保留一堆空壳文档。对应`scripts/docs-index.ts`、`scripts/docs-sources.ts`。
+已声明的本地助手系统说明纳入living白名单，新增其他系统页仍需同步明确入口。当前文档可归并重写，旧规格正文仍保留。检查器通过当前文档的legacy-feature-ids找到旧功能编号对应的现状，不要求为历史编号保留一堆空壳文档。对应`scripts/docs-index.ts`、`scripts/docs-sources.ts`。
 
 开始相关任务读[失败经验](../LESSONS.md)，满足条件才记三行；转化到规则/模板/测试并保存验证证据。原原则历史保存在[DECISIONS](../DECISIONS.md)，迁移不改旧条目，失败经验可按规则整理。四个收录条件及满30天后措施是否仍有效由AI复核；自动检查约束三行格式、30条上限及已转化项的验证和日期字段，不自动删除经验。
 

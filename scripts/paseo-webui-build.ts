@@ -89,6 +89,7 @@ export function buildWebUI(options: {
   dependencyPatches?: DependencyPatch[];
   exportDirectory?: string;
   graphFile?: string;
+  publicPath?: string;
   exportWeb: () => void;
 }) {
   const { source, identity, output, patches, exportWeb } = options;
@@ -154,6 +155,7 @@ export function buildWebUI(options: {
             files: patch.files,
           })),
           sourceGraph,
+          publicPath: options.publicPath ?? '/',
           node: process.version,
           files,
         },
@@ -196,8 +198,8 @@ export function buildWebUI(options: {
 
 function main() {
   const [action, ...extra] = process.argv.slice(2);
-  if (!['fetch', 'B0', 'G1', 'B0-graph'].includes(action) || extra.length)
-    throw new Error('Usage: paseo-webui-build.ts fetch | B0 | G1 | B0-graph');
+  if (!['fetch', 'B0', 'G1', 'H', 'B0-graph'].includes(action) || extra.length)
+    throw new Error('Usage: paseo-webui-build.ts fetch | B0 | G1 | H | B0-graph');
   const identity: UpstreamSource = JSON.parse(
     readFileSync(join(root, 'third_party/paseo-webui/upstream.json'), 'utf8'),
   );
@@ -218,8 +220,22 @@ function main() {
     B0: SourcePatch[];
     measurement?: SourcePatch[];
     G1?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
+    H?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
   } = JSON.parse(readFileSync(join(root, 'third_party/paseo-webui/patches/series.json'), 'utf8'));
-  if (action === 'G1' && !series.G1) throw new Error('G1 probe patches are not configured.');
+  const mountedProfile = action === 'G1' ? series.G1 : action === 'H' ? series.H : undefined;
+  if ((action === 'G1' || action === 'H') && !mountedProfile)
+    throw new Error('Mount profile is not configured.');
+  const publicPath =
+    action === 'G1'
+      ? '/vendor/paseo/g1-direct'
+      : action === 'H'
+        ? '/vendor/paseo/' +
+          sha256(
+            Buffer.from(
+              JSON.stringify({ source: identity.commit, profile: action, patches: mountedProfile }),
+            ),
+          ).slice(0, 16)
+        : '/';
   if (action === 'B0-graph' && !series.measurement?.length)
     throw new Error('Graph observer is not configured.');
   const graphFile = join(root, '.scratch/paseo-webui/probes/b0-source-graph.json');
@@ -234,8 +250,8 @@ function main() {
   const receipt = buildWebUI({
     source,
     identity,
-    patches: (action === 'G1'
-      ? series.G1!.source
+    patches: (mountedProfile
+      ? mountedProfile.source
       : action === 'B0-graph'
         ? [...series.B0, ...series.measurement!]
         : series.B0
@@ -243,13 +259,13 @@ function main() {
       ...patch,
       path: resolve(root, patch.path),
     })),
-    dependencyPatches:
-      action === 'G1'
-        ? series.G1!.dependencies.map((patch) => ({ ...patch, path: resolve(root, patch.path) }))
-        : [],
+    dependencyPatches: mountedProfile
+      ? mountedProfile.dependencies.map((patch) => ({ ...patch, path: resolve(root, patch.path) }))
+      : [],
     output: join(root, '.scratch/paseo-webui/artifacts', action),
     exportDirectory: probeExport,
     graphFile: action === 'B0-graph' ? graphFile : undefined,
+    publicPath,
     exportWeb: () => {
       const env = { ...process.env };
       for (const key of Object.keys(env))
@@ -260,6 +276,7 @@ function main() {
         )
           delete env[key];
       if (action === 'B0-graph') env.VIBES_PASEO_GRAPH_FILE = graphFile;
+      if (action === 'H') env.VIBES_PASEO_BASE_URL = publicPath;
       const args = ['run', 'build:web', '--workspace=@getpaseo/app'];
       if (probeExport) args.push('--', '--output-dir', probeExport);
       execFileSync('npm', args, {

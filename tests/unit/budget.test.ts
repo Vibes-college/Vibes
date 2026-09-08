@@ -31,3 +31,28 @@ test('asset budget distinguishes free and paid counts without weakening individu
   for (const value of [0, NaN, Infinity, assetLimits.fileBytes + 1])
     assert.throws(() => assertAssetBudget({ fileCount: 1, largestFile: value }, true));
 });
+
+test('assistant resource gate rejects missing samples and either exceeded bound', async () => {
+  const { assertAssistantBudget } = await import('../../scripts/budget-policy.ts');
+  const limits = { candidateInitialGzipTarget: 50, candidateTotalGzipMaximum: 100 };
+  assert.doesNotThrow(() =>
+    assertAssistantBudget(
+      { assistantInitialJavascriptGzip: 50, assistantTotalJavascriptGzip: 100 },
+      limits,
+    ),
+  );
+  for (const [initial, total] of [
+    [0, 0],
+    [51, 100],
+    [50, 101],
+    [60, 50],
+    [NaN, 100],
+  ]) {
+    assert.throws(() =>
+      assertAssistantBudget(
+        { assistantInitialJavascriptGzip: initial, assistantTotalJavascriptGzip: total },
+        limits,
+      ),
+    );
+  }
+});

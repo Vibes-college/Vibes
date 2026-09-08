@@ -1,5 +1,6 @@
+import { paseoResourceKind } from '../src/features/paseo-webui/asset-contract.ts';
 import { readFileSync, readdirSync, realpathSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join, resolve, extname, dirname } from 'node:path';
+import { join, resolve, dirname } from 'node:path';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { pathToFileURL } from 'node:url';
 import { root } from './local-tools.ts';
@@ -43,20 +44,7 @@ function safePath(value: string) {
   )
     throw new Error(`Invalid artifact path: ${value}`);
 }
-function kind(path: string) {
-  const extension = extname(path);
-  if (extension === '.js') return 'script';
-  if (extension === '.css') return 'style';
-  if (extension === '.html') return 'document';
-  if (extension === '.wasm') return 'wasm';
-  if (['.woff', '.woff2', '.ttf', '.otf'].includes(extension)) return 'font';
-  if (['.png', '.jpg', '.jpeg', '.webp', '.avif', '.svg', '.gif', '.ico'].includes(extension))
-    return 'image';
-  if (['.mp3', '.mp4', '.webm', '.wav', '.ogg'].includes(extension)) return 'media';
-  if (extension === '.json' || extension === '.txt') return 'metadata';
-  if (extension === '.map') return 'source-map';
-  throw new Error(`Unclassified resource: ${path}`);
-}
+
 function paths(directory: string, prefix = ''): string[] {
   return readdirSync(directory, { withFileTypes: true })
     .flatMap((entry) => {
@@ -142,7 +130,7 @@ export function createPaseoManifest(directory: string, receipt: BuildReceipt, gr
     contents.set(file.path, data);
     return {
       ...file,
-      kind: kind(file.path),
+      kind: paseoResourceKind(file.path),
       gzipBytes: gzipSync(data).length,
       brotliBytes: brotliCompressSync(data).length,
     };
@@ -155,7 +143,7 @@ export function createPaseoManifest(directory: string, receipt: BuildReceipt, gr
       throw new Error('External or parameterized entry script.');
     // B0 is rooted at /. Candidates keep their prefix in a separate manifest.
     const path = decodeURIComponent(url.pathname.slice(1));
-    if (contents.get(path) === undefined || kind(path) !== 'script')
+    if (contents.get(path) === undefined || paseoResourceKind(path) !== 'script')
       throw new Error('Unknown entry script.');
     return path;
   });

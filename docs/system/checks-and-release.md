@@ -13,7 +13,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '8cc79a96b3fe5c29bfedc1c85a636466f9c2a82dfb98b93c9772c5593392fc6a'
+code-revision: '75de1d8448a709b550dd877bdb0bcdc7b1ba064dc326da40b199249f5ecb9319'
 ---
 
 # 检查与发布
@@ -179,11 +179,11 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 `node --experimental-strip-types scripts/paseo-webui-build.ts fetch`只取得并核对`third_party/paseo-webui/upstream.json`固定的官方来源、提交、锁文件和许可；已有源码不重置。上游依赖安装按该清单的已授权工作区及脚本审阅流程单独执行，不使用主站node_modules。`B0`要求干净源码，校验`patches/series.json`中的补丁摘要并严格应用后运行官方Web导出；当前B0补丁为空，不代表已选定生产候选。该目录的JSON配置与patch补丁纳入docs:check的源码对应检查，改变它们须复核对应说明。
 
-导出必须有index.html及JS，资源不得为符号链接；随后保存原始资源哈希、Paseo许可、固定锁文件和实际安装包的许可文本，核对并恢复源码后才提交到`.scratch/paseo-webui/artifacts/B0`。失败会使旧的受控成功目录失效，未知输出目录与意外源码改动保留待查。构建记录不是网络请求或性能验收；实际依赖体积、许可缺失及运行路径另由实验核对。主站build、verify、预算分类和发布流程目前均不包含此实验产物。
+导出必须有index.html及JS，资源不得为符号链接；随后保存原始资源哈希、Paseo许可、固定锁文件和实际安装包的许可文本，核对并恢复源码后才提交到`.scratch/paseo-webui/artifacts/B0`。失败会使旧的受控成功目录失效，未知输出目录与意外源码改动保留待查。构建记录不是网络请求或性能验收；实际依赖体积、许可缺失及运行路径另由实验核对。普通build、verify与发布不启用原生资源；H只允许显式隔离输出，H预算已经单列并使用保守初开上界，完整H仍超出最终候选门槛；正式发布候选尚未选定。
 
 同一构建命令的`G1`动作按series中的source/dependencies两类补丁重放直接挂载探针，输出独立的artifacts/G1。依赖补丁只允许列出的Expo Router、React Native Web、Unistyles文件，检查补丁及每个文件改前/改后摘要，构建后恢复原始依赖；意外改动不覆盖。G1导出使用独立临时目录，不覆盖已保存B0，也不作为性能收益结果。
 
-`node --experimental-strip-types scripts/paseo-webui-probe.ts`校验B0/G1原始资源并生成`.scratch/paseo-webui/probes/web`：根路径保留B0，`/probe/one/`和`/probe/two/`为Astro换页测试，G1资源位于`/vendor/paseo/g1-direct/`。这是本地实验前缀，不是最终发布摘要或新增产品入口。AI在同版隔离daemon托管该目录；`PASEO_PROBE_URL=http://127.0.0.1:6792 npx playwright test tests/paseo-mount.spec.ts`用现有Playwright配置执行探针；地址仅允许本机。未指定地址时这些测试明确跳过，不把跳过算验收；手机项目是浏览器模拟，不能替代真实iPhone。正式接入与发布仍需012剩余验证。
+`node --experimental-strip-types scripts/paseo-webui-probe.ts`校验B0/G1原始资源并生成`.scratch/paseo-webui/probes/web`：根路径保留B0，`/probe/one/`和`/probe/two/`为Astro换页测试，G1资源位于`/vendor/paseo/g1-direct/`。这是本地实验前缀，不是最终发布摘要或新增产品入口。AI在同版隔离daemon托管该目录；`PASEO_PROBE_URL=http://127.0.0.1:6792 npx playwright test tests/paseo-mount.spec.ts`用现有Playwright配置执行探针；地址仅允许本机。未指定地址时这些测试明确跳过，不把跳过算验收；手机项目是浏览器模拟，不能替代真实iPhone。H网站接入另见[本地助手系统说明](local-assistant.md)，正式发布仍需012剩余验证。
 
 `B0-graph`在独立输出应用measurement只读Metro钩子，保存实际解析模块路径、源码摘要及同步/异步依赖；官方序列化保持不变。图文件摘要进入该构建记录。`paseo-webui-manifest.ts`核对观察构建与保留B0的实际文件清单、每个文件/图摘要和完整依赖闭包，拒绝漏文件、额外文件、未知资源类型、符号链接和断裂图。清单逐文件记录原大小、默认gzip/Brotli；所有JS计入总量，HTML入口脚本单列，不能把后续chunk藏出总量。源码同步闭包不等同于运行时执行量，压缩盘点不等同于实际传输。
 
@@ -192,3 +192,5 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 实验prepare固定B0/H、六项独立消融、A/B及A+P/B+P的配置，未配对/已配对分别安排每配置10冷20暖，共720条单worker顺序；冷启动空HTTP缓存，仅施加对应配对快照，暖启动先做不计时预热。6组负载包含1000条历史（1024000字符正文）、20秒流与200次工具状态变化、50文件/每侧10000行diff、长度边界、6000行JSONL真实Luna任务材料。固定协议校验通过只证明事件形状合法，未执行UI/模型或恢复测试。冻结文件已有不同内容时拒绝覆盖；首次请求盘点再次运行另存时间戳记录，保留用于冻结的首份记录。
 
 budget-baseline.json记录统一gzip的B0初开4687382 B、总量4690481 B，候选首开减半目标2343691 B、总量上限4690481 B，700000 B仍是附加研究目标；主站原有门槛不变，当前尚未把助手预算接入正式发布。采样覆盖摘要只检查预定cohort是否齐全，保留失败数，空/部分数据不能变成通过；完整覆盖也仅表示可以分析，不代表正确性或性能过关。
+
+H以`node --experimental-strip-types scripts/paseo-webui-build.ts H`导出，显式`VIBES_PASEO_PROFILE=H VIBES_OUT_DIR=.scratch/paseo-webui/h-site npm run build`生成带入口的隔离站；只接受已匹配来源/补丁/资源摘要的H，不改变默认构建。`PASEO_HOST_URL`供`tests/paseo-loading.spec.ts`使用，地址必须是本机且已经托管该产物；未指定明确跳过。源码与测试细节、当前限制见[助手系统说明](local-assistant.md)。

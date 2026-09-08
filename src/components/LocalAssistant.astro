@@ -1,0 +1,158 @@
+---
+import type { PaseoAssetConfig } from '../features/paseo-webui/asset-contract';
+import type { Locale } from '../lib/i18n/routes';
+interface Props {
+  config: PaseoAssetConfig;
+  locale: Locale;
+}
+const { config, locale } = Astro.props;
+const zh = locale === 'zh';
+---
+
+<button
+  class="paseo-entry"
+  data-paseo-open
+  aria-controls="local-assistant"
+  aria-expanded="false"
+  disabled
+>
+  {zh ? '本地助手' : 'Local assistant'}
+</button>
+<noscript
+  ><p class="paseo-noscript">
+    {zh ? '启用 JavaScript 后可打开本地助手。' : 'Enable JavaScript to open the local assistant.'}
+  </p></noscript
+>
+<section
+  id="local-assistant"
+  data-paseo-config={JSON.stringify(config)}
+  data-open-requested="false"
+  role="region"
+  aria-label={zh ? '本地助手' : 'Local assistant'}
+  hidden
+  transition:persist="paseo-assistant"
+>
+  <header class="paseo-toolbar">
+    <strong>Paseo</strong>
+    <button data-paseo-exit>{zh ? '退出并刷新' : 'Exit and reload'}</button>
+    <button data-paseo-close>{zh ? '收起' : 'Close'}</button>
+  </header>
+  <div class="paseo-notice" data-paseo-notice>
+    <p role="status" data-paseo-status>
+      {zh ? '正在加载本地助手…' : 'Loading the local assistant…'}
+    </p>
+    <button data-paseo-retry hidden>{zh ? '重试' : 'Retry'}</button>
+    <button data-paseo-reload hidden>{zh ? '刷新页面' : 'Reload page'}</button>
+  </div>
+  <div id="root" tabindex="-1"></div>
+</section>
+<script>
+  import '../scripts/paseo-boot';
+</script>
+<style is:global>
+  .paseo-entry {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 70;
+    border: 1px solid #b8b8b8;
+    border-radius: 22px;
+    padding: 10px 16px;
+    background: #fff;
+    color: #222;
+    font: 600 14px/1.2 system-ui;
+    box-shadow: 0 2px 12px #0001;
+  }
+  .paseo-entry:disabled {
+    opacity: 0.6;
+  }
+  .paseo-noscript {
+    position: fixed;
+    right: 18px;
+    bottom: 60px;
+    z-index: 70;
+    max-width: 280px;
+    padding: 8px;
+    background: #fff;
+    font-size: 14px;
+  }
+  #local-assistant {
+    position: fixed;
+    right: 12px;
+    top: 12px;
+    bottom: 72px;
+    width: min(720px, calc(100vw - 24px));
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid #b8b8b8;
+    border-radius: 10px;
+    box-shadow: 0 12px 48px #0003;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  #local-assistant[hidden],
+  #local-assistant [hidden] {
+    display: none !important;
+  }
+  .paseo-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd;
+    color: #222;
+    background: #fff;
+    font: 14px/1.4 system-ui;
+  }
+  .paseo-toolbar strong {
+    margin-right: auto;
+  }
+  .paseo-toolbar button,
+  .paseo-notice button {
+    font: inherit;
+    padding: 7px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    color: #222;
+    background: #fff;
+  }
+  .paseo-notice {
+    padding: 14px;
+    font: 14px/1.5 system-ui;
+    color: #333;
+  }
+  #local-assistant #root {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    contain: layout paint;
+    container-type: inline-size;
+    container-name: paseo;
+    outline: none;
+  }
+  #local-assistant #root > div {
+    flex: 1;
+    min-width: 0;
+  }
+  @media (max-width: 600px) {
+    #local-assistant {
+      inset: 0;
+      width: 100%;
+      height: 100dvh;
+      border: 0;
+      border-radius: 0;
+    }
+    .paseo-toolbar {
+      padding-top: max(8px, env(safe-area-inset-top));
+    }
+    .paseo-entry {
+      bottom: max(18px, env(safe-area-inset-bottom));
+    }
+  }
+</style>

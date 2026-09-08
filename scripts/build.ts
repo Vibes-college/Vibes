@@ -1,3 +1,4 @@
+import { copyPaseoAssets } from './paseo-webui-assets.ts';
 import { writeContentSecurity } from './content-security.ts';
 import { resolve } from 'node:path';
 import { rmSync } from 'node:fs';
@@ -19,6 +20,7 @@ const hasPublished = catalog.works.some((work) =>
 // Custom Markdown plugins and public image dimensions can change without Markdown edits.
 // A full content rebuild prevents Astro from publishing stale rendered HTML.
 run(process.execPath, ['node_modules/astro/bin/astro.mjs', 'build', '--force']);
+copyPaseoAssets(out);
 await optimizeImages(out);
 writeContentSecurity(out, bundleSandboxGame(out));
 // 显式指定正文根；全站没有发布作品时也不能回退去索引导航页面。

@@ -29,3 +29,26 @@ export function assertBudget(sizes: Record<keyof typeof budgetLimits, number>) {
     }
   }
 }
+
+export function assertAssistantBudget(
+  sizes: { assistantInitialJavascriptGzip: number; assistantTotalJavascriptGzip: number },
+  limits: { candidateInitialGzipTarget: number; candidateTotalGzipMaximum: number },
+) {
+  const initial = sizes.assistantInitialJavascriptGzip;
+  const total = sizes.assistantTotalJavascriptGzip;
+  if (
+    !Number.isSafeInteger(initial) ||
+    initial <= 0 ||
+    !Number.isSafeInteger(total) ||
+    total < initial ||
+    !Number.isSafeInteger(limits.candidateInitialGzipTarget) ||
+    limits.candidateInitialGzipTarget <= 0 ||
+    !Number.isSafeInteger(limits.candidateTotalGzipMaximum) ||
+    limits.candidateTotalGzipMaximum < limits.candidateInitialGzipTarget
+  )
+    throw new Error('Missing or invalid assistant resource budget.');
+  if (initial > limits.candidateInitialGzipTarget || total > limits.candidateTotalGzipMaximum)
+    throw new Error(
+      `Assistant budget failed: initial ${initial}/${limits.candidateInitialGzipTarget}, total ${total}/${limits.candidateTotalGzipMaximum} gzip bytes.`,
+    );
+}

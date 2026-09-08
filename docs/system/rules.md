@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '1c156e0519501aaca6751e47bff6262da907c95a34d5cb359ca55d42f267378d'
+code-revision: '6c0a69431c14e396878e798f5b7afc18d31578c66726c763e05e66c9167d033c'
 ---
 
 # 常量、规则表与正则
@@ -47,7 +47,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 
 ## 检查与运行规则
 
-Playwright清单包含独立B0请求盘点和G1挂载探针，只有显式提供本机实验地址才执行；普通验证中的跳过不算Paseo验收。步骤见[实验构建](checks-and-release.md#paseo实验构建边界)。
+Playwright清单包含独立B0请求盘点、G1挂载探针和H加载回归，只有显式提供本机实验地址才执行；普通验证中的跳过不算Paseo验收。步骤见[实验构建](checks-and-release.md#paseo实验构建边界)。
 
 | 名称 / 规则     | 当前值或行为                                                                                                     | 定义位置                                                                     |
 | --------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -149,3 +149,5 @@ docs/DECISIONS.md只能追加，原LESSONS历史迁移时保留旧正文；新�
 MDX仅为需要交互的文章启用React islands；普通Markdown不加载React，多实例共享模块。章节和事实锚点限制见[MDX规则](markdown.md#mdx互动文章)。detail.ts、detail-gestures.ts与detail-paging.ts共用组件区域排除，避免键盘、横滑和纵向翻页抢走组件输入。scripts/content-security.ts仅为本次构建产物的确切内联脚本追加SHA256许可，不启用脚本unsafe-inline。
 
 MDX格式整篇关闭左右拖动及长按拖动换篇，作品概览页顶部的相邻文章链接保留；普通Markdown维持原有手势。组件区域仍排除阅读键盘和纵向封面翻页手势。
+
+H隔离构建的助手原生清单必须匹配源产物摘要，全部原生JS与独有宿主依赖计入助手总量；首次打开暂用同一全量作为保守上界。静态泄漏、预加载或未知原生脚本拒绝，共享依赖仍计公共预算，原有数值门槛不变。scripts/budget.ts尊重.scratch内的显式VIBES_OUT_DIR，并依据冻结budget-baseline.json检查初开目标和总量最大值；先打印数据再拒绝超限H，不把实验配置视为已达标。细节见[助手系统说明](local-assistant.md)。

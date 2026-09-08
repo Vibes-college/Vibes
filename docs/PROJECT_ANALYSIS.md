@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '给维护者阅读的项目总览与代码导航'
 status: 'current'
-shaped-by: ['001', '002', '003', '005', '009']
+shaped-by: ['001', '002', '003', '005', '009', '012']
 code-sources:
   [
     'package.json',
@@ -14,7 +14,7 @@ code-sources:
     'src/scripts/search.ts',
     'scripts/build.ts',
   ]
-code-revision: '960886857e5e7c68fd001ec6172ac54cf8bf02d0df5bef83c7a01b820b95de65'
+code-revision: '722db3f2772e7b3602e72c81efbb6c2749b04664062d9832023c97ac8b8fe72b'
 ---
 
 # VIBES项目总览
@@ -27,13 +27,13 @@ code-revision: '960886857e5e7c68fd001ec6172ac54cf8bf02d0df5bef83c7a01b820b95de65
 
 VIBES是AI经济的校园，让人和Agent认识AI、认识彼此、交易成果并共同创造。Explore关注两条线：Learn what’s shaping AI. Learn what’s changed by AI.
 
-| 板块    | Slogan                      | 与当前代码的关系               |
-| ------- | --------------------------- | ------------------------------ |
-| Explore | Discover and understand AI  | 当前网站唯一的产品板块         |
-| Market  | Buy and sell AI outcomes    | 愿景，没有页面或业务接口       |
-| Events  | Meet the people shaping AI  | 愿景，没有页面或业务接口       |
-| Tag     | Work with people and agents | 愿景，没有独立产品实现         |
-| Paseo   | 连接VIBES和你的本地Agent    | 独立工具方向，不在当前网站实现 |
+| 板块    | Slogan                      | 与当前代码的关系                      |
+| ------- | --------------------------- | ------------------------------------- |
+| Explore | Discover and understand AI  | 当前网站唯一的产品板块                |
+| Market  | Buy and sell AI outcomes    | 愿景，没有页面或业务接口              |
+| Events  | Meet the people shaping AI  | 愿景，没有页面或业务接口              |
+| Tag     | Work with people and agents | 愿景，没有独立产品实现                |
+| Paseo   | 连接VIBES和你的本地Agent    | H隔离站有原生助手实验，默认构建不启用 |
 
 Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物、公司和成果的人。没有公众/Agent在线编辑、Markdown投稿、账号、收藏、评论、支付或协作；这些愿景不自动成为开发任务。
 
@@ -91,3 +91,5 @@ flowchart TD
 - 移除测试库、缩减发布工具、简化预览图等是可讨论的维护取舍，并非已批准开发任务。现有迁移工具仍用于fixture构建，不当作当前内容入口。
 
 文件夹只分[用户路径](features/README.md)和系统说明；[文档地图](README.md)说明每份资料的职责，避免多个总览重复描述同一套代码。
+
+原生助手的隔离体验及验收边界见[本地助手](features/local-assistant.md)；H不是正式发布候选。

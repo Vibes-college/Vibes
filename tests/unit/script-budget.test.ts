@@ -136,3 +136,88 @@ test('the on-demand MIT game is budgeted and arbitrary public scripts are not ex
     size(scripts.get('/_astro/boot.js')!) + size(scripts.get('/unexpected.js')!),
   );
 });
+
+test('assistant inventory counts all native chunks and host dependencies, preserving common helpers', async () => {
+  const { createHash } = await import('node:crypto');
+  const prefix = '/vendor/paseo/0123456789abcdef';
+  const scripts = new Map([
+    ['/_astro/boot.js', 'import "./shared.js"; import("./host.abc.js");'],
+    ['/_astro/host.abc.js', 'import "./shared.js"; import "./private.js";'],
+    ['/_astro/shared.js', 'export const shared = 1;'],
+    ['/_astro/private.js', 'export const privateValue = 2;'],
+    [prefix + '/entry.js', 'nativeEntry();'],
+    [prefix + '/lazy.js', 'nativeOptional();'],
+    ['/_astro/orphan.js', 'unknownMustStayCommon();'],
+  ]);
+  const nativeFiles = [...scripts].filter(([path]) => path.startsWith(prefix));
+  const config = {
+    basePath: prefix,
+    scripts: nativeFiles.map(([path, source]) => ({
+      path,
+      sha256: createHash('sha256').update(source).digest('hex'),
+    })),
+  };
+  const pages = ['<script src="/_astro/boot.js"></script>'];
+  const measured = scriptBudget(scripts, pages, config);
+  assert.equal(
+    measured.assistantTotalJavascriptGzip,
+    ['/_astro/host.abc.js', '/_astro/private.js', ...nativeFiles.map(([path]) => path)].reduce(
+      (sum, path) => sum + size(scripts.get(path)!),
+      0,
+    ),
+  );
+  assert.equal(measured.assistantInitialJavascriptGzip, measured.assistantTotalJavascriptGzip);
+  assert.equal(
+    measured.javascriptGzip + measured.assistantTotalJavascriptGzip,
+    [...scripts.values()].reduce((sum, source) => sum + size(source), 0),
+  );
+  assert.throws(
+    () => scriptBudget(scripts, [...pages, `<script src="${prefix}/entry.js"></script>`], config),
+    /leaked/,
+  );
+  assert.throws(
+    () =>
+      scriptBudget(
+        scripts,
+        [...pages, '<link rel="modulepreload" href="/_astro/host.abc.js">'],
+        config,
+      ),
+    /statically/,
+  );
+  scripts.set('/_astro/boot.js', 'import "./host.abc.js";');
+  assert.throws(() => scriptBudget(scripts, pages, config), /dynamically/);
+  scripts.set('/_astro/boot.js', 'import("./host.abc.js");');
+  scripts.set(prefix + '/unknown.js', 'unlisted();');
+  assert.throws(() => scriptBudget(scripts, pages, config), /Unknown assistant/);
+  scripts.delete(prefix + '/unknown.js');
+  scripts.set(prefix + '/lazy.js', 'changed();');
+  assert.throws(() => scriptBudget(scripts, pages, config), /differs/);
+});
+test('assistant helpers shared with media remain counted in the ordinary allowance', async () => {
+  const { createHash } = await import('node:crypto');
+  const prefix = '/vendor/paseo/0123456789abcdef';
+  const scripts = new Map([
+    ['/_astro/boot.js', 'import("./media.abc.js"); import("./host.abc.js");'],
+    ['/_astro/media.abc.js', 'import "./shared.js";'],
+    ['/_astro/host.abc.js', 'import "./shared.js";'],
+    ['/_astro/shared.js', 'export const shared = true;'],
+    [prefix + '/entry.js', 'native();'],
+  ]);
+  const measured = scriptBudget(scripts, ['<script src="/_astro/boot.js"></script>'], {
+    basePath: prefix,
+    scripts: [
+      {
+        path: prefix + '/entry.js',
+        sha256: createHash('sha256').update('native();').digest('hex'),
+      },
+    ],
+  });
+  assert.equal(
+    measured.javascriptGzip,
+    size(scripts.get('/_astro/boot.js')!) + size(scripts.get('/_astro/shared.js')!),
+  );
+  assert.equal(
+    measured.javascriptGzip + measured.mediaJavascriptGzip + measured.assistantTotalJavascriptGzip,
+    [...scripts.values()].reduce((sum, source) => sum + size(source), 0),
+  );
+});

@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import LocalAssistant from '../components/LocalAssistant.astro';
+import { getPaseoBuild } from '../features/paseo-webui/build-config';
 import { ClientRouter } from 'astro:transitions';
 import LanguageSwitch from '../components/LanguageSwitch.astro';
 import { messages } from '../lib/i18n/messages';
@@ -29,6 +31,7 @@ const t = messages[locale];
 const site = buildSite();
 const canonical = new URL(Astro.url.pathname, site.origin);
 const summary = description || t.footer;
+const paseo = getPaseoBuild();
 ---
 
 <!doctype html>
@@ -95,6 +98,7 @@ const summary = description || t.footer;
       <span class="header-note">{t.campus}</span>
     </header>
     <slot />
+    {paseo && <LocalAssistant config={paseo.config} locale={locale} />}
     <script>
       import '../scripts/reading-prefetch';
       import '../scripts/media-boot';

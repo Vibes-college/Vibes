@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '浏览与搜索作品'
 status: 'current'
-shaped-by: ['001', '003', '005', '010']
+shaped-by: ['001', '003', '005', '010', '012']
 legacy-feature-ids: ['explore-filter', 'not-found', 'responsive-access']
 code-sources:
   [
@@ -32,7 +32,7 @@ code-sources:
     'public/icons/',
     'tests/explore.spec.ts',
   ]
-code-revision: '92b5171b20ca3eff6c271d965ab5555fd45dfd4382c876ab9ef600465cb0f630'
+code-revision: '0933c3e6b93305501d1bd8f22dae5e3af398d0b8f37d277d6ed423704d8427aa'
 ---
 
 # 功能名：浏览与搜索作品
@@ -50,6 +50,8 @@ code-revision: '92b5171b20ca3eff6c271d965ab5555fd45dfd4382c876ab9ef600465cb0f630
 5. 点English切换英文目录，只显示已发布英文内容；没有该语言内容时显示提示和原文入口。
 6. 无结果时点“清空搜索与筛选”重新浏览；搜索框×只清关键词。加载失败时显示“重试”，不会把失败显示成零结果。
 7. 打开不存在的地址时显示404，可返回中文目录；手机使用相同路径。
+
+H隔离实验站右下角提供[本地助手](local-assistant.md)，主动打开才加载；收起后继续浏览，普通构建没有此入口。
 
 ### 操作之后发生什么
 

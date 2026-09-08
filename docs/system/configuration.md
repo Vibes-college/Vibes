@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: '1cd745dc8ed2d35c4d7d6abb8901d41198bd483732c9ff1f07180a0f9dccf5f9'
+code-revision: '6e2179cf67aa0b18a632bc0d62c10df586c5f46174b5682c703ae849fb210c95'
 ---
 
 # 配置和环境变量
@@ -69,6 +69,8 @@ Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、rem
 | `GITHUB_TOKEN`                                  | GitHub Actions 临时提供 | CI 读取代码所需的平台身份；普通检查授予 `contents: read`，发布job另有 `deployments: write`；无需手填 |
 | `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | Wrangler 自动部署身份   | Token仅放GitHub production环境secret；account由固定releaseTarget提供；本机OAuth用于阶段预览          |
 
+`VIBES_PASEO_PROFILE=H`只允许配合`.scratch/`内的显式`VIBES_OUT_DIR`生成助手实验站；未设时`astro.config.mjs`选择空入口组件，从构建图排除助手客户端代码，也不复制原生资源。`PASEO_HOST_URL`用于实际H加载回归，只接受本机HTTP地址。具体构建与限制见[助手系统说明](local-assistant.md)。
+
 `PASEO_BASELINE_URL`供`tests/paseo-baseline.spec.ts`记录同版原始B0首次资源请求。`PASEO_PROBE_URL`仅供`tests/paseo-mount.spec.ts`选择显式构建的本机G1实验daemon，只允许HTTP localhost/127.0.0.1及端口；不提供时跳过该实验，不改变正常网站测试地址。准备步骤及边界见[实验构建](checks-and-release.md#paseo实验构建边界)。
 
 本地与CI均以1个worker串行运行Playwright Chromium和WebKit，包括reactions.spec.ts的分章评价加载与保存回归；按实际环境报告结果。生产发布由GitHub检查工作流负责，不再配置第二套Cloudflare Git自动发布，以免抢先上线或重复构建。
@@ -102,6 +104,8 @@ eslint.config.mjs与.prettierignore排除.scratch合成内容和产物；它们�
 CLOUDFLARE_API_TOKEN只授予部署所需Worker脚本编辑及vibes.college域名相关权限；仅发布job注入，不传给PR检查。身份配置由AI完成，缺少登录/授权时给用户具体步骤；不把短期本机OAuth复制为长期CI secret。GitHub production环境已于2026-09-06通过API建立，限制部署分支为main；环境secret已配置并验证令牌有效、域名和目标Worker可读取，权限为指定账户Workers Scripts编辑、vibes.college的Workers Routes编辑与Zone读取；首次自动部署已由[main运行34029233677](https://github.com/Vibes-college/Vibes/actions/runs/34029233677)及[线上验收](https://github.com/Vibes-college/Vibes/pull/3#issuecomment-5558821204)确认成功。后续仍按每次实际发布记录判断状态。
 
 wrangler.jsonc使用workers_dev:false、preview_urls:true和唯一vibes.college custom_domain。预览使用版本URL而非独立测试Worker，生产构建SITE_URL=https://vibes.college，PR预览同canonical并加noindex。发布元数据/__release.json仅公开源码SHA和产物摘要，不包含秘密。
+
+astro.config.mjs在客户端按显式源码列表合并公共启动/辅助小模块到site-boot，保留动态边界；不递归合并依赖，以allow-extension保留原入口导出。助手、媒体与MDX仍按各自加载路径处理。
 
 astro.config.mjs在客户端构建中让动态目标由原生import下载，仅并行准备其依赖，避免WebKit将失败的modulepreload一直留在缓存；现有搜索失败后刷新重试回归覆盖。
 
