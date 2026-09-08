@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '428de0c8ae8463f40995079445e13e374d5c02d443932c3dc74ee599c57ebae1'
+code-revision: '25031369f947c1ab0017b8b6ad41090328bc5b771fb50b2bd7fb12a2542195bb'
 ---
 
 # 常量、规则表与正则
@@ -130,7 +130,7 @@ src/config/media.ts统一素材地址和平台登记。短视频≤1MiB且≤12�
 
 可见阈值50%、停留200ms，≤800px最多1个自动动态卡片、桌面最多2个；减少动态、省流量关闭自动。手动音视频/外站体验互斥，失焦后台、离屏、搜索替换、详情翻页和历史切换清理。音视频使用preload=none且启动时才挂source；本地服务没有Range时，明确请求章节跳转才有界读取Blob补足seek，暂停会取消读取，销毁会释放URL；原生暂停与页面暂停共用取消路径；play/playing先忽略已暂停元素的迟到事件，正常原生继续播放恢复手动意图并参与互斥，seeked、canplay及timeupdate仍核对播放意图，拦住跳转结束后只恢复原生进度的异步播放，章节跳转中暂停不会因异步恢复而继续播放。下载失败保留原作入口，外站平台限制不能靠iframe load事件判断。
 
-public/_headers只允许已登记播放器/原站frame来源、指定视频源和本地blob，主页面脚本仍不允许外站或任意内联代码。注册新来源须同步策略并做实际嵌入验收；iframe内容由原平台管理。
+public/_headers只允许已登记播放器/原站frame来源、指定视频源和本地blob，主页面脚本仍不允许外站或任意内联代码。A1图表实验只追加已核对固定原生运行时的精确脚本哈希，不扩展iframe来源或沙箱权限；详见[助手系统说明](local-assistant.md)。注册新来源须同步策略并做实际嵌入验收；iframe内容由原平台管理。
 
 ## 可读代码说明的对应规则
 

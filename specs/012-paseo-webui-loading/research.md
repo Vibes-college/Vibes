@@ -193,3 +193,17 @@ T007将W0—W5生成器、输出大小/哈希与协议版本固定；W1/W2事件
 T022沿用已存在的宿主AppState/document/focus适配，新增三配置协议观察：收起时heartbeat appVisible=false、focusedAgentId=null，仍接收agent_stream；展开恢复焦点、复用同一HostRuntime且socket数不变，无cancel请求。受控document.visibilityState与visibilitychange验证组合通知和恢复后online/目录ready，不冒充实际浏览器挂起或iPhone后台证据。8项共同回归及修正定位后的3项工具选择回归均通过；日志host/h-chat-presentation-all.log（含旧WebKit误点失败）和h-selection-tools-final.log。
 
 阶段检查：`h-chat-presentation-verify.log`的类型、lint、格式、文档及118项单元通过；整站E2E为184通过、61明确跳过、1失败。失败是既有WebKit原生音频暂停/恢复在60秒后再次暂停；trace显示play/playing后约124ms出现pause，原因尚未定位。原始trace保存在host/audio-recurrence；相同代码单独连续3次复测均通过，不将偶发未复现解释为已修复，整站首次失败保留。默认产物budget通过；助手专项选择/工具三配置和展示三配置证据独立有效。
+
+## R16：Mermaid生产动态边界与原生呈现限制
+
+`a1-mermaid-lazy.patch`仅延后加载原生host模块，保留上游渲染、源策略、请求驱动及隔离iframe。A1生产导出出现独立host资源；实际三配置验证普通聊天和Mermaid源码出现时不下载，主动展开才请求。第一次故意中断该chunk后可见错误且重新点击成功；源码/图表、收起/展开不重复请求。浏览器检查iframe不能访问parent.document，不以HTML属性单独代替隔离验证。
+
+首次真实生产CSP阻止原生iframe内联脚本；`a1-csp-diagnostic.log`记录浏览器要求的固定脚本哈希。构建器从已验证上游源码的生成JSON字面量提取唯一脚本、计算哈希并随回执传给站点CSP；不eval源码、不增加任意inline/eval、frame来源或iframe的same-origin权限。原有iframe自身策略保留。未知格式/多脚本/外部脚本替代在单元验证中拒绝。资源拆包通过不代表安全策略或实际渲染自动通过。
+
+源码往返测试发现透明图表工具栏截获“查看图表”，以inert限制隐藏测量区域及其后代，保留运行iframe。该次`a1-browser-all.log`中的桌面为真实遮挡失败；手机Chromium是测试点击canvas中心命中原生工具栏容器，改用左上画布；WebKit两项因测试尚未结束即启动重建、回执被严格失效机制移除而中断，不能归为产品失败。后续严格串行，`a1-controls-browser-all.log`三配置6项通过。内置浏览器另发现短中文图表高度26px、原生工具栏被裁；单独将数值height下限改为120仍被通用ZoomableViewport的flex:1压到26px，`a1-readable-browser-all.log`三配置均在新增的工具栏完整性断言失败。随后仅在内联图表容器覆盖flex-grow/shrink/basis，使其采用原本声明的测量高度并保留120px下限；原生图表引擎/缩放规则不变。
+
+原始证据位于probe-mermaid/；真实浏览器通过直接连接本机禁用真实providers的同版mock实例，在独立Git目录发送固定图表内容。该合成数据不计Luna重任务，也不计最终10冷20暖性能样本。当前静态体积仅按冻结的node:zlib默认gzip口径比较原生文件，宿主和实际冷/暖等待仍需最终采样；不据单个chunk大小宣称减半或通过最终预算。
+
+高度布局修正后，`a1-height-browser-all.log`和`a1-height-report.json`记录三配置6项全部通过，含请求路径/次数/预期失败；`a1-cua-readable-diagram.png`是内置浏览器实际显示并操作源码往返的证据。上游源策略/渲染模型/请求驱动/HTML四组16项单元通过；本站解析及构建测试6项通过。受控mock自定义响应在刷新后可能作为合成历史再次呈现，故本组只作为图表呈现/加载验收，不用于权威历史去重结论。
+
+A1阶段整站`verify`的类型、格式、文档和119项单元通过；E2E为184通过、67跳过、1失败，仍是WebKit原生音频暂停后恢复测试。默认Explore预算通过（公开JS gzip 20,288字节）。音频单项附加pause调用追踪后5次中3次失败、2次通过，失败的第二个pause事件没有站点JavaScript的pause调用，不能据此声称已确定根因或豁免验收。完整证据保存在probe-mermaid/audio-diagnostic/。原生app额外类型检查发现早期宿主补丁3处类型问题，仍待修复；本站类型通过不代表原生app类型已通过。当前保持Draft，不构成整站验收完成。

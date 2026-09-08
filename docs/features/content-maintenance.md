@@ -13,7 +13,7 @@ code-sources:
     'scripts/migrate-content.ts',
     'tests/content-lifecycle.spec.ts',
   ]
-code-revision: '3b114fd39604a885f152722bd3c41795af19dd6f271776eaaeef5bb14d069e53'
+code-revision: '538edbb01d88c78ddc93f5f7de7d5d98f132a1d90f5b4d005695c991b5fc1daa'
 ---
 
 # 功能名：维护作品内容

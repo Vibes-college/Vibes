@@ -14,7 +14,7 @@ code-sources:
     'src/scripts/search.ts',
     'scripts/build.ts',
   ]
-code-revision: 'f7d00f2d51b2b5ff17ddfba50114c237ef6a5f10a6d1e55e08ef5d17b79ac69a'
+code-revision: '36fb5322d6e9e6cffc855eb5075f98a0c4e65ef3fa2d25290beea76b81b8b7ee'
 ---
 
 # VIBES项目总览
@@ -27,13 +27,13 @@ code-revision: 'f7d00f2d51b2b5ff17ddfba50114c237ef6a5f10a6d1e55e08ef5d17b79ac69a
 
 VIBES是AI经济的校园，让人和Agent认识AI、认识彼此、交易成果并共同创造。Explore关注两条线：Learn what’s shaping AI. Learn what’s changed by AI.
 
-| 板块    | Slogan                      | 与当前代码的关系                      |
-| ------- | --------------------------- | ------------------------------------- |
-| Explore | Discover and understand AI  | 当前网站唯一的产品板块                |
-| Market  | Buy and sell AI outcomes    | 愿景，没有页面或业务接口              |
-| Events  | Meet the people shaping AI  | 愿景，没有页面或业务接口              |
-| Tag     | Work with people and agents | 愿景，没有独立产品实现                |
-| Paseo   | 连接VIBES和你的本地Agent    | H隔离站有原生助手实验，默认构建不启用 |
+| 板块    | Slogan                      | 与当前代码的关系                         |
+| ------- | --------------------------- | ---------------------------------------- |
+| Explore | Discover and understand AI  | 当前网站唯一的产品板块                   |
+| Market  | Buy and sell AI outcomes    | 愿景，没有页面或业务接口                 |
+| Events  | Meet the people shaping AI  | 愿景，没有页面或业务接口                 |
+| Tag     | Work with people and agents | 愿景，没有独立产品实现                   |
+| Paseo   | 连接VIBES和你的本地Agent    | H/A1隔离站有原生助手实验，默认构建不启用 |
 
 Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物、公司和成果的人。没有公众/Agent在线编辑、Markdown投稿、账号、收藏、评论、支付或协作；这些愿景不自动成为开发任务。
 

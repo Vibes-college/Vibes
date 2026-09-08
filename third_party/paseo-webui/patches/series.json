@@ -154,5 +154,97 @@
         ]
       }
     ]
+  },
+  "A1": {
+    "source": [
+      {
+        "path": "third_party/paseo-webui/patches/g1-direct-source.patch",
+        "sha256": "ccb8476d888ea7081c814f960a47be1fdedc6fa1b250f215336427e5b265244a"
+      },
+      {
+        "path": "third_party/paseo-webui/patches/h-host-boundary.patch",
+        "sha256": "0f8c5774aec4a8b747204ca57be428932743d047000a8c543da6efd56c8b9ef4"
+      },
+      {
+        "path": "third_party/paseo-webui/patches/h-public-work.patch",
+        "sha256": "c87574e3fea327d9e36929a57562ced6031ea8005b89743c5017624d61345871"
+      },
+      {
+        "path": "third_party/paseo-webui/patches/h-reactive-history.patch",
+        "sha256": "29efd984229da68ef57293a239e2c7bdb49d6a3d41457037cb20fa7e63b8e43f"
+      },
+      {
+        "path": "third_party/paseo-webui/patches/h-operation-feedback.patch",
+        "sha256": "3316c12f1437717832b779b9c15a20cc9ec3a2405befc6aa511798881daea432"
+      },
+      {
+        "path": "third_party/paseo-webui/patches/a1-mermaid-lazy.patch",
+        "sha256": "22bc341fbea639ffed994e2cbaa4288cf3412dfea300be4f3c17483ff5c807fb"
+      }
+    ],
+    "dependencies": [
+      {
+        "path": "third_party/paseo-webui/patches/g1-direct-dependencies.patch",
+        "sha256": "9a4f7c8073dfc7347c37bd1bfe7c11fb75590f1f8f35f978d9730142256bb71a",
+        "files": [
+          {
+            "path": "node_modules/expo-router/build/ExpoRoot.js",
+            "before": "77260901eab6515873a664cd23c575b1a099a8efdcf7a06dbcd9fc5097a29496",
+            "after": "0142ca0539b61262d2e5ca673dd5c79e6ea42ef5abf64a58593ea282eafd2af4"
+          },
+          {
+            "path": "node_modules/react-native-unistyles/lib/module/web/runtime.js",
+            "before": "cb6042812846b289d0350a5b2d5eb7182514e018e641db1a45e7b48e9abd2901",
+            "after": "39c4e1202e951d59669017111236075001ba715d2f5ef30c2d2efe427885040e"
+          },
+          {
+            "path": "node_modules/react-native-unistyles/lib/module/web/state.js",
+            "before": "fbedfe3b9eb6c77aedbde121b0cc5d2f659b9c3e0506d5b2ccb5d26e3dddd3ff",
+            "after": "e2599f46fbbc52a678edae3c58ac397908fb4eb72f7e62b42f51210060fe3b9c"
+          },
+          {
+            "path": "node_modules/react-native-unistyles/lib/module/web/css/state.js",
+            "before": "2b82daa76f4c590928eae09cfdc00eb588b963ddb55a025fcd2c66ef7ed1622c",
+            "after": "b1f3d3a97f0609dce8b5de81f0740767685959400ac54efe32287c04985fe0f6"
+          },
+          {
+            "path": "node_modules/react-native-web/dist/exports/Dimensions/index.js",
+            "before": "d0514091110a8bf389760291f396873431da6266a40183c7318867f41fa5006e",
+            "after": "4ac692dfbbe7d9b77fda30cfc50cf01a42809a2735c14588e3637945cc92fc05"
+          },
+          {
+            "path": "node_modules/react-native-web/dist/exports/UIManager/index.js",
+            "before": "bfe549db01c31f89bfc0352fe3b8c4a803787a82f78e9a11ce7ebebe417b88f1",
+            "after": "fedc5b17cf0ed6695d61c00f16ddef278bc0c5ed7afbd0561c35731c58bec007"
+          },
+          {
+            "path": "node_modules/react-native-web/dist/exports/Modal/ModalPortal.js",
+            "before": "ac4c69d0467c0c9706cbe264c716af16a51055be155345f4de9c0c6a551fe607",
+            "after": "cedb20d8ee20fd18f6684b56f5cf7e343d5bfc52336829cf4f0d814556da0b4a"
+          },
+          {
+            "path": "node_modules/react-native-web/dist/exports/StyleSheet/dom/index.js",
+            "before": "5b6db0490b7280cb8101131e8d52dae8395c149859e7280d26e8f24f5709eb7b",
+            "after": "248e943ceb55fbcb612ac2117a183b241a8e112d2fe494c9510d7ad827ca8d1f"
+          },
+          {
+            "path": "node_modules/react-native-web/dist/exports/Modal/ModalFocusTrap.js",
+            "before": "3c0cc252f45d2c48fa726491251faff18c7ab26c340dfab0aab86a54f813815f",
+            "after": "ad10f153d6e22de61fa34b6d1330ecf3629187186823b0c7e7f38a68c6fc91e6"
+          }
+        ]
+      },
+      {
+        "path": "third_party/paseo-webui/patches/h-focus-dependency.patch",
+        "sha256": "6cb3d616cc3fd003c178894870745d3f5f778c7589c7e5f4c7421f8f890faa76",
+        "files": [
+          {
+            "path": "node_modules/react-native-web/dist/exports/Modal/ModalFocusTrap.js",
+            "before": "ad10f153d6e22de61fa34b6d1330ecf3629187186823b0c7e7f38a68c6fc91e6",
+            "after": "358a1bf0be13449c99c8b08512b9295e8fcd418b4603737910caf54f024323e0"
+          }
+        ]
+      }
+    ]
   }
 }

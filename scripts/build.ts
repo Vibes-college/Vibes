@@ -1,3 +1,4 @@
+import { getPaseoBuild } from '../src/features/paseo-webui/build-config.ts';
 import { copyPaseoAssets } from './paseo-webui-assets.ts';
 import { writeContentSecurity } from './content-security.ts';
 import { resolve } from 'node:path';
@@ -22,7 +23,11 @@ const hasPublished = catalog.works.some((work) =>
 run(process.execPath, ['node_modules/astro/bin/astro.mjs', 'build', '--force']);
 const assistantEnabled = copyPaseoAssets(out);
 await optimizeImages(out);
-writeContentSecurity(out, bundleSandboxGame(out), assistantEnabled);
+writeContentSecurity(
+  out,
+  [...bundleSandboxGame(out), ...(getPaseoBuild()?.sandboxScriptHashes ?? [])],
+  assistantEnabled,
+);
 // 显式指定正文根；全站没有发布作品时也不能回退去索引导航页面。
 if (hasPublished)
   run(process.execPath, [

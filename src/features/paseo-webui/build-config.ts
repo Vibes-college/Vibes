@@ -16,34 +16,35 @@ export interface PaseoBuild {
   directory: string;
   config: PaseoAssetConfig;
   files: ArtifactFile[];
+  sandboxScriptHashes: string[];
 }
 let cached: PaseoBuild | null | undefined;
 export function getPaseoBuild(): PaseoBuild | null {
   if (cached !== undefined) return cached;
   const profile = process.env.VIBES_PASEO_PROFILE;
   if (!profile) return (cached = null);
-  // Until the final candidate is selected, integration is only an isolated H build.
+  // Until the final candidate is selected, integration is only an isolated H/A1 build.
   if (
     process.env.VIBES_DEPLOY === '1' ||
-    profile !== 'H' ||
+    !['H', 'A1'].includes(profile) ||
     !process.env.VIBES_OUT_DIR ||
     !resolve(process.env.VIBES_OUT_DIR).startsWith(resolve('.scratch') + '/')
   )
     throw new Error(
-      'H requires an explicit isolated .scratch output; no production candidate is selected.',
+      'H/A1 requires an explicit isolated .scratch output; no production candidate is selected.',
     );
-  const directory = resolve('.scratch/paseo-webui/artifacts/H');
+  const directory = resolve('.scratch/paseo-webui/artifacts', profile);
   const receipt = JSON.parse(readFileSync(join(directory, 'build-receipt.json'), 'utf8'));
   const identity = JSON.parse(
     readFileSync(resolve('third_party/paseo-webui/upstream.json'), 'utf8'),
   );
   const patches = JSON.parse(
     readFileSync(resolve('third_party/paseo-webui/patches/series.json'), 'utf8'),
-  ).H;
+  )[profile];
   const expectedPrefix =
     '/vendor/paseo/' +
     createHash('sha256')
-      .update(JSON.stringify({ source: identity.commit, profile: 'H', patches }))
+      .update(JSON.stringify({ source: identity.commit, profile, patches }))
       .digest('hex')
       .slice(0, 16);
   if (
@@ -63,11 +64,20 @@ export function getPaseoBuild(): PaseoBuild | null {
         })),
       )
   )
-    throw new Error('H artifact does not match the declared source and patches.');
+    throw new Error('Native artifact does not match the declared source and patches.');
+  const sandboxScriptHashes: unknown = receipt.sandboxScriptHashes ?? [];
+  if (
+    !Array.isArray(sandboxScriptHashes) ||
+    sandboxScriptHashes.some(
+      (hash) => typeof hash !== 'string' || !/^'sha256-[A-Za-z0-9+/]{43}='$/.test(hash),
+    ) ||
+    (profile === 'A1' && sandboxScriptHashes.length !== 1)
+  )
+    throw new Error('Invalid native sandbox script hashes.');
   const files: ArtifactFile[] = receipt.files;
   const byPath = new Map(files.map((file) => [file.path, file]));
   if (!files.length || byPath.size !== files.length)
-    throw new Error('Invalid H resource inventory.');
+    throw new Error('Invalid native resource inventory.');
   for (const file of files) {
     paseoResourceKind(file.path);
     if (
@@ -76,22 +86,22 @@ export function getPaseoBuild(): PaseoBuild | null {
       file.path.includes('\\') ||
       file.path.split('/').some((part) => !part || part === '.' || part === '..')
     )
-      throw new Error('Unsafe H resource.');
+      throw new Error('Unsafe native resource.');
     const path = join(directory, file.path);
     if (realpathSync(path) !== join(realpathSync(directory), file.path))
-      throw new Error('H resource cannot be a symlink.');
+      throw new Error('Native resource cannot be a symlink.');
     const bytes = readFileSync(path);
     if (
       bytes.length !== file.bytes ||
       createHash('sha256').update(bytes).digest('hex') !== file.sha256
     )
-      throw new Error('H resource digest changed.');
+      throw new Error('Native resource digest changed.');
   }
   const html = readFileSync(join(directory, 'index.html'), 'utf8');
   const resource = (url: string) => {
     const file = byPath.get(url.slice(receipt.publicPath.length + 1));
     if (!url.startsWith(receipt.publicPath + '/') || !file)
-      throw new Error('Unknown H entry resource.');
+      throw new Error('Unknown native entry resource.');
     return { url, integrity: 'sha256-' + Buffer.from(file.sha256, 'hex').toString('base64') };
   };
   const scripts = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)].map((match) =>
@@ -108,5 +118,5 @@ export function getPaseoBuild(): PaseoBuild | null {
     styles,
   });
   if (!config) throw new Error('Invalid native public resource prefix.');
-  return (cached = { directory, files, config });
+  return (cached = { directory, files, config, sandboxScriptHashes });
 }

@@ -15,6 +15,7 @@ import {
 import { dirname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { root } from './local-tools.ts';
+import { readMermaidSandboxHashes } from './paseo-webui-sandbox.ts';
 import { collectPaseoLicenses } from './paseo-webui-licenses.ts';
 import { applyDependencyPatches, type DependencyPatch } from './paseo-webui-dependencies.ts';
 
@@ -90,6 +91,7 @@ export function buildWebUI(options: {
   exportDirectory?: string;
   graphFile?: string;
   publicPath?: string;
+  mermaidSandboxSource?: string;
   exportWeb: () => void;
 }) {
   const { source, identity, output, patches, exportWeb } = options;
@@ -114,6 +116,9 @@ export function buildWebUI(options: {
       applied.push(patch);
     }
     restoreDependencies = applyDependencyPatches(source, options.dependencyPatches ?? []);
+    const sandboxScriptHashes = options.mermaidSandboxSource
+      ? readMermaidSandboxHashes(join(source, options.mermaidSandboxSource))
+      : [];
     const stagedDiff = git(source, ['diff', '--cached', '--binary']);
     if (existsSync(dist) && lstatSync(dist).isSymbolicLink())
       throw new Error('Export directory is a symlink.');
@@ -155,6 +160,7 @@ export function buildWebUI(options: {
             files: patch.files,
           })),
           sourceGraph,
+          sandboxScriptHashes,
           publicPath: options.publicPath ?? '/',
           node: process.version,
           files,
@@ -198,8 +204,8 @@ export function buildWebUI(options: {
 
 function main() {
   const [action, ...extra] = process.argv.slice(2);
-  if (!['fetch', 'B0', 'G1', 'H', 'B0-graph'].includes(action) || extra.length)
-    throw new Error('Usage: paseo-webui-build.ts fetch | B0 | G1 | H | B0-graph');
+  if (!['fetch', 'B0', 'G1', 'H', 'A1', 'B0-graph'].includes(action) || extra.length)
+    throw new Error('Usage: paseo-webui-build.ts fetch | B0 | G1 | H | A1 | B0-graph');
   const identity: UpstreamSource = JSON.parse(
     readFileSync(join(root, 'third_party/paseo-webui/upstream.json'), 'utf8'),
   );
@@ -221,14 +227,22 @@ function main() {
     measurement?: SourcePatch[];
     G1?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
     H?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
+    A1?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
   } = JSON.parse(readFileSync(join(root, 'third_party/paseo-webui/patches/series.json'), 'utf8'));
-  const mountedProfile = action === 'G1' ? series.G1 : action === 'H' ? series.H : undefined;
-  if ((action === 'G1' || action === 'H') && !mountedProfile)
+  const mountedProfile =
+    action === 'G1'
+      ? series.G1
+      : action === 'H'
+        ? series.H
+        : action === 'A1'
+          ? series.A1
+          : undefined;
+  if ((action === 'G1' || action === 'H' || action === 'A1') && !mountedProfile)
     throw new Error('Mount profile is not configured.');
   const publicPath =
     action === 'G1'
       ? '/vendor/paseo/g1-direct'
-      : action === 'H'
+      : action === 'H' || action === 'A1'
         ? '/vendor/paseo/' +
           sha256(
             Buffer.from(
@@ -266,6 +280,10 @@ function main() {
     exportDirectory: probeExport,
     graphFile: action === 'B0-graph' ? graphFile : undefined,
     publicPath,
+    mermaidSandboxSource:
+      action === 'A1'
+        ? 'packages/app/src/components/markdown/fence/mermaid/runtime/html.gen.ts'
+        : undefined,
     exportWeb: () => {
       const env = { ...process.env };
       for (const key of Object.keys(env))
@@ -276,7 +294,7 @@ function main() {
         )
           delete env[key];
       if (action === 'B0-graph') env.VIBES_PASEO_GRAPH_FILE = graphFile;
-      if (action === 'H') env.VIBES_PASEO_BASE_URL = publicPath;
+      if (action === 'H' || action === 'A1') env.VIBES_PASEO_BASE_URL = publicPath;
       const args = ['run', 'build:web', '--workspace=@getpaseo/app'];
       if (probeExport) args.push('--', '--output-dir', probeExport);
       execFileSync('npm', args, {

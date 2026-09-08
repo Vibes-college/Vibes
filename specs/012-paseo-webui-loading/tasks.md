@@ -59,7 +59,7 @@ amended-by: []
 
 独立验收：A按需加载且可用，B无对应构建资源并有合理替代；两者核心任务一致。US5最终选择依赖本故事，因此在US5最终实验前实施。依赖US1—US3基础路径；完整恢复/真机验收在最终组合后执行。
 
-- [ ] T027 [US4] 在third_party/paseo-webui/patches/对UP/packages/app/src/components/markdown/fence/实现Mermaid生产拆包探针；tests/paseo-features.spec.ts验证普通聊天不下载、展开才加载、重开缓存、失败重试和原隔离策略，证据写resources/evidence/012-paseo-webui-loading/probe-mermaid/；G2失败先定位不扩展其余功能。
+- [x] T027 [US4] 在third_party/paseo-webui/patches/对UP/packages/app/src/components/markdown/fence/实现Mermaid生产拆包探针；tests/paseo-features.spec.ts验证普通聊天不下载、展开才加载、重开缓存、失败重试和原隔离策略，证据写resources/evidence/012-paseo-webui-loading/probe-mermaid/；G2失败先定位不扩展其余功能。
 - [ ] T028 [US4] 在third_party/paseo-webui/patches/将UP/packages/app/src/panels/register-panels.ts的轻量注册与终端/编辑器重实现分离，保留官方上下文；tests/paseo-features.spec.ts验证深链接、保存布局和加载失败回退。
 - [ ] T029 [US4] 在third_party/paseo-webui/patches/落实终端/编辑器卸载资源清理与草稿/位置保留；tests/paseo-resources.spec.ts区分未挂载、已加载隐藏、卸载，验证不关闭远端terminal/Agent，重开输出正确。
 - [ ] T030 [US4] 在third_party/paseo-webui/patches/处理共享语法高亮与复杂diff的按需边界，保留UP/packages/app/src/utils/highlight-cache.ts既有保护；tests/paseo-features.spec.ts验证工具/聊天/文件共用路径、复制原文与超长内容。

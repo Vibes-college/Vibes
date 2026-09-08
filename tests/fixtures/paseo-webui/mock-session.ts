@@ -27,7 +27,10 @@ export interface MockFixture extends MockSession {
   page: Page;
   client: FixtureClient;
   serverId: string;
-  createSession(options?: { model?: string }): Promise<MockSession>;
+  createSession(options?: {
+    model?: string;
+    featureValues?: Record<string, unknown>;
+  }): Promise<MockSession>;
   open(session?: MockSession): Promise<void>;
 }
 
@@ -70,7 +73,9 @@ export async function withMockSession(
   let failure: unknown;
   try {
     await client.connect();
-    const createSession = async (options: { model?: string } = {}): Promise<MockSession> => {
+    const createSession = async (
+      options: { model?: string; featureValues?: Record<string, unknown> } = {},
+    ): Promise<MockSession> => {
       const cwd = mkdtempSync(root + '/run-');
       // Native directory discovery must stop here rather than reaching the parent checkout.
       execFileSync('git', ['init'], { cwd, stdio: 'ignore' });
@@ -82,6 +87,7 @@ export async function withMockSession(
       const agent = await client.createAgent({
         provider: 'mock',
         model: options.model || 'ten-second-stream',
+        featureValues: options.featureValues,
         modeId: 'load-test',
         cwd,
         workspaceId,

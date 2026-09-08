@@ -1,0 +1,170 @@
+diff --git a/packages/app/src/components/markdown/fence/mermaid/host.web.tsx b/packages/app/src/components/markdown/fence/mermaid/host.web.tsx
+index f99b5e6..81f980b 100644
+--- a/packages/app/src/components/markdown/fence/mermaid/host.web.tsx
++++ b/packages/app/src/components/markdown/fence/mermaid/host.web.tsx
+@@ -141,7 +141,8 @@ function MermaidFenceHostImpl({
+   const visible = state.visible;
+   const canShowDiagram = visible !== null && hasRuntimeContent;
+   const diagramVisible = canShowDiagram && !showSource;
+-  const runtimeHeight = Math.max(visible?.height ?? 240, 1);
++  // Short, wide diagrams still need room for readable content and the 48px toolbar.
++  const runtimeHeight = Math.max(visible?.height ?? 240, 120);
+   const actions = useMemo(
+     () => [
+       {
+@@ -202,28 +203,38 @@ function MermaidFenceHostImpl({
+           ) : null}
+         </View>
+       ) : null}
+-      <ZoomableViewport
+-        accessibilityLabel={t("message.diagram.diagram")}
+-        actions={actions}
+-        contentSize={diagramSize}
+-        style={viewportStyle}
+-        testID="mermaid-viewport"
+-        wheelActivation="modifier"
+-      >
+-        <MermaidIframeRuntime
+-          request={request}
+-          height="100%"
+-          onRendered={handleRendered}
+-          onRenderFailed={renderFailed}
+-        />
+-      </ZoomableViewport>
++      {/* Keep the measuring iframe alive, but hidden toolbar descendants must not intercept source controls. */}
++      <div inert={!diagramVisible} style={{ display: "contents" }}>
++        <ZoomableViewport
++          accessibilityLabel={t("message.diagram.diagram")}
++          actions={actions}
++          contentSize={diagramSize}
++          style={viewportStyle}
++          testID="mermaid-viewport"
++          wheelActivation="modifier"
++        >
++          <MermaidIframeRuntime
++            request={request}
++            height="100%"
++            onRendered={handleRendered}
++            onRenderFailed={renderFailed}
++          />
++        </ZoomableViewport>
++      </div>
+     </>
+   );
+ }
+ 
+ const MEASURING_SIZE = { width: 240, height: 240 };
+ const sourceContainerStyle: ViewStyle = { position: "relative" };
+-const containerStyle: ViewStyle = { overflow: "hidden", position: "relative" };
++// The generic viewport fills flex layouts; inline fences instead own their measured height.
++const containerStyle: ViewStyle = {
++  overflow: "hidden",
++  position: "relative",
++  flexGrow: 0,
++  flexShrink: 0,
++  flexBasis: "auto",
++};
+ const measuringStyle: ViewStyle = {
+   position: "absolute",
+   left: 0,
+diff --git a/packages/app/src/components/markdown/fence/mermaid/index.tsx b/packages/app/src/components/markdown/fence/mermaid/index.tsx
+index 0f56d5f..645f2a6 100644
+--- a/packages/app/src/components/markdown/fence/mermaid/index.tsx
++++ b/packages/app/src/components/markdown/fence/mermaid/index.tsx
+@@ -1,6 +1,93 @@
+-import type { MarkdownFenceRendererProps } from "../types";
+-import { MermaidFenceHost } from "./host";
++import { useEffect, useRef, useState, type ComponentType } from 'react';
++import { Pressable, Text, View } from 'react-native';
++import { StyleSheet } from 'react-native-unistyles';
++import { useTranslation } from 'react-i18next';
++import { HighlightedCodeBlock } from '@/components/highlighted-code-block';
++import type { MarkdownFenceRendererProps } from '../types';
+ 
++type Renderer = ComponentType<MarkdownFenceRendererProps>;
++let rendererRequest: Promise<Renderer> | undefined;
++
++function loadRenderer(): Promise<Renderer> {
++  rendererRequest ??= import('./host')
++    .then((module) => module.MermaidFenceHost)
++    .catch((error: unknown) => {
++      rendererRequest = undefined;
++      throw error;
++    });
++  return rendererRequest;
++}
++
++/** Source stays readable until the user explicitly requests the diagram runtime. */
+ export function MermaidFence(props: MarkdownFenceRendererProps) {
+-  return <MermaidFenceHost {...props} />;
++  const { t } = useTranslation();
++  const [Renderer, setRenderer] = useState<Renderer | null>(null);
++  const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
++  const mounted = useRef(true);
++  useEffect(() => {
++    mounted.current = true;
++    return () => {
++      mounted.current = false;
++    };
++  }, []);
++  const expand = () => {
++    if (status === 'loading') return;
++    setStatus('loading');
++    void loadRenderer().then(
++      (component) => {
++        if (mounted.current) setRenderer(() => component);
++      },
++      () => {
++        if (mounted.current) setStatus('error');
++      }
++    );
++  };
++  // Keep the original renderer, sandbox, render policy and source/diagram controls.
++  if (Renderer) return <Renderer {...props} />;
++  return (
++    <View testID="paseo-mermaid-lazy-fence">
++      <HighlightedCodeBlock
++        code={props.code}
++        language="mermaid"
++        inheritedStyles={props.inheritedStyles}
++        textStyle={props.textStyle}
++      />
++      {status === 'error' ? (
++        <Text
++          style={styles.status}
++          accessibilityLiveRegion="polite"
++          testID="paseo-mermaid-load-error"
++        >
++          {t('common.states.downloadFailed')}
++        </Text>
++      ) : null}
++      <Pressable
++        accessibilityRole="button"
++        disabled={status === 'loading'}
++        onPress={expand}
++        style={styles.button}
++        testID="paseo-mermaid-expand"
++      >
++        <Text style={styles.status}>
++          {status === 'loading'
++            ? t('common.loading')
++            : status === 'error'
++            ? t('common.actions.retry')
++            : t('message.diagram.viewDiagram')}
++        </Text>
++      </Pressable>
++    </View>
++  );
+ }
++
++const styles = StyleSheet.create((theme) => ({
++  button: {
++    alignSelf: 'flex-start',
++    minHeight: 32,
++    paddingHorizontal: 12,
++    paddingVertical: 8,
++    borderRadius: 8,
++    backgroundColor: theme.colors.surface2,
++  },
++  status: { color: theme.colors.foregroundMuted, fontSize: 12, lineHeight: 18 },
++}));

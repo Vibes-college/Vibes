@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: 'aa6f744fccf4d33592183e4609ec7bf90b66cf37371f11478d8b9cfad1c9aaa5'
+code-revision: '1e0679768a45bd7a5b263c00bcfb0c8dc7d4d67f7c34c32709c9820ff7b475ce'
 ---
 
 # 配置和环境变量
@@ -69,7 +69,7 @@ Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、rem
 | `GITHUB_TOKEN`                                  | GitHub Actions 临时提供 | CI 读取代码所需的平台身份；普通检查授予 `contents: read`，发布job另有 `deployments: write`；无需手填 |
 | `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | Wrangler 自动部署身份   | Token仅放GitHub production环境secret；account由固定releaseTarget提供；本机OAuth用于阶段预览          |
 
-`VIBES_PASEO_PROFILE=H`只允许配合`.scratch/`内的显式`VIBES_OUT_DIR`生成助手实验站；未设时`astro.config.mjs`选择空入口组件，从构建图排除助手客户端代码，也不复制原生资源。`PASEO_HOST_URL`用于实际H加载回归，只接受本机HTTP地址。具体构建与限制见[助手系统说明](local-assistant.md)。
+`VIBES_PASEO_PROFILE=H`或`A1`只允许配合`.scratch/`内的显式`VIBES_OUT_DIR`生成助手实验站；未设时`astro.config.mjs`选择空入口组件，从构建图排除助手客户端代码，也不复制原生资源。`PASEO_MOCK_PROFILE`为固定H/A1协议夹具选择生产站点目录；`PASEO_HOST_URL`用于实际H加载回归，只接受本机HTTP地址。具体构建与限制见[助手系统说明](local-assistant.md)。
 
 `PASEO_BASELINE_URL`供`tests/paseo-baseline.spec.ts`记录同版原始B0首次资源请求。`PASEO_PROBE_URL`仅供`tests/paseo-mount.spec.ts`选择显式构建的本机G1实验daemon，只允许HTTP localhost/127.0.0.1及端口；不提供时跳过该实验，不改变正常网站测试地址。准备步骤及边界见[实验构建](checks-and-release.md#paseo实验构建边界)。
 
