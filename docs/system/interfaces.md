@@ -2,9 +2,10 @@
 tense: 'living'
 describes: '接口与外部服务'
 status: 'current'
-shaped-by: ['001', '003', '004', '005', '009', '010']
+shaped-by: ['001', '003', '004', '005', '009', '010', '012']
 code-sources:
   [
+    'src/features/paseo-webui/contract.ts',
     'src/scripts/search.ts',
     'src/scripts/explore.ts',
     'src/pages/robots.txt.ts',
@@ -13,7 +14,7 @@ code-sources:
     'scripts/release-policy.ts',
     'src/components/WorkDetail.astro',
   ]
-code-revision: 'd1a2aa63c97c398781d5f7a1e54c99affd710f13f89b8de15e94792149a878ed'
+code-revision: 'f523201367f207476ba039522c3af6495010316ac877aab42acf5e3fba4d7775'
 ---
 
 # 接口与外部服务
@@ -99,3 +100,11 @@ MDX组件在文章内部按client指令启动，同页共享React模块，从本
 ## 作品媒体
 
 媒体和平台登记见src/config/media.ts及[媒体规则](rules.md#媒体加载与体积)。浏览器只在点击后创建YouTube、Spotify、B站或已核对原站的iframe；媒体下载、账号和地区限制由平台决定，无平台API密钥。音视频文件只从同源或指定来源加载，图表数据经有界GET读取；完整来源不提前挂到元素。2048点击后仅读取`/media/2048/game-bundled.txt`，发布模板内含固定游戏样式与脚本，不再从沙盒请求子资源；仍以不允许同源访问的sandbox运行，不访问父页面或持久存储。旧`game.txt`保留给已打开页面；初始化未成功会给出完整刷新入口。精确脚本授权及体积限制见[运行配置](configuration.md)。
+
+## Paseo宿主契约
+
+`src/features/paseo-webui/contract.ts`定义版本1的直接模块挂载接口及严格数据校验；当前尚未接入Explore入口。挂载类型要求同一容器返回同一实例，真正退出后需整页重载才能重新挂载；收起和普通导航不调用退出。具体生命周期实现及其验收由012接入任务完成，接口定义不等于运行行为已通过。
+
+宿主命令只有展示（可见、焦点、页面前台分别传递）、中英locale、公开作品草稿/取消和dispose；没有聊天、审批、停止或任意RPC。草稿只接受作品ID（100字符）、标题（240）、简述（2000）、规范链接和可空原作链接（各2048）；URL必须是无用户名、密码、查询或fragment的HTTPS地址。草稿来自公开发布元数据，不能从当前配对URL或聊天状态提取；自由文本长度校验无法识别所有秘密，调用方仍须保证来源公开，资料不自动发送。
+
+助手事件仅有首次可操作、请求收起、初始化/可操作/已退出状态及固定错误码（资源、初始化、致命）和是否可重试；不接收原始异常、工具内容或连接凭据。未知类型/版本/字段、继承字段及访问器均拒绝；成功校验返回新对象。直接模块模式没有postMessage桥，未引入source/origin消息校验分支。单元测试位于`tests/unit/paseo-webui-contract.test.ts`。

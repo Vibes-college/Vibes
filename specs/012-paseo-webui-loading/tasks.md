@@ -18,7 +18,7 @@ amended-by: []
 - [ ] T003 在resources/evidence/012-paseo-webui-loading/compatibility/验证WebUI0.7.2对同版隔离daemon的实际配对/会话/工具/审批/恢复，固定主实验版本配对；旧daemon兼容取消，保留已验证项，中继及完整恢复在接入后验收；失败先定位，结论写specs/012-paseo-webui-loading/research.md。
 - [ ] T004 在scripts/paseo-webui-manifest.ts生成B0全量文件、哈希、同步/异步依赖与压缩清单，记录源码图和实际请求到resources/evidence/012-paseo-webui-loading/baseline/；可在G1后补齐，拆包比较前必须完成，不覆盖已保存的B0，不混算H与B0。
 - [x] T005 在.scratch/paseo-webui/probes/验证受控模块挂载入口、独立React、官方providers、history/CSS/焦点/滚动/动态前缀；有限适配不成立时试同源文档容器及Astro不重载条件，选择唯一接入方式并将证据/补丁路径写specs/012-paseo-webui-loading/research.md。
-- [ ] T006 在src/features/paseo-webui/contract.ts定义幂等挂载、展示状态、公开作品草稿、可操作/错误/收起及真正退出边界；在tests/unit/paseo-webui-contract.test.ts覆盖字段/长度/未知事件及禁止秘密/任意RPC，独立文档模式额外验证source/origin。
+- [x] T006 在src/features/paseo-webui/contract.ts定义幂等挂载、展示状态、公开作品草稿、可操作/错误/收起及真正退出边界；在tests/unit/paseo-webui-contract.test.ts覆盖字段/长度/未知事件及禁止秘密/任意RPC，独立文档模式额外验证source/origin。
 - [ ] T007 在scripts/paseo-webui-experiment.ts与tests/fixtures/paseo-webui/冻结B0/H/A1—A6/A/B/P配置、W0—W5输入及哈希、冷暖缓存、版本和采样规则，输出审核资源上限与基线摘要到third_party/paseo-webui/budget-baseline.json，原始证据存resources/evidence/012-paseo-webui-loading/baseline/；验证无结果数据不得生成通过结论。
 
 ## US1（P1）：普通浏览零助手加载，首次打开可恢复
