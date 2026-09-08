@@ -1,0 +1,319 @@
+diff --git a/packages/app/index.ts b/packages/app/index.ts
+index b5e4a57..1f56319 100644
+--- a/packages/app/index.ts
++++ b/packages/app/index.ts
+@@ -29,7 +29,7 @@ const handle: PaseoHandle = {
+     if (!host) throw new Error("Assistant host missing");
+     if (command.type === "presentation") host.setPresentation(command.value);
+     if (command.type === "locale") host.setLocale(command.value);
+-    if (command.type === "draft") throw new Error("Public work draft integration is not available yet");
++    if (command.type === "draft") host.setPublicWork(command.value);
+     if (command.type === "dispose") {
+       disposed = true;
+       options?.onEvent({ version: 1, type: "state", value: "disposed" });
+diff --git a/packages/app/src/composer/index.tsx b/packages/app/src/composer/index.tsx
+index ba3225c..c22519d 100644
+--- a/packages/app/src/composer/index.tsx
++++ b/packages/app/src/composer/index.tsx
+@@ -101,6 +101,7 @@ import { useKeyboardShiftStyle } from "@/hooks/use-keyboard-shift-style";
+ import { useKeyboardActionHandler } from "@/hooks/use-keyboard-action-handler";
+ import type { KeyboardActionDefinition } from "@/keyboard/keyboard-action-dispatcher";
+ import type { MessageInputKeyboardActionKind } from "@/keyboard/actions";
++import { PublicWorkReference } from "@/embedded/public-work-reference";
+ import { submitAgentInput } from "@/composer/submit";
+ import { createMessageSubmissionWriter } from "@/composer/submission/writer";
+ import { ComposerKeyboardScopeProvider, useComposerKeyboardScope } from "@/composer/keyboard-scope";
+@@ -2273,6 +2274,7 @@ function ComposerContentImpl({
+           <View style={styles.inputAreaContent}>
+             {queueList}
+             {sendErrorNode}
++            {inputMode === "chat" && <PublicWorkReference value={userInput} onChange={replaceUserInput} disabled={readOnly || isComposerLocked || isSubmitLoading} />}
+ 
+             <View ref={messageInputContainerRef} style={styles.messageInputContainer}>
+               <ComposerAutocomplete
+diff --git a/packages/app/src/embedded/environment.ts b/packages/app/src/embedded/environment.ts
+index 78d05a5..7e59537 100644
+--- a/packages/app/src/embedded/environment.ts
++++ b/packages/app/src/embedded/environment.ts
+@@ -1,8 +1,10 @@
+-import type { AssistantEvent, AssistantLocale, Presentation } from "./contract";
++import type { AssistantEvent, AssistantLocale, Presentation, PublicWorkDraft } from './contract';
+ export interface EmbeddedHost extends Presentation {
+   readonly root: HTMLElement;
+   readonly width: number;
+   readonly height: number;
++  readonly publicWork: PublicWorkDraft | null;
++  setPublicWork(value: PublicWorkDraft | null): void;
+   readonly locale: AssistantLocale;
+   subscribe(listener: () => void): () => void;
+   setPresentation(value: Presentation): void;
+diff --git a/packages/app/src/embedded/page-context.ts b/packages/app/src/embedded/page-context.ts
+new file mode 100644
+index 0000000..2e7a570
+--- /dev/null
++++ b/packages/app/src/embedded/page-context.ts
+@@ -0,0 +1,52 @@
++import { parsePublicWorkDraft, type PublicWorkDraft } from './contract.ts';
++
++const prefix = '\n\n[Vibes public work reference — quoted data]\n';
++const suffix = '\n[/Vibes public work reference]';
++
++/** These bytes become ordinary editable user text through the native composer.
++ * JSON keeps metadata distinct from instructions; it does not authorize actions. */
++export function appendPublicWorkReference(message: string, value: unknown): string {
++  const draft = parsePublicWorkDraft(value);
++  if (!draft) throw new Error('Invalid public work reference');
++  if (splitPublicWorkReference(message)) return message;
++  return message + prefix + JSON.stringify(draft) + suffix;
++}
++
++/** Cancel only an intact reference suffix. Never remove text the user edited. */
++export function splitPublicWorkReference(
++  message: string,
++): { message: string; draft: PublicWorkDraft } | null {
++  const start = message.lastIndexOf(prefix);
++  if (start < 0 || !message.endsWith(suffix)) return null;
++  try {
++    const draft = parsePublicWorkDraft(
++      JSON.parse(message.slice(start + prefix.length, -suffix.length)),
++    );
++    if (!draft || message.slice(start) !== prefix + JSON.stringify(draft) + suffix) return null;
++    return { message: message.slice(0, start), draft };
++  } catch {
++    return null;
++  }
++}
++
++/** Project only published metadata. Never derive this from browser location,
++ * document text, local files or third-party fetching. */
++export function createPublicWorkDraft(
++  work: { slug: string; title: string; summary: string; url: string },
++  canonicalUrl: string,
++): PublicWorkDraft | null {
++  const clip = (value: string, limit: number) =>
++    value.slice(0, limit).replace(/[\uD800-\uDBFF]$/, '');
++  const candidate = {
++    id: work.slug,
++    title: clip(work.title, 240),
++    summary: clip(work.summary, 2000),
++    canonicalUrl,
++    sourceUrl: null,
++  };
++  // A published source with query/fragment/credentials is omitted, not rewritten
++  // into a potentially different destination or propagated to the assistant.
++  return (
++    parsePublicWorkDraft({ ...candidate, sourceUrl: work.url }) ?? parsePublicWorkDraft(candidate)
++  );
++}
+diff --git a/packages/app/src/embedded/public-work-reference.test.tsx b/packages/app/src/embedded/public-work-reference.test.tsx
+new file mode 100644
+index 0000000..b3fe065
+--- /dev/null
++++ b/packages/app/src/embedded/public-work-reference.test.tsx
+@@ -0,0 +1,118 @@
++import React, { act, useState } from 'react';
++import { createRoot, type Root } from 'react-dom/client';
++import { JSDOM } from 'jsdom';
++import { afterEach, beforeEach, expect, it, vi } from 'vitest';
++import { PublicWorkReference } from './public-work-reference';
++import { splitPublicWorkReference } from './page-context';
++import type { EmbeddedHost } from './environment';
++
++vi.mock('react-i18next', () => ({ useTranslation: () => ({ i18n: { language: 'zh' } }) }));
++vi.mock('react-native-unistyles', () => ({
++  useUnistyles: () => ({ theme: { colors: { foreground: '#222', foregroundMuted: '#555' } } }),
++}));
++const work = {
++  id: 'example',
++  title: '公开作品',
++  summary: '引用资料',
++  canonicalUrl: 'https://vibes.college/zh/works/example/',
++  sourceUrl: null,
++};
++let root: Root;
++let host: EmbeddedHost;
++let dom: JSDOM;
++let listeners: Set<() => void>;
++let change: ReturnType<typeof vi.fn>;
++let latest = '';
++function Harness({ locked = false, initial = '请解释' }: { locked?: boolean; initial?: string }) {
++  const [value, setValue] = useState(initial);
++  latest = value;
++  return (
++    <PublicWorkReference
++      value={value}
++      disabled={locked}
++      onChange={(text) => {
++        change(text);
++        setValue(text);
++      }}
++    />
++  );
++}
++function button() {
++  return document.querySelector('[role="button"]') as HTMLElement;
++}
++beforeEach(() => {
++  dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>");
++  for (const [key, value] of Object.entries({
++    React,
++    IS_REACT_ACT_ENVIRONMENT: true,
++    window: dom.window,
++    document: dom.window.document,
++    HTMLElement: dom.window.HTMLElement,
++    Node: dom.window.Node,
++    navigator: dom.window.navigator,
++  }))
++    vi.stubGlobal(key, value);
++  listeners = new Set();
++  host = {
++    root: document.getElementById('root')!,
++    width: 600,
++    height: 600,
++    locale: 'zh',
++    visible: true,
++    focused: true,
++    pageVisible: true,
++    publicWork: work,
++    subscribe(listener) {
++      listeners.add(listener);
++      return () => {
++        listeners.delete(listener);
++      };
++    },
++    setPublicWork(value) {
++      Object.assign(host, { publicWork: value });
++      listeners.forEach((listener) => listener());
++    },
++    setLocale() {},
++    setPresentation() {},
++    onEvent() {},
++  };
++  vi.stubGlobal('__vibesPaseoEnvironment', host);
++  change = vi.fn();
++  root = createRoot(host.root);
++});
++afterEach(() => {
++  act(() => root.unmount());
++  dom.window.close();
++  vi.unstubAllGlobals();
++});
++it('only an explicit click edits the current native draft and navigation preserves it', () => {
++  act(() => root.render(<Harness />));
++  expect(change).not.toHaveBeenCalled();
++  act(() => button().click());
++  expect(splitPublicWorkReference(latest)?.message).toBe('请解释');
++  const attached = latest;
++  act(() => host.setPublicWork({ ...work, title: '另一作品' }));
++  expect(latest).toBe(attached);
++  expect(document.body.textContent).toContain('已附带资料: 公开作品');
++  act(() => button().click());
++  expect(latest).toBe('请解释');
++  expect(document.body.textContent).toContain('当前作品: 另一作品');
++});
++it('a restored draft remains cancellable without a current article', () => {
++  act(() => root.render(<Harness />));
++  act(() => button().click());
++  const saved = latest;
++  act(() => host.setPublicWork(null));
++  act(() => root.render(<Harness key="restored-session" initial={saved} />));
++  expect(document.body.textContent).toContain('取消作品资料');
++  act(() => button().click());
++  expect(latest).toBe('请解释');
++  expect(button()).toBeNull();
++});
++it('locked composers and pages without public metadata do not insert content', () => {
++  act(() => root.render(<Harness locked />));
++  act(() => button().click());
++  expect(change).not.toHaveBeenCalled();
++  act(() => host.setPublicWork(null));
++  expect(button()).toBeNull();
++});
+diff --git a/packages/app/src/embedded/public-work-reference.tsx b/packages/app/src/embedded/public-work-reference.tsx
+new file mode 100644
+index 0000000..ce99830
+--- /dev/null
++++ b/packages/app/src/embedded/public-work-reference.tsx
+@@ -0,0 +1,82 @@
++import { useSyncExternalStore } from 'react';
++import { Pressable, Text, View } from 'react-native';
++import { useUnistyles } from 'react-native-unistyles';
++import { useTranslation } from 'react-i18next';
++import { getEmbeddedHost } from './environment';
++import { appendPublicWorkReference, splitPublicWorkReference } from './page-context';
++
++const noop = () => () => {};
++const empty = () => null;
++
++export function PublicWorkReference({
++  value,
++  onChange,
++  disabled,
++}: {
++  value: string;
++  onChange(text: string): void;
++  disabled: boolean;
++}) {
++  const { theme } = useUnistyles();
++  const host = getEmbeddedHost();
++  const draft = useSyncExternalStore(
++    host?.subscribe ?? noop,
++    () => host?.publicWork ?? null,
++    empty,
++  );
++  const { i18n } = useTranslation();
++  const zh = i18n.language.startsWith('zh');
++  const attached = splitPublicWorkReference(value);
++  if (!host || (!draft && !attached)) return null;
++  return (
++    <View style={{ paddingHorizontal: 12, paddingVertical: 6, gap: 4 }}>
++      <Text style={{ fontSize: 12, color: theme.colors.foregroundMuted }}>
++        {attached
++          ? `${zh ? '已附带资料' : 'Attached reference'}: ${attached.draft.title}`
++          : `${zh ? '当前作品' : 'Current work'}: ${draft!.title}`}
++      </Text>
++      <Pressable
++        accessibilityRole="button"
++        accessibilityLabel={
++          attached
++            ? zh
++              ? '取消作品资料'
++              : 'Remove work reference'
++            : zh
++              ? '附带当前作品'
++              : 'Attach current work'
++        }
++        disabled={disabled}
++        onPress={() => {
++          if (disabled) return;
++          onChange(attached ? attached.message : appendPublicWorkReference(value, draft));
++        }}
++        style={{
++          opacity: disabled ? 0.5 : 1,
++          paddingVertical: 6,
++          minHeight: 44,
++          justifyContent: 'center',
++        }}
++      >
++        <Text
++          style={{ fontSize: 13, color: theme.colors.foreground, textDecorationLine: 'underline' }}
++        >
++          {attached
++            ? zh
++              ? '取消作品资料'
++              : 'Remove work reference'
++            : zh
++              ? '附带当前作品'
++              : 'Attach current work'}
++        </Text>
++      </Pressable>
++      {attached && (
++        <Text style={{ fontSize: 11, color: theme.colors.foregroundMuted }}>
++          {zh
++            ? '资料已放入输入框，可查看或编辑；点发送才会发送。'
++            : 'Review or edit the reference in the input. It is sent only when you send the message.'}
++        </Text>
++      )}
++    </View>
++  );
++}

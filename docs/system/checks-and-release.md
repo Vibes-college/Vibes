@@ -13,7 +13,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '43bca224c34f2996cbefb8848ef98399b44aa3420696caba7981f9a9a56858d1'
+code-revision: '0784edf6a9829cf109dbdecc2258a52073bfd3f7917d712fe46539f6cfbbbb60'
 ---
 
 # 检查与发布
@@ -193,6 +193,8 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 budget-baseline.json记录统一gzip的B0初开4687382 B、总量4690481 B，候选首开减半目标2343691 B、总量上限4690481 B，700000 B仍是附加研究目标；主站原有门槛不变，当前尚未把助手预算接入正式发布。采样覆盖摘要只检查预定cohort是否齐全，保留失败数，空/部分数据不能变成通过；完整覆盖也仅表示可以分析，不代表正确性或性能过关。
 
-H以`node --experimental-strip-types scripts/paseo-webui-build.ts H`导出，显式`VIBES_PASEO_PROFILE=H VIBES_OUT_DIR=.scratch/paseo-webui/h-site npm run build`生成带入口的隔离站；只接受已匹配来源/补丁/资源摘要的H，不改变默认构建。`PASEO_HOST_URL`供`tests/paseo-loading.spec.ts`使用，地址必须是本机且已经托管该产物；未指定明确跳过。源码与测试细节、当前限制见[助手系统说明](local-assistant.md)。
+H以`node --experimental-strip-types scripts/paseo-webui-build.ts H`导出，显式`SITE_URL=https://vibes.college VIBES_PASEO_PROFILE=H VIBES_OUT_DIR=.scratch/paseo-webui/h-site npm run build`生成带入口的隔离站；只接受已匹配来源/补丁/资源摘要的H，不改变默认构建。HTTPS SITE_URL让公开资料引用正式作品地址，不改变本机托管地址。`PASEO_HOST_URL`供`tests/paseo-loading.spec.ts`使用，地址必须是本机且已经托管该产物；未指定明确跳过。源码与测试细节、当前限制见[助手系统说明](local-assistant.md)。
 
 H的真实安全头/中继回归用`PASEO_CSP_URL=http://127.0.0.1:4392 PASEO_PAIRING_FILE=.scratch/paseo-webui/h-pairing-url.txt PASEO_RELAY_LOG=.scratch/paseo-webui/daemon-home/startup-relay.log npx playwright test tests/paseo-csp.spec.ts`，要求AI已准备独立Worker与同版中继实例；文件留本机，不把配对值或原始连接日志写入测试产物。此项不替代最终恢复/真机和部署验收。
+
+相同Worker/配对文件可运行`tests/paseo-chat.spec.ts`，验证公开作品资料进入原生草稿、取消、跨文章与刷新恢复；自动化不因此发送模型请求。手动创建的私有测试context显式继承项目的视口、触控、缩放与userAgent，关闭配对trace；不能只换项目名称就声称完成手机覆盖。中继连接计数验收期间不另开或刷新其他实验客户端，避免污染daemon侧差值。

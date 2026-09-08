@@ -8,9 +8,10 @@ code-sources:
     'src/components/LocalAssistant.astro',
     'src/scripts/paseo-boot.ts',
     'src/features/paseo-webui/host.ts',
+    'src/features/paseo-webui/page-context.ts',
     'src/layouts/Layout.astro',
   ]
-code-revision: 'b119504126c5cdc4c02b8cb0458a22e8f9c99e0509192f63c1dec09afeb861e7'
+code-revision: 'a00f1e8ff7647492afcee039ae616af8b5864ecc094e2de97bb15ec070f62b81'
 ---
 
 # 本地助手：打开、收起与继续浏览
@@ -27,6 +28,8 @@ code-revision: 'b119504126c5cdc4c02b8cb0458a22e8f9c99e0509192f63c1dec09afeb861e7
 4. 点击“收起”返回浏览，焦点回到助手入口；站内换语言或作品页后再次打开，保留同一原生实例和会话。收起不停止本地Agent，也不销毁连接与缓存。
 5. 资源下载失败时先恢复网络，再点“重试”；宿主模块加载失败、初始化失败或长时间未完成时使用刷新入口。刷新完成后助手保持关闭，再主动点击打开。
 6. “退出并刷新”销毁当前网页运行环境并刷新，保留Paseo设备存储；它不等于停止本地任务、断开已保存设备或忘记设备。
+
+阅读公开作品时，原生聊天输入框上方显示“附带当前作品”。点击后，标题、规范链接、可用的原作链接及简述作为引用资料进入原生输入框，可以查看和编辑；只有主动发送才提交。完整资料块可以点击“取消作品资料”移除，原来的输入保留。手动改写资料块后可直接在输入框删除，取消按钮不擅自删除改写内容。切换文章只更新可附带的作品，不覆盖已写好的草稿；草稿按原生会话/目录规则保存。
 
 桌面面板固定在右侧，窄屏占满视口，顶部保留收起和退出按钮。宿主提示跟随站点中英文；Paseo内部采用自己的翻译。文章正文与助手有独立滚动区域。网站搜索获得焦点时，助手快捷键不应抢占输入。
 
@@ -46,6 +49,7 @@ flowchart TD
 
 - 入口与容器：`src/components/LocalAssistant.astro`、`src/layouts/Layout.astro`。
 - 点击加载与生命周期：`src/scripts/paseo-boot.ts`、`src/features/paseo-webui/host.ts`。
+- 公开资料与原生草稿：`src/features/paseo-webui/page-context.ts`、`third_party/paseo-webui/patches/h-public-work.patch`。
 - 原生适配与构建来源：`third_party/paseo-webui/patches/series.json`及[系统说明](../system/local-assistant.md)。
 
 ## 验收标准
@@ -58,6 +62,7 @@ flowchart TD
 - [x] 退出刷新后不自动打开、不改设备registry；320px容器适配及搜索焦点隔离通过。
 - [ ] 真实iPhone后台、锁屏、切网与软键盘完整验收。
 - [ ] 公开作品草稿、聊天/停止/审批、恢复及忘记设备的完整H验收。
+- [x] 公开作品资料可查看、取消，原生草稿跨文章/刷新保留；实际Luna收到标题并回复。
 - [x] 本地Worker的实际CSP、官方TLS中继配对、已有会话恢复及禁止来源拒绝通过。
 - [ ] 最终A/B选择、资源预算及上线验收。
 
@@ -72,6 +77,8 @@ flowchart TD
 
 ## 已知问题 / 待办
 
-H仅验证嵌入基础，不代表原生全部能力、恢复、语音或最终性能通过。未完成项以[012任务](../../specs/012-paseo-webui-loading/tasks.md)为准；缺少真机证据不能以模拟替代。当前没有公开作品附带入口，也没有选定可正式发布的配置。
+H仅验证嵌入基础，不代表原生全部能力、恢复、语音或最终性能通过。未完成项以[012任务](../../specs/012-paseo-webui-loading/tasks.md)为准；缺少真机证据不能以模拟替代。尚未选定可正式发布的配置。作品资料只使用已发布元数据；不抓取原网站，不读取本地文件，不附带连接配置。
 
 中继专项有效证据：2026-09-08，tests/paseo-csp.spec.ts三配置通过实际配对、历史、换语言、刷新恢复、原生JS/CSS MIME/不可变缓存及禁止来源拒绝。内置浏览器中gpt-5.6-luna经中继回复PASEO_RELAY_OK；不计最终重任务或完整恢复矩阵。
+
+手机context现已显式继承项目的设备参数；早期中继记录未覆盖手机视口。扩大覆盖后发现并修正历史页保留初始连接错误的问题：2026-09-08，三配置的草稿/中继/延迟连接恢复9项通过。生产编译原因与修正前后证据见012 research R13；该基础恢复不替代完整100次矩阵。

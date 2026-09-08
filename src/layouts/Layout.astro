@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import LocalAssistant from '../components/LocalAssistant.astro';
 import { getPaseoBuild } from '../features/paseo-webui/build-config';
+import type { PublicWorkDraft } from '../features/paseo-webui/contract';
 import { ClientRouter } from 'astro:transitions';
 import LanguageSwitch from '../components/LanguageSwitch.astro';
 import { messages } from '../lib/i18n/messages';
@@ -16,6 +17,7 @@ interface Props {
   locale?: Locale;
   alternates?: { locale: string; path: string }[];
   defaultPath?: string;
+  publicWork?: PublicWorkDraft | null;
 }
 const {
   locale = 'zh',
@@ -26,6 +28,7 @@ const {
   detail = false,
   alternates = [],
   defaultPath,
+  publicWork,
 } = Astro.props;
 const t = messages[locale];
 const site = buildSite();
@@ -99,6 +102,7 @@ const paseo = getPaseoBuild();
     </header>
     <slot />
     {paseo && <LocalAssistant config={paseo.config} locale={locale} />}
+    {paseo && publicWork && <div hidden data-paseo-public-work={JSON.stringify(publicWork)} />}
     <script>
       import '../scripts/reading-prefetch';
       import '../scripts/media-boot';

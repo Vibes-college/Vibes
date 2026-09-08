@@ -17,6 +17,10 @@ shaped-by: ['004']
 
 ## 已转化
 
+- [2026-09-08] 现象：原生助手手机历史页多次保留连接前错误，运行时已经在线｜证据：resources/evidence/012-paseo-webui-loading/host/h-history-before-fix.log及h-history-after-fix.log
+  原因：生产React编译器丢弃可变外部状态的版本依赖；普通单元测试未经过该编译器，不能发现此问题。
+  转化：[确定性延迟恢复测试](../tests/paseo-recovery.spec.ts)覆盖真实生产导出，[窄范围编译边界](../third_party/paseo-webui/patches/h-reactive-history.patch)保留依赖｜验证：修正前失败，修正后三配置通过；升级移除边界前重跑同场景｜转化日期：2026-09-08｜状态：已转化
+
 - [2026-09-06] 现象：连续导航返回搜索结果两次出现约123px滚动偏差｜证据：resources/evidence/005-continuous-navigation/verify-initial-failures.log及专项回归
   原因：异步结果短暂令页面变矮，换页后的scrollend可能先覆盖目标history滚动值，page-load才读取已太迟。
   转化：[explore.ts](../src/scripts/explore.ts)在before-preparation保存目标位置，结果恢复后再对齐｜验证：[navigation.spec.ts](../tests/navigation.spec.ts)覆盖，WebKit连续5次专项通过｜转化日期：2026-09-06｜状态：已转化

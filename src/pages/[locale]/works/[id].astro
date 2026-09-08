@@ -15,6 +15,8 @@ import { articleSections } from '../../../data/article-sections';
 import { validateFactAnchors } from '../../../data/work-facts';
 import { locales, htmlLanguages, workPath } from '../../../lib/i18n/routes';
 import { languageTarget } from '../../../lib/content/views';
+import { createPublicWorkDraft } from '../../../features/paseo-webui/page-context';
+import { buildSite } from '../../../config/site';
 export function getStaticPaths() {
   return locales.flatMap((locale) =>
     getWorks(locale).map((work) => ({ params: { locale, id: work.slug }, props: { work } })),
@@ -56,6 +58,10 @@ const alternates = locales.flatMap((locale) => {
   description={work.summary}
   alternates={alternates}
   defaultPath={workPath(work.originalLocale, work.slug)}
+  publicWork={createPublicWorkDraft(
+    work,
+    new URL(workPath(work.locale, work.slug), buildSite().origin).href,
+  )}
 >
   <main
     id="main"

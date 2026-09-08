@@ -13,7 +13,7 @@ code-sources:
     'scripts/paseo-webui-assets.ts',
     'third_party/paseo-webui/',
   ]
-code-revision: '1a67927c206a8133ec3bd96b222c25c08549a804a3a9a1226f83abfe8d5ec67d'
+code-revision: '7cee8588b9ffcb586b90204a6e59d7f064dfcd33ea572eda9f56056b5c2adcec'
 ---
 
 # 原生Paseo嵌入边界
@@ -26,7 +26,7 @@ code-revision: '1a67927c206a8133ec3bd96b222c25c08549a804a3a9a1226f83abfe8d5ec67d
 
 ```sh
 node --experimental-strip-types scripts/paseo-webui-build.ts H
-VIBES_PASEO_PROFILE=H VIBES_OUT_DIR=.scratch/paseo-webui/h-site npm run build
+SITE_URL=https://vibes.college VIBES_PASEO_PROFILE=H VIBES_OUT_DIR=.scratch/paseo-webui/h-site npm run build
 ```
 
 未设`VIBES_PASEO_PROFILE`时Astro在构建图形成前将入口替换为空组件，不输出助手客户端chunk、入口或原生资源；仅在页面条件中不渲染组件仍会遗留chunk，因此不能作为构建排除。H必须显式指定`.scratch/`内输出，发布模式VIBES_DEPLOY=1及其他配置拒绝。构建期间`build-config.ts`核对固定提交、锁文件、完整source/dependency补丁记录、摘要前缀及每个声明资源的大小、哈希和真实路径；不接受符号链接或越界路径。页面只接受一个入口JS及最多20项CSS，路径必须属于同一16位摘要前缀，携带SHA256完整性值。未知字段不向运行时复制。
@@ -37,7 +37,13 @@ VIBES_PASEO_PROFILE=H VIBES_OUT_DIR=.scratch/paseo-webui/h-site npm run build
 
 轻量`paseo-boot.ts`只在按钮点击后动态导入host。host先建立原生环境，再并行下载SRI脚本和CSS；全部资源成功后调用原生mount。并发调用共享Promise，成功资源不重复下载，失败资源才清除缓存后重试。脚本执行完却没有合法mount，或mount失败，要求整页刷新；30秒未完成提供刷新入口，不另开第二实例。
 
-H在G1直接挂载适配上增加契约和presentation边界；保留上游根providers、独立React运行时、HostRuntime、SessionProvider及原生页面路由。宿主不实现第二套聊天或任意RPC；契约字段见[接口](interfaces.md#paseo宿主契约)。公开草稿命令类型已定义，实际composer接入未完成。
+H在G1直接挂载适配上增加契约和presentation边界；保留上游根providers、独立React运行时、HostRuntime、SessionProvider及原生页面路由。HostRuntime仅在嵌入且没有明确初始连接配置时跳过默认localhost自动发现；设备注册、运行时单例、SessionProvider与同步协议保留。宿主不实现第二套聊天或任意RPC；契约字段见[接口](interfaces.md#paseo宿主契约)。
+
+原生生产编译会丢弃useAgentHistory和聚合连接状态hook中仅用于失效通知的版本依赖，使页面在连接恢复后仍沿用初始快照。h-reactive-history.patch仅对这两个hook保留原有手动memo化，其他编译优化保留；tests/paseo-recovery.spec.ts延迟真实连接后释放原始帧，验证历史随后自动更新。升级时须在生产导出中验证同一场景，不能只运行未经过该编译器的单元测试。
+
+`page-context.ts`从已发布作品投影有限字段，规范链接来自构建SITE_URL与作品路径；本机HTTP规范地址不作为公开作品资料，因此隔离体验也设置正式HTTPS的SITE_URL。标题/简述分别裁到240/2000字符，原作链接包含凭据、查询或fragment时整条省略，不改写成另一个地址。页面元数据节点不随助手容器持久化；mount完成及Astro换页后更新候选资料，普通目录传null。
+
+`h-public-work.patch`只在原生composer加入公开资料按钮，通过原有replaceUserInput编辑原生草稿。资料使用有标签的JSON文本，不添加系统消息、任意RPC、自动发送或第二套消息队列；用户仍通过原生提交、错误恢复与审批流程操作。完整资料后缀可移除并保留之前输入；手动改写后不自动删除。新文章不会替换旧草稿，锁定/只读输入不允许附带；未发送资料随原生草稿存储，宿主不另存副本。
 
 容器跨Astro页面持久化；原生React Native、Unistyles和Reanimated的具名样式节点及CSS链接同样保留。原生history使用内部路由，不改变Explore的地址。收起、导航不dispose；退出命令最终整页刷新，网页内单例、监听器与连接随文档销毁，不删除设备。
 

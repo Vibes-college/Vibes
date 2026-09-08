@@ -1,10 +1,12 @@
 import {
   parseAssistantEvent,
+  parsePublicWorkDraft,
   type AssistantEvent,
   type AssistantLocale,
   type PaseoHandle,
   type PaseoModule,
   type Presentation,
+  type PublicWorkDraft,
 } from './contract';
 import { parsePaseoAssetConfig } from './asset-contract';
 
@@ -15,9 +17,11 @@ interface Environment extends Presentation {
   width: number;
   height: number;
   locale: AssistantLocale;
+  publicWork: PublicWorkDraft | null;
   subscribe(listener: () => void): () => void;
   setPresentation(value: Presentation): void;
   setLocale(value: AssistantLocale): void;
+  setPublicWork(value: PublicWorkDraft | null): void;
   onEvent(event: AssistantEvent): void;
 }
 declare global {
@@ -53,6 +57,7 @@ const environment: Environment = {
   focused: false,
   pageVisible: !document.hidden,
   locale: locale(),
+  publicWork: null,
   subscribe(listener) {
     listeners.add(listener);
     return () => {
@@ -74,6 +79,10 @@ const environment: Environment = {
       this.locale = value;
       notify();
     }
+  },
+  setPublicWork(value) {
+    this.publicWork = value;
+    notify();
   },
   onEvent: receive,
 };
@@ -232,6 +241,7 @@ async function start() {
       },
       onEvent: receive,
     });
+    await publishPageWork();
   } catch {
     clearTimeout(timer);
     if (mounting || (stage as Stage) === 'fatal') stage = 'fatal';
@@ -240,6 +250,16 @@ async function start() {
   } finally {
     starting = undefined;
   }
+}
+async function publishPageWork() {
+  let value: PublicWorkDraft | null = null;
+  try {
+    const metadata = document.querySelector<HTMLElement>('[data-paseo-public-work]');
+    value = parsePublicWorkDraft(JSON.parse(metadata?.dataset.paseoPublicWork || 'null'));
+  } catch {
+    // Invalid metadata removes the optional reference, not the native chat.
+  }
+  await handle?.dispatch({ version: 1, type: 'draft', value });
 }
 export async function openAssistant(button?: HTMLElement, visible = true) {
   if (stage === 'disposed') return;
@@ -283,6 +303,7 @@ window.addEventListener('focus', presentation);
 window.addEventListener('blur', presentation);
 document.addEventListener('astro:page-load', () => {
   environment.setLocale(locale());
+  void publishPageWork();
   renderStatus();
   presentation();
 });

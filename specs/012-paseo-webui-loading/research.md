@@ -163,3 +163,15 @@ T007将W0—W5生成器、输出大小/哈希与协议版本固定；W1/W2事件
 三配置中继自动回归通过配对、历史、语言导航、整页刷新后恢复及对blocked.invalid的CSP拒绝。最初把旧Playwright WebSocket对象仍留在Set误判为未关闭；真实CDP也未收到旧文档的close事件，但daemon对应relay_data_disconnected已出现。现在同时核对daemon对应通道已关闭、新文档零新连接，再验证重开，未取消关闭门槛。私有日志/配对文件不进入产物，记录只保存原生资源路径、公开中继origin和结果。
 
 中继恢复仅是基础路径，不完成T003完整恢复或最终100次矩阵。实验daemon展示目录改为独立probes/web，保留B0根入口与H站点，避免后续上游构建覆盖体验页。真正退出由原生dispose执行刷新，宿主只在失败时兜底，避免双重刷新；对应测试额外要求一次主文档请求。
+
+## R13：公开作品草稿与生产历史状态失效
+
+2026-09-08，h-public-work.patch在原生composer中显示当前公开作品，用户点击后通过replaceUserInput插入有标签的JSON引用文本；发送、排队、失败恢复仍由原生submitAgentInput处理，未增加RPC或系统消息。4项边界单元、3项原生组件测试，以及三配置真实中继草稿测试通过附带、取消、跨文章与刷新恢复。内置浏览器主动附带Attention Is All You Need并通过原生发送按钮提交，gpt-5.6-luna回复PASEO_PUBLIC_WORK_OK: Attention Is All You Need；本轮没有工具调用。截图在chat/public-work-before-send.png及后续回复证据，模型小验证不计最终重任务。
+
+审阅发现中继测试手动newContext未继承设备参数，早期“三配置”只证明对应浏览器引擎，不能证明手机视口；已显式传递viewport/userAgent/deviceScaleFactor/isMobile/hasTouch。真实手机视口下，历史页偶发停在“无法加载历史”，不是等待不足：失败时HostRuntime为online、agentDirectoryStatus为ready，页面仍保留初始未连接结果。分别保存三轮失败/成功日志、history-mobile-chromium.png及脱敏运行状态；不删失败、不自动重试。
+
+固定H生产包中useAgentHistory的useSyncExternalStore返回值被丢弃，编译缓存只比较hosts/serverId等稳定引用，原手动useMemo依赖的runtimeVersion消失；同样模式出现在useHostRuntimeConnectionStatuses。history-compiled-before.json保存产物哈希及对应函数。tests/paseo-recovery.spec.ts延迟第二条真实加密连接的下行帧，先进入历史页，再原样释放：连接与目录已恢复后错误仍不消失，确定性复现。帧只暂存在内存，不解析、不落盘，不伪造daemon响应。
+
+最小修正h-reactive-history.patch只对上述两个读取可变外部状态的hook加函数级use no memo，保留既有手动依赖；不关闭全局编译优化，不重写运行时或同步协议。这是[React官方支持的函数级退出机制](https://react.dev/reference/react-compiler/directives/use-no-memo)，升级时只有相同生产延迟恢复用例通过才可移除。修正后生产函数保留useSyncExternalStore返回值及useMemo版本依赖，三配置的草稿/中继/确定性延迟恢复共9项通过（host/h-history-after-fix.log）；相关上游13组/321项单元通过。没有把普通Vitest当作编译产物验证。
+
+根providers层级保留；SessionProvider及composer/submit.ts与固定上游字节一致。HostRuntime的变化只有嵌入模式跳过隐式localhost发现，以及聚合连接状态hook的上述编译边界；原有显式配置/配对、注册、单例与同步保留。chat/provider-boundary.json记录源码核验范围，chat/history-compiled-after.json记录生产函数；T016通过不代表T003/T024完整恢复完成。

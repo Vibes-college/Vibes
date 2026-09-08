@@ -14,7 +14,7 @@ code-sources:
     'src/scripts/search.ts',
     'scripts/build.ts',
   ]
-code-revision: '5a923625d05272ac82595a3735a36c722b8875ef9436fb52c502ede3d7eeb13e'
+code-revision: 'f7d00f2d51b2b5ff17ddfba50114c237ef6a5f10a6d1e55e08ef5d17b79ac69a'
 ---
 
 # VIBES项目总览

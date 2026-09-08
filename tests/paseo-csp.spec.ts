@@ -35,8 +35,17 @@ test('real relay pairing, restored history and least-privilege CSP survive navig
   browser,
 }, testInfo) => {
   test.setTimeout(90000);
-  const context = await browser.newContext();
+  const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = testInfo.project.use;
+  const context = await browser.newContext({
+    viewport,
+    userAgent,
+    deviceScaleFactor,
+    isMobile,
+    hasTouch,
+  });
   const page = await context.newPage();
+  page.setDefaultTimeout(15000);
+  let primaryFailure: unknown;
   const sockets = new Set<object>();
   const baselineChannels = activeRelayChannels();
   let createdSockets = 0;
@@ -81,10 +90,60 @@ test('real relay pairing, restored history and least-privilege CSP survive navig
     await expect(page.locator('#root #menu-button')).toBeVisible({ timeout: 30000 });
     await page.locator('#root #menu-button').click();
     await page.getByRole('button', { name: '历史', exact: true }).click();
-    await page
-      .getByText(/^这是直接挂载界面的受控审批测试。仅在当前 compat 目录/)
-      .first()
-      .click();
+    try {
+      await page
+        .getByText(/^这是直接挂载界面的受控审批测试。仅在当前 compat 目录/)
+        .first()
+        .click();
+    } catch (error) {
+      // Pairing has completed and its form is gone; retain only the history UI.
+      await page.screenshot({
+        path: resolve(
+          'resources/evidence/012-paseo-webui-loading/host',
+          `history-${testInfo.project.name}.png`,
+        ),
+      });
+      const state = await page.evaluate(() => {
+        const runtime = (
+          window as unknown as {
+            __paseoHostRuntimeStore: {
+              getHosts(): { serverId: string }[];
+              getSnapshot(id: string): {
+                connectionStatus: string;
+                agentDirectoryStatus: string;
+                hasEverLoadedAgentDirectory: boolean;
+                clientGeneration: number;
+                connectionEpoch: number;
+                lastError: string | null;
+              } | null;
+            };
+          }
+        ).__paseoHostRuntimeStore;
+        return runtime.getHosts().map(({ serverId }) => {
+          const snapshot = runtime.getSnapshot(serverId);
+          return (
+            snapshot && {
+              connectionStatus: snapshot.connectionStatus,
+              agentDirectoryStatus: snapshot.agentDirectoryStatus,
+              hasEverLoadedAgentDirectory: snapshot.hasEverLoadedAgentDirectory,
+              clientGeneration: snapshot.clientGeneration,
+              connectionEpoch: snapshot.connectionEpoch,
+              errorCategories: ['timeout', 'closed', 'abort', 'network', 'handshake'].filter(
+                (word) => snapshot.lastError?.toLowerCase().includes(word),
+              ),
+            }
+          );
+        });
+      });
+      writeFileSync(
+        resolve(
+          'resources/evidence/012-paseo-webui-loading/host',
+          `history-${testInfo.project.name}.json`,
+        ),
+        JSON.stringify({ state, createdSockets, observedSockets: sockets.size }, null, 2),
+      );
+      throw error;
+    }
     await expect(page.locator('#root').getByText('PASEO_RELAY_OK', { exact: true })).toBeVisible({
       timeout: 30000,
     });
@@ -156,6 +215,8 @@ test('real relay pairing, restored history and least-privilege CSP survive navig
       JSON.stringify(
         {
           recordedAt: new Date().toISOString(),
+          viewport: page.viewportSize(),
+          isMobile: Boolean(isMobile),
           origins: [...origins],
           responses,
           blockedUnlistedOrigin: denied,
@@ -167,7 +228,15 @@ test('real relay pairing, restored history and least-privilege CSP survive navig
         2,
       ),
     );
+  } catch (error) {
+    primaryFailure = error;
   } finally {
-    await context.close();
+    try {
+      await context.close();
+    } catch (error) {
+      // Preserve the original timeout/action failure if the runner already disposed it.
+      primaryFailure ??= error;
+    }
   }
+  if (primaryFailure) throw primaryFailure;
 });
