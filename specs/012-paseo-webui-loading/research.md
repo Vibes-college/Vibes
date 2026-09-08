@@ -127,3 +127,11 @@ WebUI与daemon的官方构建命令均在固定源码上成功。Web导出39个�
 **实际证据**：真实浏览器在默认权限的新建Luna会话出现审批卡片；等待审批期间收起并经Astro切换文章，展开仍是原卡片，接受后工具输出预期标记并完成。自动化在桌面Chromium及手机配置Chromium/WebKit验证首次点击前无socket、并发打开只挂载一次、只保留一个socket、收起/文章跳转/后退后原根和CSSOM保留且文档未重载。最终探针9项通过，包括320px容器不越界；桌面滚轮能滚动文章且固定面板位置不变。容器420/720宽度与宿主输入快捷键隔离另行验证；手机项目内的这项尺寸测试显式使用1280宽视口，不冒称是手机键盘测试。证据保存在`resources/evidence/012-paseo-webui-loading/host/`的截图、构建和Playwright日志，自动化入口为`tests/paseo-mount.spec.ts`。
 
 **边界**：这只是接入选择探针，测试夹具的打开按钮未加入Explore。尚未实现正式就绪/错误/重试契约、真正退出、公开作品草稿、完整活动信号合成及生产CSP；这些继续按T006及后续任务验收。原审批模式切换差异和停止后子进程可能继续的问题仍保留。没有真实iPhone、加密中继、最终恢复矩阵或A/B性能通过结论。
+
+## R11 原始B0依赖与请求盘点
+
+T004用官方Metro的只读experimentalSerializerHook采集实际解析图，固定为`patches/graph-capture.patch`；不替换编译器或序列化逻辑。单独B0-graph构建与原B0的39个文件路径/大小/哈希完全一致，原B0未覆盖，图文件自身摘要进入观察构建记录。实际源图有4986模块、同步闭包4980模块，4条异步边均来自attachments/store的存储平台分支；Mermaid、终端、编辑器等尚未形成这类外围加载边界。
+
+文件盘点脚本严格验证完整图、全量资源和摘要，静态JS总大小20554608 B、逐文件默认gzip4690481 B；HTML入口单文件gzip4686132 B。首次打开的真实Chromium请求另加载了indexeddb-attachment-store异步chunk，说明“异步文件”不等于“首次不加载”。同次盘点记录了xterm样式、文档和两个JS请求，并逐个核对JS响应正文与原B0哈希一致；只有一个本机新上下文样本，不能作为冷暖性能收益结论。本机daemon的传输方式与最终Cloudflare不同，浏览器报告的网络字节不能替代统一压缩预算。
+
+原始证据在`resources/evidence/012-paseo-webui-loading/baseline/`：b0-manifest.json、b0-source-graph.json及desktop-chromium/initial-requests.json。T007仍需冻结样本、输入和公式。G1整站回归另发现既有手机WebKit音频测试在原生恢复后再次暂停；184通过、13跳过、1失败，单独两次复查一过一败。诊断记录中页面可见，暂停不是本站再次调用audio.pause；媒体源码及该测试与main无差异，根因尚未确定，不擅自修改媒体逻辑或声明整站通过。该验证问题仍须在最终交付前解决。

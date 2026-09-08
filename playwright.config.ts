@@ -11,6 +11,7 @@ export default defineConfig({
     'beui.spec.ts',
     'media.spec.ts',
     'paseo-mount.spec.ts',
+    'paseo-baseline.spec.ts',
   ],
   fullyParallel: true,
   // A single local Worker serves the suite; serialize clients to avoid proxy connection loss.

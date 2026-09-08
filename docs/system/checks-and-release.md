@@ -13,7 +13,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '221ef2b969e1df735852bda0026a10db366e71ec432f4d6f9e21cef16d7c38d7'
+code-revision: '2c9b640715bc595ec884266a684f702a1683557e588f6dde2b5b712e4f181a7b'
 ---
 
 # 检查与发布
@@ -184,3 +184,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 同一构建命令的`G1`动作按series中的source/dependencies两类补丁重放直接挂载探针，输出独立的artifacts/G1。依赖补丁只允许列出的Expo Router、React Native Web、Unistyles文件，检查补丁及每个文件改前/改后摘要，构建后恢复原始依赖；意外改动不覆盖。G1导出使用独立临时目录，不覆盖已保存B0，也不作为性能收益结果。
 
 `node --experimental-strip-types scripts/paseo-webui-probe.ts`校验B0/G1原始资源并生成`.scratch/paseo-webui/probes/web`：根路径保留B0，`/probe/one/`和`/probe/two/`为Astro换页测试，G1资源位于`/vendor/paseo/g1-direct/`。这是本地实验前缀，不是最终发布摘要或新增产品入口。AI在同版隔离daemon托管该目录；`PASEO_PROBE_URL=http://127.0.0.1:6792 npx playwright test tests/paseo-mount.spec.ts`用现有Playwright配置执行探针；地址仅允许本机。未指定地址时这些测试明确跳过，不把跳过算验收；手机项目是浏览器模拟，不能替代真实iPhone。正式接入与发布仍需012剩余验证。
+
+`B0-graph`在独立输出应用measurement只读Metro钩子，保存实际解析模块路径、源码摘要及同步/异步依赖；官方序列化保持不变。图文件摘要进入该构建记录。`paseo-webui-manifest.ts`核对观察构建与保留B0的实际文件清单、每个文件/图摘要和完整依赖闭包，拒绝漏文件、额外文件、未知资源类型、符号链接和断裂图。清单逐文件记录原大小、默认gzip/Brotli；所有JS计入总量，HTML入口脚本单列，不能把后续chunk藏出总量。源码同步闭包不等同于运行时执行量，压缩盘点不等同于实际传输。
+
+`tests/paseo-baseline.spec.ts`用单独的`PASEO_BASELINE_URL`（同样只允许本机HTTP）对原生B0首次打开记录实际完成/失败请求，保存资源类型、响应状态、传输统计与计时，并核对JS正文哈希。只取路径，不保存查询参数、请求头或聊天数据；没有地址明确跳过。B0与G1两个入口和结果分开，不把宿主探针当基线。原始图和网络记录保存于baseline/，采样次数及最终预算冻结仍由012实验任务完成。

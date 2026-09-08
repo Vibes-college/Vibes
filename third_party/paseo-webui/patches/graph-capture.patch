@@ -1,0 +1,38 @@
+--- a/packages/app/metro.config.cjs
++++ b/packages/app/metro.config.cjs
+@@ -120,4 +120,35 @@
+   };
+ }
+ 
++// Measurement-only graph observer: it never changes transforms or serialization.
++if (process.env.VIBES_PASEO_GRAPH_FILE) {
++  const crypto = require("node:crypto");
++  const destination = process.env.VIBES_PASEO_GRAPH_FILE;
++  const sourceRoot = path.resolve(projectRoot, "../..");
++  const previousHook = config.serializer.experimentalSerializerHook;
++  const relative = (value) => path.relative(sourceRoot, value).split(path.sep).join("/");
++  config.serializer.experimentalSerializerHook = (graph, delta) => {
++    previousHook?.(graph, delta);
++    if (graph.transformOptions.platform !== "web") return;
++    const record = {
++      schemaVersion: 1,
++      platform: "web",
++      entries: [...graph.entryPoints].map(relative).sort(),
++      modules: [...graph.dependencies.values()].map((module) => ({
++        path: relative(module.path),
++        sourceSha256: crypto.createHash("sha256").update(module.getSource()).digest("hex"),
++        dependencies: [...module.dependencies.values()].map((dependency) => ({
++          path: relative(dependency.absolutePath),
++          import: dependency.data.name,
++          asyncType: dependency.data.data.asyncType,
++          optional: dependency.data.data.isOptional === true,
++        })),
++      })).sort((a, b) => a.path.localeCompare(b.path)),
++    };
++    const records = fs.existsSync(destination) ? JSON.parse(fs.readFileSync(destination, "utf8")) : [];
++    records.push(record);
++    fs.writeFileSync(destination, JSON.stringify(records, null, 2) + "\n");
++  };
++}
++
+ module.exports = config;

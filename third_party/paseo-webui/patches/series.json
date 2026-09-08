@@ -60,5 +60,11 @@
         ]
       }
     ]
-  }
+  },
+  "measurement": [
+    {
+      "path": "third_party/paseo-webui/patches/graph-capture.patch",
+      "sha256": "179bd76ccd60bacf53f3e160406083264cb92b5402a2c7d390ef832977224467"
+    }
+  ]
 }

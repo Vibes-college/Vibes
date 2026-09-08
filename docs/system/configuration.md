@@ -23,7 +23,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: '38f782322af3275b4edf6c50a1b335220094c430611cb2deafa9b03378ce4fd7'
+code-revision: '1cd745dc8ed2d35c4d7d6abb8901d41198bd483732c9ff1f07180a0f9dccf5f9'
 ---
 
 # 配置和环境变量
@@ -69,7 +69,7 @@ Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、rem
 | `GITHUB_TOKEN`                                  | GitHub Actions 临时提供 | CI 读取代码所需的平台身份；普通检查授予 `contents: read`，发布job另有 `deployments: write`；无需手填 |
 | `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | Wrangler 自动部署身份   | Token仅放GitHub production环境secret；account由固定releaseTarget提供；本机OAuth用于阶段预览          |
 
-`PASEO_PROBE_URL`仅供`tests/paseo-mount.spec.ts`选择显式构建的本机G1实验daemon，只允许HTTP localhost/127.0.0.1及端口；不提供时跳过该实验，不改变正常网站测试地址。准备步骤及边界见[实验构建](checks-and-release.md#paseo实验构建边界)。
+`PASEO_BASELINE_URL`供`tests/paseo-baseline.spec.ts`记录同版原始B0首次资源请求。`PASEO_PROBE_URL`仅供`tests/paseo-mount.spec.ts`选择显式构建的本机G1实验daemon，只允许HTTP localhost/127.0.0.1及端口；不提供时跳过该实验，不改变正常网站测试地址。准备步骤及边界见[实验构建](checks-and-release.md#paseo实验构建边界)。
 
 本地与CI均以1个worker串行运行Playwright Chromium和WebKit，包括reactions.spec.ts的分章评价加载与保存回归；按实际环境报告结果。生产发布由GitHub检查工作流负责，不再配置第二套Cloudflare Git自动发布，以免抢先上线或重复构建。
 

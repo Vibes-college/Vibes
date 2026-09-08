@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'fa4049a74ec7e1d939cd05de0e69a576f387d94e0752b9842f8abab1e91e527e'
+code-revision: '1c156e0519501aaca6751e47bff6262da907c95a34d5cb359ca55d42f267378d'
 ---
 
 # 常量、规则表与正则
@@ -47,7 +47,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 
 ## 检查与运行规则
 
-Playwright清单包含独立G1挂载探针，只有显式提供本机实验地址才执行；普通验证中的跳过不算Paseo验收。步骤见[实验构建](checks-and-release.md#paseo实验构建边界)。
+Playwright清单包含独立B0请求盘点和G1挂载探针，只有显式提供本机实验地址才执行；普通验证中的跳过不算Paseo验收。步骤见[实验构建](checks-and-release.md#paseo实验构建边界)。
 
 | 名称 / 规则     | 当前值或行为                                                                                                     | 定义位置                                                                     |
 | --------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
