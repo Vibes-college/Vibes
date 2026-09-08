@@ -370,6 +370,9 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     element.addEventListener(
       'timeupdate',
       () => {
+        // A native seek can resume after seeked without another play/playing event.
+        // Native user play restores wanted before normal progress updates.
+        if (!wanted && !element.paused) pause();
         const current = cues.findLast((cue) => Number(cue.dataset.mediaCue) <= element.currentTime);
         cues.forEach((cue) => cue.toggleAttribute('data-current', cue === current));
       },

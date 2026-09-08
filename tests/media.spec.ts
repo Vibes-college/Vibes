@@ -76,6 +76,36 @@ test('native audio controls can pause and resume after custom startup', async ({
     .toBeGreaterThan(manualCount);
   await audio.evaluate((node) => {
     const element = node as HTMLAudioElement;
+    const events: unknown[] = [];
+    const record = (type: string) => {
+      events.push({
+        type,
+        at: performance.now(),
+        paused: element.paused,
+        seeking: element.seeking,
+        time: element.currentTime,
+        button: document.querySelector('[data-media-toggle]')?.getAttribute('aria-pressed'),
+      });
+      element.dataset.nativeSeekTrace = JSON.stringify(events);
+    };
+    for (const type of [
+      'play',
+      'playing',
+      'pause',
+      'seeking',
+      'seeked',
+      'canplay',
+      'canplaythrough',
+      'loadeddata',
+      'waiting',
+      'timeupdate',
+    ])
+      for (const capture of [true, false])
+        element.addEventListener(
+          type,
+          () => record(`${type}:${capture ? 'capture' : 'bubble'}`),
+          capture,
+        );
     const pauseDuringSeek = () => {
       if (element.currentTime < 60) return;
       element.removeEventListener('seeking', pauseDuringSeek);
@@ -85,19 +115,26 @@ test('native audio controls can pause and resume after custom startup', async ({
     };
     element.addEventListener('seeking', pauseDuringSeek);
   });
-  await page.locator('.media-tools > summary').click();
-  await page.locator('[data-media-seek="60"]').click();
-  await expect(audio).toHaveAttribute('data-native-pause-during-seek', 'true');
-  await expect(audio).toHaveJSProperty('seeking', false);
-  await expect(audio).toHaveJSProperty('paused', true);
-  await expect(page.locator('[data-media-toggle]')).toHaveAttribute('aria-pressed', 'false');
-  await page.locator('.media-tools > summary').click();
-  await expectSettledPause(audio);
-  await nativePlay();
-  await expect(audio).toHaveJSProperty('paused', false);
-  await expect
-    .poll(() => audio.evaluate((el) => (el as HTMLAudioElement).currentTime))
-    .toBeGreaterThan(60);
+  try {
+    await page.locator('.media-tools > summary').click();
+    await page.locator('[data-media-seek="60"]').click();
+    await expect(audio).toHaveAttribute('data-native-pause-during-seek', 'true');
+    await expect(audio).toHaveJSProperty('seeking', false);
+    await expect(audio).toHaveJSProperty('paused', true);
+    await expect(page.locator('[data-media-toggle]')).toHaveAttribute('aria-pressed', 'false');
+    await page.locator('.media-tools > summary').click();
+    await expectSettledPause(audio);
+    await nativePlay();
+    await expect(audio).toHaveJSProperty('paused', false);
+    await expect
+      .poll(() => audio.evaluate((el) => (el as HTMLAudioElement).currentTime))
+      .toBeGreaterThan(60);
+  } finally {
+    await test.info().attach('native-audio-seek-events', {
+      body: (await audio.getAttribute('data-native-seek-trace')) || '[]',
+      contentType: 'application/json',
+    });
+  }
   await page.goto('/zh/works/lora/');
 });
 
