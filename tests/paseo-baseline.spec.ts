@@ -1,5 +1,5 @@
 import { test, expect } from './browser-test.ts';
-import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 
@@ -65,7 +65,12 @@ test('record the preserved standalone B0 initial request inventory', async ({ pa
   const target = join('resources/evidence/012-paseo-webui-loading/baseline', testInfo.project.name);
   mkdirSync(target, { recursive: true });
   writeFileSync(
-    join(target, 'initial-requests.json'),
+    join(
+      target,
+      existsSync(join(target, 'initial-requests.json'))
+        ? `initial-requests-${Date.now()}.json`
+        : 'initial-requests.json',
+    ),
     JSON.stringify(
       {
         schemaVersion: 1,

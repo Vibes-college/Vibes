@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "source": "9400a49af670fdb5db4af58e73f8df98588dbea9",
+  "lockSha256": "0e8d199c6c1b4f6ed99cc0cf524bb589602d0996466ef80e3a4ec62f29d77e8f",
+  "manifestSha256": "81117d30abac58c87b6117c03834f90ce12cca071c5aeceadb08dde02f38a4cd",
+  "observedRequestsSha256": "421de3870638ca0b77629cf918c82bd863d50b3d1417aa01d50511cd8185735a",
+  "totalScriptGzipBytes": 4690481,
+  "initialScriptPaths": [
+    "_expo/static/js/web/index-43a07b99db98101d53d1836e3b42f3d7.js",
+    "_expo/static/js/web/indexeddb-attachment-store-6fc4ec740eb6299f89b7022549c5a970.js"
+  ],
+  "initialScriptGzipBytes": 4687382,
+  "candidateInitialGzipTarget": 2343691,
+  "candidateTotalGzipMaximum": 4690481,
+  "additionalResearchTarget": 700000,
+  "targetIsObservedPass": false,
+  "preservedMainLimits": {
+    "ordinaryScriptGzip": 21000,
+    "mdxScriptGzip": 150000,
+    "mediaScriptGzip": 16000,
+    "homepageGzip": 40000,
+    "interactiveSourceBytes": 12000,
+    "imageBytes": 204800
+  }
+}

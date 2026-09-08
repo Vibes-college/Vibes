@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "status": "prepared-not-measured",
+  "upstreamCommit": "9400a49af670fdb5db4af58e73f8df98588dbea9",
+  "lockSha256": "0e8d199c6c1b4f6ed99cc0cf524bb589602d0996466ef80e3a4ec62f29d77e8f",
+  "protocol": "AgentStreamEventPayloadSchema from fixed built @getpaseo/protocol 0.7.2",
+  "profiles": {
+    "B0": {
+      "host": false,
+      "lazy": [],
+      "trimmed": false,
+      "renderingPatch": false
+    },
+    "H": {
+      "host": true,
+      "lazy": [],
+      "trimmed": false,
+      "renderingPatch": false
+    },
+    "A1": {
+      "host": true,
+      "lazy": ["mermaid"],
+      "trimmed": false,
+      "renderingPatch": false
+    },
+    "A2": {
+      "host": true,
+      "lazy": ["terminal"],
+      "trimmed": false,
+      "renderingPatch": false
+    },
+    "A3": {
+      "host": true,
+      "lazy": ["editor"],
+      "trimmed": false,
+      "renderingPatch": false
+    },
+    "A4": {
+      "host": true,
+      "lazy": ["syntax"],
+      "trimmed": false,
+      "renderingPatch": false
+    },
+    "A5": {
+      "host": true,
+      "lazy": ["languages"],
+      "trimmed": false,
+      "renderingPatch": false
+    },
+    "A6": {
+      "host": true,
+      "lazy": ["icons"],
+      "trimmed": false,
+      "renderingPatch": false
+    },
+    "A": {
+      "host": true,
+      "lazy": ["mermaid", "terminal", "editor", "syntax", "languages", "icons"],
+      "trimmed": false,
+      "renderingPatch": false
+    },
+    "B": {
+      "host": true,
+      "lazy": ["mermaid", "terminal", "editor", "syntax", "languages", "icons"],
+      "trimmed": true,
+      "renderingPatch": false
+    },
+    "A+P": {
+      "host": true,
+      "lazy": ["mermaid", "terminal", "editor", "syntax", "languages", "icons"],
+      "trimmed": false,
+      "renderingPatch": true
+    },
+    "B+P": {
+      "host": true,
+      "lazy": ["mermaid", "terminal", "editor", "syntax", "languages", "icons"],
+      "trimmed": true,
+      "renderingPatch": true
+    }
+  },
+  "sampling": {
+    "coldPerScenario": 10,
+    "warmPerScenario": 20,
+    "pairingScenarios": ["unpaired", "paired"],
+    "workers": 1,
+    "randomSeed": 120072,
+    "openTimeoutMs": 120000,
+    "recoveryPerCandidate": 100,
+    "minimumAutomaticRecovery": 99,
+    "disconnectAndForgetPerCandidate": 20,
+    "resourceCycles": 100,
+    "lunaPerCandidate": 3,
+    "iphoneSeconds": [10, 60, 300, 900],
+    "iphoneRepeatsPerCandidate": 3,
+    "coldCache": "New persistent profile; empty HTTP cache and storage, then apply only the selected pairing snapshot.",
+    "warmCache": "Reuse the paired/unpaired profile after one untimed successful warmup; report observed cache hits.",
+    "metrics": "Click-to-operable; optional first-use separate. Model/provider wait separate. Actual encoded body bytes and per-file gzip both retained."
+  },
+  "inputs": [
+    {
+      "id": "W0",
+      "bytes": 14,
+      "sha256": "d6053dda260da778dcad98434c1a672afd317805d1079b735aa87943b454e6cf"
+    },
+    {
+      "id": "W1",
+      "bytes": 1181073,
+      "sha256": "c7ba36a0cad3cbdf5fe5dfa5f95ede7afd305ef27611dc949a95850f5a268a93"
+    },
+    {
+      "id": "W2",
+      "bytes": 204092,
+      "sha256": "24295d9b18b855302d06bcd702ac810050ed3f27993596fa6991235ce14d6c0f"
+    },
+    {
+      "id": "W3",
+      "bytes": 609332,
+      "sha256": "80ddd4216a0940180fe8df5c9cfa88df1fe855c79ab29bf5bc80a7b02082e4fa"
+    },
+    {
+      "id": "W4",
+      "bytes": 1148494,
+      "sha256": "8c65910dedf5c6a49e528992e172dd9a8d6b88e9e2fafd01d7c76666eac24a23"
+    },
+    {
+      "id": "W5",
+      "bytes": 415070,
+      "sha256": "7de7811c2f5f01a2bf5160a1b644c49d3f5cd87cc01776be09f14d60a5bc7815"
+    }
+  ],
+  "sampleOrderSha256": "e78249d6ca244392dbd065313b9aec3d33ed618d30e938cc7dea7d6c82d8c55d"
+}
