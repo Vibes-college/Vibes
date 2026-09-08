@@ -31,7 +31,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '2ef056a4062c52b9585065920085597a3330692a9540ed0d60846cbc3dc54b6b'
+code-revision: '890ebd4f420adedec9bdbeda69e2f5d37116273b87ff72a48032053467fd3090'
 ---
 
 # 功能名：检查与发布网站
@@ -82,7 +82,7 @@ flowchart TD
 - 构建、容量和本地测试：`scripts/build.ts`、`scripts/optimize-images.ts`、`scripts/budget.ts`、`scripts/budget-policy.ts`、`scripts/asset-sizes.ts`、`scripts/test-e2e.ts`、`scripts/database.ts`、`scripts/local-tools.ts`、`playwright.config.ts`、`wrangler.local.jsonc`。
 - 来源与静态元数据：`src/config/site.ts`、`astro.config.mjs`、`src/layouts/Layout.astro`、`src/pages/sitemap.xml.ts`、`src/pages/robots.txt.ts`；测试D1并非网站数据源，见[数据模型](../system/content-model.md)。
 
-构建先把public/images中超过200KB的栅格图片生成到dist的WebP响应式变体和manifest，再为本地图片补充srcset；原始文件不被普通build改写。预算分别检查公共脚本、独立延后媒体模块、每篇MDX的完整额外模块和优化图片最大输出，包含延迟加载；媒体文件在内容校验时核对实际大小及数据。通过体积门槛不等于组件已在真机验收，具体限制见[规则](../system/rules.md)。
+构建先把public/images中超过200KB的栅格图片生成到dist的WebP响应式变体和manifest，再为本地图片补充srcset；随后将固定2048素材打包为自包含沙盒模板，并生成全页共用的精确CSP脚本摘要；原始文件不被普通build改写。预算分别检查公共脚本、独立延后媒体模块、每篇MDX的完整额外模块和优化图片最大输出，包含延迟加载；媒体文件在内容校验时核对实际大小及数据。通过体积门槛不等于组件已在真机验收，具体限制见[规则](../system/rules.md)。
 
 ## 验收标准
 

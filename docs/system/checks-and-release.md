@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '923139c6e507e8a09bc4208873dca41a89130c27a95ac8f9bb40ea17ed6cef05'
+code-revision: 'c25e584657b00370a8bc44984470b1c72a8393f7268d9bef248621f10d08d116'
 ---
 
 # 检查与发布
@@ -131,15 +131,15 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 
 `npm run media:prepare -- <image|video|audio> <本地输入> <新id> [--start 秒] [--seconds 秒]`输出到public/media/<id>，已有目录拒绝覆盖。视频产生静态海报、短静音预览及完整转码；音频产生短试听、完整转码及真实波形；图片产生受限WebP尺寸。需要本机FFmpeg/ffprobe，使用现有Sharp，不自动安装依赖。清单记录输入摘要、处理参数与输出大小，原始输入保持不变；AI仍须填写作品来源/许可、文案和展示选择。验证命令及维护路径见[内容维护](../features/content-maintenance.md)。
 
-content:validate核对媒体结构、引用、字节及真实数值；budget另报告mediaJavascriptGzip，保留公共脚本门槛。tests/media.spec.ts覆盖三个浏览器的延迟加载、章节、失败重试、图库、数据、搜索替换与无JS；外站响应在自动化中隔离，实际第三方播放须用内置浏览器另验，不能将测试桩当作原站证据。
+content:validate核对媒体结构、引用、字节及真实数值；budget另报告mediaJavascriptGzip，保留公共脚本门槛。tests/media.spec.ts覆盖三个浏览器项目的延迟加载、章节、跳转暂停、原生播放/暂停与页面按钮同步、慢章节补充下载取消、失败重试、图库、数据、搜索替换与无JS；外站响应在自动化中隔离，实际第三方播放须用内置浏览器另验，不能将测试桩当作原站证据。
 
 ## 浏览器测试
 
 本地与CI使用同一配置和测试文件。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
 
-测试页面关闭前等待静态资源传输结束，10秒内仍未空闲即失败；这是对Wrangler本地代理中断响应会退出问题的防护，不重试测试或吞掉错误。公共fixture见tests/browser-test.ts。
+媒体测试完成播放、暂停和历史断言后，先通过正常页面导航退出播放器，释放可能仍保持连接的原生下载。测试页面关闭前等待静态资源传输结束，10秒内仍未空闲即失败；这是对Wrangler本地代理中断响应会退出问题的防护，不重试测试或吞掉错误。公共fixture见tests/browser-test.ts。
 
-手机项目包含Chromium与WebKit设备模拟，包含触摸横滑和320px列表/详情检查，不代表真实iPhone Safari通过。媒体测试附件记录首次/同会话缓存访问的DOMContentLoaded、首屏绘制、海报观测和点击到真实视频首帧；单次本机样本不当作公网性能，浏览器不支持的绘制指标保留null。导航缓存测试使用隔离空持久profile验证缓存复用，桌面项目另等待真实60秒TTL验证过期后读取。ego-browser仅在有视觉或体验验收目的时按需使用，不是自动化E2E前提。`npx playwright test --headed`可查看测试过程，运行前先构建。
+手机项目包含Chromium与WebKit设备模拟，包含触摸横滑和320px列表/详情检查，不代表真实iPhone Safari通过。原生音频章节测试在成功或失败时均附捕获/冒泡阶段的媒体事件、进度及按钮状态，便于核对异步暂停。媒体测试附件记录首次/同会话缓存访问的DOMContentLoaded、首屏绘制、海报观测和点击到真实视频首帧；单次本机样本不当作公网性能，浏览器不支持的绘制指标保留null。导航缓存测试使用隔离空持久profile验证缓存复用，桌面项目另等待真实60秒TTL验证过期后读取。ego-browser仅在有视觉或体验验收目的时按需使用，不是自动化E2E前提。`npx playwright test --headed`可查看测试过程，运行前先构建。
 
 ## 数据库和部署边界
 
@@ -163,6 +163,8 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 英文发布前须核对全文再记录sourceRevision；原文修改使旧译文标待复核，更新摘要前必须再次审核。详细字段见[内容维护](../features/content-maintenance.md)。
 
 `npm run release:restore -- <version-id>`恢复本地已记录的生产版本；记录和门槛见[CI](checks-and-release.md)。不能传任意域名、账户或合成内容。
+
+构建中的scripts/sandbox-game.ts只打包已登记2048模板及其固定CSS/JS，并将确切可执行字节交给CSP摘要流程；旧模板地址保留；64KiB超限、模板引用改变、额外脚本/样式或嵌入闭合标签均使构建失败。tests/unit/sandbox-game.test.ts检查字节保真与拒绝边界；tests/media.spec.ts验证真实站内切换、阻断沙盒子资源仍可操作、退出重开，以及旧CSP缺少摘要时完整刷新恢复。最终域名的浏览器网络策略可能不同于预览，上线验收须实际操作游戏。
 
 ## 源码与说明同步检查
 

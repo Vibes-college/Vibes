@@ -27,9 +27,9 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
   let generation = 0;
   let attached = false;
   let wanted = false;
-  let ownedPause = false;
   let disposed = false;
   let pendingSeek: number | undefined;
+  let pausedSeek = false;
   let seekRequest: AbortController | undefined;
   let objectUrl: string | undefined;
   let failedSources = 0;
@@ -89,6 +89,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
   }
   function failed() {
     wanted = false;
+    pausedSeek = false;
     controller.pending = false;
     controller.manual = false;
     controller.userPaused = true;
@@ -114,6 +115,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
       announceManual();
     } else controller.manual = false;
     wanted = true;
+    pausedSeek = false;
     controller.pending = true;
     const ticket = ++generation;
     status.textContent = '';
@@ -145,6 +147,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     }
   }
   function pause(user = false) {
+    pausedSeek ||= Boolean(element?.seeking);
     generation++;
     seekRequest?.abort();
     seekRequest = undefined;
@@ -153,7 +156,6 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     if (user) controller.userPaused = true;
     controller.manual = false;
     if (element && !element.paused) {
-      ownedPause = true;
       element.pause();
     }
     if (animated && image && image.getAttribute('src') !== poster) {
@@ -167,6 +169,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     if (disposed) return;
     pause();
     disposed = true;
+    pausedSeek = false;
     lifetime.abort();
     pageSignal.removeEventListener('abort', dispose);
     if (element) {
@@ -211,7 +214,17 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
           pause();
           return;
         }
+        // Media events can arrive after play() was already cancelled by pause().
+        if (element.paused) return;
+        if (!wanted && pausedSeek) {
+          pause();
+          return;
+        }
+        // Native controls do not expose their pointer/keyboard events to page JS.
+        // Outside a cancelled seek, their play event is the explicit new intent.
+        if (!wanted && element.controls && !element.paused) controller.manual = true;
         if (controller.manual) {
+          pausedSeek = false;
           controller.userPaused = false;
           wanted = true;
           announceManual();
@@ -222,6 +235,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     element.addEventListener(
       'playing',
       () => {
+        if (element.paused) return;
         if (!wanted || !alive()) {
           pause();
           return;
@@ -235,14 +249,10 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     element.addEventListener(
       'pause',
       () => {
-        if (ownedPause) {
-          ownedPause = false;
-          return;
-        }
-        if (!element.ended) controller.userPaused = true;
-        wanted = false;
-        controller.manual = false;
-        display(false);
+        // Ignore an already-handled pause or a queued source-reset event after
+        // playback has resumed. A flag could otherwise swallow the next native pause.
+        if (!element.paused || !wanted) return;
+        pause(!element.ended);
         root.dispatchEvent(new CustomEvent('media:idle', { bubbles: true }));
       },
       { signal },
@@ -251,6 +261,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
       'ended',
       () => {
         wanted = false;
+        pausedSeek = false;
         controller.manual = false;
         controller.userPaused = true;
         display(false);
@@ -312,7 +323,6 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
           if (active.signal.aborted || !alive()) return;
           objectUrl = URL.createObjectURL(new Blob(chunks, { type: source.type }));
           seekRequest = undefined;
-          ownedPause = !element.paused;
           const ticket = ++generation;
           controller.pending = true;
           element.src = objectUrl;
@@ -341,7 +351,18 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     element.addEventListener(
       'canplay',
       () => {
-        void seekToPending();
+        if (!wanted) pause();
+        else void seekToPending();
+      },
+      { signal },
+    );
+    // WebKit may restore native playback as an in-flight seek settles. Reapply
+    // the user's pause intent instead of waiting for a later `playing` event.
+    element.addEventListener(
+      'seeked',
+      () => {
+        if (!wanted) pause();
+        if (!element.seeking) pausedSeek = false;
       },
       { signal },
     );
@@ -349,6 +370,9 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     element.addEventListener(
       'timeupdate',
       () => {
+        // A native seek can resume after seeked without another play/playing event.
+        // Native user play restores wanted before normal progress updates.
+        if (!wanted && !element.paused) pause();
         const current = cues.findLast((cue) => Number(cue.dataset.mediaCue) <= element.currentTime);
         cues.forEach((cue) => cue.toggleAttribute('data-current', cue === current));
       },

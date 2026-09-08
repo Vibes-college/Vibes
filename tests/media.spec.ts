@@ -1,5 +1,7 @@
 import { test, expect } from './browser-test.ts';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 
 // Exercise decoding/lifecycle with a licensed local stream; external playback is manual QA.
 // Apply only to the remote-video cases so the cold/cached timing test keeps real HTTP caching.
@@ -12,6 +14,255 @@ async function useLocalVideoTransport(page: Page) {
 const detail = (kind: string, locale = 'zh') =>
   `/${locale}/works/${({ video: 'sintel-trailer', audio: 'carefree', loop: 'yaoda-football', gallery: 'feature-visualization', chart: 'anscombe-quartet', demo: '2048-original' } as Record<string, string>)[kind]}/`;
 const mediaRequests = (url: string) => /\/media\/|\/_astro\/media[.-]/.test(url);
+
+async function expectSettledPause(media: Locator) {
+  await expect(media).toHaveJSProperty('seeking', false);
+  const samples = await media.evaluate(async (node) => {
+    const element = node as HTMLMediaElement;
+    const states = [];
+    // Observe the queued native events after seeked, including delayed resume.
+    for (let sample = 0; sample < 20; sample++) {
+      states.push({ paused: element.paused, seeking: element.seeking, time: element.currentTime });
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
+    return states;
+  });
+  await test.info().attach('paused-seek-settlement', {
+    body: JSON.stringify(samples),
+    contentType: 'application/json',
+  });
+  expect(samples.every((state) => state.paused)).toBe(true);
+}
+
+test('native audio controls can pause and resume after custom startup', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto(detail('audio'));
+  const audio = page.locator('[data-context=detail] audio');
+  await page.evaluate(() => {
+    document.documentElement.dataset.manualMediaCount = '0';
+    document.addEventListener('media:manual', () => {
+      document.documentElement.dataset.manualMediaCount = String(
+        Number(document.documentElement.dataset.manualMediaCount) + 1,
+      );
+    });
+  });
+  await page.locator('[data-media-toggle]').click();
+  await expect
+    .poll(() => audio.evaluate((el) => (el as HTMLAudioElement).currentTime))
+    .toBeGreaterThan(0);
+  // The platform's own left-hand play control, not the Vibes overlay button.
+  const nativePlay = async () => {
+    await audio.scrollIntoViewIfNeeded();
+    const box = await audio.boundingBox();
+    expect(box).not.toBeNull();
+    // WebKit places a 15-second rewind control before play; Chromium starts with play.
+    await page.mouse.click(box!.x + (browserName === 'webkit' ? 50 : 24), box!.y + box!.height / 2);
+  };
+  await nativePlay();
+  await expect(audio).toHaveJSProperty('paused', true);
+  await expect(page.locator('[data-media-toggle]')).toHaveAttribute('aria-pressed', 'false');
+  const pausedAt = await audio.evaluate((el) => (el as HTMLAudioElement).currentTime);
+  const manualCount = Number(await page.locator('html').getAttribute('data-manual-media-count'));
+  await nativePlay();
+  await expect(audio).toHaveJSProperty('paused', false);
+  await expect
+    .poll(() => audio.evaluate((el) => (el as HTMLAudioElement).currentTime))
+    .toBeGreaterThan(pausedAt + 0.01);
+  await expect(page.locator('[data-media-toggle]')).toHaveAttribute('aria-pressed', 'true');
+  await expect
+    .poll(async () => Number(await page.locator('html').getAttribute('data-manual-media-count')))
+    .toBeGreaterThan(manualCount);
+  await audio.evaluate((node) => {
+    const element = node as HTMLAudioElement;
+    const events: unknown[] = [];
+    const record = (type: string) => {
+      events.push({
+        type,
+        at: performance.now(),
+        paused: element.paused,
+        seeking: element.seeking,
+        time: element.currentTime,
+        button: document.querySelector('[data-media-toggle]')?.getAttribute('aria-pressed'),
+      });
+      element.dataset.nativeSeekTrace = JSON.stringify(events);
+    };
+    for (const type of [
+      'play',
+      'playing',
+      'pause',
+      'seeking',
+      'seeked',
+      'canplay',
+      'canplaythrough',
+      'loadeddata',
+      'waiting',
+      'timeupdate',
+    ])
+      for (const capture of [true, false])
+        element.addEventListener(
+          type,
+          () => record(`${type}:${capture ? 'capture' : 'bubble'}`),
+          capture,
+        );
+    const pauseDuringSeek = () => {
+      if (element.currentTime < 60) return;
+      element.removeEventListener('seeking', pauseDuringSeek);
+      element.dataset.nativePauseDuringSeek = String(element.seeking);
+      // Exercise the native pause event path, without the Vibes button handler.
+      element.pause();
+    };
+    element.addEventListener('seeking', pauseDuringSeek);
+  });
+  try {
+    await page.locator('.media-tools > summary').click();
+    await page.locator('[data-media-seek="60"]').click();
+    await expect(audio).toHaveAttribute('data-native-pause-during-seek', 'true');
+    await expect(audio).toHaveJSProperty('seeking', false);
+    await expect(audio).toHaveJSProperty('paused', true);
+    await expect(page.locator('[data-media-toggle]')).toHaveAttribute('aria-pressed', 'false');
+    await page.locator('.media-tools > summary').click();
+    await expectSettledPause(audio);
+    await nativePlay();
+    await expect(audio).toHaveJSProperty('paused', false);
+    await expect
+      .poll(() => audio.evaluate((el) => (el as HTMLAudioElement).currentTime))
+      .toBeGreaterThan(60);
+  } finally {
+    await test.info().attach('native-audio-seek-events', {
+      body: (await audio.getAttribute('data-native-seek-trace')) || '[]',
+      contentType: 'application/json',
+    });
+  }
+  await page.goto('/zh/works/lora/');
+});
+
+test('native pause cancels a slow chapter download without late playback', async ({ page }) => {
+  await page.goto(detail('audio'));
+  const audio = page.locator('[data-context=detail] audio');
+  await page.locator('[data-media-toggle]').click();
+  await expect
+    .poll(() => audio.evaluate((el) => (el as HTMLAudioElement).currentTime))
+    .toBeGreaterThan(0);
+  // Model a host without byte ranges while keeping real media decoding/playback.
+  await audio.evaluate((el) =>
+    Object.defineProperty(el, 'seekable', {
+      configurable: true,
+      get: () => ({ length: 0 }),
+    }),
+  );
+  let requested = false;
+  let releaseDownload!: () => void;
+  const downloadGate = new Promise<void>((resolve) => {
+    releaseDownload = resolve;
+  });
+  await page.route('**/media/**', async (route) => {
+    if (route.request().resourceType() !== 'fetch') return route.continue();
+    requested = true;
+    const response = await route.fetch();
+    await downloadGate;
+    await route.fulfill({ response });
+  });
+  try {
+    await page.locator('.media-tools > summary').click();
+    await page.locator('[data-media-seek="60"]').click();
+    await expect.poll(() => requested).toBe(true);
+    await audio.evaluate((el) => (el as HTMLAudioElement).pause());
+    await expect(page.locator('[data-media-toggle]')).toHaveAttribute('aria-pressed', 'false');
+    releaseDownload();
+    await expectSettledPause(audio);
+    await expect(audio).not.toHaveAttribute('src', /^blob:/);
+    await expect(page.locator('[data-media-panel]')).not.toHaveClass(/is-loading/);
+  } finally {
+    releaseDownload();
+    await page.goto('/zh/works/lora/');
+  }
+});
+
+test('pause during a pending chapter seek stays paused when native seeking settles', async ({
+  page,
+}) => {
+  await page.goto(detail('video'));
+  const video = page.locator('[data-context=detail] video');
+  await page.locator('[data-media-toggle]').click();
+  await expect
+    .poll(() => video.evaluate((el) => (el as HTMLVideoElement).currentTime))
+    .toBeGreaterThan(0);
+  await video.evaluate((node) => {
+    const element = node as HTMLVideoElement;
+    const events: unknown[] = [];
+    const record = (type: string) => {
+      events.push({
+        type,
+        time: performance.now(),
+        paused: element.paused,
+        seeking: element.seeking,
+        currentTime: element.currentTime,
+      });
+      element.dataset.seekTrace = JSON.stringify(events);
+    };
+    for (const name of ['play', 'playing', 'pause', 'seeking', 'seeked', 'canplay'])
+      element.addEventListener(name, () => record(name));
+    const pauseDuringSeek = () => {
+      if (element.currentTime < 30) return;
+      element.removeEventListener('seeking', pauseDuringSeek);
+      element.dataset.pausedDuringSeek = String(element.seeking);
+      element
+        .closest('[data-media-panel]')!
+        .querySelector<HTMLButtonElement>('[data-media-toggle]')!
+        .click();
+      record('user-pause-during-seek');
+    };
+    element.addEventListener('seeking', pauseDuringSeek);
+  });
+  try {
+    await page.locator('.media-tools > summary').click();
+    await page.locator('[data-media-seek="30"]').first().click();
+    await expect(video).toHaveAttribute('data-paused-during-seek', 'true');
+    await expect(video).toHaveJSProperty('seeking', false);
+    await expect(video).toHaveJSProperty('paused', true);
+    await expectSettledPause(video);
+    await expect(page.locator('[data-media-toggle]')).toHaveAttribute('aria-pressed', 'false');
+  } finally {
+    await test.info().attach('native-media-seek-events', {
+      body: (await video.getAttribute('data-seek-trace')) || '[]',
+      contentType: 'application/json',
+    });
+  }
+  // Leaving the player releases a paused native download before the test context closes.
+  await page.goto('/zh/works/lora/');
+});
+
+test('game recovers with a full reload when an older document lacks its CSP hash', async ({
+  page,
+}) => {
+  const hash = `'sha256-${createHash('sha256').update(readFileSync('public/media/2048/game.js')).digest('base64')}'`;
+  const path = '**/zh/works/2048-original/';
+  await page.route(path, async (route) => {
+    const response = await route.fetch();
+    const headers = response.headers();
+    expect(headers['content-security-policy']).toContain(hash);
+    headers['content-security-policy'] = headers['content-security-policy'].replace(hash, '');
+    await route.fulfill({ response, headers });
+  });
+  await page.goto(detail('demo'));
+  const firstLoad = await page.evaluate(() => performance.timeOrigin);
+  await page.locator('[data-media-launch]').click();
+  const refresh = page.getByRole('button', { name: '刷新重试', exact: true });
+  await expect(refresh).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('iframe')).toHaveCount(0);
+  await page.unroute(path);
+  await refresh.click();
+  await expect.poll(() => page.evaluate(() => performance.timeOrigin)).toBeGreaterThan(firstLoad);
+  await page.waitForLoadState('networkidle');
+  await page.locator('[data-media-launch]').click();
+  await expect(page.frameLocator('iframe').locator('.tile')).toHaveCount(2);
+  await expect(page.locator('[data-media-status]')).toBeEmpty();
+  await page.locator('[data-media-exit]').click();
+  await expect(page.locator('iframe')).toHaveCount(0);
+  await page.goto('/zh/works/lora/');
+});
 
 test('ordinary pages request no media and full video waits for click, supports chapters', async ({
   page,
@@ -39,11 +290,15 @@ test('ordinary pages request no media and full video waits for click, supports c
     .toBeGreaterThanOrEqual(30);
   await page.locator('[data-media-toggle]').click();
   await expect(video).toHaveJSProperty('paused', true);
+  await expectSettledPause(video);
   await page.locator('.read-down').click();
   await expect(video).toHaveJSProperty('paused', true);
   await page.goBack();
   await expect(page.locator('[data-media-panel]')).toBeVisible();
   await expect(video).toHaveJSProperty('paused', true);
+  // A paused full download may remain buffered; leave the player so its lifecycle
+  // releases the request before the shared local-Worker teardown drains traffic.
+  await page.goto('/zh/works/lora/');
 });
 
 test('search cards preserve navigation, manual audio is exclusive, and replacement releases players', async ({
@@ -146,16 +401,30 @@ test('registered game and real dataset only start on demand and exit cleans up',
 }) => {
   const requested: string[] = [];
   page.on('request', (request) => requested.push(request.url()));
-  await page.goto(detail('demo'));
+  await page.route('**/media/2048/game.{css,js}', (route) => route.abort());
+  await page.goto('/zh/');
+  await page.locator('#search').fill('2048');
+  await page.locator('[data-search-grid] a[href="/zh/works/2048-original/"]').first().click();
   await expect(page.locator('iframe')).toHaveCount(0);
+  expect(requested.some((url) => url.includes('/media/2048/game'))).toBe(false);
   await page.locator('[data-media-launch]').click();
   const game = page.frameLocator('iframe');
+  await expect(page.locator('iframe')).toHaveAttribute('sandbox', 'allow-scripts allow-popups');
   await expect(game.locator('.game-container')).toBeVisible();
+  await expect(game.locator('.game-container')).toHaveCSS('background-color', 'rgb(187, 173, 160)');
   await expect(game.locator('.tile')).toHaveCount(2);
+  await expect(page.locator('[data-media-status]')).toBeEmpty();
+  // Keep opaque srcdoc independent of browser-specific subresource permissions.
+  await expect(game.locator('script[src], link[rel="stylesheet"]')).toHaveCount(0);
+  expect(requested.some((url) => /\/media\/2048\/game\.(js|css)$/.test(url))).toBe(false);
   await game.locator('.game-container').click();
   await page.keyboard.press('ArrowLeft');
   await page.keyboard.press('ArrowUp');
   await expect.poll(() => game.locator('.tile').count()).toBeGreaterThan(2);
+  await page.locator('[data-media-exit]').click();
+  await expect(page.locator('iframe')).toHaveCount(0);
+  await page.locator('[data-media-launch]').click();
+  await expect(game.locator('.tile')).toHaveCount(2);
   await page.locator('[data-media-exit]').click();
   await expect(page.locator('iframe')).toHaveCount(0);
   await page.goto(detail('chart'));

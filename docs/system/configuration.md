@@ -54,7 +54,7 @@ code-revision: 'a310103fe8f339b50f1e2d17e4588e4ef41d3ad705b3e11e4b1e5a029c1d9257
 
 Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，普通Markdown页面不加载React。@astrojs/mdx与@astrojs/react分别提供MDX编译和React islands；react/react-dom仅在需要交互的岛上加载，@types/react及@types/react-dom用于类型检查，tsconfig.json使用react-jsx。Motion用于beUI组件动画，lucide-react提供其原版图标，clsx与tailwind-merge保留原版类合并行为；Tailwind与@tailwindcss/vite在构建期生成组件样式，不加载浏览器运行库，不导入全局Preflight，beUI入口仅扫描beUI组件及演示目录。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
 
-构建后scripts/content-security.ts扫描HTML中的内联可执行脚本，按精确内容补充dist/_headers的SHA256许可，支持从普通页面连续导航到互动文章；其他CSP指令保持public/_headers定义。Astro内置CSP当前不兼容ClientRouter，因此不同时开启两套策略；脚本不使用unsafe-inline。
+构建后scripts/content-security.ts扫描HTML中的内联可执行脚本，并接收固定2048打包模板的脚本摘要，按精确内容补充dist/_headers的SHA256许可，支持从普通页面连续导航到互动文章；其他CSP指令保持public/_headers定义。Astro内置CSP当前不兼容ClientRouter，因此不同时开启两套策略；脚本不使用unsafe-inline。
 
 ## 本地助手依赖与配置
 
@@ -112,6 +112,6 @@ Astro在公共布局启用ClientRouter，`prefetchAll:false`关闭全站自动�
 
 ## 作品媒体
 
-媒体和平台登记见src/config/media.ts及[媒体规则](rules.md#媒体加载与体积)。浏览器只在点击后创建YouTube、Spotify、B站或已核对原站的iframe；媒体下载、账号和地区限制由平台决定，无平台API密钥。音视频文件只从同源或指定来源加载，图表数据经有界GET读取；完整来源不提前挂到元素。2048从本站读取MIT源码模板与游戏脚本，以不允许同源访问的sandbox运行；其依赖计入媒体预算，不访问父页面或持久存储。
+媒体和平台登记见src/config/media.ts及[媒体规则](rules.md#媒体加载与体积)。浏览器只在点击后创建YouTube、Spotify、B站或已核对原站的iframe；媒体下载、账号和地区限制由平台决定，无平台API密钥。音视频文件只从同源或指定来源加载，图表数据经有界GET读取；完整来源不提前挂到元素。2048仅在点击后读取本站MIT源码模板，以不允许同源访问的sandbox运行。构建时scripts/sandbox-game.ts将固定游戏的CSS/JS内嵌到64KiB以内的game-bundled.txt，保留旧game.txt，脚本按精确SHA256加入所有页面共用的CSP；沙盒不再发起样式或脚本子请求，避免部分浏览器网络环境阻止不透明来源的资源访问。开发服务器仍读取原始素材。游戏脚本继续计入媒体预算一次，不访问父页面DOM或持久存储；仅向父页面报告初始化，父页面核对消息确实来自当前沙盒。5秒没有初始化信号会停止并提供完整刷新入口，恢复旧页面继承CSP不含新摘要的情况。
 
 ESLint仅对public/media/2048/game.js这一份带MIT署名的上游压缩分发文件豁免本项目风格规则；自有媒体代码仍完整检查，原始来源版本见同目录SOURCE.txt，实际游戏操作与总脚本预算仍有测试。
