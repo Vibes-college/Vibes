@@ -17,7 +17,6 @@ code-sources:
     '.prettierrc.json',
     '.prettierignore',
     '.gitignore',
-    '.gitattributes',
     '.dev.vars.example',
     '.openai/hosting.json',
     'src/config/site.ts',
