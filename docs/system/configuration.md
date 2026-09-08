@@ -17,6 +17,7 @@ code-sources:
     '.prettierrc.json',
     '.prettierignore',
     '.gitignore',
+    '.gitattributes',
     '.dev.vars.example',
     '.openai/hosting.json',
     'src/config/site.ts',
@@ -48,6 +49,8 @@ code-revision: '38f782322af3275b4edf6c50a1b335220094c430611cb2deafa9b03378ce4fd7
 | 页面标准域名        | `SITE_URL`，本地默认127.0.0.1:4322                              | `src/config/site.ts`统一供Astro、布局、sitemap和robots使用          |
 | 正式域名            | `vibes.college`，用户已于2026-09-06授权                         | wrangler.jsonc的Custom Domain；已转接上线；发布与恢复结果见交付说明 |
 | 缓存与安全响应头    | 精确脚本哈希、拒绝被嵌入、允许登记媒体/iframe、构建资源缓存一年 | `public/_headers`                                                   |
+
+`.gitattributes`仅对Paseo补丁文本允许统一diff空白上下文行的尾空格；源码补丁仍在构建时用`git apply --whitespace=error-all`检查实际新增代码，不放宽源码空白检查。
 
 ## Markdown与排版依赖
 

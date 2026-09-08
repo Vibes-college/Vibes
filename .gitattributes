@@ -1,0 +1,3 @@
+# Unified diff context lines contain a required leading space, including blank lines.
+# The build applies these patches with --whitespace=error-all to check actual source edits.
+third_party/paseo-webui/patches/*.patch whitespace=-blank-at-eol
