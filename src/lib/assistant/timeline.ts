@@ -1,4 +1,4 @@
-import { splitContext } from './labels.ts';
+import { splitContext, labels, type Labels } from './labels.ts';
 import type { ThreadMessageLike } from '@assistant-ui/react';
 import type { FetchAgentTimelineResponseMessage } from '@getpaseo/protocol/messages';
 export type TimelinePage = FetchAgentTimelineResponseMessage['payload'];
@@ -13,9 +13,14 @@ export function preview(value: unknown, limit = 16_000): string {
   const text = typeof value === 'string' ? value : (JSON.stringify(value, null, 2) ?? '');
   return text.length > limit ? text.slice(0, limit) + '\n…' : text;
 }
-export function toMessages(rows: readonly TimelineRow[], running: boolean): ThreadMessageLike[] {
+export function toMessages(
+  rows: readonly TimelineRow[],
+  running: boolean,
+  t: Labels = labels.en,
+): ThreadMessageLike[] {
   const messages: ThreadMessageLike[] = [];
   const tools = new Map<string, number>();
+  const calls = new Map<string, Set<number>>();
   let previous: TimelineRow | undefined;
   for (const row of rows) {
     const item = row.item;
@@ -59,8 +64,20 @@ export function toMessages(rows: readonly TimelineRow[], running: boolean): Thre
           status: { type: 'complete', reason: 'stop' },
         });
     } else if (item.type === 'tool_call') {
-      const toolKey = `${row.turnId ?? ''}:${item.callId}`;
-      const prior = tools.get(toolKey);
+      const callKey = `${row.provider}:${item.callId}`;
+      const toolKey = `${row.provider}:${row.turnId ?? ''}:${item.callId}`;
+      let prior = tools.get(toolKey);
+      // Codex can finish a yielded command after its turn was interrupted. Paseo then
+      // omits turnId; merge only an unambiguous call from the same provider.
+      const candidates = calls.get(callKey);
+      if (!row.turnId && item.status !== 'running')
+        prior = candidates?.size === 1 ? candidates.values().next().value : undefined;
+      const commandError =
+        item.detail.type === 'shell' &&
+        typeof item.detail.exitCode === 'number' &&
+        item.detail.exitCode !== 0
+          ? t.commandFailed.replace('{code}', String(item.detail.exitCode))
+          : preview(item.error ?? item.detail);
       const message: ThreadMessageLike = {
         id: prior === undefined ? id : messages[prior].id,
         role: 'assistant',
@@ -81,15 +98,17 @@ export function toMessages(rows: readonly TimelineRow[], running: boolean): Thre
           item.status === 'running'
             ? { type: 'running' }
             : item.status === 'failed'
-              ? { type: 'incomplete', reason: 'error', error: preview(item.error ?? item.detail) }
+              ? { type: 'incomplete', reason: 'error', error: commandError }
               : item.status === 'canceled'
                 ? { type: 'incomplete', reason: 'cancelled' }
                 : { type: 'complete', reason: 'stop' },
       };
-      if (prior === undefined) {
-        tools.set(toolKey, messages.length);
-        messages.push(message);
-      } else messages[prior] = message;
+      const index = prior ?? messages.length;
+      tools.set(toolKey, index);
+      if (!calls.has(callKey)) calls.set(callKey, new Set());
+      calls.get(callKey)!.add(index);
+      if (prior === undefined) messages.push(message);
+      else messages[prior] = message;
     } else if (item.type === 'error')
       messages.push({
         id,

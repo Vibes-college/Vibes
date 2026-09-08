@@ -23,7 +23,7 @@ code-sources:
     'tests/unit/assistant-recovery.test.ts',
     'tests/unit/assistant-diagnostics.test.ts',
   ]
-code-revision: '592b007c6acd11ad0bf51618ba4b274c3e615e42bc46b466b34c7ef91febc9d1'
+code-revision: 'd272e2d4730c784c65823d4cd799ecadba01f17d7f3fa59df08123b0734d4f9a'
 ---
 
 # 本地助手连接与状态
@@ -60,7 +60,7 @@ SDK负责实例内传输重连；外层仅在探活/连接失败后串行关闭�
 
 发送、创建、停止及审批同时只允许一个请求，运行/初始化/待审批时禁发。`operation-ledger.ts`在实际提交前写入sessionStorage的`vibes.local-assistant.operations.v1`，最多32个待确认项，仅含设备/会话/操作ID、类型和审批requestId，不含正文或重发payload；不会自动重放。收到RPC确认则删除；断线或超时保留并跨刷新核对：发送按user_message的messageId/clientMessageId、审批按原requestId已不再待处理、停止按权威非运行状态解除拦截。后两项只证明当前状态已核对，不证明是哪次操作造成的。创建超时没有充分证据自动核对，必须检查会话列表/电脑后明确解除本地拦截。所有操作未知时阻止后续操作；显式核对按钮不执行RPC、不标记业务成功。存储失败保留内存记录并提示刷新后的核对限制。
 
-工具仍按turn/callId更新原卡；完成、失败和取消来自真实事件，不以空闲推断任务完成。关闭面板与跨页导航不停止电脑任务。恢复、暂停、审批或发送超时均不扩大权限。
+工具按provider/turn/callId更新原卡；迟到终态缺失turnId时，仅在同provider/callId唯一对应时补回原卡，歧义不猜测。完成、失败和取消来自真实事件，不以空闲推断工具完成。shell退出码非零时显示本地化退出码提示，实际输出在工具详情中作有界预览，默认最多16000字符。停止调用官方cancelAgent，Paseo0.5.0的Codex路径发turn/interrupt并等待本轮settled，不逐一终止子进程；真实延迟写入验收确认本轮中断后子进程仍可能完成。因此UI显示“Agent本轮已中断”并提示到电脑核对，不承诺所有已启动命令停止。关闭面板与跨页导航不停止电脑任务。恢复、暂停、审批或发送超时均不扩大权限。
 
 审批以agentId和requestId绑定待审批，远端确认后刷新状态。工具审批支持allow/deny；已识别的question支持选项、多个问题、多选与自由文字，答案按问题header提交到updatedInput.answers。未知格式不猜答案，保留拒绝并提示到电脑处理；不调用assistant-ui的本地addToolResult来伪造远端批准。
 

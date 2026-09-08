@@ -399,13 +399,13 @@ export class AssistantDaemon {
       },
     });
   }
-  async append(agentId: string, item: TimelineRow['item']) {
+  async append(agentId: string, item: TimelineRow['item'], turnId: string | null = 'turn-1') {
     const rows = this.timelines.get(agentId) ?? [];
     const seq = rows.length;
     const row: TimelineRow = {
       provider: 'codex',
       item,
-      turnId: 'turn-1',
+      ...(turnId ? { turnId } : {}),
       timestamp: '2026-09-07T00:00:00Z',
       seqStart: seq,
       seqEnd: seq,
@@ -415,7 +415,7 @@ export class AssistantDaemon {
     this.timelines.set(agentId, [...rows, row]);
     await this.stream(
       agentId,
-      { type: 'timeline', provider: 'codex', item, turnId: 'turn-1' },
+      { type: 'timeline', provider: 'codex', item, ...(turnId ? { turnId } : {}) },
       seq,
     );
   }

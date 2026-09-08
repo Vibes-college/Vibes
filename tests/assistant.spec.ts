@@ -63,7 +63,10 @@ test('assistant loads only on demand and sends public work context through the e
   const last = daemon.requests.filter((m) => m.type === 'send_agent_message_request').at(-1)!;
   expect(last.text).toBe('再给一个例子');
   await page.getByRole('button', { name: '停止', exact: true }).click();
-  await expect(page.locator('#assistant-dialog header [role=status]')).toContainText('任务已停止');
+  await expect(page.locator('#assistant-dialog header [role=status]')).toContainText(
+    'Agent 本轮已中断',
+  );
+  await expect(page.getByText('已启动的命令可能仍在电脑运行', { exact: false })).toBeVisible();
   expect(daemon.failures).toEqual([]);
 });
 
@@ -134,7 +137,10 @@ test('real permission IDs support allow, deny, multiple choice and stop without 
     responses[2].response.behavior === 'allow' && responses[2].response.updatedInput,
   ).toMatchObject({ answers: { 范围: '界面, 实现', 输出: '简短说明' } });
   await page.getByRole('button', { name: '停止', exact: true }).click();
-  await expect(page.locator('#assistant-dialog header [role=status]')).toContainText('任务已停止');
+  await expect(page.locator('#assistant-dialog header [role=status]')).toContainText(
+    'Agent 本轮已中断',
+  );
+  await expect(page.getByText('已启动的命令可能仍在电脑运行', { exact: false })).toBeVisible();
   expect(daemon.failures).toEqual([]);
 });
 test('refresh, reconnect and navigation restore authoritative history and preserve session isolation', async ({
@@ -457,4 +463,39 @@ test('lost subscription confirmation and a resolved approval heal without repeat
   await expect(page.locator('#assistant-dialog header [role=status]')).toContainText('空闲');
   await expect(page.getByRole('button', { name: '发送', exact: true })).toBeEnabled();
   expect(daemon.requests.filter((m) => m.type === 'agent_permission_response')).toHaveLength(1);
+});
+
+test('late unscoped command results update one tool and explain actual exit failures', async ({
+  page,
+}) => {
+  const daemon = new AssistantDaemon();
+  await daemon.install(page);
+  await page.goto('/zh/');
+  await pair(page, daemon);
+  await choose(page);
+  const item = {
+    type: 'tool_call',
+    callId: 'late-shell',
+    name: 'shell',
+    status: 'running',
+    detail: { type: 'shell', command: 'npm test' },
+    error: null,
+  } as const;
+  await daemon.append('alpha', item);
+  await page.locator('[data-slot=tool-group-trigger]').click();
+  await expect(page.locator('[data-slot=tool-fallback-root]')).toHaveCount(1);
+  await daemon.append(
+    'alpha',
+    {
+      ...item,
+      status: 'failed',
+      detail: { ...item.detail, exitCode: 1, output: 'ERR_ASSERTION: expected 1, got 3' },
+      error: { message: 'Tool call failed' },
+    },
+    null,
+  );
+  await expect(page.locator('[data-slot=tool-fallback-root]')).toHaveCount(1);
+  await page.locator('[data-slot=tool-fallback-trigger]').click();
+  await expect(page.locator('[data-slot=tool-fallback-error]')).toContainText('退出码 1');
+  await expect(page.locator('[data-slot=tool-fallback-args]')).toContainText('ERR_ASSERTION');
 });

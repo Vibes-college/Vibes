@@ -356,3 +356,15 @@ E2E必须补齐以下故障时序，验证真实动作与数据而非只断言�
 独立审查59e96fb发现快照后重播旧状态、before失败滞留实时事件两个P2。修复将无序状态事件转换为有界权威重读，保留时间线seq归并，并在before失败时消费有效实时事件；两项复现已进入store单元回归。首次完整预览验证为修复主动中断，不能记作通过，最终SHA重新运行完整验证。
 
 4299ead完整浏览器检查为218通过、4项设备跳过、3项失败；三设备均来自新增审批丢回执用例误把审批解决当成任务结束。UI保留执行中/停止按钮符合真实agent状态，修正用例先断言执行中，再明确结束fixture任务后检查发送恢复，三设备针对性复核全部通过。产品代码未为此放宽门控。
+
+### 2026-09-08：真实 Luna 重任务与停止边界
+
+6af3c27完整verify通过119单元、221浏览器，4项按设备跳过；budget全部通过，完整助手650572字节gzip，相比原644514增加6058字节。Cloudflare同SHA阶段预览已上传并核对。以下真实验收发现的新修正仍需最终版本再验，不能把阶段通过扩大到后续改动。
+
+用户要求真实验证使用Luna，并扩大到更重、更多任务。在内置浏览器通过官方relay/真实Paseo0.5.0与Codex0.153.3，用gpt-5.6-luna完成隔离目录的多文件实现、初始5项测试失败到全部通过、6000条JSONL报告及独立核算、75秒长工具、真实审批拒绝/允许、待审批切会话及刷新恢复；拒绝时文件不存在，允许后内容正确。补充Playwright真实浏览器验证诊断下载（5758字节、25事件，build6af3c27），检查无配对、正文、目录及原始agentId，断开重连与忘记清理通过，390×844无横向溢出。初次只读smoke使用Astra；用户指定后真实模型任务均为Luna。
+
+用户截图中的第一条Tool call failed展开后是npm test的5项预设断言失败，exitCode1，命令已执行并返回完整输出；不是连接失败。后续Luna也遇到自己的shell脚本错误并修正。退出码存在时应直接显示命令退出码，保留原输出以供核对，不能把所有红色工具卡解释成传输故障。原先手机疑似浏览器.js失败仍无原始证据，不据此认定同一根因。
+
+真实停止任务为先写started、sleep120、再追加completed。UI中断本轮后变为空闲，但文件最终包含startedcompleted。读取已安装官方server源码确认Codex provider interrupt发turn/interrupt，agent-manager等待本轮settled；此路径不枚举或杀子进程。canonical历史同callId在06:52:37Z为running/turnId=codex-turn-3，06:54:37Z返回completed/exitCode0但turnId缺失。原UI按turn/callId分组导致旧运行卡残留。修正只补唯一同provider/callId的无轮次终态，不对歧义猜测；停止提示改为本轮已中断并说明子进程边界，未引入远程进程管理或扩大权限。
+
+证据：resources/evidence/011-local-paseo-assistant/recovery-real-ui.json、recovery-real-export-report.json、recovery-real-diagnostics.json、recovery-stop-semantics.json和recovery-user-tool-failure.png；隔离任务与报告在.scratch/recovery-agent-fixture。桌面后台尝试被用户切回打断，不计入定时通过；真机Safari矩阵仍待测。

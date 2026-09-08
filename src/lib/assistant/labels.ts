@@ -78,7 +78,9 @@ export const labels = {
     latest: '返回最新记录',
     completed: '任务已完成',
     failed: '任务失败',
-    canceled: '任务已停止',
+    canceled: 'Agent 本轮已中断',
+    stopHint: '已启动的命令可能仍在电脑运行，请在电脑确认；中断本轮不保证终止所有子进程。',
+    commandFailed: '命令返回失败（退出码 {code}）。展开工具查看具体输出。',
     busy: '正在等待电脑确认…',
     nojs: '本地助手需要启用 JavaScript。',
     errors: {
@@ -185,7 +187,10 @@ export const labels = {
     latest: 'Return to latest',
     completed: 'Task completed',
     failed: 'Task failed',
-    canceled: 'Task stopped',
+    canceled: 'Agent turn interrupted',
+    stopHint:
+      'Started commands may still be running on your computer. Interrupting a turn does not guarantee that all child processes stop; verify on your computer.',
+    commandFailed: 'Command failed with exit code {code}. Expand the tool to inspect its output.',
     busy: 'Waiting for your computer…',
     nojs: 'The local assistant requires JavaScript.',
     errors: {

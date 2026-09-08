@@ -111,7 +111,7 @@ export function App({
   const running = state.agent?.status === 'running' || state.agent?.status === 'initializing';
   const messages = useMemo(
     () => [
-      ...toMessages(state.rows, running),
+      ...toMessages(state.rows, running, t),
       ...permissionMessages(state.agent?.pendingPermissions ?? [], t),
     ],
     [state.rows, state.agent?.pendingPermissions, running, t],
@@ -336,6 +336,11 @@ export function App({
                       {t.acknowledgeUnknown}
                     </Button>
                   </AlertDescription>
+                </Alert>
+              )}
+              {state.outcome === 'canceled' && (
+                <Alert className="aui:mx-4 aui:mt-3 aui:w-auto">
+                  <AlertDescription>{t.stopHint}</AlertDescription>
                 </Alert>
               )}
               {state.diagnosticWarning && (

@@ -1,4 +1,4 @@
-import { contextMessage, splitContext } from '../../src/lib/assistant/labels.ts';
+import { contextMessage, splitContext, labels } from '../../src/lib/assistant/labels.ts';
 import { questions } from '../../src/lib/assistant/questions.ts';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
@@ -217,4 +217,72 @@ test('question parsing rejects ambiguous headers and unsupported option structur
     }),
     [],
   );
+});
+
+test('late unscoped tool results replace only an unambiguous provider call', () => {
+  const item = {
+    type: 'tool_call',
+    callId: 'late',
+    name: 'shell',
+    status: 'running',
+    detail: { type: 'shell', command: 'sleep 120' },
+    error: null,
+  } as const;
+  const started = row(1, item, 'turn-1');
+  const completed = {
+    ...row(2, { ...item, status: 'completed', detail: { ...item.detail, exitCode: 0 } }),
+    turnId: undefined,
+  };
+  const messages = toMessages([started, completed], false);
+  assert.equal(messages.length, 1);
+  assert.equal(messages[0].status?.type, 'complete');
+  assert.equal(
+    toMessages([started, row(2, item, 'turn-2'), { ...completed, seqStart: 3, seqEnd: 3 }], false)
+      .length,
+    3,
+  );
+
+  const reused = toMessages(
+    [
+      started,
+      completed,
+      row(3, item, 'turn-2'),
+      {
+        ...completed,
+        seqStart: 4,
+        seqEnd: 4,
+        item: {
+          ...completed.item,
+          detail: { type: 'shell', command: 'second command', exitCode: 0 },
+        },
+      } as TimelineRow,
+    ],
+    false,
+  );
+  assert.equal(reused.length, 3);
+  assert.ok(!JSON.stringify(reused[0]).includes('second command'));
+  assert.equal(toMessages([started, { ...completed, provider: 'claude' }], false).length, 2);
+});
+
+test('a failed shell command shows its exit code while retaining actual output', () => {
+  const command = row(1, {
+    type: 'tool_call',
+    callId: 'bad-test',
+    name: 'shell',
+    status: 'failed',
+    detail: {
+      type: 'shell',
+      command: 'npm test',
+      exitCode: 1,
+      output: 'ERR_ASSERTION: expected 1, got 3',
+    },
+    error: { message: 'Tool call failed' },
+  });
+  const message = toMessages([command], false, labels.zh)[0];
+  assert.deepEqual(message.status, {
+    type: 'incomplete',
+    reason: 'error',
+    error: '命令返回失败（退出码 1）。展开工具查看具体输出。',
+  });
+  assert.ok(JSON.stringify(message.content).includes('ERR_ASSERTION'));
 });
