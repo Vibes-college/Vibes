@@ -21,7 +21,7 @@ code-sources:
     'tests/unit/assistant.test.ts',
     'tests/unit/assistant-store.test.ts',
   ]
-code-revision: '8c2f433af09ef3459c0517de9559ef638af11e922ea05119e2db126d6a6a7846'
+code-revision: '1c78bb3a6a0ef9c174eb094305e1d231cab8b9b6d8408bf821b2af7cf17871b0'
 ---
 
 # 功能名：使用本地助手
@@ -70,7 +70,7 @@ flowchart TD
 - [x] 2026-09-07真实Chromium UI连接Paseo0.5.0，新建Codex会话，读取隔离目录README并回答作品标题。
 - [x] 2026-09-07真实Chromium UI停止运行任务；刷新及断开重连恢复同一会话。
 - [x] 2026-09-07真实Chromium UI用官方审批分别拒绝、允许隔离目录写文件，核对拒绝未写入、允许后文件存在。协议夹具另验多问题/多选回答及结果未知保护；真实模型问题表单未触发。
-- [ ] 桌面、移动Chromium/WebKit及320px回归通过，内置浏览器实际布局复核通过。
+- [x] 2026-09-07桌面、移动Chromium/WebKit及320px回归通过；内置浏览器在构建版复核桌面、390px布局及关闭焦点恢复。
 - [ ] 真机iPhone Safari及手机断网/锁屏后的恢复验收通过。
 
 真实证据为resources/evidence/011-local-paseo-assistant/official-final-browser.json及对应截图，检查配对/来源/工具/审批/忘记，浏览器未报告运行错误；创建、执行、停止及恢复见official-real-browser.json的已通过步骤。自动化设备模拟不等于真机通过。

@@ -21,7 +21,7 @@ code-sources:
     'tests/unit/assistant.test.ts',
     'tests/unit/assistant-store.test.ts',
   ]
-code-revision: '8c2f433af09ef3459c0517de9559ef638af11e922ea05119e2db126d6a6a7846'
+code-revision: '1c78bb3a6a0ef9c174eb094305e1d231cab8b9b6d8408bf821b2af7cf17871b0'
 ---
 
 # 本地助手连接与状态

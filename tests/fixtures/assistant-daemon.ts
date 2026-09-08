@@ -383,6 +383,13 @@ export class AssistantDaemon {
                   multiSelect: true,
                   options: [{ label: '界面' }, { label: '实现' }],
                 },
+                {
+                  id: 'output',
+                  header: '输出',
+                  question: '希望怎样输出？',
+                  multiSelect: false,
+                  options: [{ label: '简短说明' }, { label: '详细说明' }],
+                },
               ],
             }
           : { path: 'README.md' },

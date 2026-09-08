@@ -277,6 +277,7 @@ export function App({
                   </DropdownMenu>
                 )}
                 <TooltipIconButton
+                  className="aui:max-sm:hidden"
                   tooltip={fullscreen ? t.restore : t.fullscreen}
                   onClick={() => setFullscreen(!fullscreen)}
                 >

@@ -122,6 +122,8 @@ test('real permission IDs support allow, deny, multiple choice and stop without 
   await daemon.permission('alpha', 'question');
   await page.getByLabel('界面', { exact: true }).check();
   await page.getByLabel('实现', { exact: true }).check();
+  await expect(page.getByRole('button', { name: '提交回答', exact: true })).toBeDisabled();
+  await page.getByLabel('简短说明', { exact: true }).check();
   await page.getByRole('button', { name: '提交回答', exact: true }).click();
   await expect(page.locator('[data-slot=tool-fallback-approval]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '提交回答', exact: true })).toHaveCount(0);
@@ -130,7 +132,7 @@ test('real permission IDs support allow, deny, multiple choice and stop without 
   expect(responses[2].requestId).toBe('permission-1');
   expect(
     responses[2].response.behavior === 'allow' && responses[2].response.updatedInput,
-  ).toMatchObject({ answers: { 范围: '界面, 实现' } });
+  ).toMatchObject({ answers: { 范围: '界面, 实现', 输出: '简短说明' } });
   await page.getByRole('button', { name: '停止', exact: true }).click();
   await expect(page.locator('#assistant-dialog header [role=status]')).toContainText('任务已停止');
   expect(daemon.failures).toEqual([]);
