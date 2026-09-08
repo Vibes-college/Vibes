@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003', '004', '005', '009', '010']
+shaped-by: ['002', '003', '004', '005', '009', '010', '011']
 code-sources:
   [
     'package.json',
@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '710bfe6bfc821717aa114f34d809ff105d8894b2ccb67d9deae57c188c1a458b'
+code-revision: '1248abededbddb78b8871060e19a97b3d0ed5407ab26bbf88e695a9c7f5cdb18'
 ---
 
 # 检查与发布
@@ -171,3 +171,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 `npm run docs:check -- --revisions`只打印当前源码的候选摘要，不写文件，不表示说明正确，也不替代正常docs:check。先对照改动核对文案、流程和验收，再记录摘要并运行正常检查。测试见tests/unit/docs-sources.test.ts；内容正文及work.json不在结构代码摘要里，数量从content:validate读取。
 
 新规格complete表示实现及验收完成，不等于已合并或已部署。全部任务已勾选而状态仍in-progress会失败；main中的complete与历史merged同样保护正文。合并后核对无需再创建状态补丁PR。
+
+## 本地助手验收
+
+tests/assistant.spec.ts使用tests/fixtures/assistant-daemon.ts的官方协议与加密实现，在三个浏览器项目覆盖连接、会话/模型、作品、消息、工具、审批、停止、恢复、双语和320px；CI不接用户电脑及模型。另在真实浏览器UI连接官方daemon运行隔离任务，分别记录版本、执行、工具、停止、恢复及审批结果，保存去秘密证据。真机Safari未测时保留待验，不把夹具或SDK握手当成真实任务完成。

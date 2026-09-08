@@ -136,3 +136,48 @@ test('the on-demand MIT game is budgeted and arbitrary public scripts are not ex
     size(scripts.get('/_astro/boot.js')!) + size(scripts.get('/unexpected.js')!),
   );
 });
+
+test('assistant allowance only covers explicit lazy entry; eager import and preload remain common', () => {
+  const scripts = new Map([
+    ['/_astro/boot.js', 'import("./assistant.abc.js");'],
+    ['/_astro/assistant.abc.js', 'import "./react.js";import("./protocol.js");'],
+    ['/_astro/react.js', 'export const React=1;'],
+    ['/_astro/protocol.js', 'export const SDK=1;'],
+  ]);
+  const html = '<script src="/_astro/boot.js"></script>';
+  const lazy = scriptBudget(scripts, [html]);
+  assert.equal(lazy.javascriptGzip, size(scripts.get('/_astro/boot.js')!));
+  assert.equal(
+    lazy.assistantJavascriptGzip,
+    [...scripts.values()].slice(1).reduce((sum, text) => sum + size(text), 0),
+  );
+  const preloaded = scriptBudget(scripts, [
+    html + '<link rel="modulepreload" href="/_astro/assistant.abc.js">',
+  ]);
+  assert.equal(preloaded.assistantJavascriptGzip, 0);
+  scripts.set('/_astro/boot.js', 'import "./assistant.abc.js";');
+  assert.equal(scriptBudget(scripts, [html]).assistantJavascriptGzip, 0);
+});
+
+test('shared React belongs to both lazy assistant and independent MDX cost, never ordinary boot', () => {
+  const scripts = new Map([
+    ['/_astro/boot.js', 'import("./assistant.abc.js");'],
+    ['/_astro/assistant.abc.js', 'import "./react.js";'],
+    ['/_astro/demo.js', 'import "./react.js";'],
+    ['/_astro/react.js', 'export const React=1;'],
+  ]);
+  const html = '<script src="/_astro/boot.js"></script>';
+  const measured = scriptBudget(scripts, [
+    html,
+    html + '<astro-island component-url="/_astro/demo.js"></astro-island>',
+  ]);
+  assert.equal(measured.javascriptGzip, size(scripts.get('/_astro/boot.js')!));
+  assert.equal(
+    measured.assistantJavascriptGzip,
+    size(scripts.get('/_astro/assistant.abc.js')!) + size(scripts.get('/_astro/react.js')!),
+  );
+  assert.equal(
+    measured.mdxJavascriptGzip,
+    size(scripts.get('/_astro/demo.js')!) + size(scripts.get('/_astro/react.js')!),
+  );
+});

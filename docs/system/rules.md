@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '009', '010']
+shaped-by: ['001', '003', '005', '006', '007', '009', '010', '011']
 code-sources:
   [
     'src/lib/content/',
@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '6806b3278c0c6a895641f3edf6326ceb924856edde64b82d86546f80ea0b0fe0'
+code-revision: 'f1003823bdf3bcf8511a7c6b1cc0bf6018f08ce4c9aa1350fc00ec2e182f05bd'
 ---
 
 # 常量、规则表与正则
@@ -62,7 +62,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 | 单项测试超时    | 单项测试使用Playwright默认30000ms                                                                                | playwright.config.ts                                                         |
 | 页面断言等待    | Playwright自动等待，expect默认5000ms                                                                             | playwright.config.ts                                                         |
 | 手机验收尺寸    | desktop-chromium / mobile-chromium / mobile-webkit，另有320×700检查；不代表真机Safari                            | playwright.config.ts；tests/explore.spec.ts                                  |
-| 阅读验收        | LoRA 正文 >700 字、包含低秩矩阵、表格与来源标题；禁止 dialog                                                     | tests/explore.spec.ts                                                        |
+| 阅读验收        | LoRA 正文 >700 字、包含低秩矩阵、表格与来源标题；正文不使用dialog，助手仅主动打开后出现                          | tests/explore.spec.ts                                                        |
 | 嵌入和卡片      | iframe只在点击后创建；卡片短视频可延迟静音播放、音频点击加载；简介最多两行                                       | tests/explore.spec.ts；src/styles/base.css                                   |
 | 本地数据库限制  | reset/migrate 是唯一入口，不接受额外参数；固定 --local                                                           | scripts/local-tools.ts；scripts/database.ts                                  |
 | 数据位置        | .wrangler/project-local；重建只删其 v3/d1                                                                        | scripts/local-tools.ts；scripts/database.ts                                  |
@@ -147,3 +147,9 @@ docs/DECISIONS.md只能追加，原LESSONS历史迁移时保留旧正文；新�
 MDX仅为需要交互的文章启用React islands；普通Markdown不加载React，多实例共享模块。章节和事实锚点限制见[MDX规则](markdown.md#mdx互动文章)。detail.ts、detail-gestures.ts与detail-paging.ts共用组件区域排除，避免键盘、横滑和纵向翻页抢走组件输入。scripts/content-security.ts仅为本次构建产物的确切内联脚本追加SHA256许可，不启用脚本unsafe-inline。
 
 MDX格式整篇关闭左右拖动及长按拖动换篇，作品概览页顶部的相邻文章链接保留；普通Markdown维持原有手势。组件区域仍排除阅读键盘和纵向封面翻页手势。
+
+## 本地助手加载与界面
+
+仅主动打开才加载assistant.ts及完整动态依赖，assistantJavascriptGzip≤700000字节；静态引用、modulepreload或公共共享仍按公共路径计量，未归属模块不免预算。普通公共脚本保持21000字节、MDX保持150000字节、媒体保持16000字节硬门槛。完整官方Elements及Paseo SDK实测约644KB gzip，依据见[011研究](../../specs/011-local-paseo-assistant/research.md)。
+
+助手沿用官方布局及aui前缀，reset只作用于助手及门户；桌面可全屏，手机默认全屏。配对仅接受官方加密relay，CSP只增加wss://relay.paseo.sh；存储与恢复见[本地连接](local-assistant.md)。

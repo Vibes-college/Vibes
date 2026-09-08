@@ -38,7 +38,15 @@ const meta = {
   ))
 }
 
-<section class="detail-cover" aria-label={t.overview} data-work-detail>
+<section
+  class="detail-cover"
+  aria-label={t.overview}
+  data-work-detail
+  data-assistant-work
+  data-title={work.title}
+  data-source={work.url}
+  data-summary={work.description}
+>
   <nav class="detail-navigation" aria-label={t.switchWork} data-pagefind-ignore>
     <a class="back-link" data-back-link href={browsePath(work.locale)} aria-label={t.explore}
       ><img src="/icons/x-mark.svg" width="22" height="22" alt="" /></a

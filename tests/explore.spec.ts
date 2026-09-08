@@ -39,7 +39,7 @@ test('cards navigate directly to a complete article; browser back restores filte
     })
     .click();
   await expect(page).toHaveURL(/\/works\/lora\//);
-  await expect(page.locator('dialog')).toHaveCount(0);
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
   await expect(page.getByRole('heading', { level: 1 })).toContainText('LoRA');
   await expect(page.locator('.prose table')).toHaveCount(1);
   await page.locator('.read-down').click();
@@ -106,7 +106,8 @@ test('static output stays small and content routes exist', async ({ request, pag
     expect(html).toContain('id="reading"');
     expect(html).toMatch(/<h2\b/);
     expect(html).toContain('class="original-site"');
-    expect(html).not.toContain('<dialog');
+    expect(html).not.toMatch(/<dialog\b[^>]*\sopen(?:\s|=|>)/);
+    expect(html).toContain('id="assistant-dialog"');
   }
   const response = await request.get('/sitemap.xml');
   expect(response.ok()).toBe(true);

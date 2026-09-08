@@ -67,7 +67,8 @@ export function scriptBudget(scripts: Map<string, string>, pages: string[]) {
   }
   const dependencies = new Map([...scripts].map(([path, source]) => [path, imports(source)]));
   const mediaRoots = new Set<string>();
-  function closure(roots: Set<string>, deferMedia = false) {
+  const assistantRoots = new Set<string>();
+  function closure(roots: Set<string>, deferEnhancements = false) {
     const seen = new Set<string>();
     function visit(reference: string, importer = '/index.html') {
       const url = new URL(reference, `https://build.invalid${importer}`);
@@ -80,8 +81,14 @@ export function scriptBudget(scripts: Map<string, string>, pages: string[]) {
         const resolved = new URL(target.path, `https://build.invalid${path}`).pathname;
         // Only this reviewed lazy entry may use the media allowance. Static/preloaded
         // access still makes its complete dependency tree part of the common budget.
-        if (deferMedia && target.dynamic && /^\/_astro\/media\.[\w-]+\.js$/.test(resolved))
+        if (deferEnhancements && target.dynamic && /^\/_astro\/media\.[\w-]+\.js$/.test(resolved))
           mediaRoots.add(resolved);
+        else if (
+          deferEnhancements &&
+          target.dynamic &&
+          /^\/_astro\/assistant\.[\w-]+\.js$/.test(resolved)
+        )
+          assistantRoots.add(resolved);
         else visit(target.path, path);
       }
     }
@@ -94,22 +101,25 @@ export function scriptBudget(scripts: Map<string, string>, pages: string[]) {
   // Count its complete script in the same allowance; other public JS stays common.
   if (mediaRoots.size && scripts.has('/media/2048/game.js') && !common.has('/media/2048/game.js'))
     mediaFiles.push('/media/2048/game.js');
-  const islands = closure(islandRoots);
+  const islands = closure(islandRoots, true);
+  const assistantFiles = [...closure(assistantRoots)].filter((path) => !common.has(path));
   const islandFiles = [...islands].filter((path) => !common.has(path));
   const commonFiles = [...scripts.keys()].filter(
-    (path) => !islandFiles.includes(path) && !mediaFiles.includes(path),
+    (path) =>
+      !islandFiles.includes(path) && !mediaFiles.includes(path) && !assistantFiles.includes(path),
   );
   const size = (values: string[]) =>
     values.reduce((total, value) => total + gzipSync(value).length, 0);
   return {
     javascriptGzip: size(commonFiles.map((path) => scripts.get(path)!)) + size([...commonInline]),
     mediaJavascriptGzip: size(mediaFiles.map((path) => scripts.get(path)!)),
+    assistantJavascriptGzip: size(assistantFiles.map((path) => scripts.get(path)!)),
     mdxJavascriptGzip: Math.max(
       0,
       ...interactivePages.map(
         (page) =>
           size(
-            [...closure(page.roots)]
+            [...closure(page.roots, true)]
               .filter((path) => !common.has(path))
               .map((path) => scripts.get(path)!),
           ) + size([...new Set(page.inline)].filter((body) => !commonInline.has(body))),

@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
@@ -16,7 +17,27 @@ export default defineConfig({
   trailingSlash: 'always',
   devToolbar: { enabled: false },
   vite: {
-    build: { assetsInlineLimit: 0 },
+    // relay 0.7.2 publishes dist but its browser export points at absent src.
+    resolve: {
+      alias: {
+        '@getpaseo/relay/e2ee': createRequire(import.meta.url).resolve('@getpaseo/relay/e2ee'),
+      },
+    },
+    build: {
+      assetsInlineLimit: 0,
+      rolldownOptions: {
+        output: {
+          manualChunks(id) {
+            // These always ship together in Layout; one chunk avoids repeated compression overhead.
+            if (
+              id.endsWith('/src/scripts/reading-prefetch.ts') ||
+              id.includes('/astro/dist/prefetch/')
+            )
+              return 'reading-prefetch';
+          },
+        },
+      },
+    },
     plugins: [
       proseStyle(),
       tailwindcss(),

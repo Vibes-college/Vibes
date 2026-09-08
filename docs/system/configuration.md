@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '配置和环境变量'
 status: 'current'
-shaped-by: ['001', '004', '005', '009', '010']
+shaped-by: ['001', '004', '005', '009', '010', '011']
 code-sources:
   [
     'package.json',
@@ -11,6 +11,7 @@ code-sources:
     'wrangler.jsonc',
     'wrangler.local.jsonc',
     'tsconfig.json',
+    'components.json',
     'tsconfig.tools.json',
     'eslint.config.mjs',
     'playwright.config.ts',
@@ -23,7 +24,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: '612deb01672bdd91ce0088d8f2cea3a81c364ed4c2f65152b45a6ce57d662a3c'
+code-revision: 'a310103fe8f339b50f1e2d17e4588e4ef41d3ad705b3e11e4b1e5a029c1d9257'
 ---
 
 # 配置和环境变量
@@ -51,9 +52,15 @@ code-revision: '612deb01672bdd91ce0088d8f2cea3a81c364ed4c2f65152b45a6ce57d662a3c
 
 ## Markdown与排版依赖
 
-Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，普通Markdown页面不加载React。@astrojs/mdx与@astrojs/react分别提供MDX编译和React islands；react/react-dom仅在需要交互的岛上加载，@types/react及@types/react-dom用于类型检查，tsconfig.json使用react-jsx。Motion用于beUI组件动画，lucide-react提供其原版图标，clsx与tailwind-merge保留原版类合并行为；Tailwind与@tailwindcss/vite在构建期生成组件样式，不加载浏览器运行库，不导入全局Preflight，仅扫描beUI组件及演示目录。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
+Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，普通Markdown页面不加载React。@astrojs/mdx与@astrojs/react分别提供MDX编译和React islands；react/react-dom仅在需要交互的岛上加载，@types/react及@types/react-dom用于类型检查，tsconfig.json使用react-jsx。Motion用于beUI组件动画，lucide-react提供其原版图标，clsx与tailwind-merge保留原版类合并行为；Tailwind与@tailwindcss/vite在构建期生成组件样式，不加载浏览器运行库，不导入全局Preflight，beUI入口仅扫描beUI组件及演示目录。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
 
 构建后scripts/content-security.ts扫描HTML中的内联可执行脚本，按精确内容补充dist/_headers的SHA256许可，支持从普通页面连续导航到互动文章；其他CSP指令保持public/_headers定义。Astro内置CSP当前不兼容ClientRouter，因此不同时开启两套策略；脚本不使用unsafe-inline。
+
+## 本地助手依赖与配置
+
+assistant-ui和Paseo发布包由package.json精确锁定；完整官方Elements需要radix-ui、class-variance-authority、cmdk、zustand、remark-gfm、tw-shimmer和tw-animate-css，均由锁文件管理，不从运行时CDN加载。components.json指定官方registry与aui前缀，tsconfig的@/_对应src/_；Astro仅对Paseo relay加密子路径修正发布入口。助手reset及门户样式作用域独立，两级动态入口在主动打开时加载。用途和协议见[本地连接](local-assistant.md)。
+
+不新增Vibes环境密钥：模型登录留在电脑，设备配对经显式操作保存，不写入.dev.vars或Git。
 
 ## 环境变量名称
 

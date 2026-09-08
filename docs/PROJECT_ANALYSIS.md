@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '给维护者阅读的项目总览与代码导航'
 status: 'current'
-shaped-by: ['001', '002', '003', '005', '009']
+shaped-by: ['001', '002', '003', '005', '009', '011']
 code-sources:
   [
     'package.json',
@@ -14,7 +14,7 @@ code-sources:
     'src/scripts/search.ts',
     'scripts/build.ts',
   ]
-code-revision: '3b5b26b5f921295ab1c7911104157e9ed232b1239e63643b4873425787a65734'
+code-revision: '77c181ef5952e1fc058d913eb3b1316bae0defd49a2e33146ab879c5f9198e82'
 ---
 
 # VIBES项目总览
@@ -27,15 +27,17 @@ code-revision: '3b5b26b5f921295ab1c7911104157e9ed232b1239e63643b4873425787a65734
 
 VIBES是AI经济的校园，让人和Agent认识AI、认识彼此、交易成果并共同创造。Explore关注两条线：Learn what’s shaping AI. Learn what’s changed by AI.
 
-| 板块    | Slogan                      | 与当前代码的关系               |
-| ------- | --------------------------- | ------------------------------ |
-| Explore | Discover and understand AI  | 当前网站唯一的产品板块         |
-| Market  | Buy and sell AI outcomes    | 愿景，没有页面或业务接口       |
-| Events  | Meet the people shaping AI  | 愿景，没有页面或业务接口       |
-| Tag     | Work with people and agents | 愿景，没有独立产品实现         |
-| Paseo   | 连接VIBES和你的本地Agent    | 独立工具方向，不在当前网站实现 |
+| 板块    | Slogan                      | 与当前代码的关系            |
+| ------- | --------------------------- | --------------------------- |
+| Explore | Discover and understand AI  | 当前网站唯一的产品板块      |
+| Market  | Buy and sell AI outcomes    | 愿景，没有页面或业务接口    |
+| Events  | Meet the people shaping AI  | 愿景，没有页面或业务接口    |
+| Tag     | Work with people and agents | 愿景，没有独立产品实现      |
+| Paseo   | 连接VIBES和你的本地Agent    | Explore内本地助手的连接基础 |
 
-Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物、公司和成果的人。没有公众/Agent在线编辑、Markdown投稿、账号、收藏、评论、支付或协作；这些愿景不自动成为开发任务。
+Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物、公司和成果的人。没有公众/Agent在线编辑、Markdown投稿、账号、收藏、评论、支付或多人协作；这些愿景不自动成为开发任务。
+
+访客可主动打开本地助手，连接自己的Paseo电脑Agent，附带作品讨论、执行任务并处理审批；界面复用官方assistant-ui完整组件，不增加Vibes模型代理。
 
 ## 现在能完成什么
 
@@ -43,6 +45,7 @@ Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物
 | ------------------------ | ------------------------------------------- | ------------------------------------------------------ |
 | 访客怎样找到作品         | [浏览与搜索](features/explore-browse.md)    | src/components/Explore.astro、src/scripts/explore.ts   |
 | 怎样阅读与继续探索       | [阅读详情](features/article-read.md)        | src/components/WorkDetail.astro、src/scripts/detail.ts |
+| 怎样与电脑Agent讨论作品  | [本地助手](features/local-assistant.md)     | src/components/assistant/、src/lib/assistant/          |
 | 怎样日常更新原文与译文   | [维护内容](features/content-maintenance.md) | src/lib/content/、scripts/validate-content.ts          |
 | 怎样检查并发布到测试站   | [检查与发布](features/project-commands.md)  | scripts/release.ts、.github/workflows/check.yml        |
 | 怎样让文档跟代码一起变化 | [维护文档](features/document-governance.md) | scripts/docs-check.ts、scripts/docs-sources.ts         |

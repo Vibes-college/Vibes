@@ -48,3 +48,5 @@ docs/
 AGENTS和宪章指导AI执行；[specs](../specs/README.md)记录需求、计划和完成度，进入main后冻结。合并状态由Git与PR提供，部署状态由发布版本和实际站点提供，不把这些易变状态复制到每篇现状说明。
 
 resources保存被忽略的本地原始证据；.scratch是临时产物，不提交。node_modules、dist、.astro、.wrangler与test-results是运行生成数据，不是手工维护文档。
+
+本地Agent连接：访客步骤见[本地助手](features/local-assistant.md)，协议、组件、存储和恢复见[本地连接](system/local-assistant.md)。

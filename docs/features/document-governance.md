@@ -13,7 +13,7 @@ code-sources:
     'scripts/docs-sources.ts',
     'scripts/docs-lessons.ts',
   ]
-code-revision: '8fafe9c34619f2ebb5ed22511d4df925494ed45e4bc0a8a0c36f4cdd7a12d27b'
+code-revision: '06b2e42fef99d569ea8fdeb6e70f7579a0d138ff52b720d7356fb7ffa787f078'
 ---
 
 # 功能名：规划开发与维护文档

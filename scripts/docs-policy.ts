@@ -18,6 +18,7 @@ const livingFiles = new Set([
   'specs/README.md',
   'resources/README.md',
   'docs/system/configuration.md',
+  'docs/system/local-assistant.md',
   'docs/system/markdown.md',
   'docs/system/content-model.md',
   'docs/system/rules.md',

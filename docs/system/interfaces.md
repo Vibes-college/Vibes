@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '接口与外部服务'
 status: 'current'
-shaped-by: ['001', '003', '004', '005', '009', '010']
+shaped-by: ['001', '003', '004', '005', '009', '010', '011']
 code-sources:
   [
     'src/scripts/search.ts',
@@ -13,16 +13,18 @@ code-sources:
     'scripts/release-policy.ts',
     'src/components/WorkDetail.astro',
   ]
-code-revision: 'd1a2aa63c97c398781d5f7a1e54c99affd710f13f89b8de15e94792149a878ed'
+code-revision: 'db3be55c14dac79f02d525066d8dd5e973a124360d82fedb49085dcbad15dbca'
 ---
 
 # 接口与外部服务
 
-## 1 没有业务 API
+## 1 没有Vibes业务 API
 
 代码中没有 `/api/*` 路由、登录接口、内容提交接口、数据库查询接口、支付回调接口、邮件接口或 Server Actions。网站的页面在构建时生成，用户请求到的是静态文件。
 
-因此不存在下面这些输入/输出：
+本地助手通过Paseo官方WSS中继连接用户授权的电脑，不经过Vibes后端。输入为设备配对、对话和审批选择，返回会话、历史、执行事件及权限请求；认证、超时、恢复、存储和版本见[本地连接](local-assistant.md)。浏览器设备配对材料不等于模型凭据，权限由daemon执行。
+
+Vibes后端不存在下面这些输入/输出：
 
 - 没有账号注册、登录、退出或找回密码的输入输出。
 - 没有文章投稿、编辑、审核或发布的输入输出。
@@ -92,7 +94,7 @@ release-utils.ts通过gh api GET读取固定仓库Vibes-college/Vibes的pulls/{n
 
 站内导航和提前准备使用同站详情HTML GET，没有新增业务API。Astro公共`navigate`与`prefetch`接口分别处理导航和HTTP预取；搜索加载器按zh/en返回独立Pagefind实例，创建时核对当前文档语言，过时加载以AbortError终止。
 
-文章图片可引用HTTPS外链，浏览器直接向图源请求；img-src允许HTTPS图片，主页面脚本、连接与字体仍同源，媒体文件及iframe按登记来源。第三方图源中断不阻止其余正文阅读，维护者应提供替代文字与尺寸；详见[Markdown排版](markdown.md)。
+文章图片可引用HTTPS外链，浏览器直接向图源请求；img-src允许HTTPS图片，主页面脚本与字体仍同源，连接额外允许官方Paseo WSS中继，媒体文件及iframe按登记来源。第三方图源中断不阻止其余正文阅读，维护者应提供替代文字与尺寸；详见[Markdown排版](markdown.md)。
 
 MDX组件在文章内部按client指令启动，同页共享React模块，从本站加载；没有新增业务接口。构建只执行受信仓库组件，不读取远程MDX。需要后台的组件不能仅靠复制源码接入，须明确新的接口与权限。
 

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import AssistantHost from '../components/AssistantHost.astro';
 import { ClientRouter } from 'astro:transitions';
 import LanguageSwitch from '../components/LanguageSwitch.astro';
 import { messages } from '../lib/i18n/messages';
@@ -95,9 +96,11 @@ const summary = description || t.footer;
       <span class="header-note">{t.campus}</span>
     </header>
     <slot />
+    <AssistantHost locale={locale} />
     <script>
       import '../scripts/reading-prefetch';
       import '../scripts/media-boot';
+      import '../scripts/assistant-boot';
     </script>
     <footer class="site-footer" data-pagefind-ignore transition:persist={`footer-${locale}`}>
       <span>{t.footer}</span><a href="#main">{t.top}</a>

@@ -1,0 +1,47 @@
+---
+import type { Locale } from '../lib/i18n/routes';
+const { locale = 'zh' } = Astro.props as { locale: Locale };
+const zh = locale === 'zh';
+---
+
+<div id="assistant-host" data-pagefind-ignore>
+  <button id="assistant-open" class="assistant-launch" type="button" aria-haspopup="dialog"
+    >{zh ? '本地助手' : 'Local assistant'}</button
+  >
+  <div transition:persist="local-assistant" id="assistant-root"></div>
+  <p id="assistant-load-error" role="alert" hidden>
+    {zh ? '加载失败，请重试。' : 'Could not load. Please retry.'}
+  </p>
+  <noscript
+    ><p>
+      {zh ? '本地助手需要启用 JavaScript。' : 'The local assistant requires JavaScript.'}
+    </p></noscript
+  >
+</div>
+<style is:global>
+  .assistant-launch {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 30;
+    border: 0;
+    background: #171717;
+    color: white;
+    padding: 11px 16px;
+    border-radius: 999px;
+    font: 500 14px/1.5 system-ui;
+    cursor: pointer;
+  }
+  body:has(#assistant-root[data-mounted]) .assistant-launch {
+    display: none;
+  }
+  #assistant-load-error:not([hidden]) {
+    position: fixed;
+    right: 16px;
+    bottom: 70px;
+    z-index: 30;
+    background: white;
+    padding: 12px;
+    border: 1px solid #ddd;
+  }
+</style>

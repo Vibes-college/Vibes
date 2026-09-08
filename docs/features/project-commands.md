@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '检查与发布网站'
 status: 'current'
-shaped-by: ['001', '002', '003', '004', '005', '009', '010']
+shaped-by: ['001', '002', '003', '004', '005', '009', '010', '011']
 legacy-feature-ids: ['delivery-setup', 'local-database', 'site-metadata']
 code-sources:
   [
@@ -31,7 +31,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '8e9db5699dbd36bcc61df171295947600231e47c73b0ee816eb431724e0038f7'
+code-revision: '2ef056a4062c52b9585065920085597a3330692a9540ed0d60846cbc3dc54b6b'
 ---
 
 # 功能名：检查与发布网站
@@ -71,6 +71,8 @@ flowchart TD
   G -->|失败或不确定| J[保留证据与资源，修复或恢复]
   H -->|失败| J
 ```
+
+本地助手随静态网站发布，没有额外Vibes聊天服务或模型密钥。CI使用官方协议加密夹具；真实电脑与模型操作需单独浏览器验收，见[使用本地助手](local-assistant.md)。点击后完整依赖另有硬预算，见[系统规则](../system/rules.md)。
 
 ## 涉及的文件
 
