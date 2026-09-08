@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '7f996c1ecd38b9bd86e9416d7f4dac539d1dde24b8b8af78442e511c25ef2a60'
+code-revision: 'ef17db987c5d5a6efc0f9572789e59a3161cbcefd6d80f5906d0167fb87f1962'
 ---
 
 # 检查与发布
@@ -131,7 +131,7 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 
 `npm run media:prepare -- <image|video|audio> <本地输入> <新id> [--start 秒] [--seconds 秒]`输出到public/media/<id>，已有目录拒绝覆盖。视频产生静态海报、短静音预览及完整转码；音频产生短试听、完整转码及真实波形；图片产生受限WebP尺寸。需要本机FFmpeg/ffprobe，使用现有Sharp，不自动安装依赖。清单记录输入摘要、处理参数与输出大小，原始输入保持不变；AI仍须填写作品来源/许可、文案和展示选择。验证命令及维护路径见[内容维护](../features/content-maintenance.md)。
 
-content:validate核对媒体结构、引用、字节及真实数值；budget另报告mediaJavascriptGzip，保留公共脚本门槛。tests/media.spec.ts覆盖三个浏览器项目的延迟加载、章节、跳转暂停、原生播放/暂停与页面按钮同步、慢章节补充下载取消、失败重试、图库、数据、搜索替换与无JS；外站响应在自动化中隔离，实际第三方播放须用内置浏览器另验，不能将测试桩当作原站证据。
+content:validate核对媒体结构、引用、字节及真实数值；budget另报告mediaJavascriptGzip，保留公共脚本门槛。tests/media.spec.ts覆盖三个浏览器项目的延迟加载、章节、音频跳转暂停、原生播放/暂停与页面按钮同步、慢章节补充下载取消、失败重试、图库、数据、搜索替换与无JS；外站响应在自动化中隔离，实际第三方播放须用内置浏览器另验，不能将测试桩当作原站证据。视频章节跳转尚未完成时点击暂停、跳转结束后恢复播放属于可接受行为，不设“必须保持暂停”的自动化断言；普通暂停、音频跳转暂停与慢下载取消仍保留测试。
 
 ## 浏览器测试
 

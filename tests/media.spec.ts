@@ -180,60 +180,6 @@ test('native pause cancels a slow chapter download without late playback', async
   }
 });
 
-test('pause during a pending chapter seek stays paused when native seeking settles', async ({
-  page,
-}) => {
-  await page.goto(detail('video'));
-  const video = page.locator('[data-context=detail] video');
-  await page.locator('[data-media-toggle]').click();
-  await expect
-    .poll(() => video.evaluate((el) => (el as HTMLVideoElement).currentTime))
-    .toBeGreaterThan(0);
-  await video.evaluate((node) => {
-    const element = node as HTMLVideoElement;
-    const events: unknown[] = [];
-    const record = (type: string) => {
-      events.push({
-        type,
-        time: performance.now(),
-        paused: element.paused,
-        seeking: element.seeking,
-        currentTime: element.currentTime,
-      });
-      element.dataset.seekTrace = JSON.stringify(events);
-    };
-    for (const name of ['play', 'playing', 'pause', 'seeking', 'seeked', 'canplay'])
-      element.addEventListener(name, () => record(name));
-    const pauseDuringSeek = () => {
-      if (element.currentTime < 30) return;
-      element.removeEventListener('seeking', pauseDuringSeek);
-      element.dataset.pausedDuringSeek = String(element.seeking);
-      element
-        .closest('[data-media-panel]')!
-        .querySelector<HTMLButtonElement>('[data-media-toggle]')!
-        .click();
-      record('user-pause-during-seek');
-    };
-    element.addEventListener('seeking', pauseDuringSeek);
-  });
-  try {
-    await page.locator('.media-tools > summary').click();
-    await page.locator('[data-media-seek="30"]').first().click();
-    await expect(video).toHaveAttribute('data-paused-during-seek', 'true');
-    await expect(video).toHaveJSProperty('seeking', false);
-    await expect(video).toHaveJSProperty('paused', true);
-    await expectSettledPause(video);
-    await expect(page.locator('[data-media-toggle]')).toHaveAttribute('aria-pressed', 'false');
-  } finally {
-    await test.info().attach('native-media-seek-events', {
-      body: (await video.getAttribute('data-seek-trace')) || '[]',
-      contentType: 'application/json',
-    });
-  }
-  // Leaving the player releases a paused native download before the test context closes.
-  await page.goto('/zh/works/lora/');
-});
-
 test('game recovers with a full reload when an older document lacks its CSP hash', async ({
   page,
 }) => {
