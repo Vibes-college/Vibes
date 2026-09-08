@@ -19,6 +19,24 @@ export const labels = {
     forget: '忘记电脑',
     reconnect: '重新连接',
     sync: '刷新状态',
+    diagnostics: '导出连接诊断',
+    stale: '正在核对电脑状态；以下为上次完整记录，恢复前暂不能操作。',
+    retrying: '将自动重试，也可以选择刷新状态。',
+    unknown: '有一项操作的结果仍待核对。请先检查电脑上的会话与实际结果；继续不会自动重发。',
+    acknowledgeUnknown: '我已核对，继续操作',
+    diagnosticWarning: '浏览器无法保存完整诊断或待确认操作；刷新后可能无法自动核对。',
+    stages: {
+      idle: '已断开',
+      connect: '连接电脑',
+      probe: '检查连接响应',
+      identity: '核对设备身份',
+      directory: '读取会话目录',
+      subscribe: '恢复会话订阅',
+      history: '补齐历史和待审批',
+      ready: '已核对',
+      waiting: '等待重试',
+      blocked: '需要处理连接问题',
+    },
     intro: '把作品交给你电脑上的 Agent。电脑需保持联网和唤醒。',
     setup: '先在电脑安装官方 Paseo，完成 Agent 登录并启动 daemon，然后复制配对链接到这里。',
     install: '打开 Paseo 安装说明',
@@ -64,6 +82,10 @@ export const labels = {
     busy: '正在等待电脑确认…',
     nojs: '本地助手需要启用 JavaScript。',
     errors: {
+      identity: '设备身份不符，已停止自动恢复。请核对电脑的配对信息。',
+      release: '旧连接未能安全释放，已停止创建新连接。请导出诊断后重新打开页面。',
+      createUnknown: '创建结果未确认，请先检查会话列表和电脑，避免重复创建。',
+      operationLimit: '待确认操作过多，请先核对并处理已有操作。',
       pairing: '配对信息无效。请使用官方 Paseo 的 v2 加密配对链接。',
       connect: '未能连接电脑。检查 daemon、网络和配对信息后重试。',
       sync: '状态恢复失败，请重新连接或刷新。',
@@ -99,6 +121,27 @@ export const labels = {
     forget: 'Forget computer',
     reconnect: 'Reconnect',
     sync: 'Refresh status',
+    diagnostics: 'Export connection diagnostics',
+    stale:
+      'Checking your computer. These are the last complete records; actions are unavailable until restored.',
+    retrying: 'Recovery will retry automatically. You can also refresh status.',
+    unknown:
+      'An operation still needs verification. Check the conversation and actual result on your computer. Continuing will not resend it.',
+    acknowledgeUnknown: 'I checked the result; continue',
+    diagnosticWarning:
+      'Browser storage could not preserve diagnostics or pending operations. Verification after refresh may be unavailable.',
+    stages: {
+      idle: 'Disconnected',
+      connect: 'Connecting to computer',
+      probe: 'Checking connection response',
+      identity: 'Verifying device identity',
+      directory: 'Loading session directory',
+      subscribe: 'Restoring subscription',
+      history: 'Restoring history and approvals',
+      ready: 'Verified',
+      waiting: 'Waiting to retry',
+      blocked: 'Connection needs attention',
+    },
     intro: 'Work with your computer’s Agent while exploring. Keep your computer awake and online.',
     setup:
       'Install official Paseo on your computer, sign in to an Agent, start the daemon, then paste its pairing link here.',
@@ -146,6 +189,13 @@ export const labels = {
     busy: 'Waiting for your computer…',
     nojs: 'The local assistant requires JavaScript.',
     errors: {
+      identity:
+        'Device identity does not match. Automatic recovery stopped; verify pairing on your computer.',
+      release:
+        'The previous connection could not be released safely. Export diagnostics and reopen this page.',
+      createUnknown:
+        'Session creation was not confirmed. Check your computer and session list before creating another.',
+      operationLimit: 'Too many unconfirmed operations. Verify existing operations first.',
       pairing: 'Invalid pairing information. Use an official Paseo v2 encrypted pairing link.',
       connect: 'Could not connect. Check the daemon, network, and pairing information.',
       sync: 'Could not restore state. Reconnect or refresh.',

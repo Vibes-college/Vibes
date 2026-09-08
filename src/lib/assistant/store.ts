@@ -10,9 +10,24 @@ import {
   type SavedDevice,
 } from './pairing.ts';
 import { maximumRows, mergeRows, type TimelinePage, type TimelineRow } from './timeline.ts';
+import { ConnectionOwner } from './connection-owner.ts';
+import {
+  RecoveryTask,
+  RecoveryFault,
+  bounded,
+  type RecoveryStage,
+  type RecoveryReason,
+} from './recovery.ts';
+import { AssistantDiagnostics } from './diagnostics.ts';
+import { OperationLedger, type OperationKind } from './operation-ledger.ts';
+import { createClientActivityTracker, type ClientActivityTracker } from './activity.ts';
 
 export interface AssistantState {
   connection: 'offline' | 'connecting' | 'syncing' | 'ready';
+  recoveryStage: RecoveryStage;
+  retryMs: number | null;
+  unknown: boolean;
+  diagnosticWarning: boolean;
   device: boolean;
   selectedId: string;
   agents: PaseoAgent[];
@@ -27,6 +42,10 @@ export interface AssistantState {
 }
 const initial = (): AssistantState => ({
   connection: 'offline',
+  recoveryStage: 'idle',
+  retryMs: null,
+  unknown: false,
+  diagnosticWarning: false,
   device: false,
   selectedId: '',
   agents: [],
@@ -42,7 +61,18 @@ const initial = (): AssistantState => ({
 export class AssistantStore {
   private state = initial();
   private listeners = new Set<() => void>();
-  private driver: Connection | null = null;
+  private owner: ConnectionOwner<Connection>;
+  private recovery: RecoveryTask;
+  private diagnostics: AssistantDiagnostics;
+  private ledger: OperationLedger;
+  private activity: ClientActivityTracker;
+  private get driver() {
+    return this.owner.client;
+  }
+  private pairVersion = 0;
+  private verifiedGeneration = -1;
+  private recoveryId = 0;
+  private subscribed = false;
   private device: SavedDevice | null = null;
   private remember = false;
   private generation = 0;
@@ -53,15 +83,75 @@ export class AssistantStore {
   private epoch = '';
   private cursor: TimelinePage['startCursor'] = null;
   private buffered: DaemonEvent[] = [];
-  private unsubscribers: (() => void)[] = [];
-  private syncing: Promise<void> | null = null;
   private tab: Storage;
   private local: Storage;
-  private factory: typeof createConnection;
   constructor(tab: Storage, local: Storage, factory = createConnection) {
     this.tab = tab;
     this.local = local;
-    this.factory = factory;
+    this.diagnostics = new AssistantDiagnostics(tab);
+    this.ledger = new OperationLedger(tab);
+    this.diagnostics.onStorageChange = (available) =>
+      this.update({ diagnosticWarning: !available || !this.ledger.available });
+    this.owner = new ConnectionOwner(
+      () => {
+        if (!this.device) throw new RecoveryFault('connect', 'canceled');
+        return factory(this.device);
+      },
+      (driver, valid) => this.mountClient(driver, valid),
+    );
+    this.recovery = new RecoveryTask({
+      run: (signal, reason, attempt) => this.recover(signal, reason, attempt),
+      failed: (error, retryMs) => {
+        const fault =
+          error instanceof RecoveryFault
+            ? error
+            : new RecoveryFault(this.state.recoveryStage, 'unknown');
+        this.update({
+          connection: 'offline',
+          loading: false,
+          recoveryStage: fault.terminal ? 'blocked' : 'waiting',
+          retryMs,
+          error:
+            fault.code === 'identity'
+              ? 'identity'
+              : fault.code === 'release'
+                ? 'release'
+                : fault.stage === 'history' || fault.stage === 'subscribe'
+                  ? 'history'
+                  : fault.stage === 'directory'
+                    ? 'sync'
+                    : 'connect',
+        });
+        this.diagnostics.record('recovery', {
+          status: 'failed',
+          stage: fault.stage,
+          code: fault.code,
+          recovery: this.recoveryId,
+          ...(retryMs === null ? {} : { retryMs }),
+        });
+      },
+    });
+    const isConnected = () => this.driver?.status() === 'connected';
+    this.activity = createClientActivityTracker({
+      client: {
+        get isConnected() {
+          return isConnected();
+        },
+        sendHeartbeat: (payload) => {
+          try {
+            this.driver?.heartbeat(payload);
+          } catch {
+            /* Advisory activity must not stop recovery. */
+          }
+        },
+      },
+      deviceType: 'web',
+      initialFocusedAgentId: null,
+      initialFocusedTerminalId: null,
+      initialAppVisible: true,
+      now: Date.now,
+      onAppResumed: (awayMs) => this.diagnostics.record('lifecycle', { status: 'visible', awayMs }),
+    });
     this.device = readDevice(tab, local);
     try {
       this.remember = !!local.getItem(deviceKey);
@@ -104,7 +194,10 @@ export class AssistantStore {
       this.report('pairing');
       return;
     }
+    const version = ++this.pairVersion;
     await this.disconnect();
+    if (version !== this.pairVersion) return;
+    this.ledger.clear();
     this.device = { offer, clientId: globalThis.crypto.randomUUID() };
     this.remember = remember;
     this.update({ ...initial(), device: true });
@@ -112,153 +205,309 @@ export class AssistantStore {
     await this.connect();
     if (!saved && !this.state.error) this.report('storage');
   }
-  async connect() {
-    if (!this.device) return;
-    await this.disconnect();
-    const generation = this.generation;
-    const driver = this.factory(this.device);
-    this.driver = driver;
-    const valid = () => generation === this.generation && this.driver === driver;
-    this.unsubscribers = [
-      driver.onEvent((event) => {
-        if (valid()) this.event(event);
-      }),
-      driver.onStatus((status) => {
-        if (!valid()) return;
-        if (status.status === 'connected') void this.resync();
-        else {
-          this.transport++;
-          this.operation++;
-          this.syncing = null;
-          this.selection++;
-          this.buffered = [];
-          this.update({
-            connection: status.status === 'connecting' ? 'connecting' : 'offline',
-            loading: false,
-            busy: false,
-          });
+  private mountClient(driver: Connection, valid: () => boolean) {
+    this.generation++;
+    let previous = driver.status();
+    const offEvent = driver.onEvent((event) => {
+      if (valid() && this.verifiedGeneration === this.generation) this.event(event);
+    });
+    const offStatus = driver.onStatus((status) => {
+      if (!valid()) return;
+      this.diagnostics.record('transport', {
+        status: status.status,
+        generation: this.generation,
+        ...('attempt' in status ? { attempt: status.attempt } : {}),
+      });
+      if (status.status === 'connected') void this.recovery.request('transport');
+      else {
+        if (previous === 'connected') {
+          this.invalidateData();
+          this.recovery.invalidate();
+          void this.recovery.request('transport');
         }
-      }),
-    ];
-    this.update({ connection: 'connecting', error: null });
-    try {
-      await driver.connect();
-      if (valid()) await this.resync();
-    } catch {
-      if (valid()) this.update({ connection: 'offline', error: 'connect' });
-    }
+        this.update({
+          connection: status.status === 'connecting' ? 'connecting' : 'offline',
+          loading: false,
+        });
+      }
+      previous = status.status;
+    });
+    return () => {
+      offEvent();
+      offStatus();
+    };
   }
-  async disconnect() {
+  private invalidateData() {
     this.generation++;
     this.transport++;
-    this.operation++;
     this.selection++;
-    this.syncing = null;
-    for (const unsubscribe of this.unsubscribers) unsubscribe();
-    this.unsubscribers = [];
-    const old = this.driver;
-    this.driver = null;
+    this.operation++;
+    this.verifiedGeneration = -1;
+    this.subscribed = false;
     this.buffered = [];
-    this.update({ connection: 'offline', busy: false, loading: false });
-    if (old) await old.close();
+    this.update({ busy: false, loading: false, unknown: this.hasUnknown() });
+  }
+  private hasUnknown() {
+    return (
+      !!this.device && !!this.ledger.pending(this.device.offer.serverId, this.state.selectedId)
+    );
+  }
+  async connect() {
+    if (this.device) await this.recovery.start('connect');
+  }
+  async disconnect() {
+    const settled = this.recovery.stop();
+    this.invalidateData();
+    this.update({ connection: 'offline', recoveryStage: 'idle', retryMs: null });
+    try {
+      await this.owner.release();
+    } catch {
+      this.update({ recoveryStage: 'blocked', error: 'release' });
+    }
+    await settled;
+    this.diagnostics.record('recovery', {
+      status: 'canceled',
+      stage: 'idle',
+      connections: 0,
+      subscriptions: 0,
+      ...this.recovery.resources,
+    });
+    this.diagnostics.flush();
   }
   async forget() {
-    await this.disconnect();
+    this.pairVersion++;
     this.device = null;
+    await this.disconnect();
+    this.ledger.clear();
+    this.diagnostics.clear();
     try {
       forgetDevice(this.tab, this.local);
     } catch {
       this.update({ ...initial(), error: 'forgetStorage' });
       return;
     }
-    this.update(initial());
+    this.update({
+      ...initial(),
+      ...(!this.ledger.available || !this.diagnostics.storageAvailable
+        ? { error: 'forgetStorage' }
+        : {}),
+    });
   }
   resync = async () => {
-    if (this.syncing) return this.syncing;
-    const driver = this.driver,
-      generation = this.generation,
-      transport = this.transport;
-    if (!driver || driver.status() !== 'connected') return;
-    this.update({ connection: 'syncing', loading: true });
-    const job = (async () => {
-      try {
-        driver.verify();
-        const [directory, providers] = await Promise.all([driver.directory(), driver.providers()]);
-        if (generation !== this.generation || transport !== this.transport) return;
-        if (providers.error) throw new Error('providers');
-        const agents = directory.entries.map((entry) => entry.agent);
-        this.update({
-          agents,
-          providers: providers.providers.filter((p) => p.available).map((p) => p.provider),
-        });
-        const selected = this.state.selectedId;
-        if (selected) await this.select(selected);
-        else this.update({ loading: false, connection: 'ready' });
-      } catch {
-        if (generation === this.generation && transport === this.transport)
-          this.update({ loading: false, connection: 'offline', error: 'sync' });
-      }
-    })();
-    this.syncing = job;
-    await job;
-    if (this.syncing === job) this.syncing = null;
+    if (this.device) await this.recovery.start('manual');
   };
-  select = async (id: string) => {
-    const driver = this.driver,
-      generation = this.generation,
-      selection = ++this.selection;
-    if (!driver || driver.status() !== 'connected') return;
-    const valid = () => generation === this.generation && selection === this.selection;
-    this.buffered = [];
-    this.epoch = '';
-    this.cursor = null;
-    this.update({
-      selectedId: id,
-      agent: null,
-      rows: [],
-      loading: true,
-      hasOlder: false,
-      error: null,
-      outcome: null,
+  visibility = (visible: boolean) => {
+    const changed = this.activity.notifyAppVisibility(visible).changed;
+    this.recovery.visibility(visible);
+    if (!changed) return;
+    this.activity.sendHeartbeat();
+    if (!visible) {
+      this.selection++;
+      this.buffered = [];
+      this.update({ connection: 'offline', loading: false });
+      this.diagnostics.record('lifecycle', { status: 'hidden' });
+      this.diagnostics.flush();
+    } else void this.recovery.request('resume');
+  };
+  recoverFrom = (reason: 'pageshow' | 'network') => this.recovery.request(reason);
+  recordActivity = () => {
+    this.activity.recordUserActivity();
+    this.activity.maybeSendImmediateHeartbeat();
+  };
+  exportDiagnostics = () => this.diagnostics.export();
+  acknowledgeUnknown = () => {
+    if (!this.device || this.state.connection !== 'ready') return;
+    const entry = this.ledger.pending(this.device.offer.serverId, this.state.selectedId);
+    if (entry) this.ledger.resolve(entry.id);
+    this.update({ unknown: this.hasUnknown(), error: null });
+  };
+  private async stage<T>(
+    stage: RecoveryStage,
+    action: () => Promise<T>,
+    signal: AbortSignal,
+    ms = 10_000,
+  ) {
+    if (signal.aborted) throw new RecoveryFault(stage, 'canceled');
+    this.update({ recoveryStage: stage });
+    const start = performance.now();
+    const recovery = this.recoveryId;
+    this.diagnostics.record('stage', {
+      stage,
+      status: 'start',
+      recovery,
+      generation: this.generation,
     });
     try {
-      await driver.subscribe(id);
-      const page = await driver.timeline(id);
-      if (!valid()) return;
-      if (page.error || !page.agent) throw new Error('history');
-      this.epoch = page.epoch;
-      this.cursor = page.startCursor;
-      this.update({
-        agent: page.agent,
-        rows: page.entries,
-        hasOlder: page.hasOlder,
-        loading: false,
-        connection: 'ready',
+      const value = await bounded(Promise.resolve().then(action), ms, signal, stage);
+      this.diagnostics.record('stage', {
+        stage,
+        status: 'success',
+        recovery,
+        elapsedMs: performance.now() - start,
       });
-      if (this.device) {
-        this.device = { ...this.device, selectedId: id };
-        this.persist();
-      }
-      const buffered = this.buffered;
-      this.buffered = [];
-      for (const event of buffered) this.event(event);
-    } catch {
-      if (valid()) this.update({ loading: false, error: 'history', connection: 'offline' });
+      return value;
+    } catch (error) {
+      const fault = error instanceof RecoveryFault ? error : new RecoveryFault(stage, 'unknown');
+      this.diagnostics.record('stage', {
+        stage,
+        status: signal.aborted ? 'canceled' : 'failed',
+        recovery,
+        code: fault.code,
+        elapsedMs: performance.now() - start,
+      });
+      throw fault;
     }
+  }
+  private async recover(signal: AbortSignal, reason: RecoveryReason, attempt: number) {
+    if (!this.device) return;
+    this.recoveryId++;
+    const started = performance.now();
+    this.diagnostics.record('recovery', {
+      status: 'start',
+      reason,
+      attempt,
+      recovery: this.recoveryId,
+    });
+    this.update({
+      connection: 'syncing',
+      loading: true,
+      error: null,
+      retryMs: null,
+      unknown: this.hasUnknown(),
+    });
+    const driver = await this.owner.acquire(signal);
+    try {
+      const connected = driver.status() === 'connected';
+      if (!connected) {
+        this.update({ connection: 'connecting' });
+        await this.stage('connect', () => driver.connect(), signal, 20_000);
+      } else {
+        const probe = await this.stage('probe', () => driver.probe(), signal, 5_000);
+        this.diagnostics.record('stage', { stage: 'probe', status: 'success', rttMs: probe.rttMs });
+      }
+      await this.stage('identity', async () => driver.verify(), signal);
+    } catch (error) {
+      if (!signal.aborted) {
+        this.invalidateData();
+        await this.owner.release();
+      }
+      throw error;
+    }
+    if (signal.aborted) return;
+    this.verifiedGeneration = this.generation;
+    this.diagnostics.daemonVersion(driver.info()?.version);
+    this.update({ connection: 'syncing', loading: true });
+    const generation = this.generation;
+    const [directory, providers] = await this.stage(
+      'directory',
+      () => Promise.all([driver.directory(), driver.providers()]),
+      signal,
+    );
+    if (providers.error) throw new RecoveryFault('directory', 'unavailable');
+    if (signal.aborted || generation !== this.generation) return;
+    this.update({
+      agents: directory.entries.map((entry) => entry.agent),
+      providers: providers.providers.filter((p) => p.available).map((p) => p.provider),
+    });
+    const id = this.state.selectedId;
+    if (id) await this.loadSelected(id, driver, signal);
+    if (signal.aborted || generation !== this.generation) return;
+    this.activity.setFocusedAgentId(this.state.selectedId || null);
+    this.activity.sendHeartbeat();
+    this.update({
+      connection: 'ready',
+      recoveryStage: 'ready',
+      loading: false,
+      retryMs: null,
+      unknown: this.hasUnknown(),
+      diagnosticWarning: !this.ledger.available || !this.diagnostics.storageAvailable,
+    });
+    this.diagnostics.record('recovery', {
+      status: 'success',
+      recovery: this.recoveryId,
+      elapsedMs: performance.now() - started,
+      connections: 1,
+      subscriptions: this.subscribed ? 1 : 0,
+      rows: this.state.rows.length,
+      ...this.recovery.resources,
+    });
+  }
+  select = async (id: string) => {
+    const changed = id !== this.state.selectedId;
+    this.recovery.invalidate();
+    this.selection++;
+    this.buffered = [];
+    if (changed) {
+      this.epoch = '';
+      this.cursor = null;
+    }
+    this.update({
+      selectedId: id,
+      connection: 'syncing',
+      loading: true,
+      ...(changed ? { agent: null, rows: [], hasOlder: false, outcome: null } : {}),
+      error: null,
+    });
+    if (this.device) {
+      this.device = { ...this.device, selectedId: id };
+      this.persist();
+    }
+    this.update({ unknown: this.hasUnknown() });
+    this.activity.setFocusedAgentId(id || null);
+    await this.recovery.request('manual');
   };
+  private async loadSelected(id: string, driver: Connection, signal: AbortSignal) {
+    const selection = ++this.selection;
+    const valid = () => !signal.aborted && selection === this.selection;
+    this.buffered = [];
+    await this.stage('subscribe', () => driver.subscribe(id), signal);
+    if (!valid()) return;
+    this.subscribed = true;
+    const page = await this.stage('history', () => driver.timeline(id), signal);
+    if (!valid()) return;
+    if (page.agentId !== id || (page.agent && page.agent.id !== id))
+      throw new RecoveryFault('history', 'protocol', true);
+    if (page.error || !page.agent || page.hasNewer)
+      throw new RecoveryFault('history', 'unavailable');
+    this.epoch = page.epoch;
+    this.cursor = page.startCursor;
+    this.update({ agent: page.agent, rows: page.entries, hasOlder: page.hasOlder, loading: false });
+    if (this.device) {
+      for (const operation of this.ledger.reconcile(this.device.offer.serverId, page))
+        this.diagnostics.record('operation', {
+          status: 'confirmed',
+          operation: this.diagnostics.alias(operation),
+        });
+    }
+    const buffered = this.buffered;
+    this.buffered = [];
+    for (const event of buffered) this.event(event);
+  }
   older = async () => {
     const driver = this.driver,
       id = this.state.selectedId,
       generation = this.generation,
       selection = this.selection;
-    if (!driver || !this.cursor || this.state.loading || !this.state.hasOlder) return;
+    if (
+      !driver ||
+      this.state.connection !== 'ready' ||
+      !this.cursor ||
+      this.state.loading ||
+      !this.state.hasOlder
+    )
+      return;
     if (this.state.rows.length >= maximumRows) {
       this.report('historyLimit');
       return;
     }
     this.update({ loading: true });
     try {
-      const page = await driver.timeline(id, 'before', this.cursor);
+      const page = await bounded(
+        driver.timeline(id, 'before', this.cursor),
+        10_000,
+        new AbortController().signal,
+        'history',
+      );
       if (generation !== this.generation || selection !== this.selection) return;
       if (page.error) throw new Error('history');
       if (page.epoch !== this.epoch || page.reset || page.staleCursor || page.gap) {
@@ -319,6 +568,22 @@ export class AssistantStore {
     if (!('agentId' in event) || event.agentId !== this.state.selectedId) return;
     if (event.type === 'agent_stream') {
       const value = event.event;
+      if (value.type === 'timeline' && value.item.type === 'tool_call') {
+        this.diagnostics.record('tool', {
+          kind: ['read', 'write', 'browser', 'command'].includes(value.item.detail.type)
+            ? value.item.detail.type
+            : 'other',
+          status:
+            value.item.status === 'running'
+              ? 'submitted'
+              : value.item.status === 'completed'
+                ? 'success'
+                : value.item.status === 'failed'
+                  ? 'failed'
+                  : 'canceled',
+          session: this.diagnostics.alias(event.agentId),
+        });
+      }
       if (value.type === 'timeline') {
         if (event.seq === undefined || event.epoch !== this.epoch) {
           void this.select(event.agentId);
@@ -376,7 +641,12 @@ export class AssistantStore {
       driver = this.driver;
     if (!driver || this.state.selectedId !== id) return;
     try {
-      const result = await driver.refresh(id);
+      const result = await bounded(
+        driver.refresh(id),
+        10_000,
+        new AbortController().signal,
+        'history',
+      );
       if (
         result &&
         generation === this.generation &&
@@ -390,7 +660,7 @@ export class AssistantStore {
         selection === this.selection &&
         refresh === this.refresh
       )
-        this.report('sync');
+        void this.recovery.request('gap');
     }
   }
   models = async (provider: PaseoAgentProvider, cwd: string) => {
@@ -402,40 +672,86 @@ export class AssistantStore {
       this.report('create');
       return;
     }
-    const generation = this.generation,
-      selection = this.selection;
-    await this.operate(async (driver) => {
-      const agent = await driver.create(provider, cwd.trim());
-      if (generation === this.generation && selection === this.selection)
-        await this.select(agent.id);
-    }, 'create');
+    const generation = this.generation;
+    const agent = await this.operate('create', (driver) => driver.create(provider, cwd.trim()));
+    if (agent && generation === this.generation) await this.select(agent.id);
   };
-  private async operate(action: (driver: Connection) => Promise<void>, error: string) {
+  private async operate<T>(
+    kind: OperationKind,
+    action: (driver: Connection, operationId: string) => Promise<T>,
+    requestId?: string,
+  ): Promise<T | undefined> {
     const driver = this.driver,
+      device = this.device,
       generation = this.generation,
       selection = this.selection;
     if (
       !driver ||
+      !device ||
       this.state.connection !== 'ready' ||
       this.state.loading ||
       this.state.busy ||
-      this.state.error?.endsWith('Unknown')
+      this.hasUnknown()
     )
       return;
     const operation = ++this.operation;
-    this.update({ busy: true, error: null });
+    const id = crypto.randomUUID();
+    if (
+      !this.ledger.begin({
+        id,
+        serverId: device.offer.serverId,
+        sessionId: this.state.selectedId,
+        kind,
+        ...(requestId ? { requestId } : {}),
+      })
+    ) {
+      this.report('operationLimit');
+      return;
+    }
+    this.update({ busy: true, error: null, diagnosticWarning: !this.ledger.available });
+    const started = performance.now();
+    this.diagnostics.record('operation', {
+      kind,
+      status: 'submitted',
+      operation: this.diagnostics.alias(id),
+      session: this.diagnostics.alias(this.state.selectedId),
+    });
     try {
-      await action(driver);
+      const result = await bounded(
+        Promise.resolve().then(() => action(driver, id)),
+        20_000,
+        new AbortController().signal,
+        'ready',
+      );
+      this.ledger.resolve(id);
+      this.diagnostics.record('operation', {
+        kind,
+        status: 'confirmed',
+        operation: this.diagnostics.alias(id),
+        elapsedMs: performance.now() - started,
+      });
+      return result;
     } catch {
+      this.diagnostics.record('operation', {
+        kind,
+        status: 'unknown',
+        operation: this.diagnostics.alias(id),
+        elapsedMs: performance.now() - started,
+      });
       if (
         generation === this.generation &&
         selection === this.selection &&
         operation === this.operation
       )
-        this.report(error);
+        this.report(`${kind}Unknown`);
+      return undefined;
     } finally {
       if (generation === this.generation && operation === this.operation)
-        this.update({ busy: false });
+        this.update({
+          busy: false,
+          unknown: this.hasUnknown(),
+          diagnosticWarning: !this.ledger.available,
+        });
     }
   }
   send = async (text: string) => {
@@ -451,24 +767,29 @@ export class AssistantStore {
     const id = agent.id,
       generation = this.generation,
       selection = this.selection;
-    await this.operate(async (driver) => {
-      await driver.send(id, text, globalThis.crypto.randomUUID());
-      if (
-        generation === this.generation &&
-        selection === this.selection &&
-        this.state.selectedId === id
-      )
-        await this.select(id);
-    }, 'sendUnknown');
+    const sent = await this.operate('send', async (driver, messageId) => {
+      await driver.send(id, text, messageId);
+      return true;
+    });
+    if (
+      sent &&
+      generation === this.generation &&
+      selection === this.selection &&
+      this.state.selectedId === id
+    )
+      await this.select(id);
   };
   cancel = async () => {
-    const id = this.state.selectedId;
-    await this.operate(async (driver) => {
+    const id = this.state.selectedId,
+      generation = this.generation;
+    const confirmed = await this.operate('cancel', async (driver) => {
       await driver.cancel(id);
-      await this.refreshAgent(id);
-    }, 'cancelUnknown');
+      return true;
+    });
+    if (confirmed && generation === this.generation) await this.refreshAgent(id);
   };
   permission = async (id: string, requestId: string, response: AgentPermissionResponse) => {
+    const generation = this.generation;
     if (
       this.state.agent?.id !== id ||
       !this.state.agent.pendingPermissions.some((p) => p.id === requestId)
@@ -476,9 +797,14 @@ export class AssistantStore {
       this.report('permissionExpired');
       return;
     }
-    await this.operate(async (driver) => {
-      await driver.permission(id, requestId, response);
-      await this.refreshAgent(id);
-    }, 'permissionUnknown');
+    const confirmed = await this.operate(
+      'permission',
+      async (driver) => {
+        await driver.permission(id, requestId, response);
+        return true;
+      },
+      requestId,
+    );
+    if (confirmed && generation === this.generation) await this.refreshAgent(id);
   };
 }

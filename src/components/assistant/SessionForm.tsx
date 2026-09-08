@@ -132,7 +132,9 @@ export function SessionForm({
           )}
           <Button
             type="submit"
-            disabled={!model || state.busy || loading || state.connection !== 'ready'}
+            disabled={
+              !model || state.busy || state.unknown || loading || state.connection !== 'ready'
+            }
           >
             {t.create}
           </Button>

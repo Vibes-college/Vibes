@@ -236,11 +236,14 @@ test('invalid pairing stays offline; rejected sends require refresh before retry
   daemon.acceptSends = false;
   await page.getByLabel('发送给本地 Agent').fill('测试拒绝');
   await page.getByRole('button', { name: '发送', exact: true }).click();
-  await expect(page.getByRole('alert')).toContainText('发送结果未确认');
+  await expect(page.getByRole('alert').filter({ hasText: '发送结果未确认' })).toBeVisible();
   await expect(page.getByRole('button', { name: '发送', exact: true })).not.toBeEnabled();
   await page.getByRole('button', { name: '会话选项', exact: true }).click();
   await page.getByRole('menuitem', { name: '刷新状态', exact: true }).click();
-  await expect(page.getByLabel('发送给本地 Agent')).toBeEnabled();
+  await expect(page.getByRole('button', { name: '发送', exact: true })).not.toBeEnabled();
+  await page.getByRole('button', { name: '我已核对，继续操作', exact: true }).click();
+  await page.getByLabel('发送给本地 Agent').fill('核对后的草稿');
+  await expect(page.getByRole('button', { name: '发送', exact: true })).toBeEnabled();
   expect(daemon.requests.filter((m) => m.type === 'send_agent_message_request')).toHaveLength(1);
 });
 test('320px dialog keeps focus, fits viewport and closes back to its launcher', async ({
@@ -259,4 +262,196 @@ test('320px dialog keeps focus, fits viewport and closes back to its launcher', 
   await page.keyboard.press('Escape');
   await expect(page.locator('#assistant-dialog')).not.toBeVisible();
   await expect(page.getByRole('button', { name: '打开本地助手', exact: true })).toBeFocused();
+});
+
+// These are deterministic lifecycle signals, not evidence of real iOS suspension.
+test('foreground revalidation retains stale history and retries failed snapshots before enabling actions', async ({
+  page,
+}) => {
+  const daemon = new AssistantDaemon();
+  await daemon.install(page);
+  await page.goto('/zh/');
+  await pair(page, daemon);
+  await choose(page);
+  await daemon.append('alpha', {
+    type: 'assistant_message',
+    text: '上次完整记录',
+    messageId: 'previous',
+  });
+  const before = daemon.requests.filter((m) => m.type === 'fetch_agent_timeline_request').length;
+  await page.getByLabel('发送给本地 Agent').fill('恢复前不可发送的草稿');
+  daemon.historyFailures = 2;
+  await page.evaluate(() =>
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })),
+  );
+  await expect(page.getByText('上次完整记录', { exact: true })).toBeVisible();
+  await expect(page.getByText('将自动重试，也可以选择刷新状态。', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '发送', exact: true })).not.toBeEnabled();
+  await expect(page.getByRole('button', { name: '发送', exact: true })).toBeEnabled({
+    timeout: 10_000,
+  });
+  expect(
+    daemon.requests.filter((m) => m.type === 'fetch_agent_timeline_request').length - before,
+  ).toBe(3);
+  expect(daemon.createdConnections).toBe(1);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          JSON.parse(sessionStorage.getItem('vibes.local-assistant.diagnostics.v1') ?? '[]').filter(
+            (e: { event: string; status: string }) =>
+              e.event === 'recovery' && e.status === 'failed',
+          ).length,
+      ),
+    )
+    .toBe(2);
+  expect(daemon.failures).toEqual([]);
+});
+
+test('a half-open connection is replaced once and recovers missing history without forgetting pairing', async ({
+  page,
+}) => {
+  const daemon = new AssistantDaemon();
+  await daemon.install(page);
+  await page.goto('/zh/');
+  await pair(page, daemon);
+  await choose(page);
+  daemon.silenceCurrent();
+  await daemon.append('alpha', {
+    type: 'assistant_message',
+    text: '断档期间的结果',
+    messageId: 'missing',
+  });
+  await expect(page.getByText('断档期间的结果', { exact: true })).toHaveCount(0);
+  await page.evaluate(() => {
+    window.dispatchEvent(new Event('online'));
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+  });
+  await expect(page.getByText('断档期间的结果', { exact: true })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByLabel('发送给本地 Agent')).toBeEnabled();
+  expect(daemon.createdConnections).toBe(2);
+  expect(daemon.maxConnections).toBe(1);
+  expect(daemon.requests.filter((m) => m.type === 'send_agent_message_request')).toHaveLength(0);
+});
+
+test('an accepted send with a lost receipt is reconciled across reload without another submission', async ({
+  page,
+}) => {
+  const daemon = new AssistantDaemon();
+  await daemon.install(page);
+  await page.goto('/zh/');
+  await pair(page, daemon);
+  await choose(page);
+  daemon.dropAfterAccept = true;
+  await page.getByLabel('发送给本地 Agent').fill('只执行一次的测试');
+  await page.getByRole('button', { name: '发送', exact: true }).click();
+  await expect
+    .poll(() => daemon.requests.filter((m) => m.type === 'send_agent_message_request').length)
+    .toBe(1);
+  await page.reload();
+  await page.getByRole('button', { name: '本地助手', exact: true }).click();
+  await expect(page.getByText('只执行一次的测试', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('发送给本地 Agent')).toBeEnabled();
+  expect(daemon.requests.filter((m) => m.type === 'send_agent_message_request')).toHaveLength(1);
+  expect(
+    await page.evaluate(() =>
+      JSON.parse(sessionStorage.getItem('vibes.local-assistant.operations.v1') ?? '[]'),
+    ),
+  ).toEqual([]);
+});
+
+test('twenty resume cycles coalesce triggers; manual disconnect prevents background resurrection', async ({
+  page,
+}) => {
+  const daemon = new AssistantDaemon();
+  await daemon.install(page);
+  await page.goto('/zh/');
+  await pair(page, daemon);
+  await choose(page);
+  for (let i = 0; i < 20; i++) {
+    const before = daemon.requests.filter(
+      (m) => m.type === 'agent.timeline.set_subscription.request',
+    ).length;
+    await page.evaluate(() => {
+      window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }));
+      window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+      window.dispatchEvent(new Event('online'));
+    });
+    await expect
+      .poll(
+        () =>
+          daemon.requests.filter((m) => m.type === 'agent.timeline.set_subscription.request')
+            .length,
+      )
+      .toBe(before + 1);
+    await expect(page.getByLabel('发送给本地 Agent')).toBeEnabled();
+  }
+  expect(daemon.createdConnections).toBe(1);
+  await page.getByRole('button', { name: '会话选项', exact: true }).click();
+  await page.getByRole('menuitem', { name: '断开连接', exact: true }).click();
+  await expect(page.locator('#assistant-dialog header [role=status]')).toContainText('未连接');
+  await page.evaluate(() => {
+    window.dispatchEvent(new Event('online'));
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+  });
+  await expect(page.locator('#assistant-dialog header [role=status]')).toContainText('未连接');
+  expect(daemon.createdConnections).toBe(1);
+  await page.getByRole('button', { name: '会话选项', exact: true }).click();
+  const download = page.waitForEvent('download');
+  await page.getByRole('menuitem', { name: '导出连接诊断', exact: true }).click();
+  expect((await download).suggestedFilename()).toBe('vibes-connection-diagnostics.json');
+  await page.getByRole('button', { name: '会话选项', exact: true }).click();
+  await page.getByRole('menuitem', { name: '忘记电脑', exact: true }).click();
+  await expect(page.getByLabel('Paseo 配对链接或 JSON')).toBeVisible();
+  const storage = await page.evaluate(() => ({
+    diagnostic: sessionStorage.getItem('vibes.local-assistant.diagnostics.v1'),
+    operations: sessionStorage.getItem('vibes.local-assistant.operations.v1'),
+  }));
+  expect(storage).toEqual({ diagnostic: null, operations: null });
+});
+
+test('a mismatched server identity stops automatic recovery and blocks operations', async ({
+  page,
+}) => {
+  const daemon = new AssistantDaemon();
+  daemon.serverIdentity = 'unexpected-daemon';
+  await daemon.install(page);
+  await page.goto('/zh/');
+  await page.getByRole('button', { name: '本地助手', exact: true }).click();
+  await page.getByLabel('Paseo 配对链接或 JSON').fill(daemon.offer);
+  await page.getByRole('button', { name: '连接电脑', exact: true }).click();
+  await expect(page.getByRole('alert').filter({ hasText: '设备身份不符' })).toBeVisible();
+  await page.evaluate(() => {
+    window.dispatchEvent(new Event('online'));
+    window.dispatchEvent(new PageTransitionEvent('pageshow'));
+  });
+  expect(daemon.createdConnections).toBe(1);
+  expect(daemon.requests.filter((m) => m.type === 'fetch_agents_request')).toHaveLength(0);
+});
+
+test('lost subscription confirmation and a resolved approval heal without repeating the approval', async ({
+  page,
+}) => {
+  const daemon = new AssistantDaemon();
+  await daemon.install(page);
+  await page.goto('/zh/');
+  await pair(page, daemon);
+  await choose(page);
+  daemon.subscriptionFailures = 1;
+  await page.evaluate(() =>
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })),
+  );
+  await expect.poll(() => daemon.subscriptionFailures).toBe(0);
+  await expect(page.locator('#assistant-dialog header [role=status]')).toContainText('已连接');
+  await daemon.permission();
+  daemon.dropAfterPermission = true;
+  await page.getByRole('button', { name: '允许本次', exact: true }).click();
+  await expect
+    .poll(() => daemon.requests.filter((m) => m.type === 'agent_permission_response').length)
+    .toBe(1);
+  await expect(page.getByRole('button', { name: '允许本次', exact: true })).toHaveCount(0);
+  await expect(page.locator('#assistant-dialog header [role=status]')).toContainText('已连接');
+  await page.getByLabel('发送给本地 Agent').fill('审批核对后的草稿');
+  await expect(page.getByRole('button', { name: '发送', exact: true })).toBeEnabled();
+  expect(daemon.requests.filter((m) => m.type === 'agent_permission_response')).toHaveLength(1);
 });

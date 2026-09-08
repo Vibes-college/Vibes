@@ -25,6 +25,8 @@ amended-by: []
 
 ## 验证与交付
 
+用户已批准research中的恢复方案。恢复调度/连接所有权置于独立模块，移植旧HostRuntime/ViewedTimeline的并发、代次与退避规则，保留活动跟踪纯逻辑；paseo-client扩展有界探活及白名单诊断接口，store保留canonical权威合并。浏览器生命周期绑定集中在入口，主动断开可阻止自动恢复。同会话恢复保留内存快照并禁止过期操作；本地诊断有容量/期限和导出边界，操作索引只含核对所需ID、不含正文。来源、调整及测试关系在research据实记录，不引入旧整站依赖或新npm依赖。
+
 先写配对、事件合并、重复/过期响应和操作边界单元测试；浏览器使用受控官方协议中继夹具覆盖成功、失败、恢复和审批，不修改生产协议来配合测试。另用已安装官方daemon验证真实连接和受控任务，记录实际provider登录限制。
 
 运行完整`npm run verify`与`npm run budget`，内置浏览器进行实际UI审阅，预览遵守现有Cloudflare PR流程。功能新增`docs/features/local-assistant.md`，系统新增`docs/system/local-assistant.md`，同步Explore/阅读/检查说明、索引与源码摘要。独立Agent审阅整个PR并复核修复后的最终SHA，才转Ready；合并由用户决定。

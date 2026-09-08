@@ -4,6 +4,8 @@ import { buildRelayWebSocketUrl } from '@getpaseo/protocol/daemon-endpoints';
 import type { AgentPermissionResponse } from '@getpaseo/protocol/agent-types';
 import type { SavedDevice } from './pairing.ts';
 import type { TimelinePage } from './timeline.ts';
+import { RecoveryFault } from './recovery.ts';
+import type { HeartbeatPayload } from './activity.ts';
 export type { DaemonEvent };
 
 // Keep the published SDK's internal cancel/approval seam in this module only.
@@ -30,15 +32,19 @@ export function createConnection(device: SavedDevice) {
     connect: async () => {
       await driver.connect();
       if (driver.getLastServerInfoMessage()?.serverId !== device.offer.serverId) {
-        await driver.close();
-        throw new Error('identity');
+        // The owner must observe the terminal fault before disposing. Closing here
+        // emits "disconnected" first and could turn an identity failure into a retry.
+        throw new RecoveryFault('identity', 'identity', true);
       }
     },
     close: () => driver.close(),
     verify: () => {
       if (driver.getLastServerInfoMessage()?.serverId !== device.offer.serverId)
-        throw new Error('identity');
+        throw new RecoveryFault('identity', 'identity', true);
     },
+    probe: () => driver.ping({ timeoutMs: 5_000 }),
+    info: () => driver.getLastServerInfoMessage(),
+    heartbeat: (payload: HeartbeatPayload) => driver.sendHeartbeat(payload),
     status: () => driver.getConnectionState().status,
     onStatus: driver.subscribeConnectionStatus.bind(driver),
     onEvent: driver.subscribe.bind(driver),

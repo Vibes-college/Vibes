@@ -29,6 +29,7 @@ export function QuestionForm({
     state.busy ||
     state.loading ||
     state.connection !== 'ready' ||
+    state.unknown ||
     !!state.error?.endsWith('Unknown');
   const answered =
     items.length > 0 && items.every((q) => answers[q.header]?.length || free[q.header]?.trim());

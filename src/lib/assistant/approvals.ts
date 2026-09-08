@@ -40,9 +40,17 @@ export async function respondToApproval(
   store: AssistantStore,
   options: RespondToToolApprovalOptions,
 ) {
-  const { agent, connection, loading, busy, error } = store.getSnapshot();
+  const { agent, connection, loading, busy, error, unknown } = store.getSnapshot();
   const request = agent?.pendingPermissions.find((value) => value.id === options.approvalId);
-  if (!agent || !request || connection !== 'ready' || loading || busy || error?.endsWith('Unknown'))
+  if (
+    !agent ||
+    !request ||
+    connection !== 'ready' ||
+    loading ||
+    busy ||
+    unknown ||
+    error?.endsWith('Unknown')
+  )
     throw new Error('Approval unavailable. Refresh status.');
   const action = request.actions?.find((value) => value.id === options.optionId);
   if (request.actions?.length && !action) throw new Error('Unknown approval action.');
@@ -51,6 +59,7 @@ export async function respondToApproval(
     ...(action ? { selectedActionId: action.id } : {}),
   });
   if (
+    store.getSnapshot().unknown ||
     store.getSnapshot().error?.startsWith('permission') ||
     store.getSnapshot().error?.endsWith('Unknown')
   )

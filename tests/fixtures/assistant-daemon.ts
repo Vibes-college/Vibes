@@ -86,6 +86,20 @@ export class AssistantDaemon {
   available = true;
   acceptSends = true;
   disconnectOnSend = false;
+  dropAfterAccept = false;
+  dropAfterPermission = false;
+  historyFailures = 0;
+  subscriptionFailures = 0;
+  serverIdentity = 'vibes-test-daemon';
+  createdConnections = 0;
+  maxConnections = 0;
+  private silent = new Set<WebSocketRoute>();
+  get activeConnections() {
+    return this.connections.size;
+  }
+  silenceCurrent() {
+    for (const { socket } of this.connections) this.silent.add(socket);
+  }
   private connections = new Set<{
     socket: WebSocketRoute;
     send: (message: SessionOutboundMessage) => Promise<void>;
@@ -112,7 +126,7 @@ export class AssistantDaemon {
                 type: 'status',
                 payload: {
                   status: 'server_info',
-                  serverId: 'vibes-test-daemon',
+                  serverId: this.serverIdentity,
                   version: '0.7.2',
                   features: { selectiveAgentTimeline: true },
                 },
@@ -134,14 +148,19 @@ export class AssistantDaemon {
       };
       const connection = { socket, send };
       this.connections.add(connection);
-      socket.onMessage((data) =>
-        transport.onmessage?.({
-          data: typeof data === 'string' ? data : Uint8Array.from(data).buffer,
-          isBinary: typeof data !== 'string',
-        }),
+      this.createdConnections++;
+      this.maxConnections = Math.max(this.maxConnections, this.connections.size);
+      socket.onMessage(
+        (data) =>
+          !this.silent.has(socket) &&
+          transport.onmessage?.({
+            data: typeof data === 'string' ? data : Uint8Array.from(data).buffer,
+            isBinary: typeof data !== 'string',
+          }),
       );
       socket.onClose(() => {
         this.connections.delete(connection);
+        this.silent.delete(socket);
         transport.onclose?.(1000, 'test closed');
       });
     });
@@ -155,6 +174,16 @@ export class AssistantDaemon {
     const requestId =
       'requestId' in message && typeof message.requestId === 'string' ? message.requestId : '';
     switch (message.type) {
+      case 'ping':
+        return send({
+          type: 'pong',
+          payload: {
+            requestId,
+            clientSentAt: message.clientSentAt,
+            serverReceivedAt: Date.now(),
+            serverSentAt: Date.now(),
+          },
+        });
       case 'fetch_agents_request':
         return send({
           type: 'fetch_agents_response',
@@ -184,6 +213,11 @@ export class AssistantDaemon {
           },
         });
       case 'agent.timeline.set_subscription.request':
+        if (this.subscriptionFailures > 0) {
+          this.subscriptionFailures--;
+          await socket.close({ code: 1012, reason: 'test subscription failure' });
+          return;
+        }
         return send({
           type: 'agent.timeline.set_subscription.response',
           payload: { requestId, agentIds: message.agentIds },
@@ -212,7 +246,10 @@ export class AssistantDaemon {
             hasOlder: !!entries[0] && entries[0].seqStart > 0,
             hasNewer: false,
             entries,
-            error: null,
+            error:
+              this.historyFailures > 0
+                ? (this.historyFailures--, 'test history unavailable')
+                : null,
           },
         });
       }
@@ -244,6 +281,15 @@ export class AssistantDaemon {
         });
       }
       case 'send_agent_message_request': {
+        if (this.dropAfterAccept) {
+          await this.append(message.agentId, {
+            type: 'user_message',
+            text: message.text,
+            clientMessageId: message.messageId,
+          });
+          await socket.close({ code: 1012, reason: 'test lost receipt' });
+          return;
+        }
         if (this.disconnectOnSend) {
           await socket.close({ code: 1012, reason: 'test interruption' });
           return;
@@ -296,6 +342,10 @@ export class AssistantDaemon {
           ...agent,
           pendingPermissions: agent.pendingPermissions.filter((p) => p.id !== message.requestId),
         });
+        if (this.dropAfterPermission) {
+          await socket.close({ code: 1012, reason: 'test lost permission receipt' });
+          return;
+        }
         await this.broadcast({
           type: 'agent_permission_resolved',
           payload: {
@@ -332,7 +382,11 @@ export class AssistantDaemon {
     }
   }
   async broadcast(message: SessionOutboundMessage) {
-    await Promise.all([...this.connections].map((connection) => connection.send(message)));
+    await Promise.all(
+      [...this.connections]
+        .filter((connection) => !this.silent.has(connection.socket))
+        .map((connection) => connection.send(message)),
+    );
   }
   async stream(agentId: string, event: AgentStreamEventPayload, seq?: number) {
     await this.broadcast({

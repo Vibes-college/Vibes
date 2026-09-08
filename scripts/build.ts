@@ -2,12 +2,16 @@ import { writeContentSecurity } from './content-security.ts';
 import { resolve } from 'node:path';
 import { rmSync } from 'node:fs';
 import { run } from './local-tools.ts';
+import { execFileSync } from 'node:child_process';
 import { readCatalog } from '../src/lib/content/catalog.ts';
 import { optimizeImages } from './optimize-images.ts';
 import { bundleSandboxGame } from './sandbox-game.ts';
 
 // 合成目录使用独立输出及Astro缓存；所有构建先执行与维护命令相同的校验。
 const out = process.env.VIBES_OUT_DIR || 'dist';
+process.env.PUBLIC_ASSISTANT_BUILD = execFileSync('git', ['rev-parse', 'HEAD'], {
+  encoding: 'utf8',
+}).trim();
 if (process.env.VIBES_CONTENT_DIR && !process.env.VIBES_OUT_DIR)
   throw new Error('Isolated content requires VIBES_OUT_DIR to protect the real build.');
 if (process.env.VIBES_OUT_DIR && !resolve(out).startsWith(resolve('.scratch') + '/'))

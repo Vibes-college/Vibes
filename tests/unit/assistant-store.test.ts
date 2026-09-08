@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { RecoveryFault } from '../../src/lib/assistant/recovery.ts';
 import type { PaseoAgent } from '@getpaseo/client';
 import { AssistantStore } from '../../src/lib/assistant/store.ts';
 import { respondToApproval } from '../../src/lib/assistant/approvals.ts';
@@ -91,6 +92,15 @@ function fixture() {
       status = 'disposed';
     },
     verify: () => {},
+    probe: async () => ({
+      requestId: 'probe',
+      clientSentAt: 0,
+      serverReceivedAt: 0,
+      serverSentAt: 0,
+      rttMs: 1,
+    }),
+    info: () => null,
+    heartbeat: () => {},
     status: () => status as ReturnType<Connection['status']>,
     onEvent: (callback) => {
       eventListener = callback;
@@ -168,6 +178,8 @@ test('a stop with unknown outcome cannot falsely confirm a subsequent approval',
   assert.equal(f.counts().permissions, 0);
   assert.equal(f.store.getSnapshot().agent?.pendingPermissions.length, 1);
   await f.store.resync();
+  assert.equal(f.store.getSnapshot().unknown, true);
+  f.store.acknowledgeUnknown();
   await respondToApproval(f.store, { approvalId: 'p', approved: true, optionId: 'allow' });
   assert.equal(f.counts().permissions, 1);
 });
@@ -200,6 +212,8 @@ test('running or pending approval cannot send; unknown outcome requires authorit
   await f.store.send('twice');
   assert.equal(retried, false);
   await f.store.select('a');
+  assert.equal(f.store.getSnapshot().unknown, true);
+  f.store.acknowledgeUnknown();
   await f.store.send('after refresh');
   assert.equal(retried, true);
 });
@@ -322,6 +336,8 @@ test('an old operation cannot clear a new busy state after reconnect', async () 
   f.status('disconnected');
   f.status('connected');
   await f.store.resync();
+  assert.equal(f.store.getSnapshot().unknown, true);
+  f.store.acknowledgeUnknown();
   const second = f.store.send('new');
   assert.equal(f.store.getSnapshot().busy, true);
   old.reject(new Error('late error'));
@@ -352,4 +368,61 @@ test('a newer agent update wins over a refresh response already in flight', asyn
   pending.resolve({ agent: agent(), project: null });
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(f.store.getSnapshot().agent?.status, 'running');
+});
+
+test('temporary history failures retain the same-session snapshot and heal without a new connection', async () => {
+  const f = fixture();
+  await f.store.pair(offer, false);
+  await f.store.select('a');
+  const old = page();
+  old.entries = [
+    {
+      provider: 'codex',
+      item: { type: 'assistant_message', text: 'previous', messageId: 'old' },
+      timestamp: '2026-09-07T00:00:00Z',
+      seqStart: 0,
+      seqEnd: 0,
+      sourceSeqRanges: [],
+      collapsed: [],
+    },
+  ];
+  f.driver.timeline = async () => old;
+  await f.store.select('a');
+  let reads = 0;
+  f.driver.timeline = async () => {
+    if (++reads === 1) throw new Error('transient');
+    return old;
+  };
+  await f.store.resync();
+  assert.equal(f.store.getSnapshot().connection, 'offline');
+  assert.deepEqual(f.store.getSnapshot().rows, old.entries);
+  await f.store.send('blocked while stale');
+  assert.equal(f.counts().sends, 0);
+  await new Promise((resolve) => setTimeout(resolve, 1100));
+  assert.equal(f.store.getSnapshot().connection, 'ready');
+  assert.equal(reads, 2);
+  await f.store.disconnect();
+});
+
+test('a probe failure invalidates the client and identity faults never retry automatically', async () => {
+  const f = fixture();
+  await f.store.pair(offer, false);
+  await f.store.select('a');
+  f.driver.probe = async () => {
+    throw new Error('timeout');
+  };
+  await f.store.resync();
+  assert.equal(f.driver.status(), 'disposed');
+  await f.store.disconnect();
+  const other = fixture();
+  other.driver.verify = () => {
+    throw new RecoveryFault('identity', 'identity', true);
+  };
+  await other.store.pair(offer, false);
+  assert.equal(other.store.getSnapshot().recoveryStage, 'blocked');
+  await other.store.recoverFrom('network');
+  assert.equal(other.store.getSnapshot().error, 'identity');
+  assert.equal(other.store.getSnapshot().retryMs, null);
+  await other.store.forget();
+  assert.equal(JSON.parse(other.store.exportDiagnostics()).events.length, 0);
 });

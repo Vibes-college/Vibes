@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'ef17db987c5d5a6efc0f9572789e59a3161cbcefd6d80f5906d0167fb87f1962'
+code-revision: '19b4f8e1cc65ce2f4abc807d770eb8bfcea22af2def756504a88427fa4a63b6b'
 ---
 
 # 检查与发布
@@ -60,6 +60,8 @@ PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA�
 commit是保存进度，推送是备份或触发CI，PR是提交一批变化供审阅，合并才是进入main；它们不必同时发生。首版spec形成即创建Draft PR，AI给用户可打开的链接；描述维护目标、范围、任务摘要、当前进度、阻塞、下一步和阶段预览，详细清单以tasks.md为准。到可体验阶段、交接、暂停或结束前提交并推送有效进度、更新PR；不强制每commit立即push，也不限制领先commit数量。一个PR可包含多个commit；修改当前PR时直接继续提交，不另开修正PR。批量组织不等于无限累积，出现独立交付目的或需要单独回滚的变化时分开。
 
 纯措辞和可选日期补记可以随相关工作一起提交；实现完成状态、当前行为与源码对应必须随同一批代码更新，不延后；不为每次小收尾创建PR或催用户合并。必要功能说明仍随代码交付；影响使用、发布或安全的错误及时修正，不为减少PR而延误。检查按实际改动范围选择，不能用批量提交规避检查。
+
+构建脚本将当前Git SHA注入本地助手诊断，用于关联预览源码；它不把凭据或工作目录注入页面，开发服务缺少构建值时显示development。
 
 ## Ready前的独立审查
 

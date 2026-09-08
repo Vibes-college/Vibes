@@ -123,6 +123,7 @@ export function App({
     !state.agent ||
     running ||
     !!state.agent.pendingPermissions.length ||
+    state.unknown ||
     !!state.error?.endsWith('Unknown');
   const runtime = useExternalStoreRuntime({
     messages,
@@ -174,6 +175,7 @@ export function App({
               snapshot.busy ||
               snapshot.loading ||
               snapshot.connection !== 'ready' ||
+              snapshot.unknown ||
               !!snapshot.error?.endsWith('Unknown')
             }
           >
@@ -221,7 +223,9 @@ export function App({
                     {state.agent?.title || t.title}
                   </h2>
                   <p role="status" className="aui:truncate aui:text-xs aui:text-muted-foreground">
-                    {state.outcome ? t[state.outcome] : t[state.connection]}
+                    {state.connection === 'ready' && state.outcome
+                      ? t[state.outcome]
+                      : t[state.connection]}
                     {state.agent ? ` · ${t.status[state.agent.status]}` : ''}
                   </p>
                 </div>
@@ -270,6 +274,22 @@ export function App({
                         </DropdownMenuCheckboxItem>
                       )}
                       <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          const url = URL.createObjectURL(
+                            new Blob([store.exportDiagnostics()], { type: 'application/json' }),
+                          );
+                          const link = document.createElement('a');
+                          link.href = url;
+                          link.download = 'vibes-connection-diagnostics.json';
+                          document.body.append(link);
+                          link.click();
+                          link.remove();
+                          setTimeout(() => URL.revokeObjectURL(url), 1_000);
+                        }}
+                      >
+                        {t.diagnostics}
+                      </DropdownMenuItem>
                       <DropdownMenuItem onSelect={() => void store.forget()}>
                         {t.forget}
                       </DropdownMenuItem>
@@ -293,6 +313,35 @@ export function App({
                     {t.errors[state.error as keyof typeof t.errors] ?? t.errors.sync}
                   </AlertDescription>
                 </Alert>
+              )}
+              {state.device && state.connection !== 'ready' && (
+                <Alert className="aui:mx-4 aui:mt-3 aui:w-auto">
+                  <AlertDescription>
+                    <p>{t.stages[state.recoveryStage]}</p>
+                    {!!state.rows.length && <p>{t.stale}</p>}
+                    {state.retryMs !== null && <p>{t.retrying}</p>}
+                  </AlertDescription>
+                </Alert>
+              )}
+              {state.unknown && (
+                <Alert className="aui:mx-4 aui:mt-3 aui:w-auto">
+                  <AlertDescription>
+                    <p>{t.unknown}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={state.connection !== 'ready' || state.busy}
+                      onClick={store.acknowledgeUnknown}
+                    >
+                      {t.acknowledgeUnknown}
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
+              {state.diagnosticWarning && (
+                <p role="status" className="aui:px-4 aui:py-2 aui:text-xs">
+                  {t.diagnosticWarning}
+                </p>
               )}
               {!state.device ? (
                 <PairingForm store={store} t={t} />

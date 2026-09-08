@@ -341,3 +341,14 @@ E2E必须补齐以下故障时序，验证真实动作与数据而非只断言�
 电脑持续离线不能计为客户端恢复失败，但必须计入用户等待，并在一次连接期限后退出无限转圈、保留可读旧快照和明确重试状态；是否“电脑离线”必须有证据，普通超时只能说明暂时无法连接。恢复后再执行一个受控任务，确认通路真正可用。若目标与实测冲突，先区分网络/SDK/同步耗时再评审，不靠缩短超时制造重连风暴。
 
 建议实施顺序为：先补最小阶段诊断与可稳定重现的回归夹具→移植单连接恢复与canonical补齐适配，和诊断在同一阶段预览→完成SDK/Playwright回归及真机旧新对照→按指标决定渲染批量/缓存是否值得追加。产品代码变化后按仓库要求运行verify、budget，独立Agent审阅整个PR并复核最终SHA；本轮仅文档检查，不擅自启动此前用户要求暂停的完整CI。未通过真机恢复时继续保持Draft；发布验收和实现完成分开记录。
+
+## 恢复移植的源码对应与实际边界
+
+用户已确认上述方案并授权实施。Paseo基线固定为`0e3318a94feb4d6def3d8266a8faffc8dc98e0d6`；当前行为以[本地连接说明](../../docs/system/local-assistant.md)为准，研究中的建议指标不自动变成已通过证据。
+
+- `activity.ts`复制旧`packages/app/src/hooks/client-activity-tracker.ts`，仅增加来源注释及格式化；活动时间、可见性转换、即时心跳节流沿用。测试以node:test移植旧活动时序，不引入Vitest。浏览器只接活动/会话/可见性事件，没有额外15秒应用轮询。
+- `connection-owner.ts`是HostRuntimeController单设备/单relay的源码规则移植：保留client所有权、generation、旧代失效及串行释放；不复制整个class，也不带入HostRegistry、多线路择优和周期探针。新增关闭期限和重建预算；这些是有意差异，不宣称原样等价。
+- `recovery.ts`直接沿用ViewedTimelineSync的1秒起/30秒封顶退避计算，并移植单飞、代次取消和失败调度规则到单个当前会话的恢复任务；加入抖动、AbortSignal、有界等待与终止类错误。没有导入旧projected协议或缓存同步器；当前store负责canonical tail/事件合并，旧多会话catchUps集合不适用。
+- `lifecycle.ts`、阶段诊断、当前SDK端口与去正文操作账本是自写适配。Cindy/Lody仅作为时序/状态设计依据，未复制其协议或原生模块。许可保留于public/licenses/paseo-recovery.txt。
+
+基础版本的真实Chromium/Cloudflare与用户口述Safari证据仍保存在resources/evidence/011-local-paseo-assistant/official-*.json及截图，范围见此前研究与PR；由于恢复/操作代码已改变，需重新验证对应路径。首轮新增浏览器回归发现身份错误被包装层提前close产生的断开事件掩盖；修正为先向唯一owner返回terminal身份错误，再释放实例。另纠正两处测试把可编辑草稿误当成可发送，实际门控以发送/审批及服务端请求次数断言。失败记录保留，不当作通过证据。

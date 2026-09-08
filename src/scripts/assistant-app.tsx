@@ -2,6 +2,7 @@ import '@vitejs/plugin-react/preamble';
 import { createRoot } from 'react-dom/client';
 import { App } from '../components/assistant/App';
 import { AssistantStore } from '../lib/assistant/store';
+import { bindAssistantLifecycle } from '../lib/assistant/lifecycle';
 import type { WorkContext } from '../lib/assistant/labels';
 import '../components/assistant-ui/official.css';
 function context(): WorkContext | null {
@@ -39,9 +40,15 @@ export function mountAssistant() {
     root.render(<App store={store} locale={locale} work={context()} />);
   };
   render();
+  const unbind = bindAssistantLifecycle(store);
   if (store.getSnapshot().device) void store.connect();
   document.addEventListener('astro:page-load', render);
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') void store.resync();
-  });
+  if (import.meta.hot)
+    import.meta.hot.dispose(() => {
+      unbind();
+      document.removeEventListener('astro:page-load', render);
+      void store.disconnect();
+      root.unmount();
+      mounted = false;
+    });
 }

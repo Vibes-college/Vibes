@@ -19,7 +19,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'c8459dbf448036f5ace158e604ceadf7161d153da2143eb9bb7347f942be7a66'
+code-revision: '669a051ec22a15e9c7df47624a9d51af2a6f8e675e49adbcaa264afcf9929f8b'
 ---
 
 # 常量、规则表与正则
@@ -150,6 +150,6 @@ MDX格式整篇关闭左右拖动及长按拖动换篇，作品概览页顶部�
 
 ## 本地助手加载与界面
 
-仅主动打开才加载assistant.ts及完整动态依赖，assistantJavascriptGzip≤700000字节；静态引用、modulepreload或公共共享仍按公共路径计量，未归属模块不免预算。普通公共脚本保持21000字节、MDX保持150000字节、媒体保持16000字节硬门槛。完整官方Elements及Paseo SDK实测约644KB gzip，依据见[011研究](../../specs/011-local-paseo-assistant/research.md)。
+仅主动打开才加载assistant.ts及完整动态依赖，assistantJavascriptGzip≤700000字节；静态引用、modulepreload或公共共享仍按公共路径计量，未归属模块不免预算。普通公共脚本保持21000字节、MDX保持150000字节、媒体保持16000字节硬门槛。实际完整依赖测量与适用版本见[011研究](../../specs/011-local-paseo-assistant/research.md)。
 
 助手沿用官方布局及aui前缀，reset只作用于助手及门户；桌面可全屏，手机默认全屏。配对仅接受官方加密relay，CSP只增加wss://relay.paseo.sh；存储与恢复见[本地连接](local-assistant.md)。
