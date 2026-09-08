@@ -1,0 +1,371 @@
+diff --git a/packages/app/src/i18n/i18next.ts b/packages/app/src/i18n/i18next.ts
+index 05ceeee..31abaef 100644
+--- a/packages/app/src/i18n/i18next.ts
++++ b/packages/app/src/i18n/i18next.ts
+@@ -1,15 +1,7 @@
+ import { createInstance } from "i18next";
+ import { initReactI18next } from "react-i18next";
+ import { observeI18nInit } from "./init";
+-import { ar } from "./resources/ar";
+ import { en } from "./resources/en";
+-import { es } from "./resources/es";
+-import { fr } from "./resources/fr";
+-import { ja } from "./resources/ja";
+-import { ko } from "./resources/ko";
+-import { ptBR } from "./resources/pt-BR";
+-import { ru } from "./resources/ru";
+-import { zhCN } from "./resources/zh-CN";
+ 
+ const i18n = createInstance();
+ 
+@@ -18,17 +10,7 @@ observeI18nInit(
+     compatibilityJSON: "v4",
+     fallbackLng: "en",
+     lng: "en",
+-    resources: {
+-      ar: { translation: ar },
+-      en: { translation: en },
+-      es: { translation: es },
+-      fr: { translation: fr },
+-      ja: { translation: ja },
+-      ko: { translation: ko },
+-      "pt-BR": { translation: ptBR },
+-      ru: { translation: ru },
+-      "zh-CN": { translation: zhCN },
+-    },
++    resources: { en: { translation: en } },
+     interpolation: {
+       escapeValue: false,
+     },
+diff --git a/packages/app/src/i18n/language-load-notice.tsx b/packages/app/src/i18n/language-load-notice.tsx
+new file mode 100644
+index 0000000..0543748
+--- /dev/null
++++ b/packages/app/src/i18n/language-load-notice.tsx
+@@ -0,0 +1,33 @@
++import { Pressable, Text, View } from "react-native";
++import { useTranslation } from "react-i18next";
++import { StyleSheet } from "react-native-unistyles";
++
++export function LanguageLoadNotice({ retry }: { retry: () => void }) {
++  const { t } = useTranslation();
++  return (
++    <View style={styles.notice} testID="paseo-language-error">
++      <Text accessibilityLiveRegion="polite" style={styles.text}>
++        {t("settings.general.language.label")}: {t("common.states.downloadFailed")}
++      </Text>
++      <Pressable accessibilityRole="button" onPress={retry} testID="paseo-language-retry">
++        <Text style={styles.text}>{t("common.actions.retry")}</Text>
++      </Pressable>
++    </View>
++  );
++}
++const styles = StyleSheet.create((theme) => ({
++  notice: {
++    position: "absolute",
++    bottom: 16,
++    left: 16,
++    right: 16,
++    zIndex: 10000,
++    backgroundColor: theme.colors.background,
++    borderColor: theme.colors.border,
++    borderWidth: 1,
++    borderRadius: 8,
++    gap: 8,
++    padding: 12,
++  },
++  text: { color: theme.colors.foreground },
++}));
+diff --git a/packages/app/src/i18n/load-locale.test.ts b/packages/app/src/i18n/load-locale.test.ts
+new file mode 100644
+index 0000000..d5c96a1
+--- /dev/null
++++ b/packages/app/src/i18n/load-locale.test.ts
+@@ -0,0 +1,51 @@
++import { createInstance } from "i18next";
++import { describe, expect, it, vi } from "vitest";
++import { createLocaleLoader } from "./load-locale";
++import { en } from "./resources/en";
++
++it("shares one pending request and clears failed downloads for explicit retry", async () => {
++  const instance = createInstance();
++  await instance.init({ lng: "en", fallbackLng: "en", resources: { en: { translation: en } } });
++  let reject!: (error: Error) => void;
++  const pending = new Promise<typeof en>((_resolve, no) => {
++    reject = no;
++  });
++  const source = vi.fn().mockReturnValueOnce(pending).mockResolvedValue(en);
++  const load = createLocaleLoader(instance, {
++    ar: source,
++    es: source,
++    fr: source,
++    ja: source,
++    ko: source,
++    "pt-BR": source,
++    ru: source,
++    "zh-CN": source,
++  });
++  const first = load("fr");
++  expect(load("fr")).toBe(first);
++  reject(new Error("offline"));
++  await expect(first).rejects.toThrow("offline");
++  expect(instance.language).toBe("en");
++  await load("fr");
++  await load("fr");
++  await load("en");
++  expect(source).toHaveBeenCalledTimes(2);
++  expect(instance.hasResourceBundle("fr", "translation")).toBe(true);
++  expect(instance.language).toBe("en");
++});
++
++describe("fallback content", () => {
++  it("keeps English available for missing keys in a loaded language", async () => {
++    const instance = createInstance();
++    await instance.init({
++      lng: "fr",
++      fallbackLng: "en",
++      resources: {
++        en: { translation: en },
++        fr: { translation: { common: { back: "Retour" } } },
++      },
++    });
++    expect(instance.t("common.back")).toBe("Retour");
++    expect(instance.t("common.actions.retry")).toBe("Retry");
++  });
++});
+diff --git a/packages/app/src/i18n/load-locale.ts b/packages/app/src/i18n/load-locale.ts
+new file mode 100644
+index 0000000..2eba64e
+--- /dev/null
++++ b/packages/app/src/i18n/load-locale.ts
+@@ -0,0 +1,40 @@
++import type { SupportedLocale } from "./locales";
++import type { TranslationResources } from "./resources/en";
++import { i18n } from "./i18next";
++
++type Loaders = Record<Exclude<SupportedLocale, "en">, () => Promise<TranslationResources>>;
++const loaders: Loaders = {
++  ar: () => import("./resources/ar").then((module) => module.ar),
++  es: () => import("./resources/es").then((module) => module.es),
++  fr: () => import("./resources/fr").then((module) => module.fr),
++  ja: () => import("./resources/ja").then((module) => module.ja),
++  ko: () => import("./resources/ko").then((module) => module.ko),
++  "pt-BR": () => import("./resources/pt-BR").then((module) => module.ptBR),
++  ru: () => import("./resources/ru").then((module) => module.ru),
++  "zh-CN": () => import("./resources/zh-CN").then((module) => module.zhCN),
++};
++
++export function createLocaleLoader(
++  controller: Pick<typeof i18n, "hasResourceBundle" | "addResourceBundle">,
++  sources: Loaders,
++) {
++  const pending = new Map<SupportedLocale, Promise<void>>();
++  return function load(locale: SupportedLocale): Promise<void> {
++    if (locale === "en" || controller.hasResourceBundle(locale, "translation")) {
++      return Promise.resolve();
++    }
++    const existing = pending.get(locale);
++    if (existing) return existing;
++    const request = sources[locale]().then((resources) => {
++      controller.addResourceBundle(locale, "translation", resources, true, true);
++    });
++    pending.set(locale, request);
++    // Keep one request per language; a rejection must not poison the retry cache.
++    void request.then(
++      () => pending.delete(locale),
++      () => pending.delete(locale),
++    );
++    return request;
++  };
++}
++export const loadLocale = createLocaleLoader(i18n, loaders);
+diff --git a/packages/app/src/i18n/provider.test.tsx b/packages/app/src/i18n/provider.test.tsx
+new file mode 100644
+index 0000000..52f84c8
+--- /dev/null
++++ b/packages/app/src/i18n/provider.test.tsx
+@@ -0,0 +1,95 @@
++import React, { act, useEffect } from "react";
++import { createRoot, type Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import { I18nProvider } from "./provider";
++const state = vi.hoisted(() => ({ locale: "en", change: vi.fn(), load: vi.fn() }));
++vi.mock("@/hooks/use-settings", () => ({
++  useAppSettings: () => ({ settings: { language: state.locale } }),
++}));
++vi.mock("@/embedded/environment", () => ({ getEmbeddedHost: () => null }));
++vi.mock("expo-localization", () => ({ getLocales: () => [{ languageTag: "en" }] }));
++vi.mock("@/constants/platform", () => ({ isWeb: true }));
++vi.mock("./i18next", () => ({ i18n: { changeLanguage: state.change } }));
++vi.mock("./load-locale", () => ({ loadLocale: state.load }));
++vi.mock("react-i18next", () => ({
++  I18nextProvider: ({ children }: { children: React.ReactNode }) => children,
++}));
++vi.mock("./language-load-notice", () => ({
++  LanguageLoadNotice: ({ retry }: { retry: () => void }) => (
++    <button onClick={retry}>Retry language</button>
++  ),
++}));
++let root: Root;
++let dom: JSDOM;
++let mounts: number;
++function Child() {
++  useEffect(() => {
++    mounts++;
++  }, []);
++  return <input defaultValue="keep draft" />;
++}
++function render() {
++  root.render(
++    <I18nProvider>
++      <Child />
++    </I18nProvider>,
++  );
++}
++function deferred() {
++  let resolve!: () => void;
++  let reject!: (error: Error) => void;
++  const promise = new Promise<void>((yes, no) => {
++    resolve = yes;
++    reject = no;
++  });
++  return { promise, resolve, reject };
++}
++beforeEach(() => {
++  dom = new JSDOM("<!doctype html><div id='root'></div>");
++  for (const [key, value] of Object.entries({
++    React,
++    IS_REACT_ACT_ENVIRONMENT: true,
++    window: dom.window,
++    document: dom.window.document,
++    navigator: dom.window.navigator,
++  })) {
++    vi.stubGlobal(key, value);
++  }
++  state.locale = "en";
++  state.change.mockReset().mockResolvedValue(undefined);
++  state.load.mockReset().mockResolvedValue(undefined);
++  mounts = 0;
++  root = createRoot(document.getElementById("root")!);
++});
++afterEach(() => {
++  act(() => root.unmount());
++  dom.window.close();
++  vi.unstubAllGlobals();
++});
++it("does not apply a late language selection or remount the application", async () => {
++  const first = deferred();
++  state.locale = "fr";
++  state.load.mockReturnValueOnce(first.promise);
++  await act(async () => render());
++  const input = document.querySelector("input");
++  state.locale = "ja";
++  await act(async () => render());
++  await act(async () => first.resolve());
++  expect(state.change.mock.calls).toEqual([["ja"]]);
++  expect(document.querySelector("input")).toBe(input);
++  expect(mounts).toBe(1);
++});
++it("keeps the application on failure and retries only after an explicit action", async () => {
++  state.locale = "fr";
++  state.load.mockRejectedValueOnce(new Error("offline"));
++  await act(async () => render());
++  expect(document.body.textContent).toContain("Retry language");
++  expect(state.change).not.toHaveBeenCalled();
++  await act(async () => render());
++  expect(state.load).toHaveBeenCalledTimes(1);
++  await act(async () => document.querySelector("button")!.click());
++  expect(state.change).toHaveBeenCalledWith("fr");
++  expect(document.querySelector("button")).toBeNull();
++  expect(mounts).toBe(1);
++});
+diff --git a/packages/app/src/i18n/provider.tsx b/packages/app/src/i18n/provider.tsx
+index 6fb8677..eb56ab0 100644
+--- a/packages/app/src/i18n/provider.tsx
++++ b/packages/app/src/i18n/provider.tsx
+@@ -1,12 +1,13 @@
+ import { getEmbeddedHost } from "@/embedded/environment";
+ import * as Localization from "expo-localization";
+-import { type ReactNode, useMemo, useSyncExternalStore } from "react";
++import { type ReactNode, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+ import { I18nextProvider } from "react-i18next";
+ import { isWeb } from "@/constants/platform";
+ import { useAppSettings } from "@/hooks/use-settings";
+ import { i18n } from "./i18next";
+ import { resolveSupportedLocale } from "./locales";
+-import { ensureI18nLanguageForRender } from "./sync-language";
++import { loadLocale } from "./load-locale";
++import { LanguageLoadNotice } from "./language-load-notice";
+ 
+ interface I18nProviderProps {
+   children: ReactNode;
+@@ -23,11 +24,39 @@ function getSystemLocales(): string[] {
+ export function I18nProvider({ children }: I18nProviderProps) {
+   const { settings } = useAppSettings();
+   const host = getEmbeddedHost();
+-  const hostLocale = useSyncExternalStore(host?.subscribe ?? (() => () => {}), () => host?.locale, () => undefined);
+-  const systemLocales = useMemo(() => hostLocale ? [hostLocale === "zh" ? "zh-CN" : "en"] : getSystemLocales(), [hostLocale]);
++  const hostLocale = useSyncExternalStore(
++    host?.subscribe ?? (() => () => {}),
++    () => host?.locale,
++    () => undefined,
++  );
++  const systemLocales = useMemo(
++    () => (hostLocale ? [hostLocale === "zh" ? "zh-CN" : "en"] : getSystemLocales()),
++    [hostLocale],
++  );
+   const locale = resolveSupportedLocale(settings.language, systemLocales);
+ 
+-  ensureI18nLanguageForRender(locale, i18n);
++  const [failed, setFailed] = useState<string | null>(null);
++  const [attempt, setAttempt] = useState(0);
++  useEffect(() => {
++    let current = true;
++    setFailed(null);
++    void loadLocale(locale)
++      .then(() => {
++        // Loading an old selection may populate its cache, but cannot change the UI.
++        if (current) return i18n.changeLanguage(locale);
++      })
++      .catch(() => {
++        if (current) setFailed(locale);
++      });
++    return () => {
++      current = false;
++    };
++  }, [locale, attempt]);
+ 
+-  return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
++  return (
++    <I18nextProvider i18n={i18n}>
++      {children}
++      {failed === locale && <LanguageLoadNotice retry={() => setAttempt((value) => value + 1)} />}
++    </I18nextProvider>
++  );
+ }
+diff --git a/packages/app/src/screens/settings-screen.tsx b/packages/app/src/screens/settings-screen.tsx
+index 5e5e9be..e1aa3eb 100644
+--- a/packages/app/src/screens/settings-screen.tsx
++++ b/packages/app/src/screens/settings-screen.tsx
+@@ -343,7 +343,11 @@ function LanguageMenuItem({ value, activeLocale, selected, onChange }: LanguageM
+     : value;
+ 
+   return (
+-    <DropdownMenuItem selected={selected} onSelect={handleSelect}>
++    <DropdownMenuItem
++      testID={`settings-language-${value}`}
++      selected={selected}
++      onSelect={handleSelect}
++    >
+       {label}
+     </DropdownMenuItem>
+   );
+@@ -436,6 +440,7 @@ function GeneralSection({
+           <DropdownMenu>
+             <DropdownTrigger
+               accessibilityRole="button"
++              testID="settings-language-select"
+               accessibilityLabel={selectedLanguageLabel}
+               style={themeTriggerStyle}
+             >

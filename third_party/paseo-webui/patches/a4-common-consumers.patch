@@ -1,0 +1,112 @@
+diff --git a/node_modules/@expo/metro-config/build/serializer/serializeChunks.js b/node_modules/@expo/metro-config/build/serializer/serializeChunks.js
+index 40f4c80..d2e54f7 100644
+--- a/node_modules/@expo/metro-config/build/serializer/serializeChunks.js
++++ b/node_modules/@expo/metro-config/build/serializer/serializeChunks.js
+@@ -52,48 +52,49 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
+                 }
+             }
+         }
+-        const toCompare = [...chunks.values()];
+-        const commonDependencies = [];
+-        const commonConsumers = new Set();
+-        while (toCompare.length) {
+-            const chunk = toCompare.shift();
+-            for (const chunk2 of toCompare) {
+-                if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
+-                    const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
+-                    if (commonDeps.length) {
+-                        commonConsumers.add(chunk);
+-                        commonConsumers.add(chunk2);
+-                    }
+-                    for (const dep of commonDeps) {
+-                        chunk.deps.delete(dep);
+-                        chunk2.deps.delete(dep);
+-                    }
+-                    commonDependencies.push(...commonDeps);
+-                }
++        const asyncChunks = [...chunks].filter((chunk) => chunk.isAsync)
++            .sort((left, right) => left.name.localeCompare(right.name));
++        if (asyncChunks.some((chunk) => chunk.isEntry)) {
++            throw new Error('Vibes lazy common chunks do not support worker entries');
++        }
++        // Group by the exact consumers. Unrelated locale and grammar intersections
++        // must not pull one another into an otherwise independent dynamic import.
++        const consumersByModule = new Map();
++        asyncChunks.forEach((chunk, index) => {
++            for (const module of chunk.deps) {
++                const consumers = consumersByModule.get(module) ?? [];
++                consumers.push(index);
++                consumersByModule.set(module, consumers);
+             }
++        });
++        const sharedGroups = new Map();
++        for (const [module, consumers] of consumersByModule) {
++            if (consumers.length < 2) continue;
++            const key = consumers.join(',');
++            const group = sharedGroups.get(key) ?? { consumers, modules: [] };
++            group.modules.push(module);
++            sharedGroups.set(key, group);
+         }
+-        let commonChunk;
+-        // If common dependencies were found, extract them to the shared chunk.
+-        if (commonDependencies.length) {
+-            const commonDependenciesUnique = [...new Set(commonDependencies)];
+-            // This profile only exports web. Workers need their own runtime and are
+-            // intentionally rejected rather than given an incomplete shared graph.
+-            if ([...chunks].some((chunk) => chunk.isAsync && chunk.isEntry)) {
+-                throw new Error('Vibes lazy common chunks do not support worker entries');
++        for (const [index, group] of [...sharedGroups.values()].entries()) {
++            const shared = new Chunk(`/__common-${index}.js`, group.modules, graph, options, true, true);
++            for (const consumer of group.consumers) {
++                for (const module of group.modules) asyncChunks[consumer].deps.delete(module);
+             }
+-            commonChunk = new Chunk('/__common.js', commonDependenciesUnique, graph, options, true, true);
+-            for (const consumer of commonConsumers) consumer.requiredChunks.add(commonChunk);
+-            chunks.add(commonChunk);
++            chunks.add(shared);
+         }
+-        // TODO: Optimize this pass more.
+-        // Remove all dependencies from async chunks that are already in the common chunk.
+-        for (const chunk of [...chunks.values()]) {
+-            if (!chunk.isEntry && chunk !== commonChunk) {
+-                for (const dep of chunk.deps) {
+-                    if (commonChunk?.deps.has(dep)) chunk.requiredChunks.add(commonChunk);
+-                    if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
+-                        chunk.deps.delete(dep);
+-                    }
++        // Derive prerequisites from real synchronous edges after ownership settles.
++        // A shared module may itself depend on a wider shared group.
++        const owners = new Map();
++        for (const chunk of chunks) {
++            for (const module of chunk.deps) owners.set(module.path, chunk);
++        }
++        for (const chunk of chunks) {
++            if (chunk === entryChunk) continue;
++            for (const module of chunk.deps) {
++                for (const dependency of module.dependencies.values()) {
++                    if (!(0, isResolvedDependency_1.isResolvedDependency)(dependency) || dependency.data.data.asyncType) continue;
++                    const owner = owners.get(dependency.absolutePath);
++                    if (owner && owner !== chunk && owner.isAsync) chunk.requiredChunks.add(owner);
+                 }
+             }
+         }
+@@ -224,8 +225,17 @@ class Chunk {
+                     // helper doesn't reload and reevaluate the entrypoint.
+                     if (chunkContainingModule.isAsync) {
+                         const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+-                        const prerequisites = [...chunkContainingModule.requiredChunks]
+-                            .filter((chunk) => chunk.isAsync)
++                        const required = new Set();
++                        const collect = (chunk) => {
++                            for (const prerequisite of chunk.requiredChunks) {
++                                if (!prerequisite.isAsync || required.has(prerequisite)) continue;
++                                required.add(prerequisite);
++                                collect(prerequisite);
++                            }
++                        };
++                        collect(chunkContainingModule);
++                        required.delete(chunkContainingModule);
++                        const prerequisites = [...required]
+                             .map((chunk) => (baseUrl ?? '/') + chunk.getFilenameForConfig(serializerConfig));
+                         const target = (baseUrl ?? '/') + moduleIdName;
+                         computedAsyncModulePaths[dependency.absolutePath] = prerequisites.length

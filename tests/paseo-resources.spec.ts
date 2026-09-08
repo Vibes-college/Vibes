@@ -10,8 +10,8 @@ test('terminal hidden state is retained and document exit preserves the remote p
   browser,
 }, info) => {
   test.skip(
-    !['A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
-    'Requires an A2/A3 production fixture host.',
+    !['A2', 'A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+    'Requires an A2/A3/A4 production fixture host.',
   );
   test.setTimeout(90000);
   await withMockSession(browser, info, async ({ page, open, client, cwd, agentId }) => {
@@ -98,8 +98,8 @@ test('unsaved file content and caret survive hidden and switched workspace views
   browser,
 }, info) => {
   test.skip(
-    !['A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
-    'Requires an A2/A3 production fixture host.',
+    !['A2', 'A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+    'Requires an A2/A3/A4 production fixture host.',
   );
   test.setTimeout(90000);
   await withMockSession(browser, info, async (fixture) => {
@@ -159,8 +159,8 @@ test('editor renderer unmount preserves the draft, caret and scroll position', a
   browser,
 }, info) => {
   test.skip(
-    !['A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
-    'Requires an A2/A3 production fixture host.',
+    !['A2', 'A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+    'Requires an A2/A3/A4 production fixture host.',
   );
   test.setTimeout(90000);
   await withMockSession(browser, info, async ({ page, open, cwd }) => {

@@ -253,3 +253,19 @@ browser-test及独立缓存profile改为从请求开始追踪本地同源请求�
 首次同源计数实现又在视频冷暖测试收尾失败；a3-drain-own-diagnostic.log显示旧文档的full.mp4仍留在计数中，真实HTTP trace已完成。检查固定Playwright的_onClearLifecycle发现新文档提交会重置旧文档请求。修正为只在真实顶层HTTP导航提交后移除替换前的请求，保留新请求；同文档hash/ClientRouter导航不重置，子frame销毁清除其旧请求，非HTTP的blob不算代理活动。视频冷暖、搜索历史及受控排空三配置9项通过（a3-drain-navigation-fixed.log）。有已知失败的整站重跑已主动中止并保存结果，必须再完成一轮全量验收。
 
 最终A3整站verify通过类型、lint、格式、文档及122项单元，浏览器188通过、109按设备或实验配置明确跳过（a3-phase-verify-lifecycle.log）；单独A3最终生产包48项全通过，默认Explore的budget通过（a3-phase-budget.log）。这一轮WebKit音频恢复通过，仍保留既有间歇失败与裸audio对照，不宣称根因已修复；A3本身仍未达到最终首开预算。
+
+## R21：语言资源与精确共享边界
+
+A4在A3累计配置上保留英文静态回退，按实际选择下载八种其他翻译；provider以effect有效期隔离迟到结果，失败保留当前界面与显式重试。翻译共用插件设置表与语法的使用者不同，因此共享块按完整消费者集合分组，再从真实同步边建立前置依赖及传递闭包，不能沿用单个全局common。构建回执为53文件，原生类型检查、144项原生单元测试和实际Expo运行时/分组检查通过（probe-mermaid/a4-language-build.log）。这仍是工程探针，不计最终A/B消融、性能或预算通过。
+
+2026-09-08，桌面三项语言专项通过；三配置联合57项中56通过，一项mobile-webkit文件深链接未打开（a4-all-browser.log/json），九项语言覆盖均通过。保持产物不变的3次原用例及8次事件诊断全部通过（a4-deeplink-diagnostic.log、a4-deeplink-events.log），未确定最初失败原因；不能把偶发未复现当修复。手机用例随后按设备hasTouch使用tap，桌面保持click。内置浏览器在同一A4生产站实际完成中英日切换，保存a4-cua-english/japanese/chinese.png；没有新建真实模型任务。
+
+第二轮a4-final-browser.log/json仍为56通过1失败：触摸文件链接及九项语言用例通过；mobile-webkit终端用例在SDK createWorkspace等待60000ms超时，未进入浏览器功能断言。原轮同一终端用例通过；保留两轮原始记录，不把组合覆盖描述为单轮全绿。
+
+## R22：原生插件执行与网站CSP的实际冲突
+
+准备T032时发现固定上游plugins/evaluate.ts通过globalThis.eval执行从daemon取得的插件clientBundle。用同版mock隔离daemon安装一个仅显示文本和Settings图标的本地插件、在A4真实生产CSP下打开原生设置→插件，实际显示失败及unsafe-eval未获允许。证据为probe-mermaid/a4-plugin-csp-settings.log和plugin-csp/trace.zip；首次只检查侧栏未出现的a4-plugin-csp.log不足以单独证明原因，第二次设置错误才确认。探针结束已移除该测试插件并恢复原pluginsEnabled值，未改真实daemon或网站CSP。
+
+当前直接挂载方案不能同时保持网站现有禁止eval策略与FR003完整Web插件界面；这不是图标拆包可以解决的问题。已向用户呈现两个具体范围：保留插件界面并改成独立来源文档嵌入（需要重新验收宿主/来源/导航），或明确排除客户端插件界面、仍保留后端工具插件。用户选择前不修改CSP、不把未完成的T032或A/B配置标成完成；现有加载、聊天和语言结果仍按各自覆盖保留。
+
+A4阶段整站verify通过类型、lint、格式、文档、122项单元和188项浏览器测试，118项按设备或未启用实验明确跳过（a4-phase-verify.log）。随后串行运行默认Explore budget通过（a4-phase-budget.log）。A4原生入口静态gzip为2712275字节、全部原生JS为4695727字节，尚未包括宿主；与最终门槛相比仍未达标，不能把普通网站预算通过当助手预算通过（a4-static-size.json）。

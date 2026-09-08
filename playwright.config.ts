@@ -19,6 +19,7 @@ export default defineConfig({
     'paseo-features.spec.ts',
     'paseo-resources.spec.ts',
     'paseo-highlight.spec.ts',
+    'paseo-language.spec.ts',
   ],
   fullyParallel: true,
   // A single local Worker serves the suite; serialize clients to avoid proxy connection loss.

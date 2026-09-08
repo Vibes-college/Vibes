@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { withMockSession } from './fixtures/paseo-webui/mock-session.ts';
+import { highlightResources } from './fixtures/paseo-webui/highlight-resources.ts';
 
 test.use({ trace: 'off', screenshot: 'off', video: 'off' });
 
@@ -10,8 +11,8 @@ for (const failFirst of [false, true]) {
     browser,
   }, info) => {
     test.skip(
-      !['A1', 'A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
-      'Requires an A1/A2/A3 production fixture host.',
+      !['A1', 'A2', 'A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+      'Requires an A1/A2/A3/A4 production fixture host.',
     );
     test.setTimeout(90000);
     const receipt = JSON.parse(
@@ -122,8 +123,8 @@ for (const failFirst of [false, true]) {
     browser,
   }, info) => {
     test.skip(
-      !['A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
-      'Requires an A2/A3 production fixture host.',
+      !['A2', 'A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+      'Requires an A2/A3/A4 production fixture host.',
     );
     test.setTimeout(90000);
     const receipt = JSON.parse(
@@ -188,8 +189,8 @@ for (const failFirst of [false, true]) {
     browser,
   }, info) => {
     test.skip(
-      !['A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
-      'Requires an A2/A3 production fixture host.',
+      !['A2', 'A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+      'Requires an A2/A3/A4 production fixture host.',
     );
     test.setTimeout(90000);
     const receipt = JSON.parse(
@@ -250,8 +251,8 @@ test('native assistant file deep link activates the lazy editor at its target li
   browser,
 }, info) => {
   test.skip(
-    !['A2', 'A3'].includes(process.env.PASEO_MOCK_PROFILE || ''),
-    'Requires an A2/A3 production fixture host.',
+    !['A2', 'A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+    'Requires an A2/A3/A4 production fixture host.',
   );
   test.setTimeout(90000);
   await withMockSession(browser, info, async ({ page, createSession, open }) => {
@@ -265,7 +266,9 @@ test('native assistant file deep link activates the lazy editor at its target li
     await open(session);
     await page.locator('#root textarea:visible').fill('Show the configured file link.');
     await page.getByRole('button', { name: '发送消息', exact: true }).click();
-    await page.getByText('Open fixture line', { exact: true }).click();
+    const fileLink = page.getByText('Open fixture line', { exact: true });
+    if (info.project.use.hasTouch) await fileLink.tap();
+    else await fileLink.click();
     await expect(page.getByTestId('workspace-file-pane')).toBeVisible();
     await expect(page.getByLabel('第 18 行，第 1 列', { exact: true })).toBeVisible();
     await expect(page.locator('[contenteditable=true]:visible')).toContainText('Fixture line 18');
@@ -276,18 +279,12 @@ for (const failFirst of [false, true]) {
   test(`shared highlighter keeps raw code readable${failFirst ? ' through failure and retry' : ' while loading'}`, async ({
     browser,
   }, info) => {
-    test.skip(process.env.PASEO_MOCK_PROFILE !== 'A3', 'Requires the A3 production fixture host.');
-    test.setTimeout(90000);
-    const receipt = JSON.parse(
-      readFileSync(resolve('.scratch/paseo-webui/artifacts/A3/build-receipt.json'), 'utf8'),
+    test.skip(
+      !['A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+      'Requires an A3/A4 production fixture host.',
     );
-    const pathFor = (pattern: RegExp) => {
-      const files = receipt.files.filter((file: { path: string }) => pattern.test(file.path));
-      expect(files).toHaveLength(1);
-      return receipt.publicPath + '/' + files[0].path;
-    };
-    const shared = pathFor(/\/__common-[a-f0-9]+\.js$/);
-    const runtime = pathFor(/\/highlight-runtime-[a-f0-9]+\.js$/);
+    test.setTimeout(90000);
+    const [shared, runtime] = highlightResources();
     const code = 'const fixtureColor = 42;';
     await withMockSession(browser, info, async ({ page, open, createSession }) => {
       const session = await createSession({

@@ -16,12 +16,12 @@ code-sources:
     'scripts/paseo-webui-dependencies.ts',
     'third_party/paseo-webui/',
   ]
-code-revision: '8162765881baa5f9e7efbc5aad6ae7d3e4614b339f82548c922e9f2b358ee437'
+code-revision: 'fc575747f6f6418f85566e29f5df06378416f723a47b962edd7933985cae1779'
 ---
 
 # 原生Paseo嵌入边界
 
-用户操作和有效验收见[本地助手](../features/local-assistant.md)。当前H是固定0.7.2的完整WebUI嵌入实验，A1验证Mermaid按需，A2累计加入终端/文件主体，A3累计加入共享高亮与编辑器位置恢复；尚未完成A/B选择，均不是正式发布配置。
+用户操作和有效验收见[本地助手](../features/local-assistant.md)。当前H是固定0.7.2的完整WebUI嵌入实验，A1验证Mermaid按需，A2累计加入终端/文件主体，A3累计加入共享高亮与编辑器位置恢复，A4累计加入语言按需；尚未完成A/B选择，均不是正式发布配置。
 
 ## 构建与资源
 
@@ -32,7 +32,7 @@ node --experimental-strip-types scripts/paseo-webui-build.ts H
 SITE_URL=https://vibes.college VIBES_PASEO_PROFILE=H VIBES_OUT_DIR=.scratch/paseo-webui/h-site npm run build
 ```
 
-未设`VIBES_PASEO_PROFILE`时Astro在构建图形成前将入口替换为空组件，不输出助手客户端chunk、入口或原生资源；仅在页面条件中不渲染组件仍会遗留chunk，因此不能作为构建排除。H/A1/A2/A3必须显式指定`.scratch/`内输出，发布模式VIBES_DEPLOY=1及其他配置拒绝。构建期间`build-config.ts`核对固定提交、锁文件、完整source/dependency补丁记录、摘要前缀及每个声明资源的大小、哈希和真实路径；不接受符号链接或越界路径。页面只接受一个入口JS及最多20项CSS，路径必须属于同一16位摘要前缀，携带SHA256完整性值。未知字段不向运行时复制。
+未设`VIBES_PASEO_PROFILE`时Astro在构建图形成前将入口替换为空组件，不输出助手客户端chunk、入口或原生资源；仅在页面条件中不渲染组件仍会遗留chunk，因此不能作为构建排除。H/A1/A2/A3/A4必须显式指定`.scratch/`内输出，发布模式VIBES_DEPLOY=1及其他配置拒绝。构建期间`build-config.ts`核对固定提交、锁文件、完整source/dependency补丁记录、摘要前缀及每个声明资源的大小、哈希和真实路径；不接受符号链接或越界路径。页面只接受一个入口JS及最多20项CSS，路径必须属于同一16位摘要前缀，携带SHA256完整性值。未知字段不向运行时复制。
 
 原生补丁为Metro设置`/vendor/paseo/{摘要}`前缀；摘要来自固定提交、所选配置与补丁清单。Astro完成后`paseo-webui-assets.ts`将声明资源及Paseo许可、第三方许可说明复制到该前缀。H使用完整原生产物。脚本预算从已核验清单读取全部原生JS，宿主仅允许动态加载；静态引用/预加载原生入口、漏列脚本或摘要改变都失败，共享宿主依赖保留在公共预算。首次打开暂以全部原生JS加宿主独有依赖作保守上界，不能据此宣称拆包收益；冻结目标来自budget-baseline.json，H目前不满足最终门槛。最终不可变缓存发布验收仍未完成。隔离daemon托管H测试站时不自动应用Cloudflare的`_headers`；CSP另用本地Worker实际响应验证。启用助手的构建仅为connect-src增加固定`wss://relay.paseo.sh`，普通构建仍同源；版本化vendor路径缓存一年且immutable，不新增任意脚本、frame或worker来源。当前欢迎/聊天路径没有独立WASM、字体或worker请求，不据此认定未来外围能力通过。
 
@@ -89,3 +89,9 @@ Expo默认把不同异步块的交集升为首开common资源，因此单加impo
 `a2-editor-lifecycle.patch`以原生FileEditorModel为弱键，仅保存选择及CodeMirror滚动快照；不复制草稿、不增加持久存储。layout清理阶段在DOM移除前保存位置并destroy；同一导航请求重建时恢复，新文件行定位请求优先。文件模型仍负责自动保存及关闭时取消观察/定时器；终端仍由原生控制器释放订阅、监听和渲染器，不发送kill来清理网页。
 
 A2/A3导出在精确补丁应用期间运行原生tsgo；A3还执行原生高亮、终端和文件模型测试，以及实际安装版Expo加载器的顺序、去重和失败重试检查。专项测试为paseo-features、paseo-resources和paseo-highlight；普通构建明确跳过未启用的实验。当前累计工程探针不直接作为冻结的单变量A1—A6消融样本，最终实验须按各自配置重新构建并匹配输入/回执。
+
+A4以相同命令选择A4、输出`.scratch/paseo-webui/a4-site`。`a4-language-lazy.patch`让英文静态保留、八种翻译动态加载；加载器合并同语言并发请求，失败清除缓存，provider仅应用仍有效的选择；嵌入模式的系统语言取宿主中英文，未嵌入时使用设备语言。失败提示不卸载应用，保留英文缺词回退。`tests/paseo-language.spec.ts`覆盖实际九语言请求边界、首次与切换失败重试及迟到下载隔离。
+
+`a4-common-consumers.patch`按模块的完整使用者集合拆分共享块，再根据同步依赖建立前置资源及传递闭包，避免语言切换顺带加载语法。运行固定版本序列化器及Chunk方法的`verify-native-chunk-groups.mjs`检查模块唯一归属、共享依赖传递和worker拒绝；生产浏览器额外验证语言不会请求语法资源。A4导出执行原生类型检查及144项单元测试，B中英精简及最终预算尚未完成。
+
+固定上游客户端插件通过globalThis.eval执行clientBundle，当前直接挂载的生产CSP禁止该操作。A4实际最小插件在原生设置页显示该策略错误，证据为probe-mermaid/a4-plugin-csp-settings.log；测试插件已移除，隔离daemon插件开关已恢复。客户端插件界面尚不可用，独立来源嵌入与缩小能力范围待决定，不能以后台工具可用替代该验收。

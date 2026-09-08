@@ -204,8 +204,13 @@ export function buildWebUI(options: {
 
 function main() {
   const [action, ...extra] = process.argv.slice(2);
-  if (!['fetch', 'B0', 'G1', 'H', 'A1', 'A2', 'A3', 'B0-graph'].includes(action) || extra.length)
-    throw new Error('Usage: paseo-webui-build.ts fetch | B0 | G1 | H | A1 | A2 | A3 | B0-graph');
+  if (
+    !['fetch', 'B0', 'G1', 'H', 'A1', 'A2', 'A3', 'A4', 'B0-graph'].includes(action) ||
+    extra.length
+  )
+    throw new Error(
+      'Usage: paseo-webui-build.ts fetch | B0 | G1 | H | A1 | A2 | A3 | A4 | B0-graph',
+    );
   const identity: UpstreamSource = JSON.parse(
     readFileSync(join(root, 'third_party/paseo-webui/upstream.json'), 'utf8'),
   );
@@ -230,6 +235,7 @@ function main() {
     A1?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
     A2?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
     A3?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
+    A4?: { source: SourcePatch[]; dependencies: DependencyPatch[] };
   } = JSON.parse(readFileSync(join(root, 'third_party/paseo-webui/patches/series.json'), 'utf8'));
   const mountedProfile =
     action === 'G1'
@@ -242,16 +248,23 @@ function main() {
             ? series.A2
             : action === 'A3'
               ? series.A3
-              : undefined;
+              : action === 'A4'
+                ? series.A4
+                : undefined;
   if (
-    (action === 'G1' || action === 'H' || action === 'A1' || action === 'A2' || action === 'A3') &&
+    (action === 'G1' ||
+      action === 'H' ||
+      action === 'A1' ||
+      action === 'A2' ||
+      action === 'A3' ||
+      action === 'A4') &&
     !mountedProfile
   )
     throw new Error('Mount profile is not configured.');
   const publicPath =
     action === 'G1'
       ? '/vendor/paseo/g1-direct'
-      : action === 'H' || action === 'A1' || action === 'A2' || action === 'A3'
+      : action === 'H' || action === 'A1' || action === 'A2' || action === 'A3' || action === 'A4'
         ? '/vendor/paseo/' +
           sha256(
             Buffer.from(
@@ -290,7 +303,7 @@ function main() {
     graphFile: action === 'B0-graph' ? graphFile : undefined,
     publicPath,
     mermaidSandboxSource:
-      action === 'A1' || action === 'A2' || action === 'A3'
+      action === 'A1' || action === 'A2' || action === 'A3' || action === 'A4'
         ? 'packages/app/src/components/markdown/fence/mermaid/runtime/html.gen.ts'
         : undefined,
     exportWeb: () => {
@@ -303,7 +316,13 @@ function main() {
         )
           delete env[key];
       if (action === 'B0-graph') env.VIBES_PASEO_GRAPH_FILE = graphFile;
-      if (action === 'H' || action === 'A1' || action === 'A2' || action === 'A3')
+      if (
+        action === 'H' ||
+        action === 'A1' ||
+        action === 'A2' ||
+        action === 'A3' ||
+        action === 'A4'
+      )
         env.VIBES_PASEO_BASE_URL = publicPath;
       const args = ['run', 'build:web', '--workspace=@getpaseo/app'];
       if (probeExport) args.push('--', '--output-dir', probeExport);
@@ -312,7 +331,7 @@ function main() {
         env,
         stdio: 'inherit',
       });
-      if (action === 'A2' || action === 'A3') {
+      if (action === 'A2' || action === 'A3' || action === 'A4') {
         // Check while the exact declared source patches and workspace exports are applied.
         execFileSync(join(source, 'node_modules/.bin/tsgo'), ['--noEmit'], {
           cwd: join(source, 'packages/app'),
@@ -320,7 +339,14 @@ function main() {
           stdio: 'inherit',
         });
       }
-      if (action === 'A3') {
+      if (action === 'A4') {
+        execFileSync(
+          process.execPath,
+          [join(root, 'tests/fixtures/paseo-webui/verify-native-chunk-groups.mjs'), source],
+          { env, stdio: 'inherit' },
+        );
+      }
+      if (action === 'A3' || action === 'A4') {
         execFileSync(
           process.execPath,
           [join(root, 'tests/fixtures/paseo-webui/verify-native-async-loader.mjs'), source],
@@ -340,6 +366,14 @@ function main() {
             'src/terminal/runtime/terminal-emulator-runtime.test.ts',
             'src/file-pane/editor/model.test.ts',
             'src/file-pane/live-file/model.test.ts',
+            ...(action === 'A4'
+              ? [
+                  'src/i18n/load-locale.test.ts',
+                  'src/i18n/provider.test.tsx',
+                  'src/i18n/locales.test.ts',
+                  'src/i18n/resources.test.ts',
+                ]
+              : []),
           ],
           {
             cwd: join(source, 'packages/app'),

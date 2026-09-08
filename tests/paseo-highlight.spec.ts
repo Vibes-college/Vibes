@@ -1,23 +1,18 @@
 import { test, expect } from '@playwright/test';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { withMockSession } from './fixtures/paseo-webui/mock-session.ts';
+import { highlightResources } from './fixtures/paseo-webui/highlight-resources.ts';
 
 test.use({ trace: 'off', screenshot: 'off', video: 'off' });
-
-function chunks() {
-  const receipt = JSON.parse(
-    readFileSync(resolve('.scratch/paseo-webui/artifacts/A3/build-receipt.json'), 'utf8'),
-  );
-  return receipt.files
-    .filter((f: { path: string }) => /\/(?:__common|highlight-runtime)-[a-f0-9]+\.js$/.test(f.path))
-    .map((f: { path: string }) => receipt.publicPath + '/' + f.path) as string[];
-}
 
 test('highlighted chat copies original code and file editor reuses shared definitions', async ({
   browser,
 }, info) => {
-  test.skip(process.env.PASEO_MOCK_PROFILE !== 'A3', 'Requires the A3 production fixture host.');
+  test.skip(
+    !['A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+    'Requires an A3/A4 production fixture host.',
+  );
   test.setTimeout(90000);
   await withMockSession(browser, info, async ({ page, open, createSession }) => {
     const code = "  const fixture = '<tag>&';\n  console.log(fixture);";
@@ -50,7 +45,7 @@ test('highlighted chat copies original code and file editor reuses shared defini
     await expect
       .poll(() => page.evaluate(() => Reflect.get(window, '__fixtureClipboard')))
       .toBe(code);
-    const shared = chunks();
+    const shared = highlightResources();
     expect(shared).toHaveLength(2);
     for (const path of shared) expect(downloads.filter((v) => v === path)).toHaveLength(1);
     await page.getByRole('button', { name: '打开侧边面板', exact: true }).click();
@@ -73,7 +68,10 @@ test('highlighted chat copies original code and file editor reuses shared defini
 test('tool content beyond the native highlight limit stays complete without grammar downloads', async ({
   browser,
 }, info) => {
-  test.skip(process.env.PASEO_MOCK_PROFILE !== 'A3', 'Requires the A3 production fixture host.');
+  test.skip(
+    !['A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+    'Requires an A3/A4 production fixture host.',
+  );
   test.setTimeout(90000);
   await withMockSession(browser, info, async ({ page, open }) => {
     const downloads: string[] = [];
@@ -93,7 +91,7 @@ test('tool content beyond the native highlight limit stays complete without gram
     await expect.poll(() => raw.textContent().then((text) => text?.length)).toBe(120000);
     // Let several stable-content timer intervals pass; a delayed download is still a failure.
     await page.waitForTimeout(800);
-    for (const path of chunks()) expect(downloads).not.toContain(path);
+    for (const path of highlightResources()) expect(downloads).not.toContain(path);
     await info.attach('highlight-native-limit', {
       body: JSON.stringify({ length: 120000, downloads }),
       contentType: 'application/json',
@@ -104,7 +102,10 @@ test('tool content beyond the native highlight limit stays complete without gram
 test('native edit details load the shared highlighter only when opened', async ({
   browser,
 }, info) => {
-  test.skip(process.env.PASEO_MOCK_PROFILE !== 'A3', 'Requires the A3 production fixture host.');
+  test.skip(
+    !['A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+    'Requires an A3/A4 production fixture host.',
+  );
   test.setTimeout(90000);
   await withMockSession(browser, info, async ({ page, open }) => {
     const downloads: string[] = [];
@@ -114,18 +115,19 @@ test('native edit details load the shared highlighter only when opened', async (
     await page.getByRole('button', { name: '发送消息', exact: true }).click();
     const row = page.getByRole('button').filter({ hasText: 'use-scroll-anchor.ts' }).first();
     await expect(row).toBeVisible({ timeout: 30000 });
-    for (const path of chunks()) expect(downloads).not.toContain(path);
+    for (const path of highlightResources()) expect(downloads).not.toContain(path);
     await row.click({ position: { x: 8, y: 8 } });
     await expect(page.getByTestId('tool-call-sheet-close')).toBeVisible();
     await expect(
       page.getByText('const NEAR_BOTTOM_PX = 160;', { exact: false }).last(),
     ).toBeVisible();
-    for (const path of chunks())
+    for (const path of highlightResources())
       await expect.poll(() => downloads.filter((p) => p === path).length).toBe(1);
     await page.getByTestId('tool-call-sheet-close').click();
     await row.click({ position: { x: 8, y: 8 } });
     await expect(page.getByTestId('tool-call-sheet-close')).toBeVisible();
-    for (const path of chunks()) expect(downloads.filter((p) => p === path)).toHaveLength(1);
+    for (const path of highlightResources())
+      expect(downloads.filter((p) => p === path)).toHaveLength(1);
     await info.attach('tool-highlight-boundary', {
       body: JSON.stringify({ downloads }),
       contentType: 'application/json',
@@ -134,7 +136,10 @@ test('native edit details load the shared highlighter only when opened', async (
 });
 
 test('unsupported fence languages do not request unused grammars', async ({ browser }, info) => {
-  test.skip(process.env.PASEO_MOCK_PROFILE !== 'A3', 'Requires the A3 production fixture host.');
+  test.skip(
+    !['A3', 'A4'].includes(process.env.PASEO_MOCK_PROFILE || ''),
+    'Requires an A3/A4 production fixture host.',
+  );
   test.setTimeout(90000);
   await withMockSession(browser, info, async ({ page, open, createSession }) => {
     const code = "printf 'opaque fixture <&>'";
@@ -151,6 +156,6 @@ test('unsupported fence languages do not request unused grammars', async ({ brow
     );
     await expect(raw).toHaveText(code);
     await page.waitForTimeout(800);
-    for (const path of chunks()) expect(downloads).not.toContain(path);
+    for (const path of highlightResources()) expect(downloads).not.toContain(path);
   });
 });

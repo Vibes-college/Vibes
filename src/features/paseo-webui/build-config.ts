@@ -23,15 +23,15 @@ export function getPaseoBuild(): PaseoBuild | null {
   if (cached !== undefined) return cached;
   const profile = process.env.VIBES_PASEO_PROFILE;
   if (!profile) return (cached = null);
-  // Until the final candidate is selected, integration is only an isolated H/A1/A2/A3 build.
+  // Until the final candidate is selected, integration is only an isolated H/A1/A2/A3/A4 build.
   if (
     process.env.VIBES_DEPLOY === '1' ||
-    !['H', 'A1', 'A2', 'A3'].includes(profile) ||
+    !['H', 'A1', 'A2', 'A3', 'A4'].includes(profile) ||
     !process.env.VIBES_OUT_DIR ||
     !resolve(process.env.VIBES_OUT_DIR).startsWith(resolve('.scratch') + '/')
   )
     throw new Error(
-      'H/A1/A2/A3 requires an explicit isolated .scratch output; no production candidate is selected.',
+      'H/A1/A2/A3/A4 requires an explicit isolated .scratch output; no production candidate is selected.',
     );
   const directory = resolve('.scratch/paseo-webui/artifacts', profile);
   const receipt = JSON.parse(readFileSync(join(directory, 'build-receipt.json'), 'utf8'));

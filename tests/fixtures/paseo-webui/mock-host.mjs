@@ -3,7 +3,8 @@ import { connect } from 'node:net';
 import { readFileSync, statSync } from 'node:fs';
 import { resolve, extname, sep } from 'node:path';
 const profile = process.env.PASEO_MOCK_PROFILE || 'H';
-if (!['H', 'A1', 'A2', 'A3'].includes(profile)) throw new Error('Unknown isolated fixture profile');
+if (!['H', 'A1', 'A2', 'A3', 'A4'].includes(profile))
+  throw new Error('Unknown isolated fixture profile');
 const root = resolve(`.scratch/paseo-webui/${profile.toLowerCase()}-site`);
 const mime = {
   '.html': 'text/html',
