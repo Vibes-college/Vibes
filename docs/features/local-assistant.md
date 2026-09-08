@@ -23,7 +23,7 @@ code-sources:
     'tests/unit/assistant-recovery.test.ts',
     'tests/unit/assistant-diagnostics.test.ts',
   ]
-code-revision: '817046987a9671968b82168029f8232af76416232aeef85f34f2c9620c9b2a0d'
+code-revision: '2b988a339761dacfbbea1c96844780b134ec735a2cb240173afafeba0474615c'
 ---
 
 # 功能名：使用本地助手

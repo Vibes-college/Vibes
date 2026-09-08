@@ -653,12 +653,12 @@ export class AssistantStore {
         });
         void this.refreshAgent(event.agentId);
       } else if (value.type === 'permission_requested' || value.type === 'permission_resolved')
-        void this.refreshAgent(event.agentId);
+        void this.select(event.agentId);
     } else if (
       event.type === 'agent_permission_request' ||
       event.type === 'agent_permission_resolved'
     )
-      void this.refreshAgent(event.agentId);
+      void this.select(event.agentId);
   }
   private async refreshAgent(id: string) {
     const generation = this.generation,

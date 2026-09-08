@@ -473,3 +473,42 @@ test('review: older request failure must not discard buffered live status', asyn
   assert.equal(f.store.getSnapshot().agent?.status, 'running');
   await f.store.disconnect();
 });
+
+test('review: failed older load must keep resolved approval disabled during authoritative refresh', async () => {
+  const f = fixture();
+  f.current({
+    ...agent(),
+    pendingPermissions: [{ id: 'p', provider: 'codex', kind: 'tool', name: 'Write' }],
+  });
+  await f.store.pair(offer, false);
+  f.driver.timeline = async () => ({
+    ...page(),
+    agent: {
+      ...agent(),
+      pendingPermissions: [{ id: 'p', provider: 'codex', kind: 'tool', name: 'Write' }],
+    },
+    startCursor: { epoch: 'e1', seq: 4 },
+    hasOlder: true,
+  });
+  await f.store.select('a');
+  const pending = deferred<TimelinePage>();
+  f.driver.timeline = async () => pending.promise;
+  const fresh = deferred<Awaited<ReturnType<Connection['refresh']>>>();
+  f.driver.refresh = () => fresh.promise;
+  const older = f.store.older();
+  f.emit({
+    type: 'agent_permission_resolved',
+    agentId: 'a',
+    requestId: 'p',
+    resolution: { behavior: 'deny' },
+  } as unknown as DaemonEvent);
+  pending.reject(new Error('transient'));
+  await older;
+  const approving = f.store.permission('a', 'p', { behavior: 'allow' });
+  await new Promise((r) => setImmediate(r));
+  fresh.resolve({ agent: agent(), project: null });
+  await approving;
+  const calls = f.counts().permissions;
+  await f.store.disconnect();
+  assert.equal(calls, 0);
+});
