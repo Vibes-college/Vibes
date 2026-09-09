@@ -11,7 +11,7 @@ amended-by: []
 
 2026-09-08核对main为`0c210ee4742a6c80de7938688fb34f58674a0e8d`，当前没有助手。PR #10头为`e6e3bf863f6bb81b7b5a3206a31010cfca2e9214`；PR #11头为`c8f9d8c522226f6658b37d003b5f7b566185bd4a`；均为未合并Draft。本规格使用013，保留011/012编号与原分支，不修改其状态或清理资源。
 
-**决定**：独立新PR，不整批cherry-pick旧实现。按固定源码选择可复用UI、宿主边界和回归场景，逐项记录本地补丁。用户这次明确选择官方Web协调能力，替代早先assistant-ui方向。
+**已确认的工作方式**：独立新PR，不整批cherry-pick旧实现。按固定源码研究可复用UI、宿主边界和回归场景，逐项记录候选补丁。用户倾向优先复用官方Web协调能力，并要求先澄清用途和取舍再实施；这替代早先直接延续assistant-ui的方向，但不表示具体接入架构和功能已批准。
 
 **理由**：PR #10的[连接所有权](https://github.com/Vibes-college/Vibes/blob/e6e3bf863f6bb81b7b5a3206a31010cfca2e9214/src/lib/assistant/connection-owner.ts)、[恢复器](https://github.com/Vibes-college/Vibes/blob/e6e3bf863f6bb81b7b5a3206a31010cfca2e9214/src/lib/assistant/recovery.ts)、[会话store](https://github.com/Vibes-college/Vibes/blob/e6e3bf863f6bb81b7b5a3206a31010cfca2e9214/src/lib/assistant/store.ts)、[操作账本](https://github.com/Vibes-college/Vibes/blob/e6e3bf863f6bb81b7b5a3206a31010cfca2e9214/src/lib/assistant/operation-ledger.ts)已承担连接代次、生命周期、订阅和快照竞争、权威历史及未知结果。这些是原生协调层应覆盖的验收清单，不再作为新架构移植。
 
