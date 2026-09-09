@@ -27,7 +27,7 @@ amended-by: []
 - [x] T009 在third_party/paseo-webui/和scripts/paseo-webui-*.ts实现单产品可重放构建、独立目录、许可、资源回执；不带多配置实验引擎。
 - [x] T010 在src/features/paseo-webui/{asset-contract,build-config}.ts与scripts/build.ts、astro.config.mjs、package.json、.github/workflows/中接入相同本地/CI产物；缺失或过期产物明确失败。
 - [x] T011 [P] 在tests/unit/paseo-{webui-contract,page-context}.test.ts覆盖严格字段/URL、surface与文章requestId、空草稿触发及不可信数据边界，再实现src/features/paseo-webui/{contract,page-context}.ts。
-- [x] T012 在tests/unit/{content-security,script-budget}.test.ts补安全与预算边界，再实现scripts/content-security.ts、script-budget.ts、budget.ts及public/_headers的固定relay、sandbox精确哈希、完整清单和Explore硬预算。
+- [x] T012 在tests/unit/{content-security,script-budget}.test.ts补安全与预算边界，再实现scripts/content-security.ts、script-budget.ts、budget.ts及public/_headers的原生手工连接策略、sandbox精确哈希、完整清单和Explore硬预算。
 
 ## 3. US1：首次准备后进入助手（P1）
 

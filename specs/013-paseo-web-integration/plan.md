@@ -33,7 +33,7 @@ PR保持Draft；此预览不以完整恢复矩阵、官方性能对照、60分�
 | ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
 | third_party/paseo-webui/upstream.json、patches/                    | 固定源、锁、许可、补丁与依赖前后摘要；只有一个产品配置                    |
 | scripts/paseo-webui-build.ts及同前缀辅助模块                       | 独立源校验、按序重放官方构建、许可与资源回执、只恢复自己的临时修改        |
-| scripts/build.ts、content-security.ts、script-budget.ts、budget.ts | 主构建接入、明确relay与精确sandbox哈希、完整资源核验及Explore硬预算       |
+| scripts/build.ts、content-security.ts、script-budget.ts、budget.ts | 主构建接入、原生连接/预览策略、精确sandbox哈希、资源核验与Explore硬预算   |
 | src/features/paseo-webui/asset-contract.ts、build-config.ts        | 构建端严格消费同源资源回执，浏览器仅收到入口与CSS的URL及SRI               |
 | src/components/LocalAssistant.astro、src/scripts/paseo-boot.ts     | 即时外壳、安装引导、compact/full、文章入口、Astro持久节点与无JS说明       |
 | src/features/paseo-webui/contract.ts、host.ts、page-context.ts     | 唯一挂载、加载失败重试、展示/语言/活动与公开引用；不创建SDK连接           |
@@ -74,7 +74,9 @@ Chat是默认配置，仍使用原生WorkspaceScreen、pane、文件Explorer与C
 
 ### 生产策略与可维护性
 
-只增加实际需要的固定`wss://relay.paseo.sh`与精确sandbox脚本哈希；版本化vendor资源使用不可变缓存。保留严格脚本策略，不全站开启unsafe-eval。核对原生HTML的sandbox与插件执行边界，必要功能受阻须修复或明确报告；生产头和同SHA预览实际响应是验收证据。
+启用助手的构建允许原生手工host所需的ws/wss/http/https及data/blob连接，主页面脚本增加blob与精确sandbox脚本哈希、图片增加blob，worker-src显式保留self；不全站开启unsafe-inline或unsafe-eval。响应策略从主页面加载时生效，专用资源和连接仍在首次点击后才启动。浏览器混合内容、本地网络权限、HTTP CORS和daemon Host/Origin校验继续生效；不保证任意直接连接或自建中继都已验收。版本化vendor资源使用不可变缓存，禁用助手的本地对照保留基础同源策略。
+
+HTML采用独立响应策略和不含allow-same-origin的sandbox载体，主页面不继承该载体的脚本许可。固定原生版本的插件执行仍依赖eval，当前预览保留未接通限制，按上方阶段安排后续修复；生产头和同SHA预览实际响应是验收证据。
 
 构建核对源、锁、许可、补丁、依赖前后摘要和每个资源大小/SHA；失败不复用过期产物、不恢复他人修改。保持主站脚本硬预算，助手资源须来自核验清单，未知vendor不能被排除。记录完整原生资源gzip、解析初始化和请求情况，不继承旧减半门槛或把包体当用户体验结论。资源实际达到平台单文件限制时再处理并验证，不预先裁剪功能。
 
