@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003', '004', '005', '009', '010']
+shaped-by: ['002', '003', '004', '005', '009', '010', '013']
 code-sources:
   [
     'package.json',
@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '8046ad89664330d3bddf420d70cc6e6a7d90d423e63e45714591e41ed5218909'
+code-revision: '63411f0a25c88284c2b1aef4e82ca96236fce97bc351a39d6e6c63fb71f4ac98'
 ---
 
 # 检查与发布
@@ -137,6 +137,8 @@ content:validate核对媒体结构、引用、字节及真实数值；budget另�
 
 本地与CI使用同一配置和测试文件。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
 
+原生助手默认进入同一套三浏览器测试。首次运行先按[Paseo构建路径](local-assistant.md#重建与交付)准备固定Web产物与测试server；CI按锁执行相同准备。测试独占4396/6796，并使用本轮临时HOME、PASEO_HOME和mock provider；不读取真实账号执行任务。配对fixture只初始化一次，刷新、忘记设备和清除存储不得偷偷重种状态。mock通过与真实Agent、真机通过分别记录。
+
 媒体测试完成播放、暂停和历史断言后，先通过正常页面导航退出播放器，释放可能仍保持连接的原生下载。测试页面关闭前等待静态资源传输结束，10秒内仍未空闲即失败；这是对Wrangler本地代理中断响应会退出问题的防护，不重试测试或吞掉错误。公共fixture见tests/browser-test.ts。
 
 手机项目包含Chromium与WebKit设备模拟，包含触摸横滑和320px列表/详情检查，不代表真实iPhone Safari通过。原生音频章节测试在成功或失败时均附捕获/冒泡阶段的媒体事件、进度及按钮状态，便于核对异步暂停。媒体测试附件记录首次/同会话缓存访问的DOMContentLoaded、首屏绘制、海报观测和点击到真实视频首帧；单次本机样本不当作公网性能，浏览器不支持的绘制指标保留null。导航缓存测试使用隔离空持久profile验证缓存复用，桌面项目另等待真实60秒TTL验证过期后读取。ego-browser仅在有视觉或体验验收目的时按需使用，不是自动化E2E前提。`npx playwright test --headed`可查看测试过程，运行前先构建。
@@ -155,7 +157,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 - `npm run content:validate`检查整个目录并报告各语言发布数量，不写文件。
 - `npm run content:revision -- <id>`报告当前原文摘要、语言状态与待复核标记，不批准或发布翻译。
-- `npm run build`先校验内容，再Astro完整重编译内容缓存并构建，扫描public/images中超过200KB的栅格图片并在dist生成WebP响应式变体、manifest和srcset，再为dist/_headers补齐精确内联脚本哈希，最后生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容、图片预算或校验失败停止。
+- `npm run build`先校验固定Paseo产物与内容，再Astro完整重编译内容缓存并构建，扫描public/images中超过200KB的栅格图片并在dist生成WebP响应式变体、manifest和srcset，复制已核验原生资源与HTML预览载体，再为dist/_headers补齐精确内联脚本哈希和必要助手响应策略，最后生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容、原生产物、图片预算或校验失败停止。
 - `node --experimental-strip-types scripts/measure-explore.ts`在.scratch生成隔离5000×2样例、构建、验证分页/正文搜索并测冷/热延迟；会使用系统分配的独立空闲端口，结束清理。真实内容和dist不覆盖，不部署样例；报告位于resources/evidence/001-multilingual-explore/。
 
 普通.md与互动.mdx使用同一内容校验和发布命令；MDX语法、import与组件构建错误必须修复，不能把内容校验通过当作交互验收。

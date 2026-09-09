@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '规划开发与维护文档'
 status: 'current'
-shaped-by: ['002', '003', '004']
+shaped-by: ['002', '003', '004', '013']
 legacy-feature-ids: ['spec-kit-workflow']
 code-sources:
   [
@@ -13,7 +13,7 @@ code-sources:
     'scripts/docs-sources.ts',
     'scripts/docs-lessons.ts',
   ]
-code-revision: '8fafe9c34619f2ebb5ed22511d4df925494ed45e4bc0a8a0c36f4cdd7a12d27b'
+code-revision: '1ec44cbfaeec95b8094704c4ae5978dabfcc46cae177c2c856815d6479758418'
 ---
 
 # 功能名：规划开发与维护文档
@@ -32,6 +32,8 @@ code-revision: '8fafe9c34619f2ebb5ed22511d4df925494ed45e4bc0a8a0c36f4cdd7a12d27b
 6. 采用Spec Kit的需求在实现和验收完成后同步spec/plan/tasks及索引为complete，再提交一批完整相关改动供审阅，用户决定合并。合并后规格正文冻结，下一次决定另写规格并关联旧规格；当前功能说明原地维护。
 7. 功能及系统说明用code-sources对应源码文件，源码改动后复核文字、流程和验收再填写code-revision；只读候选摘要用npm run docs:check -- --revisions查看，正常检查会验证覆盖和摘要。
 8. 合并或重命名功能说明时，使用`legacy-feature-ids`接续旧编号，保留历史规格原文；一个旧编号只能对应一个当前文档。
+
+固定Paseo上游的JSON声明与补丁同样需要code-sources覆盖及摘要；许可证和上游原始格式不改写成治理文档。
 
 ### 操作之后发生什么
 

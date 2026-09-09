@@ -9,6 +9,16 @@ amended-by: []
 
 用户已选择旧项目、PR #11验证过的直接挂载方式，并授权接入时改进。采用一个完整官方Web模块、一套原生连接与会话协调、一个持久宿主容器；不同时维护iframe候选或旧实验引擎。基础范围以[spec](spec.md)为准。
 
+## 当前交付阶段
+
+当前先提供用户明确要求的可体验快照：暂停接回审计发现的入口，冻结已有原生接入，核对真实连接、执行与当前产出，并通过现有必要检查后给Cloudflare预览和操作说明。预览明确保留未接回的工作区操作入口、插件及首次准备需手动重试等限制；不能将这份试用快照称为完整第一阶段完成。
+
+第一阶段最终完整性目标仍是完整Paseo Web的现有界面和功能均接入，保留原生项目、终端、Git、脚本、编辑器、文件、设置及已安装插件等入口，修复宿主造成的功能缺口。不能只以能连上和发消息作为完成，也不能通过隐藏被阻断的功能来宣称完整。桌面专属能力、设备权限与用户未配置的服务沿原生真实边界说明，不伪造可用；用户先体验当前快照后再继续改进。
+
+PR保持Draft；此预览不以完整恢复矩阵、官方性能对照、60分钟负载或iPhone真机为前提，也不把这些未测项标为通过。
+
+后续根据用户可感知的问题和收益决定改进优先级。下述完整验收协议保留作后续定位与Ready依据；当前暂停新增长时测试或未经体验反馈的性能改造，不以缩小资源数字代替体验交付。
+
 ## 方案收益、代价与改进边界
 
 直接挂载复用现有容器、路由、弹层和CSSOM适配经验，便于实现边读文章边聊、极简顶部与连续开合。代价是需维护精确的Expo Router、React Native Web与Unistyles依赖补丁，升级时必须重验。它不天然降低CPU，也不让模型执行更快；Agent费用仍取决于用户的provider与模型。
@@ -38,7 +48,7 @@ Vibes沿用现有Astro/TypeScript；上游依赖在独立源码目录按锁文�
 
 - `Presentation`包含`visible/focused/pageVisible`和`surface: compact | full`。surface只控制宿主空间，不改变Chat/Build、工作区、草稿或连接。原生可发surface与close意图。
 - `PublicWorkDraft`只含`requestId/id/title/canonicalUrl`，其中id为作品slug，requestId为一次显式文章入口请求。canonicalUrl使用已发布https规范地址，拒绝认证信息、query和hash；不含summary、sourceUrl或全文。
-- `HostCommand`仅presentation、locale、draft/null、显式终止dispose；事件仅ready、state、error、close与surface。收起、切页、切大小与一般加载重试不能dispose。不可恢复根错误提供明确重新加载入口，不暗中刷新Vibes。
+- `HostCommand`仅presentation、locale、draft/null、显式终止dispose；事件仅ready、state、error、close、surface与无设备信息的saved-hosts。后者表示原生已加载保存的设备，用于首次引导，不能声称设备在线。收起、切页、切大小与一般加载重试不能dispose。不可恢复根错误提供明确重新加载入口，不暗中刷新Vibes。
 
 宿主只持有资源阶段、open/surface、当前页面与待交付引用。原生资源就绪不等于电脑已连接或Agent可用；配对与会话状态由原生表达。配对材料只沿官方UI与原生存储流转，不二次解析、不放日志/分析/Git或公开URL。
 
@@ -97,7 +107,7 @@ Chat是默认配置，仍使用原生WorkspaceScreen、pane、文件Explorer与C
 
 产品、构建或测试改动按项目full执行verify与budget；不改变检查分类或降低必需门槛。
 
-真实官方配对/中继、模型、工具、审批、停止边界、断线、刷新、导航与长期使用通过后才认定接入可交付；同SHA预览核对实际响应头和资源路径。iPhone真机缺席时保留明确待测，不能用模拟结果勾选真机。
+第一阶段按上方阶段要求提供预览，并核对同SHA实际响应头和资源路径。完整官方配对/中继、模型、工具、审批、停止边界、断线、刷新、导航与长期使用通过后才认定完整需求验收；iPhone真机缺席时保留明确待测，不能用模拟结果勾选真机。阶段体验反馈可调整后续实施顺序，不能把尚未测试的结论写为通过。
 
 代码同步docs/features/local-assistant.md、浏览/阅读入口、docs/system/local-assistant.md及configuration/interfaces/rules/checks-and-release对应段落与code-sources，再复核文字后更新摘要；索引和PROJECT_ANALYSIS随最终行为变更。全部任务实做后spec/plan/tasks与索引改complete。
 

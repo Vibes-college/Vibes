@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-web/dist/exports/Modal/ModalFocusTrap.js b/node_modules/react-native-web/dist/exports/Modal/ModalFocusTrap.js
+--- a/node_modules/react-native-web/dist/exports/Modal/ModalFocusTrap.js
++++ b/node_modules/react-native-web/dist/exports/Modal/ModalFocusTrap.js
+@@ -70,7 +70,8 @@
+   React.useEffect(() => {
+     if (canUseDOM) {
+       var trapFocus = () => {
+-        if (globalThis.__vibesPaseoEnvironment && !globalThis.__vibesPaseoEnvironment.visible) return;
++        const host = globalThis.__vibesPaseoEnvironment;
++        if (host && (!host.visible || !host.root.contains(document.activeElement))) return;
+         // We should not trap focus if:
+         // - The modal hasn't fully initialized with an HTMLElement ref
+         // - Focus is already in the process of being trapped (e.g., we're refocusing)

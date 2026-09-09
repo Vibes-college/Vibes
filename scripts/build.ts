@@ -1,3 +1,6 @@
+import { writePaseoPreview } from './paseo-webui-preview.ts';
+import { getPaseoBuild } from '../src/features/paseo-webui/build-config.ts';
+import { copyPaseoAssets } from './paseo-webui-assets.ts';
 import { writeContentSecurity } from './content-security.ts';
 import { resolve } from 'node:path';
 import { rmSync } from 'node:fs';
@@ -12,6 +15,7 @@ if (process.env.VIBES_CONTENT_DIR && !process.env.VIBES_OUT_DIR)
   throw new Error('Isolated content requires VIBES_OUT_DIR to protect the real build.');
 if (process.env.VIBES_OUT_DIR && !resolve(out).startsWith(resolve('.scratch') + '/'))
   throw new Error('Isolated output must be under .scratch/.');
+const nativeBuild = getPaseoBuild();
 const catalog = readCatalog();
 const hasPublished = catalog.works.some((work) =>
   Object.values(work.versions).some((version) => version.data.status === 'published'),
@@ -20,7 +24,13 @@ const hasPublished = catalog.works.some((work) =>
 // A full content rebuild prevents Astro from publishing stale rendered HTML.
 run(process.execPath, ['node_modules/astro/bin/astro.mjs', 'build', '--force']);
 await optimizeImages(out);
-writeContentSecurity(out, bundleSandboxGame(out));
+copyPaseoAssets(out);
+if (nativeBuild) writePaseoPreview(out);
+writeContentSecurity(
+  out,
+  [...bundleSandboxGame(out), ...(nativeBuild?.sandboxScriptHashes ?? [])],
+  Boolean(nativeBuild),
+);
 // 显式指定正文根；全站没有发布作品时也不能回退去索引导航页面。
 if (hasPublished)
   run(process.execPath, [

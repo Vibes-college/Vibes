@@ -118,6 +118,12 @@ PR #11已在真实生产策略下发现插件`globalThis.eval(clientBundle)`被�
 
 **需要适配的一处触发差异**：旧embedded/launcher-draft.ts:35对空问题直接退出，因此旧源码并不覆盖“尚未输入，点文章入口就自动附带”。按用户本次明确需求调整该触发，保留引用形态、删除和原生发送语义，不照搬空文本分支，也不新增手动附带按钮。默认保留已有草稿，不能一并继承覆盖已有问题的旧启动行为。
 
+## R8 安装路径与兼容性核查
+
+2026-09-08在线核对[官方入门](https://paseo.sh/docs)、[稳定版下载](https://paseo.sh/download)和[v0.7.2发行](https://github.com/getpaseo/paseo/releases/tag/v0.7.2)。下载页当前稳定版为v0.7.2；桌面支持macOS 13+、Windows与Linux，App自带daemon并自动启动。配对入口为Settings→所选host→Pair Device。CLI路径是安装@getpaseo/cli后运行paseo，按官方提示启用加密relay并显示配对码；provider CLI与登录凭据需先准备，手机仍需运行daemon的电脑。
+
+只读连接核验：本机既有6767服务报告v0.5.0，PR #11隔离6792服务报告v0.7.2；不自动升级或替换用户服务。兼容实例真实Codex目录包含gpt-5.6-luna且默认强度medium，provider为ready/enabled；这仅证明当前这台电脑可提供该预设，不证明新UI已经执行成功，也不承诺其他用户都有同样模型。版本、真实执行及原生配对仍需在本PR浏览器路径核对。
+
 ## 证据状态
 
 以上是固定源码与既有PR证据的只读核查；来源研究不作为新分支的运行、性能或真机结论。核心用途与直接挂载已经确认，plan/tasks按选定方案实施；阶段结论以本PR实际验证和原始证据为准。

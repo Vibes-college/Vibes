@@ -1,3 +1,5 @@
+import { paseoDevAssets } from './scripts/paseo-webui-dev.ts';
+import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
@@ -16,8 +18,23 @@ export default defineConfig({
   trailingSlash: 'always',
   devToolbar: { enabled: false },
   vite: {
+    // Explicit baseline builds must omit the assistant's emitted client chunks too.
+    resolve: {
+      alias:
+        process.env.VIBES_PASEO === 'disabled'
+          ? [
+              {
+                find: '../components/LocalAssistant.astro',
+                replacement: fileURLToPath(
+                  new URL('./src/components/LocalAssistantDisabled.astro', import.meta.url),
+                ),
+              },
+            ]
+          : [],
+    },
     build: { assetsInlineLimit: 0 },
     plugins: [
+      paseoDevAssets(),
       proseStyle(),
       tailwindcss(),
       {
@@ -27,6 +44,22 @@ export default defineConfig({
           if (name !== 'client') return;
           return {
             build: {
+              // These modules already run on every page. Share their compression
+              // stream without pulling page features or lazy dependencies forward.
+              rolldownOptions: {
+                preserveEntrySignatures: 'allow-extension',
+                output: {
+                  codeSplitting: {
+                    groups: [
+                      {
+                        name: 'site-boot',
+                        includeDependenciesRecursively: false,
+                        test: /(?:\/src\/scripts\/(?:reading-prefetch|media-boot|paseo-boot|page-lifecycle)\.ts$|\/src\/lib\/(?:escape|i18n\/routes)\.ts$|\/node_modules\/astro\/(?:dist\/(?:transitions\/|prefetch\/|virtual-modules\/(?:transitions|prefetch))|components\/ClientRouter\.astro)|vite\/preload-helper)/,
+                      },
+                    ],
+                  },
+                },
+              },
               modulePreload: {
                 polyfill: false,
                 // WebKit 270357: a failed modulepreload can survive an ordinary reload.

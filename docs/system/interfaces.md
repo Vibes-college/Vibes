@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '接口与外部服务'
 status: 'current'
-shaped-by: ['001', '003', '004', '005', '009', '010']
+shaped-by: ['001', '003', '004', '005', '009', '010', '013']
 code-sources:
   [
     'src/scripts/search.ts',
@@ -12,8 +12,13 @@ code-sources:
     'scripts/release.ts',
     'scripts/release-policy.ts',
     'src/components/WorkDetail.astro',
+    'src/features/paseo-webui/contract.ts',
+    'src/features/paseo-webui/preview-carrier.js',
+    'scripts/content-security.ts',
+    'scripts/paseo-webui-preview.ts',
+    'public/_headers',
   ]
-code-revision: 'd1a2aa63c97c398781d5f7a1e54c99affd710f13f89b8de15e94792149a878ed'
+code-revision: 'd0016f13e37848c4e881df40f97d92d7e100aab39eccf148a4f0ab389b73139c'
 ---
 
 # 接口与外部服务
@@ -92,10 +97,24 @@ release-utils.ts通过gh api GET读取固定仓库Vibes-college/Vibes的pulls/{n
 
 站内导航和提前准备使用同站详情HTML GET，没有新增业务API。Astro公共`navigate`与`prefetch`接口分别处理导航和HTTP预取；搜索加载器按zh/en返回独立Pagefind实例，创建时核对当前文档语言，过时加载以AbortError终止。
 
-文章图片可引用HTTPS外链，浏览器直接向图源请求；img-src允许HTTPS图片，主页面脚本、连接与字体仍同源，媒体文件及iframe按登记来源。第三方图源中断不阻止其余正文阅读，维护者应提供替代文字与尺寸；详见[Markdown排版](markdown.md)。
+文章图片可引用HTTPS外链，浏览器直接向图源请求；img-src允许HTTPS图片，字体保持同源，媒体文件及iframe按登记来源。启用助手的主页面还允许下述原生连接类型及blob脚本/图片；第三方图源中断不阻止其余正文阅读，维护者应提供替代文字与尺寸；详见[Markdown排版](markdown.md)。
 
 MDX组件在文章内部按client指令启动，同页共享React模块，从本站加载；没有新增业务接口。构建只执行受信仓库组件，不读取远程MDX。需要后台的组件不能仅靠复制源码接入，须明确新的接口与权限。
 
 ## 作品媒体
 
 媒体和平台登记见src/config/media.ts及[媒体规则](rules.md#媒体加载与体积)。浏览器只在点击后创建YouTube、Spotify、B站或已核对原站的iframe；媒体下载、账号和地区限制由平台决定，无平台API密钥。音视频文件只从同源或指定来源加载，图表数据经有界GET读取；完整来源不提前挂到元素。2048点击后仅读取`/media/2048/game-bundled.txt`，发布模板内含固定游戏样式与脚本，不再从沙盒请求子资源；仍以不允许同源访问的sandbox运行，不访问父页面或持久存储。旧`game.txt`保留给已打开页面；初始化未成功会给出完整刷新入口。精确脚本授权及体积限制见[运行配置](configuration.md)。
+
+## Paseo本地助手
+
+首次点击助手后浏览器读取`/vendor/paseo/{内容标识}/`内的固定Web资源，以官方协议连接访客配对的电脑。原生连接设置保留官方中继、手工直接连接和自建中继；启用助手的构建由`withPaseoRuntime`设置connect-src self、ws:、wss:、http:、https:、data:、blob:。这些响应策略从主页面加载时就生效，首次点击控制的是专用资源加载和连接启动；并非为每台已配对电脑生成地址白名单。
+
+浏览器混合内容、本地网络访问权限、HTTP请求的CORS，以及daemon自身的Host/Origin校验继续生效；允许相应协议不保证任意地址可连通，也不绕过这些限制。本地测试通过同源WebSocket代理连接自己的隔离daemon。消息、工具/审批、历史与文件操作由Paseo官方客户端和daemon承担，Vibes没有增加转发聊天或文件的业务API。电脑及Agent账号由访客提供，模型能力和权限取决于其实际配置。
+
+主页面script-src允许self、WebAssembly、blob及当前构建的精确内联哈希，仍不允许unsafe-inline或unsafe-eval；img-src加入blob以显示原生图片附件，worker-src显式保持self，避免blob脚本许可通过回退规则扩展到Worker。固定原生版本的插件执行仍使用eval，目前尚未接通；允许blob脚本本身不代表插件已可运行。禁用助手的本地对照构建保留基础同源连接策略。
+
+宿主与原生应用的本地合同在`src/features/paseo-webui/contract.ts`：宿主提供尺寸/可见性/焦点/语言及一次性公开文章引用，原生回报挂载、错误、尺寸请求或已加载保存设备。严格拒绝未知字段和不安全URL；合同不接收配对秘密或本地文件内容。文章引用只在用户提交时成为原生text附件，删除和失败恢复由原生草稿处理。完整数据和存储边界见[Paseo接入](local-assistant.md)。
+
+原生文件预览包含文本、图片、Markdown及受限HTML。HTML用`/paseo-preview/`静态载体的独立响应策略，HTTP和iframe均使用不含allow-same-origin的sandbox allow-scripts；只在这个隔离文档允许文件内联脚本和eval。策略禁止fetch/WebSocket连接、子框架、表单、对象和base地址，图片/媒体仅允许data或blob。原生HTML仍可导航自己的窗口，因此不能把connect-src none解释为全面禁止网络。父页面验证来自该窗口的握手和随机标识后传入文件，载体写入HTML前删除消息桥；文件脚本不能访问父页面、配对存储或继续接收其他文件。
+
+预览响应不缓存、不发送Referer并要求不索引；全站frame-src允许同源载体，其他页面仍由frame-ancestors none与X-Frame-Options DENY拒绝被嵌入。主页面不因预览而启用unsafe-inline/unsafe-eval。该路径不是文件上传或服务器读取接口，直接打开也没有本地文件内容。PDF/Office没有新增预览或转换服务；下载能力不超出原生连接支持范围。实际Cloudflare响应与完整预览交互仍以当前验收记录为准。

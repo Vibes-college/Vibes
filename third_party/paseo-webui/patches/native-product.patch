@@ -1,0 +1,2458 @@
+diff --git a/packages/app/src/app/_layout.tsx b/packages/app/src/app/_layout.tsx
+index cb12164..5ffdaa2 100644
+--- a/packages/app/src/app/_layout.tsx
++++ b/packages/app/src/app/_layout.tsx
+@@ -387,7 +387,9 @@ function HostRuntimeBootstrapProvider({ children }: { children: ReactNode }) {
+   const anyOnlineHostServerId = useEarliestOnlineHostServerId();
+   const daemonStartError = useDaemonStartLastError();
+   const daemonStartIsRunning = useDaemonStartIsRunning();
+-  const [hasGivenUpWaitingForHost, setHasGivenUpWaitingForHost] = useState(Boolean(getEmbeddedHost() && !("__PASEO_INITIAL_DAEMON_CONNECTION__" in globalThis)));
++  const [hasGivenUpWaitingForHost, setHasGivenUpWaitingForHost] = useState(
++    Boolean(getEmbeddedHost() && !("__PASEO_INITIAL_DAEMON_CONNECTION__" in globalThis)),
++  );
+   const isDesktopRuntime = shouldUseDesktopDaemon();
+   const startupBlocker = useMemo(
+     () =>
+@@ -861,7 +863,8 @@ function AppWithSidebar({ children }: { children: ReactNode }) {
+     routeServerId !== null && hosts.some((host) => host.serverId === routeServerId);
+   const shouldShowAppChrome =
+     storeReady &&
+-    (pathname === "/open-project" ||
++    (pathname === "/vibes-chat" ||
++      pathname === "/open-project" ||
+       pathname === "/new" ||
+       pathname === "/sessions" ||
+       pathname === "/schedules" ||
+@@ -890,6 +893,7 @@ function RootStack() {
+         <Stack.Screen name="settings/index" />
+         <Stack.Screen name="settings/[section]" />
+         <Stack.Screen name="new" />
++        <Stack.Screen name="vibes-chat" />
+         <Stack.Screen name="open-project" />
+         <Stack.Screen name="sessions" />
+         <Stack.Screen name="schedules" />
+diff --git a/packages/app/src/app/h/[serverId]/index.tsx b/packages/app/src/app/h/[serverId]/index.tsx
+index 46ba5d8..bd86416 100644
+--- a/packages/app/src/app/h/[serverId]/index.tsx
++++ b/packages/app/src/app/h/[serverId]/index.tsx
+@@ -1,4 +1,7 @@
+-import { Redirect } from "expo-router";
++import { getEmbeddedHost } from "@/embedded/environment";
++import { useProductMode } from "@/embedded/product-mode";
++import { buildHostWorkspaceRoute } from "@/utils/host-routes";
++import { Redirect, type Href } from "expo-router";
+ import { useHostRouteServerId } from "@/navigation/host-route-context";
+ import {
+   resolveHostIndexRoute,
+@@ -13,6 +16,7 @@ import {
+ 
+ export default function HostIndexRoute() {
+   const serverId = useHostRouteServerId();
++  const product = useProductMode();
+   const workspaceSelection = useLastWorkspaceSelection();
+   const isWorkspaceSelectionLoaded = useIsLastWorkspaceSelectionHydrated();
+   const workspaceSelectionWorkspaceId =
+@@ -24,6 +28,15 @@ export default function HostIndexRoute() {
+     return <StartupSplashScreen />;
+   }
+ 
++  if (getEmbeddedHost()) {
++    if (!product.hydrated) return <StartupSplashScreen />;
++    const selected = product[product.mode];
++    if (selected?.serverId === serverId)
++      return <Redirect href={buildHostWorkspaceRoute(serverId, selected.workspaceId)} />;
++    if (product.mode === "chat")
++      return <Redirect href={{ pathname: "/vibes-chat", params: { serverId } } as Href} />;
++  }
++
+   return (
+     <Redirect
+       href={resolveHostIndexRoute({
+diff --git a/packages/app/src/app/index.tsx b/packages/app/src/app/index.tsx
+index e0649f6..6298997 100644
+--- a/packages/app/src/app/index.tsx
++++ b/packages/app/src/app/index.tsx
+@@ -1,5 +1,8 @@
++import { getEmbeddedHost } from "@/embedded/environment";
++import { useProductMode, getProductDestination } from "@/embedded/product-mode";
++import { buildHostRootRoute } from "@/utils/host-routes";
+ import React from "react";
+-import { Redirect, usePathname } from "expo-router";
++import { Redirect, usePathname, type Href } from "expo-router";
+ import { StartupSplashScreen } from "@/screens/startup-splash-screen";
+ import { useEarliestOnlineHostServerId, useHostRuntimeBootstrapState } from "@/app/_layout";
+ import {
+@@ -18,6 +21,7 @@ const isDesktop = shouldUseDesktopDaemon();
+ 
+ export default function Index() {
+   const pathname = usePathname();
++  const product = useProductMode();
+   const bootstrapState = useHostRuntimeBootstrapState();
+   const anyOnlineHostServerId = useEarliestOnlineHostServerId();
+   const hosts = useHosts();
+@@ -48,6 +52,16 @@ export default function Index() {
+   });
+ 
+   if (startupRoute.kind === "redirect") {
++    if (getEmbeddedHost() && hosts.length > 0) {
++      if (!product.hydrated) return <StartupSplashScreen />;
++      const destination = getProductDestination(product.mode);
++      if (product.mode === "build" && destination.kind === "picker")
++        return <Redirect href={destination.entry as Href} />;
++      const selected = product[product.mode];
++      if (selected && hosts.some((host) => host.serverId === selected.serverId)) {
++        return <Redirect href={buildHostRootRoute(selected.serverId)} />;
++      }
++    }
+     return <Redirect href={startupRoute.href} />;
+   }
+ 
+diff --git a/packages/app/src/app/new.tsx b/packages/app/src/app/new.tsx
+index 281ec33..b04a355 100644
+--- a/packages/app/src/app/new.tsx
++++ b/packages/app/src/app/new.tsx
+@@ -1,3 +1,7 @@
++import { useEffect } from "react";
++import { useIsFocused } from "@react-navigation/native";
++import { getEmbeddedHost } from "@/embedded/environment";
++import { rememberBuildEntry } from "@/embedded/product-mode";
+ import { useLocalSearchParams } from "expo-router";
+ import { HostRouteBootstrapBoundary } from "@/components/host-route-bootstrap-boundary";
+ import { NewWorkspaceScreen } from "@/screens/new-workspace-screen";
+@@ -10,11 +14,25 @@ export default function NewWorkspaceRoute() {
+     projectId?: string;
+     draftId?: string;
+   }>();
++  const isFocused = useIsFocused();
+   const serverId = typeof params.serverId === "string" ? params.serverId : "";
+   const sourceDirectory = typeof params.dir === "string" ? params.dir : undefined;
+   const displayName = typeof params.name === "string" ? params.name : undefined;
+   const projectId = typeof params.projectId === "string" ? params.projectId : undefined;
+   const draftId = typeof params.draftId === "string" ? params.draftId : undefined;
++  useEffect(() => {
++    if (getEmbeddedHost() && isFocused)
++      rememberBuildEntry({
++        pathname: "/new",
++        params: {
++          serverId: serverId || undefined,
++          dir: sourceDirectory,
++          name: displayName,
++          projectId,
++          draftId,
++        },
++      });
++  }, [isFocused, serverId, sourceDirectory, displayName, projectId, draftId]);
+   const screenKey = JSON.stringify([
+     serverId,
+     sourceDirectory ?? null,
+diff --git a/packages/app/src/app/vibes-chat.tsx b/packages/app/src/app/vibes-chat.tsx
+new file mode 100644
+index 0000000..af2afb7
+--- /dev/null
++++ b/packages/app/src/app/vibes-chat.tsx
+@@ -0,0 +1 @@
++export { default } from "@/embedded/chat-start-screen";
+diff --git a/packages/app/src/attachments/types.ts b/packages/app/src/attachments/types.ts
+index 75ae6ae..dcf0dd5 100644
+--- a/packages/app/src/attachments/types.ts
++++ b/packages/app/src/attachments/types.ts
+@@ -3,6 +3,7 @@ import type {
+   ForgeSearchItem,
+   UploadedFileAttachment,
+ } from "@getpaseo/protocol/messages";
++import type { PublicWorkDraft } from "@/embedded/contract";
+ import type { PluginResourceComposerAttachment } from "@/plugins/attachments";
+ 
+ export type AttachmentStorageType = "web-indexeddb" | "desktop-file" | "native-file";
+@@ -104,6 +105,7 @@ export interface WorkspaceFileComposerAttachment {
+ }
+ 
+ export type UserComposerAttachment =
++  | { kind: "vibes_public_work"; reference: PublicWorkDraft }
+   | { kind: "image"; metadata: AttachmentMetadata }
+   | { kind: "file"; attachment: UploadedFileAttachment }
+   | WorkspaceFileComposerAttachment
+diff --git a/packages/app/src/composer/actions.ts b/packages/app/src/composer/actions.ts
+index d020e7b..7bfeb93 100644
+--- a/packages/app/src/composer/actions.ts
++++ b/packages/app/src/composer/actions.ts
+@@ -327,6 +327,10 @@ export interface OpenComposerAttachmentInput {
+ }
+ 
+ export function openComposerAttachment(input: OpenComposerAttachmentInput): void {
++  if (input.attachment.kind === "vibes_public_work") {
++    input.openExternalUrl(input.attachment.reference.canonicalUrl);
++    return;
++  }
+   if (input.attachment.kind === "image") {
+     input.setLightboxMetadata(input.attachment.metadata);
+     return;
+diff --git a/packages/app/src/composer/attachments/submit.ts b/packages/app/src/composer/attachments/submit.ts
+index d2eb008..be22574 100644
+--- a/packages/app/src/composer/attachments/submit.ts
++++ b/packages/app/src/composer/attachments/submit.ts
+@@ -1,3 +1,4 @@
++import { publicWorkToAgentAttachment } from "@/embedded/page-context";
+ import type { ComposerAttachment } from "@/attachments/types";
+ import type { ImageAttachment } from "@/composer/types";
+ import {
+@@ -45,6 +46,10 @@ export function splitComposerAttachmentsForSubmit(
+       : buildForgeAttachmentFromSearchItem;
+ 
+   for (const attachment of attachments) {
++    if (attachment.kind === "vibes_public_work") {
++      agentAttachments.push(publicWorkToAgentAttachment(attachment.reference));
++      continue;
++    }
+     if (attachment.kind === "image") {
+       images.push(attachment.metadata);
+       continue;
+diff --git a/packages/app/src/composer/draft/input-draft.ts b/packages/app/src/composer/draft/input-draft.ts
+index c26e186..2fe0321 100644
+--- a/packages/app/src/composer/draft/input-draft.ts
++++ b/packages/app/src/composer/draft/input-draft.ts
+@@ -1,3 +1,4 @@
++import { usePublicWorkDraft } from "@/embedded/public-work-reference";
+ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+ import type { UserComposerAttachment } from "@/attachments/types";
+ import type { TextReplacement } from "@/composer/types";
+@@ -40,6 +41,7 @@ interface AgentInputDraftComposerOptions {
+ }
+ 
+ interface UseAgentInputDraftInput {
++  acceptsPublicWork?: boolean;
+   draftKey: DraftKeyInput;
+   composer?: AgentInputDraftComposerOptions;
+ }
+@@ -166,6 +168,12 @@ export function useAgentInputDraft(input: UseAgentInputDraftInput): AgentInputDr
+     [saveDraft],
+   );
+ 
++  usePublicWorkDraft({
++    enabled: input.acceptsPublicWork === true,
++    isHydrated,
++    setAttachments,
++  });
++
+   const clear = useCallback(
+     (lifecycle: "sent" | "abandoned") => {
+       textPublication.cancel();
+diff --git a/packages/app/src/composer/draft/workspace-tab.tsx b/packages/app/src/composer/draft/workspace-tab.tsx
+index 167a888..0443b77 100644
+--- a/packages/app/src/composer/draft/workspace-tab.tsx
++++ b/packages/app/src/composer/draft/workspace-tab.tsx
+@@ -368,6 +368,7 @@ export function WorkspaceDraftAgentTab({
+     [draftId, serverId, tabId],
+   );
+   const draftInput = useAgentInputDraft({
++    acceptsPublicWork: isPaneFocused,
+     draftKey: draftStoreKey,
+     composer: {
+       initialServerId: serverId,
+diff --git a/packages/app/src/composer/index.tsx b/packages/app/src/composer/index.tsx
+index fcca89a..a03599d 100644
+--- a/packages/app/src/composer/index.tsx
++++ b/packages/app/src/composer/index.tsx
+@@ -1,3 +1,4 @@
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { LoadingSpinner } from "@/components/ui/loading-spinner";
+ import {
+   View,
+@@ -103,7 +104,6 @@ import type { KeyboardActionDefinition } from "@/keyboard/keyboard-action-dispat
+ import type { MessageInputKeyboardActionKind } from "@/keyboard/actions";
+ import { OperationNotice } from "@/embedded/operation-notice";
+ import { useOperationFeedback } from "@/embedded/use-operation-feedback";
+-import { PublicWorkReference } from "@/embedded/public-work-reference";
+ import { submitAgentInput } from "@/composer/submit";
+ import { createMessageSubmissionWriter } from "@/composer/submission/writer";
+ import { ComposerKeyboardScopeProvider, useComposerKeyboardScope } from "@/composer/keyboard-scope";
+@@ -336,6 +336,7 @@ interface RenderAttachmentTrayArgs {
+     openImage: string;
+     removeImage: string;
+     removeFile: string;
++    removePublicWork: string;
+     openGithub: (kind: string, numberLabel: string) => string;
+     removeGithub: (kind: string, numberLabel: string) => string;
+   };
+@@ -405,6 +406,25 @@ interface RenderComposerAttachmentPillArgs {
+ 
+ function renderComposerAttachmentPill(args: RenderComposerAttachmentPillArgs): ReactElement {
+   const { attachment, index, disabled, onOpen, onRemove, labels } = args;
++  if (attachment.kind === "vibes_public_work") {
++    return (
++      <AttachmentPill
++        key={`vibes-public-work:${attachment.reference.requestId}`}
++        testID="composer-public-work-attachment-pill"
++        onOpen={() => onOpen(attachment)}
++        onRemove={() => onRemove(index)}
++        openAccessibilityLabel={attachment.reference.title}
++        removeAccessibilityLabel={labels.removePublicWork}
++        disabled={disabled}
++      >
++        <AttachmentLabel
++          icon={filePillIcon}
++          title={attachment.reference.title}
++          subtitle={new URL(attachment.reference.canonicalUrl).pathname}
++        />
++      </AttachmentPill>
++    );
++  }
+   if (attachment.kind === "image") {
+     return (
+       <ImageAttachmentPill
+@@ -2204,6 +2224,8 @@ function ComposerContentImpl({
+           openImage: t("composer.attachments.openImage"),
+           removeImage: t("composer.attachments.removeImage"),
+           removeFile: t("composer.attachments.removeFile"),
++          removePublicWork:
++            getEmbeddedHost()?.locale === "zh" ? "移除文章引用" : "Remove article reference",
+           openGithub: (kind: string, numberLabel: string) =>
+             t("composer.attachments.openGithub", { kind, number: numberLabel }),
+           removeGithub: (kind: string, numberLabel: string) =>
+@@ -2280,7 +2302,6 @@ function ComposerContentImpl({
+             {queueList}
+             {sendErrorNode}
+             <OperationNotice operation="stop" phase={stopFeedback.phase} />
+-            {inputMode === "chat" && <PublicWorkReference value={userInput} onChange={replaceUserInput} disabled={readOnly || isComposerLocked || isSubmitLoading} />}
+ 
+             <View ref={messageInputContainerRef} style={styles.messageInputContainer}>
+               <ComposerAutocomplete
+diff --git a/packages/app/src/embedded/chat-preset.test.ts b/packages/app/src/embedded/chat-preset.test.ts
+new file mode 100644
+index 0000000..09ddd1b
+--- /dev/null
++++ b/packages/app/src/embedded/chat-preset.test.ts
+@@ -0,0 +1,171 @@
++import { describe, expect, it, vi } from "vitest";
++import type { ProviderSnapshotEntry } from "@getpaseo/protocol/agent-types";
++import {
++  ChatPresetInitializer,
++  resolveChatSetup,
++  type ChatPreparation,
++  type ChatPresetDependencies,
++} from "./chat-preset";
++
++const cwd = "/home/test/Vibes";
++const workspace = { id: "workspace-chat", projectId: "project-chat", workspaceDirectory: cwd };
++const entries: ProviderSnapshotEntry[] = [
++  {
++    provider: "codex",
++    enabled: true,
++    status: "ready",
++    models: [
++      {
++        provider: "codex",
++        id: "model-from-daemon",
++        aliases: ["gpt-5.6-luna"],
++        label: "Luna",
++        thinkingOptions: [
++          { id: "medium", label: "Medium" },
++          { id: "high", label: "High" },
++        ],
++        defaultThinkingOptionId: "medium",
++      },
++    ],
++  },
++];
++function fixture(initial: ChatPreparation | null = null) {
++  let saved = initial;
++  const methods = {
++    createProjectDirectory: vi.fn(async () => ({
++      directoryPath: cwd,
++      error: null,
++      errorCode: null,
++    })),
++    addProject: vi.fn(async () => ({ project: { projectId: "project-chat" }, error: null })),
++    fetchWorkspaces: vi.fn(async () => ({
++      entries: [] as (typeof workspace)[],
++      pageInfo: { hasMore: false, nextCursor: null },
++    })),
++    openProject: vi.fn(async () => ({ workspace, error: null })),
++    getProvidersSnapshot: vi.fn(async () => ({ entries })),
++  };
++  const deps: ChatPresetDependencies = {
++    client: methods as unknown as ChatPresetDependencies["client"],
++    read: async () => saved,
++    save: async (value) => {
++      saved = value;
++    },
++  };
++  return { methods, deps, getSaved: () => saved };
++}
++describe("Chat native preset", () => {
++  it("selects only the real selectable Luna id and its native default strength", () => {
++    expect(resolveChatSetup(entries, cwd)).toMatchObject({
++      cwd,
++      provider: "codex",
++      model: "model-from-daemon",
++      thinkingOptionId: "medium",
++    });
++    expect(() => resolveChatSetup([{ ...entries[0], enabled: false }], cwd)).toThrow("Codex");
++    expect(() => resolveChatSetup([{ ...entries[0], status: "loading" }], cwd)).toThrow("Codex");
++    expect(() =>
++      resolveChatSetup(
++        [{ ...entries[0], models: [{ ...entries[0].models![0], isSelectable: false }] }],
++        cwd,
++      ),
++    ).toThrow("Luna");
++    expect(() => resolveChatSetup([{ ...entries[0], models: [] }], cwd)).toThrow("Luna");
++  });
++  it("prepares a normal directory and workspace once for concurrent entry, without creating an agent", async () => {
++    const f = fixture();
++    const initializer = new ChatPresetInitializer();
++    const first = initializer.run("host", f.deps);
++    expect(initializer.run("host", f.deps)).toBe(first);
++    await expect(first).resolves.toMatchObject({
++      workspace,
++      setup: { model: "model-from-daemon", cwd },
++    });
++    expect(f.methods.createProjectDirectory).toHaveBeenCalledWith({
++      parentPath: "~",
++      name: "Vibes",
++    });
++    expect(f.methods.openProject).toHaveBeenCalledTimes(1);
++    expect(f.methods.getProvidersSnapshot).toHaveBeenCalledWith({ cwd });
++    expect(f.getSaved()).toMatchObject({ phase: "ready", workspaceId: workspace.id });
++  });
++  it("validates an existing path and reuses its workspace", async () => {
++    const f = fixture();
++    f.methods.createProjectDirectory.mockResolvedValueOnce({
++      directoryPath: cwd,
++      error: "exists" as never,
++      errorCode: "directory_exists" as never,
++    });
++    f.methods.fetchWorkspaces.mockResolvedValueOnce({
++      entries: [workspace],
++      pageInfo: { hasMore: false, nextCursor: null },
++    });
++    await new ChatPresetInitializer().run("host", f.deps);
++    expect(f.methods.addProject).toHaveBeenCalledWith(cwd);
++    expect(f.methods.openProject).not.toHaveBeenCalled();
++  });
++  it("rejects non-directory paths and permission errors without opening workspaces", async () => {
++    const file = fixture();
++    file.methods.createProjectDirectory.mockResolvedValueOnce({
++      directoryPath: cwd,
++      error: "exists" as never,
++      errorCode: "directory_exists" as never,
++    });
++    file.methods.addProject.mockResolvedValueOnce({
++      project: null as never,
++      error: "Not a directory" as never,
++    });
++    await expect(new ChatPresetInitializer().run("host", file.deps)).rejects.toThrow(
++      "Not a directory",
++    );
++    expect(file.methods.openProject).not.toHaveBeenCalled();
++    const denied = fixture();
++    denied.methods.createProjectDirectory.mockResolvedValueOnce({
++      directoryPath: null as never,
++      error: "Permission denied" as never,
++      errorCode: "permission_denied" as never,
++    });
++    await expect(new ChatPresetInitializer().run("host", denied.deps)).rejects.toThrow(
++      "Permission denied",
++    );
++    expect(denied.methods.addProject).not.toHaveBeenCalled();
++  });
++  it("queries an uncertain previous open and never blindly repeats it", async () => {
++    const f = fixture();
++    const initializer = new ChatPresetInitializer();
++    f.methods.openProject.mockRejectedValueOnce(new Error("connection lost"));
++    await expect(initializer.run("host", f.deps)).rejects.toThrow("connection lost");
++    expect(f.getSaved()?.phase).toBe("opening");
++    await expect(initializer.run("host", f.deps)).rejects.toMatchObject({
++      issue: "unknown-workspace",
++    });
++    expect(f.methods.openProject).toHaveBeenCalledTimes(1);
++    f.methods.fetchWorkspaces.mockResolvedValueOnce({
++      entries: [workspace],
++      pageInfo: { hasMore: false, nextCursor: null },
++    });
++    await expect(initializer.run("host", f.deps)).resolves.toMatchObject({ workspace });
++    expect(f.methods.openProject).toHaveBeenCalledTimes(1);
++  });
++  it("requires the pending state to persist before the non-idempotent open", async () => {
++    const f = fixture({ cwd, projectId: "project-chat", phase: "directory" });
++    f.deps.save = async () => {
++      throw new Error("storage unavailable");
++    };
++    await expect(new ChatPresetInitializer().run("host", f.deps)).rejects.toThrow(
++      "storage unavailable",
++    );
++    expect(f.methods.openProject).not.toHaveBeenCalled();
++  });
++  it("isolates simultaneous preparations by host", async () => {
++    const a = fixture();
++    const b = fixture();
++    const initializer = new ChatPresetInitializer();
++    const first = initializer.run("a", a.deps);
++    const second = initializer.run("b", b.deps);
++    expect(first).not.toBe(second);
++    await Promise.all([first, second]);
++    expect(a.methods.openProject).toHaveBeenCalledTimes(1);
++    expect(b.methods.openProject).toHaveBeenCalledTimes(1);
++  });
++});
+diff --git a/packages/app/src/embedded/chat-preset.ts b/packages/app/src/embedded/chat-preset.ts
+new file mode 100644
+index 0000000..5493b44
+--- /dev/null
++++ b/packages/app/src/embedded/chat-preset.ts
+@@ -0,0 +1,157 @@
++import type { ProviderSnapshotEntry } from "@getpaseo/protocol/agent-types";
++import type { DaemonClient } from "@getpaseo/client/internal/daemon-client";
++import type { WorkspaceDraftTabSetup } from "@/workspace-tabs/model";
++import { filterSelectableModels, findModelByReference } from "@/provider-selection/model-catalog";
++
++export const CHAT_DIRECTORY_NAME = "Vibes";
++export type ChatPresetIssue =
++  | "directory"
++  | "codex-unavailable"
++  | "luna-unavailable"
++  | "unknown-workspace";
++export class ChatPresetError extends Error {
++  constructor(
++    readonly issue: ChatPresetIssue,
++    message: string,
++  ) {
++    super(message);
++  }
++}
++
++export interface ChatPreparation {
++  cwd: string;
++  projectId: string;
++  phase: "directory" | "opening" | "ready";
++  workspaceId?: string;
++}
++
++type PresetClient = Pick<
++  DaemonClient,
++  | "createProjectDirectory"
++  | "addProject"
++  | "openProject"
++  | "fetchWorkspaces"
++  | "getProvidersSnapshot"
++>;
++export interface ChatPresetDependencies {
++  client: PresetClient;
++  read(): Promise<ChatPreparation | null>;
++  save(value: ChatPreparation): Promise<void>;
++}
++
++export function resolveChatSetup(
++  entries: ProviderSnapshotEntry[],
++  cwd: string,
++): WorkspaceDraftTabSetup {
++  const codex = entries.find((entry) => entry.provider === "codex");
++  if (!codex?.enabled || codex.status !== "ready") {
++    throw new ChatPresetError(
++      "codex-unavailable",
++      "Codex is not installed, signed in, or available on this computer.",
++    );
++  }
++  const models = filterSelectableModels(codex.models ?? null);
++  const luna = findModelByReference(models, "gpt-5.6-luna") ?? findModelByReference(models, "luna");
++  if (!luna)
++    throw new ChatPresetError(
++      "luna-unavailable",
++      "Luna is not available in this computer's Codex model list.",
++    );
++  const thinking = luna.thinkingOptions ?? [];
++  const thinkingOptionId =
++    thinking.find((option) => option.id === luna.defaultThinkingOptionId)?.id ??
++    thinking.find((option) => option.isDefault)?.id ??
++    null;
++  return {
++    provider: "codex",
++    cwd,
++    model: luna.id,
++    thinkingOptionId,
++    modeId: codex.defaultModeId ?? null,
++    featureValues: {},
++  };
++}
++
++/** One preparation per host in this module. RPC ids are correlations, not
++ * idempotency keys: after an uncertain open, query and never replay that write. */
++export class ChatPresetInitializer {
++  private readonly pending = new Map<string, Promise<Awaited<ReturnType<typeof prepare>>>>();
++  run(serverId: string, deps: ChatPresetDependencies) {
++    const current = this.pending.get(serverId);
++    if (current) return current;
++    const promise = prepare(deps).finally(() => {
++      if (this.pending.get(serverId) === promise) this.pending.delete(serverId);
++    });
++    this.pending.set(serverId, promise);
++    return promise;
++  }
++}
++
++async function prepare({ client, read, save }: ChatPresetDependencies) {
++  let saved = await read();
++  if (!saved) {
++    const directory = await client.createProjectDirectory({
++      parentPath: "~",
++      name: CHAT_DIRECTORY_NAME,
++    });
++    if (
++      !directory.directoryPath ||
++      (directory.error && directory.errorCode !== "directory_exists")
++    ) {
++      throw new ChatPresetError(
++        "directory",
++        directory.error ?? "The default folder could not be prepared.",
++      );
++    }
++    // EEXIST also covers a file. The official project API checks directory type.
++    const checked = await client.addProject(directory.directoryPath);
++    if (!checked.project || checked.error)
++      throw new ChatPresetError(
++        "directory",
++        checked.error ?? "The default path is not a usable directory.",
++      );
++    saved = {
++      cwd: directory.directoryPath,
++      projectId: checked.project.projectId,
++      phase: "directory",
++    };
++    await save(saved);
++  }
++  let cursor: string | undefined;
++  let workspace: Awaited<ReturnType<PresetClient["openProject"]>>["workspace"] = null;
++  do {
++    const page = await client.fetchWorkspaces({
++      filter: { projectId: saved.projectId },
++      page: { limit: 200, ...(cursor ? { cursor } : {}) },
++    });
++    workspace =
++      page.entries.find(
++        (entry) =>
++          entry.workspaceDirectory === saved.cwd &&
++          (!saved.workspaceId || entry.id === saved.workspaceId),
++      ) ?? null;
++    cursor = page.pageInfo.hasMore ? (page.pageInfo.nextCursor ?? undefined) : undefined;
++  } while (!workspace && cursor);
++  if (!workspace) {
++    if (saved.phase !== "directory") {
++      throw new ChatPresetError(
++        "unknown-workspace",
++        "The previous workspace preparation has not been confirmed. Check the native project list before creating another workspace.",
++      );
++    }
++    await save({ ...saved, phase: "opening" });
++    const opened = await client.openProject(saved.cwd);
++    if (!opened.workspace || opened.error) {
++      await save({ ...saved, phase: "directory" });
++      throw new ChatPresetError(
++        "directory",
++        opened.error ?? "The default workspace could not be opened.",
++      );
++    }
++    workspace = opened.workspace;
++  }
++  await save({ ...saved, phase: "ready", workspaceId: workspace.id });
++  const snapshot = await client.getProvidersSnapshot({ cwd: saved.cwd });
++  const setup = resolveChatSetup(snapshot.entries, saved.cwd);
++  return { workspace, setup };
++}
+diff --git a/packages/app/src/embedded/chat-start-screen.tsx b/packages/app/src/embedded/chat-start-screen.tsx
+new file mode 100644
+index 0000000..994de31
+--- /dev/null
++++ b/packages/app/src/embedded/chat-start-screen.tsx
+@@ -0,0 +1,199 @@
++import { useIsFocused } from "@react-navigation/native";
++import { useEffect, useState } from "react";
++import { Pressable, Text, View } from "react-native";
++import { useLocalSearchParams, useRouter, type Href } from "expo-router";
++import { useTranslation } from "react-i18next";
++import { useUnistyles } from "react-native-unistyles";
++import { useEarliestOnlineHostServerId } from "@/app/_layout";
++import { useHosts, useHostRuntimeClient, useHostRuntimeIsConnected } from "@/runtime/host-runtime";
++import { useSessionStore, normalizeWorkspaceDescriptor } from "@/stores/session-store";
++import {
++  collectAllTabs,
++  useWorkspaceLayoutStore,
++  useWorkspaceLayoutStoreHydrated,
++} from "@/stores/workspace-layout-store";
++import { navigateToWorkspace } from "@/stores/navigation-active-workspace-store";
++import { navigateToHostWorkspaceRoute } from "@/navigation/workspace-route-navigation";
++import { buildHostWorkspaceRoute } from "@/utils/host-routes";
++import { ProductHeader } from "./product-header";
++import { ChatPresetError, ChatPresetInitializer } from "./chat-preset";
++import {
++  getProductMode,
++  readChatPreparation,
++  saveChatPreparation,
++  rememberProductWorkspace,
++  useProductMode,
++  setProductMode,
++} from "./product-mode";
++
++const initializer = new ChatPresetInitializer();
++export default function ChatStartScreen() {
++  const { theme } = useUnistyles();
++  const { i18n } = useTranslation();
++  const zh = i18n.language.startsWith("zh");
++  const router = useRouter();
++  const product = useProductMode();
++  const isFocused = useIsFocused();
++  const params = useLocalSearchParams<{ serverId?: string }>();
++  const online = useEarliestOnlineHostServerId();
++  const hosts = useHosts();
++  const serverId =
++    params.serverId ?? product.chat?.serverId ?? online ?? hosts[0]?.serverId ?? null;
++  const client = useHostRuntimeClient(serverId ?? "");
++  const connected = useHostRuntimeIsConnected(serverId ?? "");
++  const layoutHydrated = useWorkspaceLayoutStoreHydrated();
++  const [error, setError] = useState<Error | null>(null);
++  const [attempt, setAttempt] = useState(0);
++  useEffect(() => {
++    if (
++      !isFocused ||
++      product.mode !== "chat" ||
++      !client ||
++      !connected ||
++      !serverId ||
++      !layoutHydrated ||
++      !product.hydrated
++    )
++      return;
++    let cancelled = false;
++    setError(null);
++    void initializer
++      .run(serverId, {
++        client,
++        read: () => readChatPreparation(serverId),
++        save: (value) => saveChatPreparation(serverId, value),
++      })
++      .then(({ workspace, setup }) => {
++        if (cancelled || getProductMode().mode !== "chat") return;
++        // Merge the authoritative reply through the official store, without a second replica.
++        useSessionStore
++          .getState()
++          .mergeWorkspaces(serverId, [normalizeWorkspaceDescriptor(workspace)]);
++        const selection = { serverId, workspaceId: workspace.id };
++        rememberProductWorkspace("chat", selection);
++        const layout =
++          useWorkspaceLayoutStore.getState().layoutByWorkspace[`${serverId}:${workspace.id}`];
++        const hasConversationTab =
++          layout &&
++          collectAllTabs(layout.root).some(
++            (tab) => tab.target.kind === "agent" || tab.target.kind === "draft",
++          );
++        if (hasConversationTab) {
++          navigateToHostWorkspaceRoute(buildHostWorkspaceRoute(serverId, workspace.id));
++        } else
++          navigateToWorkspace({
++            ...selection,
++            target: { kind: "draft", draftId: crypto.randomUUID(), setup },
++            pin: true,
++          });
++      })
++      .catch((failure: unknown) => {
++        if (!cancelled)
++          setError(failure instanceof Error ? failure : new Error("Chat preparation failed."));
++      });
++    return () => {
++      cancelled = true;
++    };
++  }, [
++    isFocused,
++    product.mode,
++    client,
++    connected,
++    serverId,
++    layoutHydrated,
++    product.hydrated,
++    attempt,
++  ]);
++  const issue = error instanceof ChatPresetError ? error.issue : null;
++  const message = !serverId
++    ? zh
++      ? "先连接你的电脑，再使用 Chat。"
++      : "Connect your computer to start Chat."
++    : !connected
++      ? zh
++        ? "正在等待这台电脑连接。可在连接设置中查看状态。"
++        : "Waiting for this computer. Check connection settings for its status."
++      : issue === "codex-unavailable"
++        ? zh
++          ? "这台电脑的 Codex 尚不可用。请安装并登录 Codex 后重试，也可以自行选择其他 Agent。"
++          : "Codex is not available on this computer. Install and sign in to Codex, then retry, or choose another agent."
++        : issue === "luna-unavailable"
++          ? zh
++            ? "这台电脑的 Codex 没有提供 Luna。可以重试获取模型，或自行选择其他模型。"
++            : "This computer's Codex does not offer Luna. Retry the model list or choose another model."
++          : issue === "unknown-workspace"
++            ? zh
++              ? "上次准备的结果仍未确认。已查询项目，暂不重复创建；恢复连接后重试查询，或打开原生项目列表核对。"
++              : "The previous preparation is still unconfirmed. Retry the query after reconnecting, or inspect the native project list."
++            : error
++              ? zh
++                ? `Chat 准备失败：${error.message}`
++                : `Chat preparation failed: ${error.message}`
++              : zh
++                ? "正在准备默认文件夹和 Codex / Luna…"
++                : "Preparing the default folder and Codex / Luna…";
++  const button = (label: string, action: () => void) => (
++    <Pressable
++      key={label}
++      accessibilityRole="button"
++      onPress={action}
++      style={{
++        minHeight: 44,
++        justifyContent: "center",
++        paddingHorizontal: 12,
++        borderWidth: 1,
++        borderColor: theme.colors.border,
++        borderRadius: 8,
++      }}
++    >
++      <Text style={{ color: theme.colors.foreground }}>{label}</Text>
++    </Pressable>
++  );
++  return (
++    <View style={{ flex: 1 }}>
++      <ProductHeader />
++      <View
++        style={{
++          flex: 1,
++          padding: 24,
++          justifyContent: "center",
++          gap: 16,
++          backgroundColor: theme.colors.surface0,
++        }}
++      >
++        <Text
++          accessibilityRole="header"
++          style={{ fontSize: 20, fontWeight: "600", color: theme.colors.foreground }}
++        >
++          Chat
++        </Text>
++        <Text style={{ color: theme.colors.foregroundMuted, lineHeight: 22 }}>{message}</Text>
++        {hosts.find((host) => host.serverId === serverId)?.label ? (
++          <Text style={{ color: theme.colors.foregroundMuted }}>
++            {hosts.find((host) => host.serverId === serverId)!.label}
++          </Text>
++        ) : null}
++        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
++          {error && connected
++            ? button(zh ? "重试" : "Retry", () => setAttempt((value) => value + 1))
++            : null}
++          {error
++            ? button(zh ? "选择 Agent / 项目" : "Choose agent / project", () => {
++                setProductMode("build");
++                router.push("/new");
++              })
++            : null}
++          {!connected || error
++            ? button(zh ? "连接设置" : "Connection settings", () =>
++                router.push(
++                  (serverId
++                    ? `/settings/hosts/${encodeURIComponent(serverId)}`
++                    : "/welcome") as Href,
++                ),
++              )
++            : null}
++        </View>
++      </View>
++    </View>
++  );
++}
+diff --git a/packages/app/src/embedded/contract.ts b/packages/app/src/embedded/contract.ts
+index 7e723fc..327137f 100644
+--- a/packages/app/src/embedded/contract.ts
++++ b/packages/app/src/embedded/contract.ts
+@@ -1,33 +1,40 @@
+ /** Only public presentation data crosses this boundary. Native pairing, chat,
+  * approvals, stop and host removal remain owned by Paseo. No generic RPC exists. */
+ export const CONTRACT_VERSION = 1 as const;
+-export const PUBLIC_DRAFT_LIMITS = Object.freeze({ id: 100, title: 240, summary: 2000, url: 2048 });
+-export type AssistantLocale = 'zh' | 'en';
++export const PUBLIC_DRAFT_LIMITS = Object.freeze({
++  requestId: 100,
++  id: 100,
++  title: 240,
++  url: 2048,
++});
++export type AssistantLocale = "zh" | "en";
+ export interface PublicWorkDraft {
++  requestId: string;
+   id: string;
+   title: string;
+   canonicalUrl: string;
+-  sourceUrl: string | null;
+-  summary: string;
+ }
+ export interface Presentation {
++  surface: "compact" | "full";
+   visible: boolean;
+   focused: boolean;
+   pageVisible: boolean;
+ }
+ export type HostCommand =
+-  | { version: 1; type: 'presentation'; value: Presentation }
+-  | { version: 1; type: 'locale'; value: AssistantLocale }
+-  | { version: 1; type: 'draft'; value: PublicWorkDraft | null }
+-  | { version: 1; type: 'dispose' };
++  | { version: 1; type: "presentation"; value: Presentation }
++  | { version: 1; type: "locale"; value: AssistantLocale }
++  | { version: 1; type: "draft"; value: PublicWorkDraft | null }
++  | { version: 1; type: "dispose" };
+ export type AssistantEvent =
+-  | { version: 1; type: 'ready' }
+-  | { version: 1; type: 'close' }
+-  | { version: 1; type: 'state'; value: 'initializing' | 'operable' | 'disposed' }
++  | { version: 1; type: "ready" }
++  | { version: 1; type: "saved-hosts" }
++  | { version: 1; type: "close" }
++  | { version: 1; type: "surface"; value: "compact" | "full" }
++  | { version: 1; type: "state"; value: "initializing" | "operable" | "disposed" }
+   | {
+       version: 1;
+-      type: 'error';
+-      code: 'resource' | 'initialization' | 'fatal';
++      type: "error";
++      code: "resource" | "initialization" | "fatal";
+       retryable: boolean;
+     };
+ export interface PaseoMountOptions {
+@@ -48,15 +55,15 @@ export interface PaseoHandle {
+ }
+ 
+ function record(value: unknown, keys: string[]): value is Record<string, unknown> {
+-  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
++  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+   const prototype = Object.getPrototypeOf(value);
+   if (prototype !== Object.prototype && prototype !== null) return false;
+   const descriptors = Object.getOwnPropertyDescriptors(value);
+   const ownKeys = Reflect.ownKeys(value);
+   return (
+     ownKeys.length === keys.length &&
+-    keys.every((key) => descriptors[key] && 'value' in descriptors[key]) &&
+-    ownKeys.every((key) => typeof key === 'string' && keys.includes(key))
++    keys.every((key) => descriptors[key] && "value" in descriptors[key]) &&
++    ownKeys.every((key) => typeof key === "string" && keys.includes(key))
+   );
+ }
+ function hasControlCharacters(value: string): boolean {
+@@ -68,7 +75,7 @@ function hasControlCharacters(value: string): boolean {
+ }
+ function text(value: unknown, max: number, empty = false): value is string {
+   return (
+-    typeof value === 'string' &&
++    typeof value === "string" &&
+     (empty || value.trim().length > 0) &&
+     value.length <= max &&
+     !hasControlCharacters(value)
+@@ -80,74 +87,88 @@ function publicUrl(value: unknown): value is string {
+     const url = new URL(value);
+     // Draft URLs come from published metadata, never the current browser URL.
+     // No connection/auth material is accepted in credentials, queries or hashes.
+-    return url.protocol === 'https:' && !url.username && !url.password && !url.search && !url.hash;
++    return url.protocol === "https:" && !url.username && !url.password && !url.search && !url.hash;
+   } catch {
+     return false;
+   }
+ }
+ export function parsePublicWorkDraft(value: unknown): PublicWorkDraft | null {
+-  if (!record(value, ['id', 'title', 'canonicalUrl', 'sourceUrl', 'summary'])) return null;
++  if (!record(value, ["requestId", "id", "title", "canonicalUrl"])) return null;
+   if (
++    !text(value.requestId, PUBLIC_DRAFT_LIMITS.requestId) ||
+     !text(value.id, PUBLIC_DRAFT_LIMITS.id) ||
+     !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value.id) ||
+     !text(value.title, PUBLIC_DRAFT_LIMITS.title) ||
+-    !text(value.summary, PUBLIC_DRAFT_LIMITS.summary, true) ||
+-    !publicUrl(value.canonicalUrl) ||
+-    (value.sourceUrl !== null && !publicUrl(value.sourceUrl))
++    !publicUrl(value.canonicalUrl)
+   )
+     return null;
+   return {
++    requestId: value.requestId,
+     id: value.id,
+     title: value.title,
+-    summary: value.summary,
+     canonicalUrl: value.canonicalUrl,
+-    sourceUrl: value.sourceUrl as string | null,
+   };
+ }
+ export function parseHostCommand(value: unknown): HostCommand | null {
+-  if (record(value, ['version', 'type']) && value.version === 1 && value.type === 'dispose')
+-    return { version: 1, type: 'dispose' };
+-  if (!record(value, ['version', 'type', 'value']) || value.version !== 1) return null;
+-  if (value.type === 'locale' && (value.value === 'zh' || value.value === 'en'))
+-    return { version: 1, type: 'locale', value: value.value };
+-  if (value.type === 'draft') {
+-    if (value.value === null) return { version: 1, type: 'draft', value: null };
++  if (record(value, ["version", "type"]) && value.version === 1 && value.type === "dispose")
++    return { version: 1, type: "dispose" };
++  if (!record(value, ["version", "type", "value"]) || value.version !== 1) return null;
++  if (value.type === "locale" && (value.value === "zh" || value.value === "en"))
++    return { version: 1, type: "locale", value: value.value };
++  if (value.type === "draft") {
++    if (value.value === null) return { version: 1, type: "draft", value: null };
+     const draft = parsePublicWorkDraft(value.value);
+-    return draft ? { version: 1, type: 'draft', value: draft } : null;
++    return draft ? { version: 1, type: "draft", value: draft } : null;
+   }
+-  if (value.type === 'presentation' && record(value.value, ['visible', 'focused', 'pageVisible'])) {
+-    const { visible, focused, pageVisible } = value.value;
++  if (
++    value.type === "presentation" &&
++    record(value.value, ["surface", "visible", "focused", "pageVisible"])
++  ) {
++    const { surface, visible, focused, pageVisible } = value.value;
+     if (
+-      typeof visible === 'boolean' &&
+-      typeof focused === 'boolean' &&
+-      typeof pageVisible === 'boolean'
++      (surface === "compact" || surface === "full") &&
++      typeof visible === "boolean" &&
++      typeof focused === "boolean" &&
++      typeof pageVisible === "boolean"
+     )
+-      return { version: 1, type: 'presentation', value: { visible, focused, pageVisible } };
++      return {
++        version: 1,
++        type: "presentation",
++        value: { surface, visible, focused, pageVisible },
++      };
+   }
+   return null;
+ }
+ export function parseAssistantEvent(value: unknown): AssistantEvent | null {
+-  if (record(value, ['version', 'type']) && value.version === 1) {
+-    if (value.type === 'ready' || value.type === 'close') return { version: 1, type: value.type };
++  if (record(value, ["version", "type"]) && value.version === 1) {
++    if (value.type === "ready" || value.type === "close" || value.type === "saved-hosts")
++      return { version: 1, type: value.type };
+   }
+   if (
+-    record(value, ['version', 'type', 'value']) &&
++    record(value, ["version", "type", "value"]) &&
++    value.version === 1 &&
++    value.type === "surface" &&
++    (value.value === "compact" || value.value === "full")
++  )
++    return { version: 1, type: "surface", value: value.value };
++  if (
++    record(value, ["version", "type", "value"]) &&
+     value.version === 1 &&
+-    value.type === 'state'
++    value.type === "state"
+   ) {
+-    if (value.value === 'initializing' || value.value === 'operable' || value.value === 'disposed')
+-      return { version: 1, type: 'state', value: value.value };
++    if (value.value === "initializing" || value.value === "operable" || value.value === "disposed")
++      return { version: 1, type: "state", value: value.value };
+   }
+   if (
+-    record(value, ['version', 'type', 'code', 'retryable']) &&
++    record(value, ["version", "type", "code", "retryable"]) &&
+     value.version === 1 &&
+-    value.type === 'error'
++    value.type === "error"
+   ) {
+     if (
+-      (value.code === 'resource' || value.code === 'initialization' || value.code === 'fatal') &&
+-      typeof value.retryable === 'boolean'
++      (value.code === "resource" || value.code === "initialization" || value.code === "fatal") &&
++      typeof value.retryable === "boolean"
+     )
+-      return { version: 1, type: 'error', code: value.code, retryable: value.retryable };
++      return { version: 1, type: "error", code: value.code, retryable: value.retryable };
+   }
+   return null;
+ }
+diff --git a/packages/app/src/embedded/html-preview-carrier.test.ts b/packages/app/src/embedded/html-preview-carrier.test.ts
+new file mode 100644
+index 0000000..c4efd94
+--- /dev/null
++++ b/packages/app/src/embedded/html-preview-carrier.test.ts
+@@ -0,0 +1,52 @@
++import { expect, it, vi } from "vitest";
++import { deliverHtmlToCarrier } from "./html-preview-carrier";
++import { withPreviewCsp } from "@/file-pane/html-preview-csp";
++
++it("delivers only the original native-CSP document to the exact opaque carrier once", () => {
++  const postMessage = vi.fn();
++  const frameWindow = { postMessage } as unknown as Window;
++  const data = { version: 1, type: "vibes-html-ready", token: "fresh-document" };
++  const input = {
++    event: { source: frameWindow, origin: "null", data } as unknown as MessageEvent,
++    frameWindow,
++    token: "fresh-document",
++    html: withPreviewCsp("<button onclick='this.textContent=2'>1</button>"),
++    delivered: false,
++    markDelivered: vi.fn(),
++  };
++  expect(deliverHtmlToCarrier(input)).toBe(true);
++  expect(postMessage).toHaveBeenCalledWith(
++    { version: 1, type: "vibes-html-content", token: input.token, html: input.html },
++    "*",
++  );
++  expect(deliverHtmlToCarrier({ ...input, delivered: true })).toBe(false);
++  expect(input.markDelivered).toHaveBeenCalledTimes(1);
++  expect(postMessage).toHaveBeenCalledTimes(1);
++});
++it("rejects foreign windows, navigated origins, stale tokens, and extra fields", () => {
++  const postMessage = vi.fn();
++  const frameWindow = { postMessage } as unknown as Window;
++  const good = {
++    source: frameWindow,
++    origin: "null",
++    data: { version: 1, type: "vibes-html-ready", token: "current" },
++  };
++  for (const event of [
++    { ...good, source: {} },
++    { ...good, origin: "https://remote.example" },
++    { ...good, data: { ...good.data, token: "old" } },
++    { ...good, data: { ...good.data, action: "read-other-files" } },
++    { ...good, data: null },
++  ])
++    expect(
++      deliverHtmlToCarrier({
++        event: event as unknown as MessageEvent,
++        frameWindow,
++        token: "current",
++        html: "private local file",
++        delivered: false,
++        markDelivered: vi.fn(),
++      }),
++    ).toBe(false);
++  expect(postMessage).not.toHaveBeenCalled();
++});
+diff --git a/packages/app/src/embedded/html-preview-carrier.ts b/packages/app/src/embedded/html-preview-carrier.ts
+new file mode 100644
+index 0000000..1a876bd
+--- /dev/null
++++ b/packages/app/src/embedded/html-preview-carrier.ts
+@@ -0,0 +1,37 @@
++/** Sandboxed carrier frames have an opaque origin. Match the exact browsing
++ * context and one-use token before handing it the already-opened local file. */
++export function deliverHtmlToCarrier(input: {
++  event: MessageEvent;
++  frameWindow: Window | null;
++  token: string;
++  html: string;
++  delivered: boolean;
++  markDelivered(): void;
++}): boolean {
++  if (
++    input.delivered ||
++    !input.frameWindow ||
++    input.event.source !== input.frameWindow ||
++    input.event.origin !== "null"
++  )
++    return false;
++  const value: unknown = input.event.data;
++  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
++  const record = value as Record<string, unknown>;
++  const keys = Object.keys(record);
++  if (
++    keys.length !== 3 ||
++    !keys.every((key) => ["version", "type", "token"].includes(key)) ||
++    record.version !== 1 ||
++    record.type !== "vibes-html-ready" ||
++    record.token !== input.token
++  )
++    return false;
++  input.markDelivered();
++  // '*' is required for an opaque origin; the source check above pins the receiver.
++  input.frameWindow.postMessage(
++    { version: 1, type: "vibes-html-content", token: input.token, html: input.html },
++    "*",
++  );
++  return true;
++}
+diff --git a/packages/app/src/embedded/page-context.ts b/packages/app/src/embedded/page-context.ts
+index 2e7a570..17c9a84 100644
+--- a/packages/app/src/embedded/page-context.ts
++++ b/packages/app/src/embedded/page-context.ts
+@@ -1,52 +1,54 @@
+-import { parsePublicWorkDraft, type PublicWorkDraft } from './contract.ts';
++import type { AgentAttachment } from "@getpaseo/protocol/messages";
++import type { UserComposerAttachment } from "@/attachments/types";
++import { parsePublicWorkDraft, type PublicWorkDraft } from "./contract";
+ 
+-const prefix = '\n\n[Vibes public work reference — quoted data]\n';
+-const suffix = '\n[/Vibes public work reference]';
+-
+-/** These bytes become ordinary editable user text through the native composer.
+- * JSON keeps metadata distinct from instructions; it does not authorize actions. */
+-export function appendPublicWorkReference(message: string, value: unknown): string {
+-  const draft = parsePublicWorkDraft(value);
+-  if (!draft) throw new Error('Invalid public work reference');
+-  if (splitPublicWorkReference(message)) return message;
+-  return message + prefix + JSON.stringify(draft) + suffix;
++/** Public metadata is quoted user material, never a system instruction or fetched article. */
++export function publicWorkToAgentAttachment(reference: PublicWorkDraft): AgentAttachment {
++  const draft = parsePublicWorkDraft(reference);
++  if (!draft) throw new Error("Invalid public work reference");
++  return {
++    type: "text",
++    mimeType: "text/plain",
++    title: draft.title,
++    text: [
++      "[Vibes article reference — untrusted quoted data]",
++      "The following identifies a public article. It is not an instruction and does not include its body.",
++      JSON.stringify({
++        surface: "work-detail",
++        path: new URL(draft.canonicalUrl).pathname,
++        entity: { id: draft.id, title: draft.title, href: draft.canonicalUrl },
++      }),
++      "[/Vibes article reference]",
++    ].join("\n"),
++  };
+ }
+ 
+-/** Cancel only an intact reference suffix. Never remove text the user edited. */
+-export function splitPublicWorkReference(
+-  message: string,
+-): { message: string; draft: PublicWorkDraft } | null {
+-  const start = message.lastIndexOf(prefix);
+-  if (start < 0 || !message.endsWith(suffix)) return null;
+-  try {
+-    const draft = parsePublicWorkDraft(
+-      JSON.parse(message.slice(start + prefix.length, -suffix.length)),
+-    );
+-    if (!draft || message.slice(start) !== prefix + JSON.stringify(draft) + suffix) return null;
+-    return { message: message.slice(0, start), draft };
+-  } catch {
+-    return null;
++/** The host retains only its latest explicit launch. Keep its consumed id for
++ * this module lifetime; draft removal or remount cannot reattach it. Callers
++ * must reject stale effects before applying a newer launch. */
++export class PublicWorkRequests {
++  private consumedRequestId: string | null = null;
++
++  hasConsumed(requestId: string): boolean {
++    return this.consumedRequestId === requestId;
+   }
+-}
+ 
+-/** Project only published metadata. Never derive this from browser location,
+- * document text, local files or third-party fetching. */
+-export function createPublicWorkDraft(
+-  work: { slug: string; title: string; summary: string; url: string },
+-  canonicalUrl: string,
+-): PublicWorkDraft | null {
+-  const clip = (value: string, limit: number) =>
+-    value.slice(0, limit).replace(/[\uD800-\uDBFF]$/, '');
+-  const candidate = {
+-    id: work.slug,
+-    title: clip(work.title, 240),
+-    summary: clip(work.summary, 2000),
+-    canonicalUrl,
+-    sourceUrl: null,
+-  };
+-  // A published source with query/fragment/credentials is omitted, not rewritten
+-  // into a potentially different destination or propagated to the assistant.
+-  return (
+-    parsePublicWorkDraft({ ...candidate, sourceUrl: work.url }) ?? parsePublicWorkDraft(candidate)
+-  );
++  apply(
++    reference: PublicWorkDraft,
++    attachments: UserComposerAttachment[],
++  ): UserComposerAttachment[] {
++    if (this.consumedRequestId === reference.requestId) return attachments;
++    this.consumedRequestId = reference.requestId;
++    if (
++      attachments.some(
++        (item) =>
++          item.kind === "vibes_public_work" && item.reference.requestId === reference.requestId,
++      )
++    )
++      return attachments;
++    return [
++      ...attachments.filter((item) => item.kind !== "vibes_public_work"),
++      { kind: "vibes_public_work", reference },
++    ];
++  }
+ }
+diff --git a/packages/app/src/embedded/product-header.tsx b/packages/app/src/embedded/product-header.tsx
+new file mode 100644
+index 0000000..3c04efa
+--- /dev/null
++++ b/packages/app/src/embedded/product-header.tsx
+@@ -0,0 +1,139 @@
++import { type ReactNode, useEffect } from "react";
++import { Pressable, Text, View } from "react-native";
++import { usePathname, useRouter, type Href } from "expo-router";
++import { useUnistyles } from "react-native-unistyles";
++import { useTranslation } from "react-i18next";
++import { SidebarMenuToggle } from "@/components/headers/menu-header";
++import { ScreenHeader } from "@/components/headers/screen-header";
++import { navigateToHostWorkspaceRoute } from "@/navigation/workspace-route-navigation";
++import { buildHostWorkspaceRoute } from "@/utils/host-routes";
++import { getEmbeddedHost } from "./environment";
++import {
++  getProductMode,
++  getProductDestination,
++  rememberProductWorkspace,
++  setProductMode,
++  useProductMode,
++  type ProductMode,
++} from "./product-mode";
++
++export function ProductHeader({
++  serverId,
++  workspaceId,
++  right,
++  onNewConversation,
++  active = true,
++  showMenu = true,
++}: {
++  serverId?: string;
++  workspaceId?: string;
++  right?: ReactNode;
++  onNewConversation?: () => void;
++  active?: boolean;
++  showMenu?: boolean;
++}) {
++  const { theme } = useUnistyles();
++  const router = useRouter();
++  const pathname = usePathname();
++  const { mode } = useProductMode();
++  const { i18n } = useTranslation();
++  const zh = i18n.language.startsWith("zh");
++  useEffect(() => {
++    if (!active || !serverId || !workspaceId) return;
++    const current = getProductMode();
++    if (
++      current.mode === "chat" &&
++      (current.chat?.serverId !== serverId || current.chat?.workspaceId !== workspaceId)
++    ) {
++      setProductMode("build");
++    }
++    rememberProductWorkspace(getProductMode().mode, { serverId, workspaceId });
++    // A mode change alone must not label the departing workspace as the destination.
++  }, [active, serverId, workspaceId]);
++  if (!getEmbeddedHost()) return null;
++  const select = (next: ProductMode) => {
++    if (next === mode && (workspaceId || pathname === "/new" || pathname === "/vibes-chat")) return;
++    setProductMode(next, serverId && workspaceId ? { serverId, workspaceId } : null);
++    const destination = getProductDestination(next);
++    if (destination.kind === "workspace") {
++      const { serverId: hostId, workspaceId: workspace } = destination.selection;
++      navigateToHostWorkspaceRoute(buildHostWorkspaceRoute(hostId, workspace));
++    } else if (destination.kind === "picker") router.navigate(destination.entry as Href);
++    else router.navigate("/vibes-chat" as Href);
++  };
++  return (
++    <ScreenHeader
++      left={
++        <>
++          {showMenu ? <SidebarMenuToggle /> : null}
++          <View style={{ flexDirection: "row", gap: 4 }} accessibilityRole="tablist">
++            {(["chat", "build"] as const).map((item) => (
++              <Pressable
++                key={item}
++                accessibilityRole="tab"
++                accessibilityState={{ selected: mode === item }}
++                accessibilityLabel={item === "chat" ? "Chat" : "Build"}
++                onPress={() => select(item)}
++                style={{
++                  minHeight: 44,
++                  minWidth: 64,
++                  paddingHorizontal: 12,
++                  justifyContent: "center",
++                  borderBottomWidth: 2,
++                  borderBottomColor: mode === item ? theme.colors.foreground : "transparent",
++                }}
++              >
++                <Text
++                  style={{
++                    color: mode === item ? theme.colors.foreground : theme.colors.foregroundMuted,
++                    fontWeight: mode === item ? "600" : "400",
++                    fontSize: 14,
++                  }}
++                >
++                  {item === "chat" ? "Chat" : "Build"}
++                </Text>
++              </Pressable>
++            ))}
++          </View>
++        </>
++      }
++      right={
++        <>
++          {onNewConversation ? (
++            <Pressable
++              accessibilityRole="button"
++              accessibilityLabel={zh ? "新对话" : "New conversation"}
++              onPress={onNewConversation}
++              style={{
++                minWidth: 44,
++                minHeight: 44,
++                alignItems: "center",
++                justifyContent: "center",
++              }}
++            >
++              <Text style={{ color: theme.colors.foreground, fontSize: 24 }}>+</Text>
++            </Pressable>
++          ) : null}
++          {right}
++          {mode === "build" ? (
++            <Pressable
++              accessibilityRole="button"
++              accessibilityLabel={zh ? "选择项目" : "Choose project"}
++              onPress={() => router.push("/new")}
++              style={{
++                minWidth: 44,
++                minHeight: 44,
++                justifyContent: "center",
++                paddingHorizontal: 8,
++              }}
++            >
++              <Text style={{ color: theme.colors.foregroundMuted }}>
++                {zh ? "项目" : "Projects"}
++              </Text>
++            </Pressable>
++          ) : null}
++        </>
++      }
++    />
++  );
++}
+diff --git a/packages/app/src/embedded/product-mode.test.ts b/packages/app/src/embedded/product-mode.test.ts
+new file mode 100644
+index 0000000..b6f3ae8
+--- /dev/null
++++ b/packages/app/src/embedded/product-mode.test.ts
+@@ -0,0 +1,117 @@
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import { JSDOM } from "jsdom";
++import AsyncStorage from "@react-native-async-storage/async-storage";
++import { createDraftPersistStorage } from "@/stores/draft-store/persistence";
++import { createValidatedPersistStorage } from "@/storage/validated-persist-storage";
++import { DraftStoreStateSchema, type DraftStoreState } from "@/stores/draft-store/state";
++
++let dom: JSDOM;
++beforeEach(() => {
++  dom = new JSDOM("<!doctype html>", { url: "https://vibes.college" });
++  vi.stubGlobal("window", dom.window);
++  vi.resetModules();
++});
++afterEach(() => {
++  dom.window.close();
++  vi.unstubAllGlobals();
++});
++
++it("restores each native workspace selection through the real AsyncStorage web adapter after module reload", async () => {
++  let product = await import("./product-mode");
++  await product.hydrateProductMode();
++  product.rememberProductWorkspace("chat", { serverId: "home", workspaceId: "chat-workspace" });
++  product.setProductMode("build");
++  product.rememberProductWorkspace("build", {
++    serverId: "office",
++    workspaceId: "existing-project",
++  });
++  product.setProductMode("chat");
++  expect(window.localStorage.getItem("vibes-product-mode-v1")).toContain("existing-project");
++  vi.resetModules();
++  product = await import("./product-mode");
++  await product.hydrateProductMode();
++  expect(product.getProductDestination("chat")).toEqual({
++    kind: "workspace",
++    selection: { serverId: "home", workspaceId: "chat-workspace" },
++  });
++  expect(product.getProductDestination("build")).toEqual({
++    kind: "workspace",
++    selection: { serverId: "office", workspaceId: "existing-project" },
++  });
++  expect(product.getProductMode().mode).toBe("chat");
++});
++it("restores a Build picker draft route instead of changing to the previous workspace", async () => {
++  let product = await import("./product-mode");
++  await product.hydrateProductMode();
++  product.rememberProductWorkspace("build", { serverId: "office", workspaceId: "previous" });
++  const entry = {
++    pathname: "/new" as const,
++    params: {
++      serverId: "office",
++      projectId: "p-2",
++      dir: "/projects/second",
++      draftId: "draft-original",
++    },
++  };
++  product.rememberBuildEntry(entry);
++  product.setProductMode("chat");
++  vi.resetModules();
++  product = await import("./product-mode");
++  await product.hydrateProductMode();
++  expect(product.getProductDestination("build")).toEqual({ kind: "picker", entry });
++  product.rememberProductWorkspace("build", { serverId: "office", workspaceId: "created" });
++  expect(product.getProductDestination("build")).toEqual({
++    kind: "workspace",
++    selection: { serverId: "office", workspaceId: "created" },
++  });
++});
++it("persists uncertain preparation by host before a reload", async () => {
++  let product = await import("./product-mode");
++  await product.hydrateProductMode();
++  const pending = { cwd: "/home/test/Vibes", projectId: "project", phase: "opening" as const };
++  await product.saveChatPreparation("host-a", pending);
++  vi.resetModules();
++  product = await import("./product-mode");
++  await expect(product.readChatPreparation("host-a")).resolves.toEqual(pending);
++  await expect(product.readChatPreparation("host-b")).resolves.toBeNull();
++});
++it("round-trips native draft text and article deletion through native persistence and localStorage", async () => {
++  const backing = () =>
++    createDraftPersistStorage(createValidatedPersistStorage(AsyncStorage, DraftStoreStateSchema));
++  const key = "native-article-draft-test";
++  const state: DraftStoreState = {
++    createModalDraft: null,
++    drafts: {
++      "agent:host:existing": {
++        lifecycle: "active",
++        updatedAt: Date.now(),
++        version: 1,
++        input: {
++          text: "Keep this existing question",
++          attachments: [
++            {
++              kind: "vibes_public_work",
++              reference: {
++                requestId: "explicit-article",
++                id: "example",
++                title: "Example",
++                canonicalUrl: "https://vibes.college/zh/works/example/",
++              },
++            },
++          ],
++        },
++      },
++    },
++  };
++  const first = backing();
++  await first.setItem(key, { state, version: 5 });
++  await first.flush();
++  expect((await backing().getItem(key))?.state.drafts["agent:host:existing"].input).toEqual(
++    state.drafts["agent:host:existing"].input,
++  );
++  state.drafts["agent:host:existing"].input.attachments = [];
++  await first.setItem(key, { state, version: 5 });
++  await first.flush();
++  const restored = (await backing().getItem(key))?.state.drafts["agent:host:existing"].input;
++  expect(restored).toEqual({ text: "Keep this existing question", attachments: [] });
++});
+diff --git a/packages/app/src/embedded/product-mode.ts b/packages/app/src/embedded/product-mode.ts
+new file mode 100644
+index 0000000..c68c383
+--- /dev/null
++++ b/packages/app/src/embedded/product-mode.ts
+@@ -0,0 +1,123 @@
++import AsyncStorage from "@react-native-async-storage/async-storage";
++import { useSyncExternalStore } from "react";
++import { z } from "zod";
++import type { ActiveWorkspaceSelection } from "@/stores/last-workspace-selection";
++import type { ChatPreparation } from "./chat-preset";
++
++export type ProductMode = "chat" | "build";
++const selectionSchema = z.object({ serverId: z.string().min(1), workspaceId: z.string().min(1) });
++const buildEntrySchema = z.object({
++  pathname: z.enum(["/new", "/open-project"]),
++  params: z.object({
++    serverId: z.string().optional(),
++    dir: z.string().optional(),
++    name: z.string().optional(),
++    projectId: z.string().optional(),
++    draftId: z.string().optional(),
++  }),
++});
++export type BuildEntry = z.infer<typeof buildEntrySchema>;
++const modeSchema = z.object({
++  mode: z.enum(["chat", "build"]),
++  chat: selectionSchema.nullable(),
++  build: selectionSchema.nullable(),
++  buildEntry: buildEntrySchema.nullable().default(null),
++});
++const preparationSchema = z.object({
++  cwd: z.string().min(1),
++  projectId: z.string().min(1),
++  phase: z.enum(["directory", "opening", "ready"]),
++  workspaceId: z.string().min(1).optional(),
++});
++const key = "vibes-product-mode-v1";
++let state: z.infer<typeof modeSchema> & { hydrated: boolean } = {
++  mode: "chat",
++  chat: null,
++  build: null,
++  buildEntry: null,
++  hydrated: false,
++};
++const listeners = new Set<() => void>();
++function publish() {
++  listeners.forEach((listener) => listener());
++}
++function persist() {
++  const { hydrated: _, ...value } = state;
++  void AsyncStorage.setItem(key, JSON.stringify(value)).catch(() => {});
++}
++let hydration: Promise<void> | null = null;
++export function hydrateProductMode(): Promise<void> {
++  if (hydration) return hydration;
++  hydration = (async () => {
++    try {
++      const raw = await AsyncStorage.getItem(key);
++      const parsed = raw ? modeSchema.safeParse(JSON.parse(raw)) : null;
++      if (parsed?.success) state = { ...parsed.data, hydrated: true };
++    } catch {
++      /* Navigation preferences may be absent; native drafts are independent. */
++    }
++    state = { ...state, hydrated: true };
++    publish();
++  })();
++  return hydration;
++}
++export function useProductMode() {
++  return useSyncExternalStore(
++    (listener) => {
++      listeners.add(listener);
++      return () => listeners.delete(listener);
++    },
++    () => state,
++    () => state,
++  );
++}
++export function getProductMode() {
++  return state;
++}
++export function setProductMode(mode: ProductMode, current?: ActiveWorkspaceSelection | null) {
++  state = { ...state, ...(current ? { [state.mode]: current } : {}), mode };
++  publish();
++  persist();
++}
++export function rememberProductWorkspace(mode: ProductMode, selection: ActiveWorkspaceSelection) {
++  if (
++    state[mode]?.serverId === selection.serverId &&
++    state[mode]?.workspaceId === selection.workspaceId &&
++    (mode !== "build" || state.buildEntry === null)
++  )
++    return;
++  state = { ...state, [mode]: selection, ...(mode === "build" ? { buildEntry: null } : {}) };
++  publish();
++  persist();
++}
++/** Keep only the native picker location. Text, attachments and tab state stay in Paseo stores. */
++export function rememberBuildEntry(entry: BuildEntry) {
++  const parsed = buildEntrySchema.parse(entry);
++  if (state.mode === "build" && JSON.stringify(state.buildEntry) === JSON.stringify(parsed)) return;
++  state = { ...state, mode: "build", buildEntry: parsed };
++  publish();
++  persist();
++}
++export function getProductDestination(mode: ProductMode) {
++  if (mode === "build" && state.buildEntry)
++    return { kind: "picker" as const, entry: state.buildEntry };
++  const selection = state[mode];
++  if (selection) return { kind: "workspace" as const, selection };
++  return mode === "chat"
++    ? { kind: "chat-start" as const }
++    : { kind: "picker" as const, entry: { pathname: "/new" as const, params: {} } };
++}
++const preparationKey = (serverId: string) => `vibes-chat-preparation-v1:${serverId}`;
++export async function readChatPreparation(serverId: string): Promise<ChatPreparation | null> {
++  const raw = await AsyncStorage.getItem(preparationKey(serverId));
++  if (!raw) return null;
++  const parsed = preparationSchema.safeParse(JSON.parse(raw));
++  if (!parsed.success)
++    throw new Error("Saved Chat preparation is invalid. Open the native project picker.");
++  return parsed.data;
++}
++export async function saveChatPreparation(serverId: string, value: ChatPreparation): Promise<void> {
++  // This write must complete before openProject; a refresh must retain uncertain state.
++  await AsyncStorage.setItem(preparationKey(serverId), JSON.stringify(value));
++}
++void hydrateProductMode();
+diff --git a/packages/app/src/embedded/public-work-reference.test.tsx b/packages/app/src/embedded/public-work-reference.test.tsx
+index 0c34fae..c29d251 100644
+--- a/packages/app/src/embedded/public-work-reference.test.tsx
++++ b/packages/app/src/embedded/public-work-reference.test.tsx
+@@ -1,44 +1,41 @@
+-import React, { act, useState } from 'react';
+-import { createRoot, type Root } from 'react-dom/client';
+-import { JSDOM } from 'jsdom';
+-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+-import { PublicWorkReference } from './public-work-reference';
+-import { splitPublicWorkReference } from './page-context';
+-import type { EmbeddedHost } from './environment';
++import React, { act, useState } from "react";
++import { createRoot, type Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import { usePublicWorkDraft } from "./public-work-reference";
++import { PublicWorkRequests, publicWorkToAgentAttachment } from "./page-context";
++import type { EmbeddedHost } from "./environment";
++import type { UserComposerAttachment } from "@/attachments/types";
++import { CanonicalDraftInputSchema } from "@/stores/draft-store/state";
++import { splitComposerAttachmentsForSubmit } from "@/composer/attachments/submit";
+ 
+-vi.mock('react-i18next', () => ({ useTranslation: () => ({ i18n: { language: 'zh' } }) }));
+-vi.mock('react-native-unistyles', () => ({
+-  useUnistyles: () => ({ theme: { colors: { foreground: '#222', foregroundMuted: '#555' } } }),
+-}));
++vi.mock("@react-navigation/native", () => ({ useIsFocused: () => true }));
++vi.mock("@/components/retained-panel", () => ({ useRetainedPanelActive: () => true }));
+ const work = {
+-  id: 'example',
+-  title: '公开作品',
+-  summary: '引用资料',
+-  canonicalUrl: 'https://vibes.college/zh/works/example/',
+-  sourceUrl: null,
++  requestId: "launch-1",
++  id: "example",
++  title: "公开作品",
++  canonicalUrl: "https://vibes.college/zh/works/example/",
+ };
+ let root: Root;
+ let host: EmbeddedHost;
+ let dom: JSDOM;
+ let listeners: Set<() => void>;
+-let change = vi.fn<(text: string) => void>();
+-let latest = '';
+-function Harness({ locked = false, initial = '请解释' }: { locked?: boolean; initial?: string }) {
+-  const [value, setValue] = useState(initial);
+-  latest = value;
+-  return (
+-    <PublicWorkReference
+-      value={value}
+-      disabled={locked}
+-      onChange={(text) => {
+-        change(text);
+-        setValue(text);
+-      }}
+-    />
+-  );
+-}
+-function button() {
+-  return document.querySelector('[role="button"]') as HTMLElement;
++let latest: UserComposerAttachment[] = [];
++let requestNumber = 0;
++function Harness({
++  hydrated = true,
++  active = true,
++  initial = [],
++}: {
++  hydrated?: boolean;
++  active?: boolean;
++  initial?: UserComposerAttachment[];
++}) {
++  const [attachments, setAttachments] = useState(initial);
++  latest = attachments;
++  usePublicWorkDraft({ enabled: active, isHydrated: hydrated, setAttachments });
++  return <button onClick={() => setAttachments([])}>Remove</button>;
+ }
+ beforeEach(() => {
+   dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>");
+@@ -54,14 +51,15 @@ beforeEach(() => {
+     vi.stubGlobal(key, value);
+   listeners = new Set();
+   host = {
+-    root: document.getElementById('root')!,
++    root: document.getElementById("root")!,
+     width: 600,
+     height: 600,
+-    locale: 'zh',
++    locale: "zh",
++    surface: "compact",
+     visible: true,
+     focused: true,
+     pageVisible: true,
+-    publicWork: work,
++    publicWork: { ...work, requestId: `test-${++requestNumber}` },
+     subscribe(listener) {
+       listeners.add(listener);
+       return () => {
+@@ -73,11 +71,13 @@ beforeEach(() => {
+       listeners.forEach((listener) => listener());
+     },
+     setLocale() {},
+-    setPresentation() {},
++    setPresentation(value) {
++      Object.assign(host, value);
++      listeners.forEach((listener) => listener());
++    },
+     onEvent() {},
+   };
+-  vi.stubGlobal('__vibesPaseoEnvironment', host);
+-  change = vi.fn<(text: string) => void>();
++  vi.stubGlobal("__vibesPaseoEnvironment", host);
+   root = createRoot(host.root);
+ });
+ afterEach(() => {
+@@ -85,34 +85,73 @@ afterEach(() => {
+   dom.window.close();
+   vi.unstubAllGlobals();
+ });
+-it('only an explicit click edits the current native draft and navigation preserves it', () => {
++
++it("waits for the active draft hydration and attaches even with no question", () => {
++  act(() => root.render(<Harness hydrated={false} />));
++  expect(latest).toEqual([]);
++  act(() => root.render(<Harness active={false} />));
++  expect(latest).toEqual([]);
+   act(() => root.render(<Harness />));
+-  expect(change).not.toHaveBeenCalled();
+-  act(() => button().click());
+-  expect(splitPublicWorkReference(latest)?.message).toBe('请解释');
+-  const attached = latest;
+-  act(() => host.setPublicWork({ ...work, title: '另一作品' }));
+-  expect(latest).toBe(attached);
+-  expect(document.body.textContent).toContain('已附带资料: 公开作品');
+-  act(() => button().click());
+-  expect(latest).toBe('请解释');
+-  expect(document.body.textContent).toContain('当前作品: 另一作品');
++  expect(latest).toEqual([{ kind: "vibes_public_work", reference: host.publicWork }]);
+ });
+-it('a restored draft remains cancellable without a current article', () => {
++it("deletion survives remount, host visibility, surface changes, and request replay", () => {
+   act(() => root.render(<Harness />));
+-  act(() => button().click());
+-  const saved = latest;
+-  act(() => host.setPublicWork(null));
+-  act(() => root.render(<Harness key="restored-session" initial={saved} />));
+-  expect(document.body.textContent).toContain('取消作品资料');
+-  act(() => button().click());
+-  expect(latest).toBe('请解释');
+-  expect(button()).toBeNull();
++  act(() => document.querySelector("button")!.click());
++  act(() =>
++    host.setPresentation({ visible: false, focused: false, pageVisible: true, surface: "full" }),
++  );
++  act(() => root.render(<Harness key="restored-draft" />));
++  act(() =>
++    host.setPresentation({ visible: true, focused: true, pageVisible: true, surface: "compact" }),
++  );
++  act(() => host.setPublicWork({ ...host.publicWork! }));
++  expect(latest).toEqual([]);
++  act(() => host.setPublicWork({ ...work, requestId: `explicit-new-${requestNumber}` }));
++  expect(latest).toHaveLength(1);
++});
++it("preserves other attachments and does not deliver the same request to another draft", () => {
++  const existing: UserComposerAttachment = {
++    kind: "workspace_file",
++    path: "notes.md",
++    selection: { kind: "whole_file" },
++  };
++  act(() => root.render(<Harness initial={[existing]} />));
++  expect(latest[0]).toEqual(existing);
++  expect(latest).toHaveLength(2);
++  act(() =>
++    host.setPublicWork({
++      ...work,
++      requestId: `replacement-${requestNumber}`,
++      title: "Next article",
++    }),
++  );
++  expect(latest).toEqual([existing, { kind: "vibes_public_work", reference: host.publicWork }]);
++  act(() => root.render(<Harness key="another-project" />));
++  expect(latest).toEqual([]);
+ });
+-it('locked composers and pages without public metadata do not insert content', () => {
+-  act(() => root.render(<Harness locked />));
+-  act(() => button().click());
+-  expect(change).not.toHaveBeenCalled();
+-  act(() => host.setPublicWork(null));
+-  expect(button()).toBeNull();
++it("uses native draft persistence and sends only ordinary quoted public metadata", () => {
++  const requests = new PublicWorkRequests();
++  const draft = { text: "Keep my question", attachments: requests.apply(work, []) };
++  expect(CanonicalDraftInputSchema.parse(draft)).toEqual(draft);
++  const submitted = splitComposerAttachmentsForSubmit(draft.attachments);
++  expect(submitted.images).toEqual([]);
++  expect(submitted.attachments).toEqual([publicWorkToAgentAttachment(work)]);
++  expect(submitted.attachments[0]).toMatchObject({ type: "text", mimeType: "text/plain" });
++  const serialized = JSON.stringify(submitted.attachments);
++  expect(serialized).toContain("untrusted quoted data");
++  expect(serialized).toContain("/zh/works/example/");
++  expect(serialized).not.toContain("requestId");
++  expect(draft.text).toBe("Keep my question");
++  expect(requests.apply(work, [])).toEqual([]);
++  expect(
++    CanonicalDraftInputSchema.safeParse({
++      text: "",
++      attachments: [
++        {
++          kind: "vibes_public_work",
++          reference: { ...work, canonicalUrl: "https://vibes.college/?token=secret" },
++        },
++      ],
++    }).success,
++  ).toBe(false);
+ });
+diff --git a/packages/app/src/embedded/public-work-reference.tsx b/packages/app/src/embedded/public-work-reference.tsx
+index ce99830..027ee1c 100644
+--- a/packages/app/src/embedded/public-work-reference.tsx
++++ b/packages/app/src/embedded/public-work-reference.tsx
+@@ -1,82 +1,39 @@
+-import { useSyncExternalStore } from 'react';
+-import { Pressable, Text, View } from 'react-native';
+-import { useUnistyles } from 'react-native-unistyles';
+-import { useTranslation } from 'react-i18next';
+-import { getEmbeddedHost } from './environment';
+-import { appendPublicWorkReference, splitPublicWorkReference } from './page-context';
++import { useIsFocused } from "@react-navigation/native";
++import { useEffect, useSyncExternalStore } from "react";
++import type { UserComposerAttachment } from "@/attachments/types";
++import { useRetainedPanelActive } from "@/components/retained-panel";
++import { getEmbeddedHost } from "./environment";
++import { PublicWorkRequests } from "./page-context";
+ 
++const requests = new PublicWorkRequests();
+ const noop = () => () => {};
+ const empty = () => null;
+ 
+-export function PublicWorkReference({
+-  value,
+-  onChange,
+-  disabled,
+-}: {
+-  value: string;
+-  onChange(text: string): void;
+-  disabled: boolean;
+-}) {
+-  const { theme } = useUnistyles();
++export function usePublicWorkDraft(input: {
++  enabled: boolean;
++  isHydrated: boolean;
++  setAttachments(updater: (current: UserComposerAttachment[]) => UserComposerAttachment[]): void;
++}): void {
+   const host = getEmbeddedHost();
+-  const draft = useSyncExternalStore(
++  const panelActive = useRetainedPanelActive();
++  const routeFocused = useIsFocused();
++  const reference = useSyncExternalStore(
+     host?.subscribe ?? noop,
+-    () => host?.publicWork ?? null,
++    () => (host?.visible && host.pageVisible ? host.publicWork : null),
+     empty,
+   );
+-  const { i18n } = useTranslation();
+-  const zh = i18n.language.startsWith('zh');
+-  const attached = splitPublicWorkReference(value);
+-  if (!host || (!draft && !attached)) return null;
+-  return (
+-    <View style={{ paddingHorizontal: 12, paddingVertical: 6, gap: 4 }}>
+-      <Text style={{ fontSize: 12, color: theme.colors.foregroundMuted }}>
+-        {attached
+-          ? `${zh ? '已附带资料' : 'Attached reference'}: ${attached.draft.title}`
+-          : `${zh ? '当前作品' : 'Current work'}: ${draft!.title}`}
+-      </Text>
+-      <Pressable
+-        accessibilityRole="button"
+-        accessibilityLabel={
+-          attached
+-            ? zh
+-              ? '取消作品资料'
+-              : 'Remove work reference'
+-            : zh
+-              ? '附带当前作品'
+-              : 'Attach current work'
+-        }
+-        disabled={disabled}
+-        onPress={() => {
+-          if (disabled) return;
+-          onChange(attached ? attached.message : appendPublicWorkReference(value, draft));
+-        }}
+-        style={{
+-          opacity: disabled ? 0.5 : 1,
+-          paddingVertical: 6,
+-          minHeight: 44,
+-          justifyContent: 'center',
+-        }}
+-      >
+-        <Text
+-          style={{ fontSize: 13, color: theme.colors.foreground, textDecorationLine: 'underline' }}
+-        >
+-          {attached
+-            ? zh
+-              ? '取消作品资料'
+-              : 'Remove work reference'
+-            : zh
+-              ? '附带当前作品'
+-              : 'Attach current work'}
+-        </Text>
+-      </Pressable>
+-      {attached && (
+-        <Text style={{ fontSize: 11, color: theme.colors.foregroundMuted }}>
+-          {zh
+-            ? '资料已放入输入框，可查看或编辑；点发送才会发送。'
+-            : 'Review or edit the reference in the input. It is sent only when you send the message.'}
+-        </Text>
+-      )}
+-    </View>
+-  );
++  const { enabled, isHydrated, setAttachments } = input;
++  useEffect(() => {
++    if (
++      !routeFocused ||
++      !enabled ||
++      !panelActive ||
++      !isHydrated ||
++      !reference ||
++      host?.publicWork?.requestId !== reference.requestId ||
++      requests.hasConsumed(reference.requestId)
++    )
++      return;
++    setAttachments((current) => requests.apply(reference, current));
++  }, [enabled, host, panelActive, routeFocused, isHydrated, reference, setAttachments]);
+ }
+diff --git a/packages/app/src/embedded/ready.test.tsx b/packages/app/src/embedded/ready.test.tsx
+new file mode 100644
+index 0000000..0e01a9e
+--- /dev/null
++++ b/packages/app/src/embedded/ready.test.tsx
+@@ -0,0 +1,53 @@
++import React, { act } from "react";
++import { createRoot, type Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import { EmbeddedReady } from "./ready";
++import { parseAssistantEvent } from "./contract";
++
++const observed = vi.hoisted(() => ({ loaded: false, hosts: [] as { serverId: string }[] }));
++vi.mock("expo-router", () => ({ usePathname: () => "/" }));
++vi.mock("@/runtime/host-runtime", () => ({
++  useHostRegistryLoaded: () => observed.loaded,
++  useHosts: () => observed.hosts,
++}));
++let root: Root;
++let dom: JSDOM;
++const onEvent = vi.fn();
++beforeEach(() => {
++  dom = new JSDOM("<!doctype html><div id='root'></div>");
++  vi.stubGlobal("window", dom.window);
++  vi.stubGlobal("document", dom.window.document);
++  vi.stubGlobal("React", React);
++  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
++  vi.stubGlobal("__vibesPaseoEnvironment", { onEvent });
++  observed.loaded = false;
++  observed.hosts = [];
++  onEvent.mockClear();
++  root = createRoot(document.getElementById("root")!);
++});
++afterEach(() => {
++  act(() => root.unmount());
++  dom.window.close();
++  vi.unstubAllGlobals();
++});
++it("reports only hydrated saved-host existence, without host metadata or online claims", () => {
++  observed.hosts = [{ serverId: "private-host-id" }];
++  act(() => root.render(<EmbeddedReady />));
++  expect(onEvent).not.toHaveBeenCalled();
++  observed.loaded = true;
++  act(() => root.render(<EmbeddedReady />));
++  expect(onEvent.mock.calls).toEqual([[{ version: 1, type: "saved-hosts" }]]);
++  act(() => root.render(<EmbeddedReady />));
++  expect(onEvent).toHaveBeenCalledTimes(1);
++  expect(parseAssistantEvent({ version: 1, type: "saved-hosts" })).toEqual({
++    version: 1,
++    type: "saved-hosts",
++  });
++  expect(parseAssistantEvent({ version: 1, type: "saved-hosts", serverId: "private" })).toBeNull();
++});
++it("does not bypass onboarding for an empty saved registry", () => {
++  observed.loaded = true;
++  act(() => root.render(<EmbeddedReady />));
++  expect(onEvent).not.toHaveBeenCalled();
++});
+diff --git a/packages/app/src/embedded/ready.tsx b/packages/app/src/embedded/ready.tsx
+index fa5bad7..0e462a3 100644
+--- a/packages/app/src/embedded/ready.tsx
++++ b/packages/app/src/embedded/ready.tsx
+@@ -1,6 +1,6 @@
+-import { useEffect } from "react";
++import { useEffect, useRef } from "react";
+ import { usePathname } from "expo-router";
+-import { useHostRegistryLoaded } from "@/runtime/host-runtime";
++import { useHostRegistryLoaded, useHosts } from "@/runtime/host-runtime";
+ import { getEmbeddedHost } from "./environment";
+ 
+ // Operable means the native startup route has yielded to its UI. Connection and
+@@ -8,6 +8,19 @@ import { getEmbeddedHost } from "./environment";
+ export function EmbeddedReady() {
+   const path = usePathname();
+   const registryLoaded = useHostRegistryLoaded();
++  const hasSavedHosts = useHosts().length > 0;
++  const reportedSavedHosts = useRef(false);
++  useEffect(() => {
++    if (!registryLoaded) return;
++    if (!hasSavedHosts) {
++      reportedSavedHosts.current = false;
++      return;
++    }
++    if (reportedSavedHosts.current) return;
++    reportedSavedHosts.current = true;
++    // This reports only saved native configuration, never connection readiness.
++    getEmbeddedHost()?.onEvent({ version: 1, type: "saved-hosts" });
++  }, [registryLoaded, hasSavedHosts]);
+   useEffect(() => {
+     if (!registryLoaded || path === "/") return;
+     const frame = requestAnimationFrame(() => {
+diff --git a/packages/app/src/file-pane/html-preview.web.test.tsx b/packages/app/src/file-pane/html-preview.web.test.tsx
+new file mode 100644
+index 0000000..dbfcf57
+--- /dev/null
++++ b/packages/app/src/file-pane/html-preview.web.test.tsx
+@@ -0,0 +1,86 @@
++import React, { act } from "react";
++import { createRoot, type Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import { FileHtmlPreview } from "./html-preview.web";
++
++vi.mock("react-i18next", () => ({
++  useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en" } }),
++}));
++let root: Root;
++let dom: JSDOM;
++beforeEach(() => {
++  dom = new JSDOM("<!doctype html><div id='root'></div>", { url: "https://vibes.college" });
++  vi.stubGlobal("window", dom.window);
++  vi.stubGlobal("document", dom.window.document);
++  vi.stubGlobal("React", React);
++  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
++  vi.stubGlobal("__vibesPaseoEnvironment", {});
++  vi.stubEnv("EXPO_PUBLIC_VIBES_HTML_PREVIEW_CARRIER", "/paseo-preview/");
++  root = createRoot(document.getElementById("root")!);
++});
++afterEach(() => {
++  act(() => root.unmount());
++  dom.window.close();
++  vi.unstubAllGlobals();
++  vi.unstubAllEnvs();
++});
++function signalReady(frame: HTMLIFrameElement, token: string) {
++  act(() =>
++    window.dispatchEvent(
++      new dom.window.MessageEvent("message", {
++        source: frame.contentWindow,
++        origin: "null",
++        data: { version: 1, type: "vibes-html-ready", token },
++      }),
++    ),
++  );
++}
++it("uses a separate response, one-use init handshake, and retains the original sandbox and CSP", () => {
++  act(() =>
++    root.render(<FileHtmlPreview html="<button onclick='this.textContent=2'>1</button>" />),
++  );
++  const frame = document.querySelector("iframe")!;
++  expect(frame.getAttribute("src")).toBe("/paseo-preview/");
++  expect(frame.hasAttribute("srcdoc")).toBe(false);
++  expect(frame.getAttribute("sandbox")).toBe("allow-scripts");
++  const post = vi.spyOn(frame.contentWindow!, "postMessage").mockImplementation(() => {});
++  act(() => frame.dispatchEvent(new dom.window.Event("load")));
++  const init = post.mock.calls[0][0] as { type: string; token: string };
++  expect(init.type).toBe("vibes-html-init");
++  expect(frame.src).not.toContain(init.token);
++  signalReady(frame, init.token);
++  expect(post.mock.calls[1][0]).toMatchObject({
++    type: "vibes-html-content",
++    token: init.token,
++    html: expect.stringContaining("Content-Security-Policy"),
++  });
++  act(() => frame.dispatchEvent(new dom.window.Event("load")));
++  signalReady(frame, init.token);
++  expect(post).toHaveBeenCalledTimes(2);
++});
++it("replaces the browsing context for changed file content and rejects the old window", () => {
++  act(() => root.render(<FileHtmlPreview html="<h1>First</h1>" />));
++  const first = document.querySelector("iframe")!;
++  const firstPost = vi.spyOn(first.contentWindow!, "postMessage").mockImplementation(() => {});
++  act(() => first.dispatchEvent(new dom.window.Event("load")));
++  const oldToken = (firstPost.mock.calls[0][0] as { token: string }).token;
++  act(() => root.render(<FileHtmlPreview html="<h1>Second</h1>" />));
++  const second = document.querySelector("iframe")!;
++  expect(second).not.toBe(first);
++  const secondPost = vi.spyOn(second.contentWindow!, "postMessage").mockImplementation(() => {});
++  signalReady(first, oldToken);
++  expect(secondPost).not.toHaveBeenCalled();
++  act(() => second.dispatchEvent(new dom.window.Event("load")));
++  const newToken = (secondPost.mock.calls[0][0] as { token: string }).token;
++  expect(newToken).not.toBe(oldToken);
++  signalReady(second, newToken);
++  expect(secondPost.mock.calls[1][0]).toMatchObject({ html: expect.stringContaining("Second") });
++});
++it("keeps the official srcDoc preview outside the embedded product", () => {
++  vi.stubGlobal("__vibesPaseoEnvironment", undefined);
++  act(() => root.render(<FileHtmlPreview html="<h1>Native</h1>" />));
++  const frame = document.querySelector("iframe")!;
++  expect(frame.getAttribute("srcdoc")).toContain("<h1>Native</h1>");
++  expect(frame.hasAttribute("src")).toBe(false);
++});
+diff --git a/packages/app/src/file-pane/html-preview.web.tsx b/packages/app/src/file-pane/html-preview.web.tsx
+index 64d8580..98a205e 100644
+--- a/packages/app/src/file-pane/html-preview.web.tsx
++++ b/packages/app/src/file-pane/html-preview.web.tsx
+@@ -1,5 +1,7 @@
+-import { useMemo } from "react";
++import { useLayoutEffect, useMemo, useRef } from "react";
+ import { useTranslation } from "react-i18next";
++import { getEmbeddedHost } from "@/embedded/environment";
++import { deliverHtmlToCarrier } from "@/embedded/html-preview-carrier";
+ import { withPreviewCsp } from "./html-preview-csp";
+ 
+ // `allow-scripts` alone: the file gets an opaque origin, so a plan page can run
+@@ -24,13 +26,60 @@ const iframeStyle = {
+ } as const;
+ 
+ export function FileHtmlPreview({ html, testID }: { html: string; testID?: string }) {
+-  const { t } = useTranslation();
++  const { t, i18n } = useTranslation();
+   const document = useMemo(() => withPreviewCsp(html), [html]);
++  const frameRef = useRef<HTMLIFrameElement>(null);
++  const deliveredRef = useRef(false);
++  const embedded = Boolean(getEmbeddedHost());
++  const carrier = process.env.EXPO_PUBLIC_VIBES_HTML_PREVIEW_CARRIER;
++  const token = useMemo(() => crypto.randomUUID(), [document]);
++  useLayoutEffect(() => {
++    if (!embedded || !carrier) return;
++    deliveredRef.current = false;
++    const receive = (event: MessageEvent) => {
++      deliverHtmlToCarrier({
++        event,
++        frameWindow: frameRef.current?.contentWindow ?? null,
++        token,
++        html: document,
++        delivered: deliveredRef.current,
++        markDelivered: () => {
++          deliveredRef.current = true;
++        },
++      });
++    };
++    window.addEventListener("message", receive);
++    return () => window.removeEventListener("message", receive);
++  }, [embedded, carrier, token, document]);
++  if (embedded && !carrier)
++    return (
++      <div role="alert">
++        {i18n.language.startsWith("zh")
++          ? "HTML 预览配置不可用。"
++          : "HTML preview configuration is unavailable."}
++      </div>
++    );
+   return (
+     <iframe
++      // A file refresh gets a new browsing context. An old document that navigated
++      // itself must never receive a subsequent file through the same WindowProxy.
++      key={token}
++      ref={frameRef}
+       data-testid={testID}
+       title={t("panels.file.editor.preview")}
+-      srcDoc={document}
++      src={embedded ? carrier : undefined}
++      onLoad={() => {
++        if (embedded && carrier && !deliveredRef.current)
++          frameRef.current?.contentWindow?.postMessage(
++            {
++              version: 1,
++              type: "vibes-html-init",
++              token,
++            },
++            "*",
++          );
++      }}
++      srcDoc={embedded ? undefined : document}
+       sandbox={SANDBOX}
+       referrerPolicy="no-referrer"
+       style={iframeStyle}
+diff --git a/packages/app/src/panels/agent-panel.tsx b/packages/app/src/panels/agent-panel.tsx
+index 5156ee8..2d11fb3 100644
+--- a/packages/app/src/panels/agent-panel.tsx
++++ b/packages/app/src/panels/agent-panel.tsx
+@@ -1287,6 +1287,7 @@ const ChatAgentReadyContent = memo(function ChatAgentReadyContent({
+     hasPluginComposerPills,
+   });
+   const rawAgentInputDraft = useAgentInputDraft({
++    acceptsPublicWork: isPaneFocused && hasActiveComposer,
+     draftKey: buildDraftStoreKey({
+       serverId,
+       agentId,
+diff --git a/packages/app/src/screens/new-workspace-screen.tsx b/packages/app/src/screens/new-workspace-screen.tsx
+index 947190c..96792d4 100644
+--- a/packages/app/src/screens/new-workspace-screen.tsx
++++ b/packages/app/src/screens/new-workspace-screen.tsx
+@@ -1,3 +1,5 @@
++import { ProductHeader } from "@/embedded/product-header";
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+ import type { ReactElement, RefObject } from "react";
+ import { useTranslation } from "react-i18next";
+@@ -1666,6 +1668,7 @@ export function NewWorkspaceScreen({
+     [draftContextScopeKey, isDraftHandoffActive],
+   );
+   const chatDraft = useAgentInputDraft({
++    acceptsPublicWork: !isDraftHandoffActive && Boolean(selectedServerId),
+     draftKey,
+     composer: buildComposerConfig({
+       serverId: selectedServerId,
+@@ -2269,7 +2272,13 @@ export function NewWorkspaceScreen({
+ 
+   return (
+     <FileDropZone style={styles.container}>
+-      <ScreenHeader left={screenHeaderLeft} borderless />
++      <>
++        {getEmbeddedHost() ? (
++          <ProductHeader />
++        ) : (
++          <ScreenHeader left={screenHeaderLeft} borderless />
++        )}
++      </>
+       <View style={contentStyle}>
+         <TitlebarDragRegion />
+         <ReanimatedAnimated.View style={centeredStyle}>
+diff --git a/packages/app/src/screens/open-project-screen.tsx b/packages/app/src/screens/open-project-screen.tsx
+index 11e9013..09469b7 100644
+--- a/packages/app/src/screens/open-project-screen.tsx
++++ b/packages/app/src/screens/open-project-screen.tsx
+@@ -1,3 +1,7 @@
++import { useIsFocused } from "@react-navigation/native";
++import { rememberBuildEntry } from "@/embedded/product-mode";
++import { ProductHeader } from "@/embedded/product-header";
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { useCallback, useEffect, useState, type ComponentType } from "react";
+ import { useTranslation } from "react-i18next";
+ import { View, Text, Pressable } from "react-native";
+@@ -28,6 +32,11 @@ import type { Href } from "expo-router";
+ export function OpenProjectScreen() {
+   const { t } = useTranslation();
+   const router = useRouter();
++  const isFocused = useIsFocused();
++  useEffect(() => {
++    if (getEmbeddedHost() && isFocused)
++      rememberBuildEntry({ pathname: "/open-project", params: {} });
++  }, [isFocused]);
+   const openDesktopAgentList = usePanelStore((s) => s.openDesktopAgentList);
+   const openProjectPicker = useOpenAddProject();
+   const chooseHost = useHostChooser();
+@@ -88,7 +97,7 @@ export function OpenProjectScreen() {
+ 
+   return (
+     <View style={styles.container}>
+-      <MenuHeader borderless />
++      {getEmbeddedHost() ? <ProductHeader /> : <MenuHeader borderless />}
+       <View style={styles.content}>
+         <TitlebarDragRegion />
+         <View style={styles.logo}>
+diff --git a/packages/app/src/screens/sessions-screen.tsx b/packages/app/src/screens/sessions-screen.tsx
+index b063e04..d23af32 100644
+--- a/packages/app/src/screens/sessions-screen.tsx
++++ b/packages/app/src/screens/sessions-screen.tsx
+@@ -1,3 +1,5 @@
++import { ProductHeader } from "@/embedded/product-header";
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { useMemo, useState, useCallback, useEffect, type ReactElement } from "react";
+ import { View, Text } from "react-native";
+ import { useIsFocused } from "@react-navigation/native";
+@@ -151,7 +153,7 @@ function SessionsScreenContent() {
+ 
+   return (
+     <View style={styles.container}>
+-      <MenuHeader title={t("sessions.title")} />
++      {getEmbeddedHost() ? <ProductHeader /> : <MenuHeader title={t("sessions.title")} />}
+       {showFilterRow ? (
+         <View style={styles.filterContainer}>
+           {isSearchSupported ? (
+diff --git a/packages/app/src/screens/workspace/workspace-screen.tsx b/packages/app/src/screens/workspace/workspace-screen.tsx
+index 0faa25c..8130bb8 100644
+--- a/packages/app/src/screens/workspace/workspace-screen.tsx
++++ b/packages/app/src/screens/workspace/workspace-screen.tsx
+@@ -1,3 +1,5 @@
++import { ProductHeader } from "@/embedded/product-header";
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { LoadingSpinner } from "@/components/ui/loading-spinner";
+ import type { JsonValue } from "@getpaseo/protocol/agent-types";
+ import { getOpenAgentTabLabel } from "@getpaseo/protocol/agent-labels";
+@@ -2826,7 +2828,9 @@ function WorkspaceScreenContent({
+         title,
+         message:
+           modifiedCount > 0
+-            ? `${bulkMessage}\n\n${t("workspace.tabs.confirmations.bulkUnsaved", { count: modifiedCount })}`
++            ? `${bulkMessage}\n\n${t("workspace.tabs.confirmations.bulkUnsaved", {
++                count: modifiedCount,
++              })}`
+             : bulkMessage,
+         confirmLabel: t("workspace.tabs.confirmations.close"),
+         cancelLabel: t("workspace.tabs.confirmations.cancel"),
+@@ -3472,7 +3476,13 @@ function WorkspaceScreenContent({
+     [isMobile, canRenderDesktopPaneSplits],
+   );
+   useEffect(() => {
+-    if (!isRouteFocused || isNative || typeof document === "undefined" || "__vibesPaseo" in globalThis || activeTabDescriptor) {
++    if (
++      !isRouteFocused ||
++      isNative ||
++      typeof document === "undefined" ||
++      "__vibesPaseo" in globalThis ||
++      activeTabDescriptor
++    ) {
+       return;
+     }
+     document.title = "Workspace";
+@@ -3856,7 +3866,24 @@ function WorkspaceScreenContent({
+   );
+   const renderWorkspaceScreenHeader = useCallback(
+     () =>
+-      showScreenHeader ? (
++      getEmbeddedHost() ? (
++        <ProductHeader
++          serverId={normalizedServerId}
++          workspaceId={normalizedWorkspaceId}
++          active={isRouteFocused}
++          onNewConversation={handleCreateDraftTab}
++          right={
++            <WorkspaceExplorerToggle
++              onPress={handleToggleExplorerSidebar}
++              label={explorerSidebarToggleLabel}
++              tooltipLabel={t("workspace.tabs.explorerSidebar.toggle")}
++              tooltipKeys={EXPLORER_TOGGLE_KEYS}
++              accessibilityState={explorerSidebarToggleAccessibilityState}
++              mobile={isMobile}
++            />
++          }
++        />
++      ) : showScreenHeader ? (
+         <ScreenHeader
+           left={
+             <>
+@@ -3895,6 +3922,11 @@ function WorkspaceScreenContent({
+         />
+       ) : null,
+     [
++      isRouteFocused,
++      handleToggleExplorerSidebar,
++      explorerSidebarToggleLabel,
++      explorerSidebarToggleAccessibilityState,
++      t,
+       canOpenImportSheet,
+       createTerminalDisabled,
+       currentBranchName,
+diff --git a/packages/app/src/stores/draft-store/state.ts b/packages/app/src/stores/draft-store/state.ts
+index 5d9fecd..02bbe8e 100644
+--- a/packages/app/src/stores/draft-store/state.ts
++++ b/packages/app/src/stores/draft-store/state.ts
+@@ -1,3 +1,4 @@
++import { parsePublicWorkDraft, type PublicWorkDraft } from "@/embedded/contract";
+ import {
+   NEW_WORKSPACE_PICKER_ATTACHMENT_OWNER,
+   type AttachmentMetadata,
+@@ -79,6 +80,10 @@ const ChangeRequestItemSchema = z.strictObject({
+ export const UserComposerAttachmentSchema: z.ZodType<UserComposerAttachment> = z.discriminatedUnion(
+   "kind",
+   [
++    z.strictObject({
++      kind: z.literal("vibes_public_work"),
++      reference: z.custom<PublicWorkDraft>((value) => parsePublicWorkDraft(value) !== null),
++    }),
+     z.strictObject({ kind: z.literal("image"), metadata: AttachmentMetadataSchema }),
+     z.strictObject({ kind: z.literal("file"), attachment: UploadedFileSchema }),
+     z.strictObject({

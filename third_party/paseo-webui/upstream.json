@@ -1,0 +1,28 @@
+{
+  "repository": "https://github.com/getpaseo/paseo.git",
+  "commit": "9400a49af670fdb5db4af58e73f8df98588dbea9",
+  "version": "0.7.2",
+  "lockfile": {
+    "path": "package-lock.json",
+    "sha256": "0e8d199c6c1b4f6ed99cc0cf524bb589602d0996466ef80e3a4ec62f29d77e8f",
+    "lockfileVersion": 3,
+    "repositoryEntryCount": 3005
+  },
+  "license": {
+    "spdx": "Apache-2.0",
+    "path": "LICENSE",
+    "sha256": "79d5aedce6aa0adc547336dc1bd34c5cc9308ba110fac7079ed97515ee573ad3"
+  },
+  "workspaces": [
+    "@getpaseo/app",
+    "@getpaseo/server",
+    "@getpaseo/cli",
+    "@getpaseo/client",
+    "@getpaseo/protocol",
+    "@getpaseo/relay",
+    "@getpaseo/highlight",
+    "@getpaseo/plugin",
+    "@getpaseo/expo-two-way-audio"
+  ],
+  "provenance": "Official v0.7.2 source and lockfile. Build uses its official Expo export; application dependencies remain in an independent checkout."
+}

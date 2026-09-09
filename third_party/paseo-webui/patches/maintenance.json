@@ -1,0 +1,65 @@
+{
+  "origin": {
+    "repository": "https://github.com/Vibes-college/Vibes.git",
+    "pullRequest": 11,
+    "commit": "c8f9d8c522226f6658b37d003b5f7b566185bd4a"
+  },
+  "acceptance": "只记录补丁来源与重新验证要求，不继承旧 PR 的通过结论。",
+  "patches": [
+    {
+      "file": "g1-direct-source.patch",
+      "purpose": "完整原生根的容器挂载、内存路由与宿主样式边界",
+      "verification": "实际开合、切页、容器尺寸与原生文件面板",
+      "removeWhen": "上游支持受控容器挂载及独立路由/样式后移除对应适配"
+    },
+    {
+      "file": "h-host-boundary.patch",
+      "purpose": "严格展示/语言/活动合同、单根就绪及错误边界",
+      "verification": "合同拒绝测试、生命周期/后台前台与错误恢复",
+      "removeWhen": "上游提供等效嵌入合同后按最终行为替换"
+    },
+    {
+      "file": "h-public-work.patch",
+      "purpose": "公开文章引用进入原生 Composer 的基础桥接",
+      "verification": "最终产品引用附件的保留、删除、重复请求与提交测试",
+      "removeWhen": "产品附件补丁完全替代基础桥接后可连同后续补丁重组"
+    },
+    {
+      "file": "h-reactive-history.patch",
+      "purpose": "修正生产编译时同一 runtime 的历史和操作状态订阅",
+      "verification": "生产导出中模拟与真实 timeline、流式和操作状态复现",
+      "removeWhen": "升级上游后原复现通过且没有状态退化时移除"
+    },
+    {
+      "file": "h-operation-feedback.patch",
+      "purpose": "原生发送、停止和权限操作失败保持可見反馈",
+      "verification": "原生操作反馈单测及生产失败/重试场景",
+      "removeWhen": "上游提供对应反馈语义且实测通过后移除"
+    },
+    {
+      "file": "h-native-types.patch",
+      "purpose": "挂载 DOM 类型、原生测试 mock 与 tsconfig 的编译修正",
+      "verification": "精确补丁状态下运行原生 tsgo --noEmit",
+      "removeWhen": "上游或其他补丁已含等效类型修复后移除"
+    },
+    {
+      "file": "g1-direct-dependencies.patch",
+      "purpose": "Expo Router、React Native Web、Unistyles 对宿主根/尺寸/CSSOM/弹层的窄适配",
+      "verification": "依赖前后哈希链、真实容器/弹层/文件预览和恢复",
+      "removeWhen": "上游支持对应容器语义后逐文件移除并重验"
+    },
+    {
+      "file": "h-focus-dependency.patch",
+      "purpose": "原生弹层焦点陷阱限定在宿主根内",
+      "verification": "弹层键盘与焦点、收起后浏览文章",
+      "removeWhen": "上游焦点范围可由外部根控制且真实测试通过后移除"
+    },
+    {
+      "file": "native-product.patch",
+      "origin": "013-paseo-web-integration 原生产品接入",
+      "purpose": "Chat/Build 原生工作区预设、精简顶部、一次性可删文章附件、surface/saved-hosts合同与独立HTML预览载体桥接",
+      "verification": "原生 embedded/draft-store/Composer/HTML preview 单测和typecheck；最终生产浏览器连接、目录、提交、附件、恢复与CSP文件路径",
+      "removeWhen": "上游提供等效原生产品槽位，或按新规格更换产品策略并完成原复现验收"
+    }
+  ]
+}

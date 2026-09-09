@@ -1,0 +1,286 @@
+diff --git a/packages/app/src/agent-stream/view.tsx b/packages/app/src/agent-stream/view.tsx
+index fb18b2e..3201ed7 100644
+--- a/packages/app/src/agent-stream/view.tsx
++++ b/packages/app/src/agent-stream/view.tsx
+@@ -1,3 +1,4 @@
++import { OperationNotice } from "@/embedded/operation-notice";
+ import { LoadingSpinner } from "@/components/ui/loading-spinner";
+ import React, {
+   forwardRef,
+@@ -1446,6 +1447,7 @@ function PermissionRequestCard({
+   }, [request]);
+ 
+   const permissionMutation = useMutation({
++    retry: false,
+     mutationFn: async (input: {
+       agentId: string;
+       requestId: string;
+@@ -1466,6 +1468,7 @@ function PermissionRequestCard({
+     reset: resetPermissionMutation,
+     mutateAsync: respondToPermission,
+     isPending: isResponding,
++    isError: isPermissionUnconfirmed,
+   } = permissionMutation;
+ 
+   const [respondingActionId, setRespondingActionId] = useState<string | null>(null);
+@@ -1515,16 +1518,20 @@ function PermissionRequestCard({
+ 
+   if (request.kind === "question") {
+     return (
+-      <QuestionFormCard
+-        permission={permission}
+-        onRespond={handleResponse}
+-        isResponding={isResponding}
+-      />
++      <>
++        <OperationNotice operation="permission" phase={isPermissionUnconfirmed ? "unknown" : null} />
++        <QuestionFormCard
++          permission={permission}
++          onRespond={handleResponse}
++          isResponding={isResponding}
++        />
++      </>
+     );
+   }
+ 
+   const footer = (
+     <>
++      <OperationNotice operation="permission" phase={isPermissionUnconfirmed ? "unknown" : null} />
+       <Text testID="permission-request-question" style={permissionStyles.question}>
+         {t("agentStream.permission.question")}
+       </Text>
+diff --git a/packages/app/src/composer/index.tsx b/packages/app/src/composer/index.tsx
+index c22519d..fcca89a 100644
+--- a/packages/app/src/composer/index.tsx
++++ b/packages/app/src/composer/index.tsx
+@@ -101,6 +101,8 @@ import { useKeyboardShiftStyle } from "@/hooks/use-keyboard-shift-style";
+ import { useKeyboardActionHandler } from "@/hooks/use-keyboard-action-handler";
+ import type { KeyboardActionDefinition } from "@/keyboard/keyboard-action-dispatcher";
+ import type { MessageInputKeyboardActionKind } from "@/keyboard/actions";
++import { OperationNotice } from "@/embedded/operation-notice";
++import { useOperationFeedback } from "@/embedded/use-operation-feedback";
+ import { PublicWorkReference } from "@/embedded/public-work-reference";
+ import { submitAgentInput } from "@/composer/submit";
+ import { createMessageSubmissionWriter } from "@/composer/submission/writer";
+@@ -1478,6 +1480,7 @@ function ComposerContentImpl({
+   const beginAgentCancellation = useSessionStore((state) => state.beginAgentCancellation);
+   const settleAgentCancellation = useSessionStore((state) => state.settleAgentCancellation);
+   const isAgentRunning = hasActiveTurn;
++  const stopFeedback = useOperationFeedback(`${serverId}:${agentId}`, isAgentRunning);
+   // Queueing behind a permission prompt would strand the message: the turn is
+   // parked until the request is answered.
+   const hasPendingPermission = useSessionStore((state) => {
+@@ -1774,6 +1777,7 @@ function ComposerContentImpl({
+       isConnected,
+     });
+     if (!cancellation) return;
++    stopFeedback.observe(cancellation);
+     const requestId = beginAgentCancellation(serverId, targetAgentId);
+     void cancellation
+       .catch((error) => {
+@@ -1794,6 +1798,7 @@ function ComposerContentImpl({
+     isConnected,
+     serverId,
+     settleAgentCancellation,
++    stopFeedback.observe,
+   ]);
+ 
+   const focusMessageInputForKeyboardAction = useCallback(() => {
+@@ -2274,6 +2279,7 @@ function ComposerContentImpl({
+           <View style={styles.inputAreaContent}>
+             {queueList}
+             {sendErrorNode}
++            <OperationNotice operation="stop" phase={stopFeedback.phase} />
+             {inputMode === "chat" && <PublicWorkReference value={userInput} onChange={replaceUserInput} disabled={readOnly || isComposerLocked || isSubmitLoading} />}
+ 
+             <View ref={messageInputContainerRef} style={styles.messageInputContainer}>
+diff --git a/packages/app/src/embedded/operation-feedback.test.tsx b/packages/app/src/embedded/operation-feedback.test.tsx
+new file mode 100644
+index 0000000..3f5f362
+--- /dev/null
++++ b/packages/app/src/embedded/operation-feedback.test.tsx
+@@ -0,0 +1,85 @@
++import React, { act } from 'react';
++import { createRoot, type Root } from 'react-dom/client';
++import { JSDOM } from 'jsdom';
++import { afterEach, beforeEach, expect, it, vi } from 'vitest';
++import { useOperationFeedback } from './use-operation-feedback';
++import { OperationNotice } from './operation-notice';
++vi.mock('react-i18next', () => ({ useTranslation: () => ({ i18n: { language: 'zh' } }) }));
++vi.mock('react-native-unistyles', () => ({
++  useUnistyles: () => ({ theme: { colors: { foregroundMuted: '#555' } } }),
++}));
++let root: Root;
++let dom: JSDOM;
++let feedback: ReturnType<typeof useOperationFeedback>;
++function Harness({ scope = 'host:agent', running = true }: { scope?: string; running?: boolean }) {
++  feedback = useOperationFeedback(scope, running);
++  return <OperationNotice operation="stop" phase={feedback.phase} />;
++}
++function deferred() {
++  let resolve!: () => void;
++  let reject!: (error: Error) => void;
++  const promise = new Promise<void>((yes, no) => {
++    resolve = yes;
++    reject = no;
++  });
++  return { promise, resolve, reject };
++}
++beforeEach(() => {
++  dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>");
++  for (const [key, value] of Object.entries({
++    React,
++    IS_REACT_ACT_ENVIRONMENT: true,
++    window: dom.window,
++    document: dom.window.document,
++    HTMLElement: dom.window.HTMLElement,
++    Node: dom.window.Node,
++    navigator: dom.window.navigator,
++    __vibesPaseoEnvironment: {},
++  }))
++    vi.stubGlobal(key, value);
++  root = createRoot(document.getElementById('root')!);
++});
++afterEach(() => {
++  act(() => root.unmount());
++  dom.window.close();
++  vi.unstubAllGlobals();
++});
++it('distinguishes a request acknowledgement from authoritative process termination', async () => {
++  act(() => root.render(<Harness />));
++  const request = deferred();
++  act(() => feedback.observe(request.promise));
++  expect(feedback.phase).toBe('pending');
++  expect(document.body.textContent).toContain('正在请求停止');
++  await act(async () => request.resolve());
++  expect(feedback.phase).toBe('acknowledged');
++  expect(document.body.textContent).toContain('请以会话状态为准');
++  expect(document.body.textContent).toContain('子进程可能继续');
++});
++it('an unconfirmed request has a visible unknown outcome and never creates a retry', async () => {
++  act(() => root.render(<Harness />));
++  const request = deferred();
++  act(() => feedback.observe(request.promise));
++  await act(async () => request.reject(new Error('Connection closed before acknowledgement')));
++  expect(feedback.phase).toBe('unknown');
++  expect(document.body.textContent).toContain('结果未知');
++  expect(document.querySelector('button')).toBeNull();
++});
++it('late completion cannot change another agent or a newly running turn', async () => {
++  act(() => root.render(<Harness />));
++  const first = deferred();
++  act(() => feedback.observe(first.promise));
++  act(() => root.render(<Harness scope="host:other" running={false} />));
++  await act(async () => first.resolve());
++  expect(feedback.phase).toBeNull();
++  const next = deferred();
++  act(() => feedback.observe(next.promise));
++  act(() => root.render(<Harness scope="host:other" running />));
++  await act(async () => next.resolve());
++  expect(feedback.phase).toBeNull();
++});
++it('permission uncertainty is presented without changing or sending a decision', () => {
++  act(() => root.render(<OperationNotice operation="permission" phase="unknown" />));
++  expect(document.body.textContent).toContain('未收到审批确认');
++  expect(document.body.textContent).toContain('不会自动重复提交');
++  expect(document.querySelector('button')).toBeNull();
++});
+diff --git a/packages/app/src/embedded/operation-notice.tsx b/packages/app/src/embedded/operation-notice.tsx
+new file mode 100644
+index 0000000..6fb331a
+--- /dev/null
++++ b/packages/app/src/embedded/operation-notice.tsx
+@@ -0,0 +1,49 @@
++import { Text } from 'react-native';
++import { useTranslation } from 'react-i18next';
++import { useUnistyles } from 'react-native-unistyles';
++import { getEmbeddedHost } from './environment';
++import type { OperationPhase } from './use-operation-feedback';
++
++export function OperationNotice({
++  operation,
++  phase,
++}: {
++  operation: 'stop' | 'permission';
++  phase: OperationPhase | null;
++}) {
++  const { i18n } = useTranslation();
++  const { theme } = useUnistyles();
++  if (!getEmbeddedHost() || !phase) return null;
++  const zh = i18n.language.startsWith('zh');
++  const message =
++    operation === 'permission'
++      ? zh
++        ? '未收到审批确认，结果未知。请等待连接和会话同步，核对请求是否仍需处理；不会自动重复提交。'
++        : 'Approval was not confirmed; the outcome is unknown. Wait for connection and session sync, then check whether it still needs a decision. It will not be resubmitted automatically.'
++      : phase === 'pending'
++      ? zh
++        ? '正在请求停止当前回合；已启动的子进程可能继续。'
++        : 'Requesting the current turn to stop; started subprocesses may continue.'
++      : phase === 'acknowledged'
++      ? zh
++        ? '停止请求已获响应，请以会话状态为准；已启动的子进程可能继续。'
++        : 'The stop request was acknowledged. Check the session state; started subprocesses may continue.'
++      : zh
++      ? '停止请求未确认，结果未知。请恢复连接后核对会话；已启动的子进程可能继续。'
++      : 'The stop request was not confirmed; the outcome is unknown. Reconnect and check the session; started subprocesses may continue.';
++  return (
++    <Text
++      testID={`paseo-${operation}-request-status`}
++      accessibilityLiveRegion="polite"
++      style={{
++        fontSize: 12,
++        lineHeight: 18,
++        color: theme.colors.foregroundMuted,
++        paddingHorizontal: 12,
++        paddingVertical: 6,
++      }}
++    >
++      {message}
++    </Text>
++  );
++}
+diff --git a/packages/app/src/embedded/use-operation-feedback.ts b/packages/app/src/embedded/use-operation-feedback.ts
+new file mode 100644
+index 0000000..88df15c
+--- /dev/null
++++ b/packages/app/src/embedded/use-operation-feedback.ts
+@@ -0,0 +1,38 @@
++import { useCallback, useEffect, useRef, useState } from 'react';
++
++export type OperationPhase = 'pending' | 'acknowledged' | 'unknown';
++
++/** Presentation of one explicit request, never an authoritative agent state. */
++export function useOperationFeedback(scope: string, isRunning: boolean) {
++  const generation = useRef(0);
++  const [feedback, setFeedback] = useState<{ scope: string; phase: OperationPhase } | null>(null);
++  useEffect(() => {
++    generation.current++;
++    setFeedback(null);
++    return () => {
++      generation.current++;
++    };
++  }, [scope]);
++  useEffect(() => {
++    if (isRunning) {
++      generation.current++;
++      setFeedback(null);
++    }
++  }, [isRunning]);
++  const observe = useCallback(
++    (request: Promise<void>) => {
++      const requestGeneration = ++generation.current;
++      setFeedback({ scope, phase: 'pending' });
++      const settle = (phase: OperationPhase) => {
++        if (requestGeneration === generation.current) setFeedback({ scope, phase });
++      };
++      // Observe the original promise without replacing its native error handling.
++      void request.then(
++        () => settle('acknowledged'),
++        () => settle('unknown')
++      );
++    },
++    [scope]
++  );
++  return { phase: feedback?.scope === scope ? feedback.phase : null, observe };
++}

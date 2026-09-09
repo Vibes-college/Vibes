@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '阅读作品详情'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '008', '009', '010']
+shaped-by: ['001', '003', '005', '006', '007', '008', '009', '010', '013']
 code-sources:
   [
     'src/components/WorkDetail.astro',
@@ -48,9 +48,12 @@ code-sources:
     'src/lib/content/relations.ts',
     'src/lib/content/revision.ts',
     'src/pages/[locale]/works/[id].astro',
+    'src/features/paseo-webui/page-context.ts',
+    'src/components/LocalAssistant.astro',
+    'tests/fixtures/paseo-webui/article-reference.ts',
     'tests/explore.spec.ts',
   ]
-code-revision: '90b9a48110d50486fbed1d6392703f471f89231b137aa485bfb44971562829ad'
+code-revision: '2335a1b92c29742e71c04c40f8d9097f57f9b1366a5fa99b646d391be9de8e31'
 ---
 
 # 功能名：阅读作品详情
@@ -69,6 +72,7 @@ code-revision: '90b9a48110d50486fbed1d6392703f471f89231b137aa485bfb44971562829ad
 6. 顶部依次为交叉关闭、上一件、下一件，仅在概览显示，进入正文后隐藏；电脑可用左右键，手机可横滑。横滑或空白长按显示边缘方向提示，随触点上下移动；明确横移后松手切换，取消或只长按不切换。首尾不循环。
 7. 详情不显示中英切换、缺译提示或查看原文入口；可返回首页选择语言。已有语言网址仍可直接打开，待复核译文保留状态文字。
 8. 在正文时先回到正文顶部向下滑返回概览，或用浏览器返回；再点概览顶部交叉按钮返回同语言目录；同标签页访问时恢复之前的分类和关键词。直接打开不存在的作品或译文地址会得到404。
+9. 点“和Agent聊这篇”，在[本地助手](local-assistant.md)的当前草稿附上公开标题与网址；输入文字保持原样，引用可删除，用户发送前不提交。普通打开助手、切换文章或重新展开不自动附加文章。小窗保留阅读空间，可继续滚动；专注交流时可展开全屏再返回。
 
 ### 操作作品封面
 
@@ -92,7 +96,7 @@ code-revision: '90b9a48110d50486fbed1d6392703f471f89231b137aa485bfb44971562829ad
 
 [beUI十组件文章](../../src/content/works/beui-motion-lab/zh.mdx)用带圆角与左右留白的深色容器提供不同的真实组件，按每节操作说明体验点击、选择、拖动、折叠与暂停；每项附来源，刷新恢复初始状态。
 
-互动文章仍从同样的作品卡片进入。[调色实验](../../src/content/works/mdx-interaction-lab/zh.mdx)提供中英文版本：进入正文后拖动滑杆/虚线区域、聚焦后按左右键或点击重置；两个色块独立变化。示例进入可视区才加载React，多实例共享运行时；普通Markdown文章不请求React。组件区域的触摸、鼠标、方向键和滚轮由演示处理，MDX整篇不安装左右拖动或长按拖动换篇手势，使用作品概览页顶部的上一篇/下一篇按钮换篇；普通Markdown保留手势。正文滚动、目录和组件自身拖动照常可用。
+互动文章仍从同样的作品卡片进入。[调色实验](../../src/content/works/mdx-interaction-lab/zh.mdx)提供中英文版本：进入正文后拖动滑杆/虚线区域、聚焦后按左右键或点击重置；两个色块独立变化。示例进入可视区才加载React，多实例共享运行时；普通Markdown正文不请求React，主动打开助手才另行加载其原生运行时。组件区域的触摸、鼠标、方向键和滚轮由演示处理，MDX整篇不安装左右拖动或长按拖动换篇手势，使用作品概览页顶部的上一篇/下一篇按钮换篇；普通Markdown保留手势。正文滚动、目录和组件自身拖动照常可用。
 
 互动组件周围的章节、目录深链接、回应与全文搜索保持同一套路径；组件内部标题不加入文章目录。禁用JS时正文、表格、公式和演示初始状态仍可读，不能动态调整。GIF或视频是效果展示，不能替代可操作组件。
 
@@ -135,6 +139,7 @@ flowchart TD
 - [x] 320px宽度无整页横向溢出，宽表格在自身区域滚动。
 - [x] 每章表情独立保存，刷新恢复；键盘、拖选、长按、受限存储、减少动态和换页清理可用。
 - [x] 封面不加载表情主体，正文空闲准备；省流量仅点击，提前点击立即加载。
+- [ ] 文章引用只由明确入口添加，移除后缩放、重开和刷新不复添；小窗聊天时文章阅读和返回路径可用。
 
 连续阅读的历史滚动、反复搜索与语言切换由`tests/navigation.spec.ts`覆盖；旧页面监听与未完成搜索在切换时失效。
 
@@ -170,6 +175,8 @@ MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器14
 `tests/mdx.spec.ts`覆盖双语互动、懒加载、多实例、搜索、深链接、回应、历史、320px与无JS；`tests/unit/mdx-sections.test.ts`覆盖AST分节和静态标题限制。
 
 `tests/unit/article-sections.test.ts`验证正文结构；`tests/unit/content-relations.test.ts`验证事实/关联；`tests/content-lifecycle.spec.ts`验证译文发布及待复核的真实构建。
+
+`tests/paseo-chat.spec.ts`通过`tests/fixtures/paseo-webui/article-reference.ts`覆盖明确文章入口、保留输入、移除后重开/刷新及发送字段；助手的真实连接与阅读并行验收见[使用本地助手](local-assistant.md)，不沿用上面的历史阅读证据。
 
 ## 依赖的其他功能
 

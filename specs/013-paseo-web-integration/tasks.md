@@ -9,6 +9,8 @@ amended-by: []
 
 目的与直接挂载已确认，用户授权有明确收益的改进。上游路径均相对本任务隔离源码的`packages/app/`，最终以`third_party/paseo-webui/patches/`中可重放补丁交付；不提交临时源码或依赖。复用旧测试时以当前行为修订，不继承旧通过结论。
 
+当前按用户最新要求先交可体验快照：暂停接回漏掉的入口，以现有原生接入完成必要检查和真实使用核验后提供Cloudflare预览及操作说明。T019未接回入口、T022完整插件/功能验收及后续性能/真机任务保留未完成，不将当前预览宣称为完整第一阶段完成。第一阶段最终目标仍是完整Paseo Web界面与功能接入，按用户体验反馈再继续。
+
 ## 1. 来源与范围
 
 - [x] T001 核对main、PR #10/#11与旧complete-root源码，在research.md记录来源和证据限度。
@@ -21,38 +23,38 @@ amended-by: []
 
 ## 2. 共用基础
 
-- [ ] T008 [P] 在tests/unit/paseo-webui-{build,dependencies}.test.ts及paseo-{build-config,asset-contract}.test.ts覆盖源/锁/补丁身份、依赖链、篡改/过期资源、失败清理与第三方修改保护。
-- [ ] T009 在third_party/paseo-webui/和scripts/paseo-webui-*.ts实现单产品可重放构建、独立目录、许可、资源回执；不带多配置实验引擎。
-- [ ] T010 在src/features/paseo-webui/{asset-contract,build-config}.ts与scripts/build.ts、astro.config.mjs、package.json、.github/workflows/中接入相同本地/CI产物；缺失或过期产物明确失败。
-- [ ] T011 [P] 在tests/unit/paseo-{webui-contract,page-context}.test.ts覆盖严格字段/URL、surface与文章requestId、空草稿触发及不可信数据边界，再实现src/features/paseo-webui/{contract,page-context}.ts。
-- [ ] T012 在tests/unit/{content-security,script-budget}.test.ts补安全与预算边界，再实现scripts/content-security.ts、script-budget.ts、budget.ts及public/_headers的固定relay、sandbox精确哈希、完整清单和Explore硬预算。
+- [x] T008 [P] 在tests/unit/paseo-webui-{build,dependencies}.test.ts及paseo-{build-config,asset-contract}.test.ts覆盖源/锁/补丁身份、依赖链、篡改/过期资源、失败清理与第三方修改保护。
+- [x] T009 在third_party/paseo-webui/和scripts/paseo-webui-*.ts实现单产品可重放构建、独立目录、许可、资源回执；不带多配置实验引擎。
+- [x] T010 在src/features/paseo-webui/{asset-contract,build-config}.ts与scripts/build.ts、astro.config.mjs、package.json、.github/workflows/中接入相同本地/CI产物；缺失或过期产物明确失败。
+- [x] T011 [P] 在tests/unit/paseo-{webui-contract,page-context}.test.ts覆盖严格字段/URL、surface与文章requestId、空草稿触发及不可信数据边界，再实现src/features/paseo-webui/{contract,page-context}.ts。
+- [x] T012 在tests/unit/{content-security,script-budget}.test.ts补安全与预算边界，再实现scripts/content-security.ts、script-budget.ts、budget.ts及public/_headers的固定relay、sandbox精确哈希、完整清单和Explore硬预算。
 
 ## 3. US1：首次准备后进入助手（P1）
 
 独立验收：未启动无专用网络；点击有反馈；安装/已安装/已配对/失败路径能进入真实原生界面，资源就绪不冒充已连接。覆盖FR001—004、FR013、FR015、SC001—002。
 
-- [ ] T013 [P] 在tests/paseo-loading.spec.ts与tests/fixtures/paseo-webui/覆盖无首次点击请求、即时外壳、慢网/失败/重试、加载中收起、单根和回访，测试纳入正常test:e2e。
-- [ ] T014 在src/components/LocalAssistant*.astro、src/scripts/paseo-boot.ts、src/features/paseo-webui/host.ts、src/layouts/Layout.astro实现轻量引导、原生预载/挂载和明确重试；核验官方安装/Agent/配对入口与无JS说明。
-- [ ] T015 [P] 在原生src/embedded/、packages/app/index.ts及根布局补丁保留完整H挂载与原生协调层，扩展约定surface/requestId合同，限定dispose，复测生产状态hook修正。
+- [x] T013 [P] 在tests/paseo-loading.spec.ts与tests/fixtures/paseo-webui/覆盖无首次点击请求、即时外壳、慢网/失败/重试、加载中收起、单根和回访，测试纳入正常test:e2e。
+- [x] T014 在src/components/LocalAssistant*.astro、src/scripts/paseo-boot.ts、src/features/paseo-webui/host.ts、src/layouts/Layout.astro实现轻量引导、原生预载/挂载和明确重试；核验官方安装/Agent/配对入口与无JS说明。
+- [x] T015 [P] 在原生src/embedded/、packages/app/index.ts及根布局补丁保留完整H挂载与原生协调层，扩展约定surface/requestId合同，限定dispose，复测生产状态hook修正。
 - [ ] T016 用真实兼容Paseo完成安装说明、官方配对/已有配对恢复与资源失败路径，检查版本/浏览器/连接方式，原始证据存resources/evidence/013-paseo-web-integration/。
 
 ## 4. US2：Chat/Build做事并查看产出（P1）
 
 独立验收：Chat可直接输入；Build处理已有目录；原生执行、审批与产出可用；文章引用可删除且只随提交发送；compact/full不串会话。覆盖FR005—009、FR014、FR016—018、SC009—013。
 
-- [ ] T017 [P] 在原生src/embedded/*.test.ts覆盖默认目录已有/非目录/权限、可用模型与Luna缺失、重复准备/未知结果查询、草稿配置、一次性引用保留/删除/空文本。
+- [x] T017 [P] 在原生src/embedded/*.test.ts覆盖默认目录已有/非目录/权限、可用模型与Luna缺失、重复准备/未知结果查询、草稿配置、一次性引用保留/删除/空文本。
 - [ ] T018 在原生src/embedded/chat-preset.ts及原生draft桥接实现按host准备默认目录/工作区和Codex/Luna原生默认强度；只发送时创建Agent，缺配置给真实入口，不覆盖既有数据。
-- [ ] T019 在原生src/embedded/product-header.tsx与src/screens/workspace/workspace-screen.tsx实现极简Chat/Build入口，保存各自选择，保留Explorer、file pane、native navigation及官方工具/审批。
-- [ ] T020 [P] 在原生src/attachments/types.ts、src/composer/、src/embedded/中实现可删文章AttachmentPill及普通text附件提交；按requestId一次性投递，保留既有草稿与原生失败行为。
-- [ ] T021 在src/components/LocalAssistant.astro、src/scripts/paseo-boot.ts及src/pages/[locale]/works/[id].astro实现显式文章引用入口和compact/full，保留文章阅读、原生根/草稿/焦点/滚动，手机不挤出不可用双栏。
-- [ ] T022 在tests/paseo-chat.spec.ts、paseo-csp.spec.ts覆盖Chat/Build实际目录/配置、空草稿引用/删除/发送、compact/full交替阅读、允许/拒绝审批、停止、文本/图片/Markdown/HTML原生文件路径；用真实Agent与内置浏览器复核并留证。
+- [ ] T019 在原生src/embedded/product-header.tsx与src/screens/workspace/workspace-screen.tsx实现Chat/Build入口并保存各自选择；页头复用原生工作区菜单、Scripts与原生操作栏，完整保留Terminal、Git、编辑器、导入/Setup、Explorer、file pane、native navigation及官方工具/审批，不以精简删除入口。
+- [x] T020 [P] 在原生src/attachments/types.ts、src/composer/、src/embedded/中实现可删文章AttachmentPill及普通text附件提交；按requestId一次性投递，保留既有草稿与原生失败行为。
+- [x] T021 在src/components/LocalAssistant.astro、src/scripts/paseo-boot.ts及src/pages/[locale]/works/[id].astro实现显式文章引用入口和compact/full，保留文章阅读、原生根/草稿/焦点/滚动，手机不挤出不可用双栏。
+- [ ] T022 在tests/paseo-chat.spec.ts、paseo-csp.spec.ts覆盖Chat/Build实际目录/配置、空草稿引用/删除/发送、compact/full交替阅读、允许/拒绝审批、停止、文本/图片/Markdown/HTML原生文件路径；修复并验证原生插件加载、图片blob及用户配置直连/relay的宿主兼容边界，用真实Agent与内置浏览器复核并留证。
 
 ## 5. US3：继续浏览与恢复（P1）
 
 独立验收：开合/切页/刷新/中断后状态可辨认；不重复提交、不丢草稿/位置；断开/忘记和收起含义一致。覆盖FR003—004、FR007—013、FR016、SC005—006。
 
 - [ ] T023 在tests/paseo-recovery.spec.ts与tests/fixtures/paseo-webui/覆盖20轮开合/导航/语言/尺寸与草稿位置、单根/socket/监听器、4操作状态×3中断各3次；以daemon记录核对操作次数与迟到事件。
-- [ ] T024 在宿主host.ts/paseo-boot.ts及原生use-client-activity活动入口保留真实visible/focused/pageVisible、Astro CSSOM与根持久化；只修接入边界，不另写会话恢复器。
+- [x] T024 在宿主host.ts/paseo-boot.ts及原生use-client-activity活动入口保留真实visible/focused/pageVisible、Astro CSSOM与根持久化；只修接入边界，不另写会话恢复器。
 - [ ] T025 在tests/paseo-recovery.spec.ts及真实浏览器核对主动断开、忘记设备、迟到回调、其他设备保留、未确认创建的查询恢复和存储清除边界；记录原生限制，不能自动重发或声称停止全部子进程。
 
 ## 6. US4：六阶段持续体验（P1）
@@ -67,7 +69,7 @@ amended-by: []
 ## 7. 文档与交付
 
 - [ ] T030 在docs/features/local-assistant.md、相关阅读/浏览说明、docs/system/local-assistant.md及配置/接口/规则/交付文档同步完整操作路径、来源与有效验收；更新索引、PROJECT_ANALYSIS.md、docs-policy/docs-sources登记，语义审阅后再更新摘要。
-- [ ] T031 完成整个PR的verify与budget、同SHA release:preview及实际响应头/资源/原有媒体回归；PR工作台记录已测/未测、环境和预览，保存推送有效进度。
+- [ ] T031 第一阶段先完成整个当前PR的verify与budget、真实基本使用及同SHA release:preview的实际响应头/资源/原有媒体回归；PR工作台记录已测/未测、环境和预览，保存推送有效进度，交用户体验后再安排下一阶段。
 - [ ] T032 由独立工作区的另一Agent审查整个PR及最终SHA，修复后复核；必要检查和实际验收全部完成才转Ready并同步spec/plan/tasks与索引complete，用户决定合并。
 
 ## 依赖与并行

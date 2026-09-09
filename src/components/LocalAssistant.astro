@@ -1,0 +1,458 @@
+---
+import type { PaseoAssetConfig } from '../features/paseo-webui/asset-contract';
+import type { PublicWorkReference } from '../features/paseo-webui/page-context';
+import { shellCopy } from '../features/paseo-webui/shell-copy';
+import type { Locale } from '../lib/i18n/routes';
+interface Props {
+  config: PaseoAssetConfig;
+  locale: Locale;
+  publicWork?: PublicWorkReference | null;
+}
+const { config, locale, publicWork } = Astro.props;
+const t = shellCopy[locale];
+---
+
+<div class="paseo-entries" data-paseo-copy-map={JSON.stringify(t)} data-pagefind-ignore>
+  {
+    publicWork && (
+      <button
+        class="paseo-article-entry"
+        data-paseo-open
+        data-paseo-article-open
+        data-paseo-public-work={JSON.stringify(publicWork)}
+        aria-controls="local-assistant"
+        aria-expanded="false"
+        disabled
+      >
+        {t.article}
+      </button>
+    )
+  }
+  <button
+    class="paseo-entry"
+    data-paseo-open
+    aria-controls="local-assistant"
+    aria-expanded="false"
+    aria-label={t.assistant}
+    title={t.assistant}
+    disabled
+  >
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" aria-hidden="true">
+      <path
+        d="M5 5.5h14v10H10l-5 3v-13Z"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linejoin="round"></path>
+      <path
+        d="m9 9 2 1.5L9 12m4 0h2"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"></path>
+    </svg>
+  </button>
+</div>
+<noscript>
+  <p class="paseo-noscript" data-pagefind-ignore>
+    {t.noscript}
+    <a href="https://paseo.sh/docs" target="_blank" rel="noopener noreferrer">Paseo</a>
+  </p>
+</noscript>
+<section
+  id="local-assistant"
+  data-paseo-config={JSON.stringify(config)}
+  data-open-requested="false"
+  data-paseo-surface="compact"
+  data-paseo-guide="true"
+  data-paseo-guide-requested="false"
+  role="region"
+  aria-label={t.assistant}
+  aria-hidden="true"
+  data-pagefind-ignore
+  hidden
+  inert
+  transition:persist="paseo-assistant"
+>
+  <header class="paseo-toolbar">
+    <strong>Paseo</strong>
+    <button data-paseo-help data-paseo-label="help" aria-label={t.help} title={t.help}>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"
+        ><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.5"></circle><path
+          d="M9.8 9a2.3 2.3 0 0 1 4.4.8c0 1.5-2.2 1.7-2.2 3.2m0 2.5h.01"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"></path></svg
+      >
+    </button>
+    <button data-paseo-expand data-paseo-label="expand" aria-label={t.expand} title={t.expand}>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"
+        ><path
+          d="M14 4h6v6M20 4l-7 7M10 20H4v-6m0 6 7-7"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path></svg
+      >
+    </button>
+    <button
+      data-paseo-compact
+      data-paseo-label="compact"
+      aria-label={t.compact}
+      title={t.compact}
+      hidden
+    >
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"
+        ><path
+          d="M20 4l-6 6m0-6v6h6M4 20l6-6m-6 0h6v6"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path></svg
+      >
+    </button>
+    <button data-paseo-close data-paseo-label="close" aria-label={t.close} title={t.close}>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"
+        ><path
+          d="m6 6 12 12M18 6 6 18"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"></path></svg
+      >
+    </button>
+  </header>
+  <div class="paseo-body">
+    <div id="root" tabindex="-1" aria-hidden="true" inert></div>
+    <section class="paseo-onboarding" data-paseo-onboarding aria-label={t.help}>
+      <div class="paseo-intro">
+        <h2 data-paseo-copy="introTitle">{t.introTitle}</h2>
+        <p data-paseo-copy="intro">{t.intro}</p>
+      </div>
+      <div class="paseo-connect-actions">
+        <button data-paseo-connect data-paseo-copy="connect">{t.connect}</button>
+        <small data-paseo-copy="preparing">{t.preparing}</small>
+      </div>
+      <ol class="paseo-setup-steps">
+        <li>
+          <h3 data-paseo-copy="installTitle">{t.installTitle}</h3>
+          <p data-paseo-copy="install">{t.install}</p>
+          <div class="paseo-setup-links">
+            <a
+              href="https://paseo.sh/download"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-paseo-copy="download">{t.download}</a
+            >
+            <a
+              href="https://paseo.sh/docs"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-paseo-copy="docs">{t.docs}</a
+            >
+          </div>
+        </li>
+        <li>
+          <h3 data-paseo-copy="agentTitle">{t.agentTitle}</h3><p data-paseo-copy="agent">
+            {t.agent}
+          </p>
+        </li>
+        <li>
+          <h3 data-paseo-copy="pairTitle">{t.pairTitle}</h3><p data-paseo-copy="pair">{t.pair}</p>
+        </li>
+      </ol>
+      <p class="paseo-mobile-note" data-paseo-copy="mobile">{t.mobile}</p>
+    </section>
+    <div class="paseo-notice" data-paseo-notice>
+      <p role="status" aria-live="polite" data-paseo-status>{t.loading}</p>
+      <button data-paseo-retry data-paseo-copy="retry" hidden>{t.retry}</button>
+      <button data-paseo-reload data-paseo-copy="reload" hidden>{t.reload}</button>
+      <button data-paseo-reference-retry data-paseo-copy="referenceRetry" hidden
+        >{t.referenceRetry}</button
+      >
+    </div>
+  </div>
+</section>
+<script>
+  import '../scripts/paseo-boot';
+</script>
+<style is:global>
+  .paseo-entries {
+    position: fixed;
+    right: 16px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    z-index: 70;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .paseo-entry,
+  .paseo-article-entry {
+    min-height: 44px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #424249;
+    box-shadow: 0 3px 14px #0001;
+    cursor: pointer;
+  }
+  .paseo-entry {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    border-radius: 50%;
+  }
+  .paseo-article-entry {
+    padding: 10px 14px;
+    border-radius: 24px;
+    font: 500 13px/1.3 system-ui;
+  }
+  .paseo-entries button:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .paseo-noscript {
+    position: fixed;
+    right: 16px;
+    bottom: 66px;
+    max-width: 280px;
+    z-index: 70;
+    padding: 8px;
+    background: #fff;
+    font-size: 14px;
+  }
+  #local-assistant {
+    --paseo-viewport-height: 100dvh;
+    --paseo-viewport-width: 100vw;
+    --paseo-viewport-top: 0px;
+    --paseo-viewport-left: 0px;
+    position: fixed;
+    right: 12px;
+    top: calc(var(--paseo-viewport-top) + 12px);
+    height: calc(var(--paseo-viewport-height) - 24px);
+    width: 400px;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    color: #222;
+    border: 1px solid #dedee2;
+    border-radius: 12px;
+    box-shadow: 0 14px 48px #0002;
+    overflow: hidden;
+    isolation: isolate;
+    font-family: system-ui;
+  }
+  /* Keep native layout nonzero while hidden. Display:none would reset virtual
+     list measurements and create avoidable work each time the panel reopens. */
+  #local-assistant[hidden] {
+    display: flex;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  #local-assistant [hidden] {
+    display: none !important;
+  }
+  #local-assistant[data-paseo-surface='full'] {
+    top: var(--paseo-viewport-top);
+    left: var(--paseo-viewport-left);
+    right: auto;
+    width: var(--paseo-viewport-width);
+    height: var(--paseo-viewport-height);
+    border: 0;
+    border-radius: 0;
+  }
+  .paseo-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+    height: 44px;
+    padding: 0 4px 0 14px;
+    border-bottom: 1px solid #ececee;
+    background: #fff;
+    font: 500 13px/1.4 system-ui;
+  }
+  .paseo-toolbar strong {
+    margin-right: auto;
+    font-weight: 550;
+    color: #71717a;
+  }
+  .paseo-toolbar button {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #71717a;
+    cursor: pointer;
+  }
+  .paseo-toolbar button:hover {
+    background: #f4f4f5;
+    color: #18181b;
+  }
+  #local-assistant button:focus-visible,
+  .paseo-entries button:focus-visible {
+    outline: 2px solid #72727c;
+    outline-offset: -3px;
+  }
+  .paseo-body {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  #local-assistant #root {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    contain: layout paint;
+    container-type: inline-size;
+    container-name: paseo;
+    outline: none;
+    overscroll-behavior: contain;
+  }
+  #local-assistant #root > div {
+    flex: 1;
+    min-width: 0;
+  }
+  #local-assistant[data-paseo-guide='true'] #root {
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .paseo-onboarding {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    overflow: auto;
+    overscroll-behavior: contain;
+    background: #fff;
+    padding: 24px 22px 90px;
+    scrollbar-gutter: stable;
+  }
+  .paseo-intro h2 {
+    margin: 0 0 12px;
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.4px;
+  }
+  .paseo-intro p,
+  .paseo-setup-steps p,
+  .paseo-mobile-note {
+    margin: 0;
+    color: #64646e;
+    font: 14px/1.7 system-ui;
+  }
+  .paseo-setup-steps {
+    list-style: none;
+    margin: 24px 0 18px;
+    padding: 0;
+  }
+  .paseo-setup-steps li + li {
+    margin-top: 22px;
+  }
+  .paseo-setup-steps h3 {
+    margin: 0 0 6px;
+    color: #26262e;
+    font: 600 14px/1.5 system-ui;
+  }
+  .paseo-setup-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 10px;
+    font: 500 13px/1.6 system-ui;
+  }
+  .paseo-setup-links a {
+    color: #303039;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .paseo-mobile-note {
+    font-size: 12px;
+  }
+  .paseo-connect-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-top: 20px;
+  }
+  .paseo-connect-actions button {
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid #24242b;
+    border-radius: 8px;
+    background: #24242b;
+    color: #fff;
+    font: 500 14px/1.4 system-ui;
+    cursor: pointer;
+  }
+  .paseo-connect-actions small {
+    color: #777780;
+    font: 12px/1.5 system-ui;
+  }
+  .paseo-notice {
+    position: absolute;
+    z-index: 3;
+    inset: auto 0 0;
+    padding: 12px 16px;
+    border-top: 1px solid #ececee;
+    background: #fafafa;
+    color: #62626c;
+    font: 13px/1.5 system-ui;
+  }
+  .paseo-notice p {
+    margin: 0;
+  }
+  .paseo-notice button {
+    min-height: 36px;
+    margin: 8px 8px 0 0;
+    padding: 6px 12px;
+    border: 1px solid #d2d2d8;
+    border-radius: 6px;
+    background: #fff;
+    color: #303039;
+    font: inherit;
+    cursor: pointer;
+  }
+  /* Keep the article's existing 780px measure in side-by-side mode, so opening
+     the assistant does not rewrap earlier paragraphs and move reading position. */
+  @media (min-width: 1240px) {
+    .is-detail:has(#local-assistant[data-paseo-surface='compact']:not([hidden])) .detail-page {
+      width: min(780px, calc(100% - 432px));
+      margin-left: max(0px, calc((100vw - 432px - 780px) / 2));
+      margin-right: auto;
+    }
+  }
+  @media (max-width: 1239px) {
+    #local-assistant[data-paseo-surface='compact'] {
+      top: auto;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      width: min(400px, calc(var(--paseo-viewport-width) - 24px));
+      height: min(58dvh, calc(var(--paseo-viewport-height) - 24px));
+    }
+  }
+  @media (max-width: 600px) {
+    .paseo-entries {
+      right: 12px;
+      bottom: max(12px, env(safe-area-inset-bottom));
+    }
+    #local-assistant[data-paseo-surface='full'] .paseo-toolbar {
+      padding-top: env(safe-area-inset-top);
+      height: calc(44px + env(safe-area-inset-top));
+    }
+    .paseo-onboarding {
+      padding: 18px 18px 90px;
+    }
+    .paseo-intro h2 {
+      font-size: 19px;
+    }
+  }
+</style>

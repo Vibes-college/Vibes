@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '检查与发布网站'
 status: 'current'
-shaped-by: ['001', '002', '003', '004', '005', '009', '010']
+shaped-by: ['001', '002', '003', '004', '005', '009', '010', '013']
 legacy-feature-ids: ['delivery-setup', 'local-database', 'site-metadata']
 code-sources:
   [
@@ -31,7 +31,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: 'a87f903d7dbfa64de35dd9bdc5d47d6458ca26dfd88f0c2507aa1ecb461c0933'
+code-revision: 'b6b5b083466940cd4d8c55f8dfec856364fdda380aebb5c24007c39eef645e6b'
 ---
 
 # 功能名：检查与发布网站
@@ -41,6 +41,8 @@ code-revision: 'a87f903d7dbfa64de35dd9bdc5d47d6458ca26dfd88f0c2507aa1ecb461c0933
 维护者从Draft PR查看进度与阶段预览，确认合并后由main检查和部署更新正式站，再由AI完成上线验收与清理。
 
 ## 用户操作路径
+
+首次准备环境或修改原生补丁时，先按[Paseo构建路径](../system/local-assistant.md#重建与交付)准备固定上游和原生产物。普通build/verify会核对产物与当前源码补丁一致；不会默默拿旧包通过。仅本地对照可以关闭助手，发布构建必须包含。
 
 1. 仅需要Spec Kit的需求使用PR；小修复、文档和小型规则补充按影响检查后直接提交，不单独开PR。远端保护限制见[发布规则](../system/checks-and-release.md)。采用Spec Kit时，AI在首版spec形成时建立Draft PR，给用户可打开的链接和任务摘要；当前进度、阻塞、下一步、预览范围放PR描述，重要决定和证据放评论。
 2. 浏览器验收包含桌面Chromium与手机Chromium/WebKit模拟，真实iPhone另验；本地按[检查规则](../system/checks-and-release.md)验证；Draft云端运行独立check，不把跳过的verify/budget当作完成验收。阶段、交接和暂停前提交推送，不逐commit强制push。
