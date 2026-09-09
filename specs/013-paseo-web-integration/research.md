@@ -96,6 +96,24 @@ PR #11已在真实生产策略下发现插件`globalThis.eval(clientBundle)`被�
 
 请求初始失败、模型/工具执行失败、连接丢失导致结果未知、停止后子进程继续分别呈现。测试拒绝/允许审批及网络丢包时实际提交次数，不能通过多等几秒、自动重试或替换UI声称解决后端执行边界。
 
+## R7 文章引用的形态、资料与生命周期
+
+只读宿主源码为`/Users/jachi/Desktop/Vibecoding-College/vibecoding-college`，HEAD `3e03a686df203c85475d6e49c2e6d2fed12c788e`；对应Paseo源码仍是R3记录的旧fork。宿主本节所列文件无未提交变化。
+
+| 环节       | 精确路径与行为                                                                                                                                                     |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 文章入口   | 宿主src/features/works/components/work-detail-dock.tsx:23–43只给pageContext传surface/path/entity.kind/slug/title/href；summary虽另在workScope，但不发送            |
+| 请求快照   | paseo-launcher-input.tsx:232–240和src/features/paseo/launch-source.ts:34–45为每次显式启动创建id，克隆页面引用和未发送问题；global-floating-paseo.tsx:235传入原生根 |
+| 输入框应用 | Paseo的embedded/launcher-draft-bridge.tsx:64与composer/draft/input-draft.ts:183等待原生草稿hydrate，再由embedded/launcher-draft.ts:40保留其他附件并替换原Vibes引用 |
+| 外观与删除 | composer/index.tsx:822使用AttachmentPill显示标题/Vibes页面说明，删除沿普通附件流程；旧onOpen为空，并非可以点开网页的超链接                                         |
+| 实际提交   | composer/attachments/submit.ts:69调用embedded/vibes-page-context.ts:82转成原生text附件；服务端prompt-attachments.ts:29把它作为用户问题后的普通文本                 |
+
+引用文本包含非可信资料标记、Surface、Path及Entity的类型/标题/slug/href，路径原为站内相对地址；没有全文、摘要、DOM抓取或额外自动读取。新站按已发布公开URL适配链接，不把旧站路由直接拷来。
+
+原生草稿和已应用request id共同去重。删除后，同一次请求、Composer重新挂载、收起/展开和compact/full不会加回；仅浏览另一篇文章不会替换已有草稿。再次显式从文章Launcher发起新请求才重新附上引用。相关回归在旧embedded/launcher-draft.test.ts:243；删除后的附件持久化沿原生draft-store。
+
+**需要适配的一处触发差异**：旧embedded/launcher-draft.ts:35对空问题直接退出，因此旧源码并不覆盖“尚未输入，点文章入口就自动附带”。按用户本次明确需求调整该触发，保留引用形态、删除和原生发送语义，不照搬空文本分支，也不新增手动附带按钮。默认保留已有草稿，不能一并继承覆盖已有问题的旧启动行为。
+
 ## 证据状态
 
-以上是固定源码与既有PR证据的只读核查；新分支尚无实现、安装、运行、性能或真机结论。用户要求先澄清核心场景和功能目的；plan是技术候选，tasks先组织讨论与方案收敛，确认后再在同一PR展开实施任务。
+以上是固定源码与既有PR证据的只读核查；新分支尚无实现、安装、运行、性能或真机结论。核心产品用途与旧引用已经澄清；plan是可审阅接入提案，用户确认后在同一PR展开实施，不把来源研究当作运行验收。
