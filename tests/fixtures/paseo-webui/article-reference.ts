@@ -1,14 +1,15 @@
 import { test, expect, type Page } from '@playwright/test';
 import { withMockSession } from './mock-session.ts';
 
-async function openArticle(page: Page) {
+async function openArticle(page: Page, browserName: string) {
   await page.locator('[data-paseo-close]').click();
   await page.locator('a[href="/zh/works/attention-is-all-you-need/"]').first().click();
   await expect(page).toHaveURL(/\/zh\/works\/attention-is-all-you-need\/$/);
   // The article bubble expires; keyboard focus can reveal it again without opening chat.
   await page.keyboard.press('Tab');
   await page.locator('[data-paseo-open]:not([data-paseo-article-open])').focus();
-  await page.keyboard.press('Shift+Tab');
+  // WebKit's default traversal includes buttons with Option+Tab.
+  await page.keyboard.press(browserName === 'webkit' ? 'Alt+Shift+Tab' : 'Shift+Tab');
   await expect(page.locator('[data-paseo-article-open]')).toBeFocused();
   await page.locator('[data-paseo-article-open]').click();
 }
@@ -22,7 +23,7 @@ export function registerArticleReferenceTests() {
       await open();
       const input = page.locator('#root textarea:visible');
       await input.fill('Existing unsent question');
-      await openArticle(page);
+      await openArticle(page, browser.browserType().name());
       const reference = page.getByTestId('composer-public-work-attachment-pill');
       await expect(reference).toContainText('Attention Is All You Need');
       await expect(input).toHaveValue('Existing unsent question');
@@ -64,7 +65,7 @@ export function registerArticleReferenceTests() {
       await open();
       const input = page.locator('#root textarea:visible');
       await expect(input).toHaveValue('');
-      await openArticle(page);
+      await openArticle(page, browser.browserType().name());
       const reference = page.getByTestId('composer-public-work-attachment-pill');
       await expect(reference).toHaveCount(1);
       await expect(input).toHaveValue('');

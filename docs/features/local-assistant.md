@@ -21,7 +21,7 @@ code-sources:
     'tests/unit/paseo-page-context.test.ts',
     'tests/unit/paseo-fixture-headers.test.ts',
   ]
-code-revision: '800ba171bc19d4b519d89fa64bc3d938f326e571a1d4c71a14ef9900a01a89f5'
+code-revision: '2e8e9f3f6e5408e015ad9ccd29f1a6e7e13a475d908d958d93b25099cfe8d2cb'
 ---
 
 # 功能名：使用本地助手
@@ -109,7 +109,7 @@ code-revision: '800ba171bc19d4b519d89fa64bc3d938f326e571a1d4c71a14ef9900a01a89f5
 
 ## 对应的自动化测试
 
-- `tests/paseo-loading.spec.ts`：普通浏览/无JS零加载、即时引导、资源失败重试、单一根与动态样式保留、全屏背景锁定及浏览器前进后退的阅读位置、受控可见视口布局。
+- `tests/paseo-loading.spec.ts`：普通浏览/无JS零加载、气泡5秒隐藏与鼠标/键盘重显、触屏关闭后再次提示及换篇重置、即时引导、资源失败重试、单一根与动态样式保留、全屏背景锁定及浏览器前进后退的阅读位置、受控可见视口布局。
 - `tests/paseo-chat.spec.ts`注册`mock-operations.ts`、`mock-chat-selection.ts`与`article-reference.ts`：真实固定版mock协议下的流式输出、工具、审批、停止、会话选择和文章引用；设备、家目录和工作目录由`tests/fixtures/paseo-webui/`隔离。
 - `tests/paseo-recovery.spec.ts`注册`tests/fixtures/paseo-webui/mock-presentation.ts`：单工具栏、听写主按钮、新建工作区点击与草稿保留、Files全屏面板尺寸和打开文件后的关闭，以及隐藏与恢复时的连接、订阅和活动状态；模拟信号不代替真机挂起。
 - `tests/paseo-csp.spec.ts`：真实图片选择、blob缩略图与灯箱解码、触屏点按图片后关闭、带行号文件链接及HTML交互与隔离；WebKit图片用例使用独立临时持久profile并在结束时删除，其余用例保持临时上下文。fixture按构建后的响应头路径规则运行，实际Cloudflare响应仍需部署验收。

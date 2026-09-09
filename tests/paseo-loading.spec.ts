@@ -47,6 +47,7 @@ test('browsing and no-JS do not fetch or connect Paseo', async ({ page, browser,
 
 test('article speech bubble expires, stays usable with focus, and renews on article navigation', async ({
   page,
+  browserName,
 }) => {
   test.setTimeout(60_000);
   const resources: string[] = [];
@@ -61,7 +62,8 @@ test('article speech bubble expires, stays usable with focus, and renews on arti
   await expect(launcher(page)).toBeVisible();
 
   await launcher(page).focus();
-  await page.keyboard.press('Shift+Tab');
+  // WebKit's default traversal includes buttons with Option+Tab.
+  await page.keyboard.press(browserName === 'webkit' ? 'Alt+Shift+Tab' : 'Shift+Tab');
   await expect(bubble).toBeFocused();
   await page.waitForTimeout(5200);
   await expect(bubble).toBeVisible();
