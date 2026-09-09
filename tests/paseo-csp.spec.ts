@@ -11,45 +11,56 @@ test('native image attachment thumbnail and lightbox decode blob images under pr
   const imagePath = resolve('.scratch/paseo-webui/upstream/packages/app/assets/images/favicon.png');
   const png = readFileSync(imagePath);
   const expectedSize = { width: png.readUInt32BE(16), height: png.readUInt32BE(20) };
-  await withMockSession(browser, info, async ({ page, open }) => {
-    const navigation = page.waitForResponse(
-      (response) =>
-        response.request().isNavigationRequest() && response.url() === 'http://localhost:4396/zh/',
-    );
-    await open();
-    const policy = await (await navigation).headerValue('content-security-policy');
-    expect(policy).toBe(
-      readFileSync('dist/_headers', 'utf8').match(/^ {2}Content-Security-Policy: (.+)$/m)?.[1],
-    );
-    await page.getByRole('button', { name: '添加附件', exact: true }).click();
-    const chooser = page.waitForEvent('filechooser');
-    await page.getByText('添加图片', { exact: true }).click();
-    await (await chooser).setFiles(imagePath);
+  await withMockSession(
+    browser,
+    info,
+    async ({ page, open }) => {
+      const navigation = page.waitForResponse(
+        (response) =>
+          response.request().isNavigationRequest() &&
+          response.url() === 'http://localhost:4396/zh/',
+      );
+      await open();
+      const policy = await (await navigation).headerValue('content-security-policy');
+      expect(policy).toBe(
+        readFileSync('dist/_headers', 'utf8').match(/^ {2}Content-Security-Policy: (.+)$/m)?.[1],
+      );
+      await page.getByRole('button', { name: '添加附件', exact: true }).click();
+      const chooser = page.waitForEvent('filechooser');
+      await page.getByText('添加图片', { exact: true }).click();
+      await (await chooser).setFiles(imagePath);
 
-    const expectDecodedImage = async (surface: Locator) => {
-      await expect(surface).toBeVisible();
-      const image = surface.locator('img');
-      await expect(image).toHaveAttribute('src', /^blob:/);
-      // React Native Web also paints a CSS background. Require its real image
-      // element to decode the selected file, not merely a visible placeholder.
-      await expect
-        .poll(() =>
-          image.evaluate((element: HTMLImageElement) => ({
-            complete: element.complete,
-            width: element.naturalWidth,
-            height: element.naturalHeight,
-          })),
-        )
-        .toEqual({ complete: true, ...expectedSize });
-    };
-    const thumbnail = page.getByTestId('composer-image-attachment-pill');
-    await expectDecodedImage(thumbnail);
-    await thumbnail.click();
-    await expectDecodedImage(page.getByTestId('attachment-lightbox-image'));
-    await page.getByTestId('attachment-lightbox-close').click();
-    await expect(page.getByTestId('attachment-lightbox')).toHaveCount(0);
-    await expect(thumbnail).toBeVisible();
-  });
+      const expectDecodedImage = async (surface: Locator) => {
+        await expect(surface).toBeVisible();
+        const image = surface.locator('img');
+        await expect(image).toHaveAttribute('src', /^blob:/);
+        // React Native Web also paints a CSS background. Require its real image
+        // element to decode the selected file, not merely a visible placeholder.
+        await expect
+          .poll(() =>
+            image.evaluate((element: HTMLImageElement) => ({
+              complete: element.complete,
+              width: element.naturalWidth,
+              height: element.naturalHeight,
+            })),
+          )
+          .toEqual({ complete: true, ...expectedSize });
+      };
+      const thumbnail = page.getByTestId('composer-image-attachment-pill');
+      await expectDecodedImage(thumbnail);
+      await thumbnail.click();
+      await expectDecodedImage(page.getByTestId('attachment-lightbox-image'));
+      if (info.project.use.isMobile) {
+        // Native touch controls appear after touching the image canvas.
+        await page.getByTestId('attachment-lightbox-canvas').tap();
+        await expect(page.getByTestId('attachment-lightbox-close')).toHaveCSS('opacity', '1');
+      }
+      await page.getByTestId('attachment-lightbox-close').click();
+      await expect(page.getByTestId('attachment-lightbox')).toHaveCount(0);
+      await expect(thumbnail).toBeVisible();
+    },
+    { persistentProfile: browser.browserType().name() === 'webkit' },
+  );
 });
 
 test('native file links open text at the requested line under production CSP', async ({

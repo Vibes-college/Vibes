@@ -1,5 +1,11 @@
-import { expect, type Browser, type Page, type TestInfo } from '@playwright/test';
-import { mkdtempSync, mkdirSync } from 'node:fs';
+import {
+  expect,
+  type Browser,
+  type BrowserContext,
+  type Page,
+  type TestInfo,
+} from '@playwright/test';
+import { mkdtempSync, mkdirSync, rmSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -52,6 +58,7 @@ export async function withMockSession(
   browser: Browser,
   info: TestInfo,
   body: (fixture: MockFixture) => Promise<void>,
+  options: { persistentProfile?: boolean } = {},
 ) {
   const response = await fetch('http://localhost:4396/__paseo-fixture');
   if (!response.ok) throw new Error('Owned protocol fixture is unavailable.');
@@ -75,46 +82,54 @@ export async function withMockSession(
   const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = info.project.use;
   const connectionId = 'direct:127.0.0.1:4396';
   const now = new Date().toISOString();
-  const context = await browser.newContext({
+  const contextOptions = {
     viewport,
     userAgent,
     deviceScaleFactor,
     isMobile,
     hasTouch,
-    // Seed one returning-browser state. Reloads, forgetting a device and child
-    // frames must use actual browser persistence, never an init script reseed.
-    storageState: {
-      cookies: [],
-      origins: [
-        {
-          origin: 'http://localhost:4396',
-          localStorage: [
-            { name: 'vibes:paseo:setup-dismissed', value: '1' },
-            {
-              name: '@paseo:daemon-registry',
-              value: JSON.stringify([
-                {
-                  serverId,
-                  label: 'Mock operation fixture',
-                  connections: [
-                    { id: connectionId, type: 'directTcp', endpoint: '127.0.0.1:4396' },
-                  ],
-                  preferredConnectionId: connectionId,
-                  createdAt: now,
-                  updatedAt: now,
-                },
-              ]),
-            },
-          ],
-        },
-      ],
-    },
-  });
+  };
+  // Seed one returning-browser state. Reloads, forgetting a device and child
+  // frames must use actual browser persistence, never an init script reseed.
+  const storageState = {
+    cookies: [],
+    origins: [
+      {
+        origin: 'http://localhost:4396',
+        localStorage: [
+          { name: 'vibes:paseo:setup-dismissed', value: '1' },
+          {
+            name: '@paseo:daemon-registry',
+            value: JSON.stringify([
+              {
+                serverId,
+                label: 'Mock operation fixture',
+                connections: [{ id: connectionId, type: 'directTcp', endpoint: '127.0.0.1:4396' }],
+                preferredConnectionId: connectionId,
+                createdAt: now,
+                updatedAt: now,
+              },
+            ]),
+          },
+        ],
+      },
+    ],
+  };
+  const profile = options.persistentProfile ? mkdtempSync(root + '/browser-profile-') : undefined;
+  let context: BrowserContext | undefined;
   const agents: string[] = [];
   const workspaces: string[] = [];
   const directories: string[] = [];
   let failure: unknown;
   try {
+    if (profile) {
+      // WebKit's ephemeral contexts cannot persist Blob/File values in IndexedDB.
+      // Opt-in cases use a fresh normal profile, never a user's browser profile.
+      context = await browser.browserType().launchPersistentContext(profile, contextOptions);
+      await context.setStorageState(storageState);
+    } else {
+      context = await browser.newContext({ ...contextOptions, storageState });
+    }
     await client.connect();
     const createSession = async (
       options: { model?: string; featureValues?: Record<string, unknown> } = {},
@@ -159,7 +174,10 @@ export async function withMockSession(
     failure = error;
   } finally {
     const cleanups = [
-      () => context.close(),
+      () => context?.close(),
+      () => {
+        if (profile) rmSync(profile, { recursive: true, force: true });
+      },
       ...agents.map((id) => () => client.cancelAgent(id)),
       ...agents.map((id) => () => client.archiveAgent(id)),
       ...directories.map((cwd) => async () => {

@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '182313f6f102246afa9dc7d160def361581290f095cfc9c1a1267634375b7abf'
+code-revision: 'a29cbd7a85df331587188905c0f4be4d6dce4e5d4c848fda844df604570f81a1'
 ---
 
 # 检查与发布
@@ -138,6 +138,8 @@ content:validate核对媒体结构、引用、字节及真实数值；budget另�
 本地与CI使用同一配置和测试文件。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
 
 原生助手默认进入同一套三浏览器测试。首次运行先按[Paseo构建路径](local-assistant.md#重建与交付)准备固定Web产物与测试server；CI按锁执行相同准备。测试独占4396/6796，并使用本轮临时HOME、PASEO_HOME和mock provider；不读取真实账号执行任务。配对fixture只初始化一次，刷新、忘记设备和清除存储不得偷偷重种状态。mock通过与真实Agent、真机通过分别记录。
+
+WebKit图片附件用例单独使用本任务创建的空持久profile，按普通窗口验证Blob附件；同版WebKit临时/私密上下文的IndexedDB无法保存Blob/File。该profile只初始化一次配对状态，成功或失败后均关闭并删除；其他原生mock用例继续使用临时上下文。真实Safari私密模式仍需真机验证。
 
 媒体测试完成播放、暂停和历史断言后，先通过正常页面导航退出播放器，释放可能仍保持连接的原生下载。测试页面关闭前等待静态资源传输结束，10秒内仍未空闲即失败；这是对Wrangler本地代理中断响应会退出问题的防护，不重试测试或吞掉错误。公共fixture见tests/browser-test.ts。
 
