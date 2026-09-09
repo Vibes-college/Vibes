@@ -21,7 +21,7 @@ code-sources:
     'tests/unit/paseo-page-context.test.ts',
     'tests/unit/paseo-fixture-headers.test.ts',
   ]
-code-revision: '4d48a79a5d9cfe278858f5204c777703e45691266afea8e8cbc472828297620b'
+code-revision: '2c70a76ffd055e5b4e6e83074aeda217c3fe5e1cf84fd2e76011a69f49a50122'
 ---
 
 # 功能名：使用本地助手
@@ -32,7 +32,7 @@ code-revision: '4d48a79a5d9cfe278858f5204c777703e45691266afea8e8cbc472828297620b
 
 ## 用户操作路径
 
-1. 在`/zh/`、`/en/`或作品详情点右下角“本地助手”。第一次点击立即显示安装与连接说明，并开始准备工作台；没有点击时不下载Paseo资源或连接电脑。无JavaScript可继续阅读，助手入口不启用。
+1. 在`/zh/`、`/en/`或作品详情点右下角透明背景的吉祥物图案入口；按钮的可访问名称为“本地助手”，英文为“Local assistant”。第一次点击立即显示安装与连接说明，并开始准备工作台；没有点击时不下载Paseo资源或连接电脑。无JavaScript可继续阅读，助手入口不启用。
 2. 在要运行Agent的电脑上，按说明打开Paseo官方桌面App下载页或CLI安装说明。桌面App打开后自动启动服务；电脑需要保持开机、运行Paseo。手机也能使用网页，但仍依赖这台电脑。
 3. 在电脑上安装并登录Codex或其他受支持的Agent。Paseo不提供模型账号，使用沿用用户自己的账号和配置。桌面App从Settings → 当前host → Pair Device取得配对信息；CLI按启动提示启用中继并显示配对二维码。
 4. 点“已安装，去连接”，在Paseo原生界面完成配对并等到电脑在线。已有配对由Paseo恢复；“工作台已准备”仅表示界面可用，不表示电脑已连接或模型可用。
