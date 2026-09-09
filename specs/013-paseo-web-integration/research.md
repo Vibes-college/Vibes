@@ -70,7 +70,7 @@ v0.7.2固定源码的packages下没有chatWorkspace/resolveChatWorkspace/hidden-
 
 ## R4 首选独立文档容器，降低宿主侵入
 
-**拟定方案**：同站专用Paseo文档运行完整原生Web；Explore持久外壳按需创建iframe，独立页面直接打开同一应用。语言、presentation、可见/聚焦/前后台、公开作品草稿和ready/error通过受限桥接传递；会话事件、配对秘密和任意RPC不进入宿主。
+**拟定方案**：同站专用Paseo文档运行完整原生Web；Explore持久外壳按需创建iframe。该文档是内部接入载体，不另建设独立使用页面；用户已明确standalone指独立模块便于维护。语言、presentation、可见/聚焦/前后台、公开作品草稿和ready/error通过受限桥接传递；会话事件、配对秘密和任意RPC不进入宿主。独立模块不自动等于iframe，具体接入仍在候选比较范围。
 
 **理由**：PR #11直接挂载曾需要改11个源码文件及9个Expo Router、React Native Web、Unistyles依赖文件以适配容器、路由、弹层和CSSOM，见[research R10](https://github.com/Vibes-college/Vibes/blob/c8f9d8c522226f6658b37d003b5f7b566185bd4a/specs/012-paseo-webui-loading/research.md#r10-接入选择与真实审批)。独立文档让Paseo有自己的window、路由和样式，先验证能否免去这些深层适配。容器不是CPU隔离，也不是天然安全沙箱，不预判更流畅。
 

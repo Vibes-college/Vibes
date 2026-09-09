@@ -14,7 +14,7 @@ amended-by: []
 - [x] T001 核对main、PR #10/#11和旧complete-root固定源码，把可复用经验与证据限度写入research.md。
 - [x] T002 在spec.md确认基础对话、执行、结果与产出查看；产出范围直接沿用Paseo原生，不新增格式预览或下载服务。
 - [x] T003 在spec.md明确Chat为默认目录/Codex/Luna/合理强度的快捷预设，Build按需进入已有项目；两者保留原生执行能力，不区分讨论与动手、不要求旧隐藏工作区。
-- [ ] T004 在spec.md澄清compact/full/standalone各自场景，标记必需、可选、不需要的功能，补成功与失败路径。
+- [ ] T004 在spec.md澄清compact/full操作场景，标记必需、可选、不需要的呈现；standalone已明确为独立模块接入，不需额外独立使用页面。
 - [ ] T005 基于回答修订plan.md，向用户解释候选在使用体验、稳定性、维护、安装和费用上的收益与代价，再确定接入路径与依赖范围。
 - [ ] T006 按确认结果重写spec.md/plan.md及checklists/requirements.md，敲定有依据的验收门槛与边界。
 - [ ] T007 在tasks.md生成按US1—US4和真实文件路径排序的实施任务；先独立审阅需求/计划/任务一致性，再进入实施。
