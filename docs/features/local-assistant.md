@@ -99,7 +99,9 @@ code-revision: '4d48a79a5d9cfe278858f5204c777703e45691266afea8e8cbc472828297620b
 
 验收项按完整范围打勾，局部验证、旧PR或mock用例不能代替未覆盖部分。2026-09-09本地英语模型协议转写通过，证据为`resources/evidence/013-paseo-web-integration/dictation/local-model-protocol.json`，该项使用模型测试音频，没有录麦克风或提交Agent。
 
-同日以合成英语作为本地Chromium测试麦克风输入，保留原生录音链路，经官方relay、本地STT和唯一1条原生消息取得真实Luna回复`ready`，没有工具调用；取消后立即重录、提交后清空草稿且无焦点并恢复麦克风通过。证据为`resources/evidence/013-paseo-web-integration/dictation/browser-ui/result.json`；不代表物理麦克风、iPhone或线上验收。完整组合、长时与真机矩阵仍待验收，范围见[013规格](../../specs/013-paseo-web-integration/spec.md)。
+同日以合成英语作为本地Chromium测试麦克风输入，保留原生录音链路，经官方relay、本地STT和唯一1条原生消息取得真实Luna回复`ready`，没有工具调用；取消后立即重录、提交后清空草稿且无焦点并恢复麦克风通过。证据为`resources/evidence/013-paseo-web-integration/dictation/browser-ui/result.json`；不代表物理麦克风、iPhone或线上录音验收。
+
+本轮布局与听写组合回归、云端预览的导航及输入状态已验收，具体范围与证据见[013任务验收记录](../../specs/013-paseo-web-integration/tasks.md#8-本轮反馈统一布局与本地英语听写)。完整能力矩阵、长时与真机仍待验收，范围见[013规格](../../specs/013-paseo-web-integration/spec.md)。
 
 ## 对应的自动化测试
 

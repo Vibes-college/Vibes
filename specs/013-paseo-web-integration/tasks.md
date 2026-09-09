@@ -9,7 +9,7 @@ amended-by: []
 
 目的与直接挂载已确认，用户授权有明确收益的改进。上游路径均相对本任务隔离源码的`packages/app/`，最终以`third_party/paseo-webui/patches/`中可重放补丁交付；不提交临时源码或依赖。复用旧测试时以当前行为修订，不继承旧通过结论。
 
-当前在已有体验预览上实施用户确认的布局与本地英语听写，范围见T033—T040：取消可见Chat/Build模式、保留首次预设与原生当前项目，compact纯聊天、full原生工作台，并处理iOS26输入/键盘/背景交互。T019其余页头快捷入口、T022完整插件/功能验收及后续性能/真机任务继续保留未完成；不把本轮完成称为完整第一阶段完成。
+用户确认的布局与本地英语听写已完成本轮实现及阶段预览验收，范围见T033—T040：取消可见Chat/Build模式、保留首次预设与原生当前项目，compact纯聊天、full原生工作台，并处理iOS26输入/键盘/背景交互。T019其余页头快捷入口、T022完整插件/功能验收及后续性能/真机任务继续保留未完成；不把本轮完成称为完整第一阶段完成。
 
 ## 1. 来源与范围
 
@@ -81,15 +81,19 @@ amended-by: []
 - [x] T035 在原生src/embedded/toolbar.tsx、src/screens/workspace/workspace-screen.tsx及原生sidebar/pane组合实现单44px白色头部；compact仅新会话/full/收起与聊天，窄屏full保留原生会话切换，不加Agent/Terminal新标签菜单。src/components/left-sidebar.tsx修复关闭外框的透明点击拦截，新建工作区继续官方路由；src/embedded/mobile-files.tsx仅把Files入口放History/Plan下，关闭左菜单后经官方动作打开全宽高CompactExplorerSidebar/MobilePanelOverlay，点文件开原生file tab并关面板。复用官方窄屏判断、宽屏保留右栏，不另造文件树或状态；补实际菜单/面板回归，组合验收由T038记录。
 - [x] T036 [P] 在src/components/LocalAssistant.astro、src/features/paseo-webui/host.ts、src/scripts/paseo-boot.ts及必要原生输入样式中修复iOS26输入自动缩放、compact软键盘可见视口定位和full背景点击/滚动穿透；保留手动缩放、compact文章操作、退出后的阅读位置与同一原生根，补宿主交互回归。真实iPhone结果仍由T038/T029单列验收。
 - [x] T037 [P] 在原生src/composer/input/、src/composer/index.tsx、src/components/dictation-controls.tsx与必要use-dictation窄补丁中复用官方local英语听写。compact只有当前有文字才显示文字发送，空输入始终麦克风，焦点与曾点击不改变规则，清空立即恢复，仅有文章或其他附件也保留麦克风；删除粘性文字输入模式，录音发送确认及携带附件不变。compact和full均隐藏Realtime入口，仅保留听写，不改daemon语音配置。保留cancel、转写、retry/discard、失败草稿与晚回调保护；提交、停止Agent、模型选择关闭和拖入附件不隐式聚焦，显式文字快捷键保留。覆盖空输入聚焦、输入后清空、仅附件、确认结束不等于发送成功、重复点击/重试、取消后的晚结果；不新增中文/云STT或实时voice/TTS。
-- [ ] T038 在tests/paseo-chat.spec.ts、paseo-recovery.spec.ts及既有同配置fixture补本轮三浏览器专项：无可见模式、单头部、当前工作区最近聊天、file/terminal保留、窄屏无新增加号、新建工作区真实点击、Files原生全屏面板与打开文件后关闭、键盘尺寸与full背景隔离、听写主按钮和失败恢复。核对真实local英语能力与操作证据；iPhone Safari iOS26软键盘、缩放与真录音若未实测则明确待测，并继续保留T029未完成。
+- [x] T038 在tests/paseo-chat.spec.ts、paseo-recovery.spec.ts及既有同配置fixture补本轮三浏览器专项：无可见模式、单头部、当前工作区最近聊天、file/terminal保留、窄屏无新增加号、新建工作区真实点击、Files原生全屏面板与打开文件后关闭、键盘尺寸与full背景隔离、听写主按钮和失败恢复。核对真实local英语能力与操作证据；iPhone Safari iOS26软键盘、缩放与真录音若未实测则明确待测，并继续保留T029未完成。
 - [x] T039 源码与补丁稳定后，对照实际行为同步docs/features/local-assistant.md、浏览/阅读路径及docs/system/local-assistant.md和相关接口/配置/检查说明；解释操作与已知边界，保留有效旧证据及未测项，再更新code-revision，不提前宣称新布局或听写已实现。
-- [ ] T040 将本轮产品补丁按既有series/maintenance登记并重建唯一产物，运行原生必要测试/类型、整站verify与budget及同SHA阶段预览验收；在现有PR #12保存推送进度、更新操作说明和实际限制。不得删改断言或照抄旧SHA结果宣称全通过；若最终检查仅复现已获许可的同一WebKit音频限制，可按既有授权发布同PR阶段预览，并记录新SHA实际结果。不新建PR、不自动Ready/合并，完整工作继续按T019、T022—T032推进。
+- [x] T040 将本轮产品补丁按既有series/maintenance登记并重建唯一产物，运行原生必要测试/类型、整站verify与budget及同SHA阶段预览验收；在现有PR #12保存推送进度、更新操作说明和实际限制。不得删改断言或照抄旧SHA结果宣称全通过；若最终检查仅复现已获许可的同一WebKit音频限制，可按既有授权发布同PR阶段预览，并记录新SHA实际结果。不新建PR、不自动Ready/合并，完整工作继续按T019、T022—T032推进。
 
-T038局部证据：2026-09-09在本任务隔离Paseo home与6797端口，复用电脑已存在的官方local模型，用模型自带7.435秒PCM16/16k英语样例经真实DaemonClient的start/chunk/finish取得转写，耗时2.618秒；原始结果见resources/evidence/013-paseo-web-integration/dictation/local-model-protocol.json。该证据只覆盖本地模型与官方协议，没有下载模型、配置云Key、录真实麦克风、验证手机或向Agent发消息；不据此勾选T038完整界面路径或T029真机验收。
+T038局部证据：2026-09-09在本任务隔离Paseo home与6797端口，复用电脑已存在的官方local模型，用模型自带7.435秒PCM16/16k英语样例经真实DaemonClient的start/chunk/finish取得转写，耗时2.618秒；原始结果见resources/evidence/013-paseo-web-integration/dictation/local-model-protocol.json。该证据只覆盖本地模型与官方协议，没有下载模型、配置云Key、录真实麦克风、验证手机或向Agent发消息；本项不单独证明T038界面路径，也不替代T029真机验收；本轮组合结果见下方。
 
-T038局部界面证据：2026-09-09以已验证的原生资源`/vendor/paseo/f2b0b0f4c78f6118/`在本地Chromium测试麦克风设备输入合成英语，未替换原生录音音频链路，经官方relay连接6797真实本地STT，再提交唯一1条用户消息，真实Codex Luna回复`ready`且0次工具调用。取消后无额外等待立即重新录音通过；提交后草稿为空、无输入焦点并恢复麦克风。原始结果见resources/evidence/013-paseo-web-integration/dictation/browser-ui/result.json；没有采集环境声音，不是物理麦克风、iPhone或Cloudflare上线验收。T038全自动组合仍待完整verify，T040仍待同SHA发布，不据此提前勾选。
+T038局部界面证据：2026-09-09以已验证的原生资源`/vendor/paseo/f2b0b0f4c78f6118/`在本地Chromium测试麦克风设备输入合成英语，未替换原生录音音频链路，经官方relay连接6797真实本地STT，再提交唯一1条用户消息，真实Codex Luna回复`ready`且0次工具调用。取消后无额外等待立即重新录音通过；提交后草稿为空、无输入焦点并恢复麦克风。原始结果见resources/evidence/013-paseo-web-integration/dictation/browser-ui/result.json；没有采集环境声音，不是物理麦克风、iPhone或Cloudflare上线验收。该证据早于最新导航调整，听写实现未变；T038组合回归及T040阶段预览的最终结果以下方产品SHA记录为准。
 
-T038窄屏导航局部证据：2026-09-09原生资源`/vendor/paseo/2a1ab1b13702f684/`的三浏览器新建工作区入口3项通过；Files完整面板的关闭/重开、打开实际文本文件后进入原生标签并关闭面板、无额外加号及听写按钮规则共3项累计通过。首轮5项通过、桌面1项因读取布局切换前的菜单状态失败；测试等待官方窄屏切换控件后，该桌面项单独通过，未削弱面板/文件断言，不写成单轮全绿。实际531px浏览器也打开原生全高文件面板并进入工作区创建页面，没有创建新工作区；完整verify及上线仍由T038/T040继续验收。
+T038窄屏导航局部证据：2026-09-09原生资源`/vendor/paseo/2a1ab1b13702f684/`的三浏览器新建工作区入口3项通过；Files完整面板的关闭/重开、打开实际文本文件后进入原生标签并关闭面板、无额外加号及听写按钮规则共3项累计通过。首轮5项通过、桌面1项因读取布局切换前的菜单状态失败；测试等待官方窄屏切换控件后，该桌面项单独通过，未削弱面板/文件断言，不写成单轮全绿。实际531px浏览器也打开原生全高文件面板并进入工作区创建页面，没有创建新工作区；完整verify及云端预览结果见下方。
+
+T038/T040本轮完成证据：2026-09-09产品提交`39a52ce924953d859e639da9e82737ef8b3736c9`正常执行`release:preview 12`退出码0；121项单测通过，三浏览器E2E 235项通过、5项条件跳过、0失败，budget通过；原生20个测试文件156项及app类型检查通过。跳过项为桌面不适用的2项触摸和1项移动可见视口测试，以及仅在桌面运行的内容生命周期在两个移动项目的2项跳过。本轮WebKit原生音频恢复用例通过，未使用发布例外，历史裸audio复现证据保留。原始发布日志及结果见resources/evidence/013-paseo-web-integration/preview-checks/39a52ce/{release.log,result.json}。
+
+同SHA的[PR #12预览](https://pr-12-vibes-explore.topologic-relay.workers.dev/zh/)已核对release标识、中英200、CSP、noindex及原生前缀`/vendor/paseo/2a1ab1b13702f684/`。实际531×766云端浏览器确认窄屏无额外加号、新建工作区官方页面可达、Files打开44px宿主页头下的531×722原生完整面板、白色单行页头、清空输入恢复麦克风；compact/full均隐藏Realtime且麦克风可用，实际默认模型为Luna。未创建工作区，未把模拟浏览器或既有合成音频证据作为实体iPhone、云端物理麦克风验收；T029及其他完整范围仍未完成，PR保留Draft。验收结果绑定上述产品提交，后续规格状态记录不作为新SHA的整站验收。
 
 ## 依赖与并行
 
