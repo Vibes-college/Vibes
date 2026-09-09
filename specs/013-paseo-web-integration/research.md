@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Paseo原生接入的来源证据与维护边界'
-status: 'draft'
+status: 'in-progress'
 amended-by: []
 ---
 
@@ -11,7 +11,7 @@ amended-by: []
 
 2026-09-08核对main为`0c210ee4742a6c80de7938688fb34f58674a0e8d`，当前没有助手。PR #10头为`e6e3bf863f6bb81b7b5a3206a31010cfca2e9214`；PR #11头为`c8f9d8c522226f6658b37d003b5f7b566185bd4a`；均为未合并Draft。本规格使用013，保留011/012编号与原分支，不修改其状态或清理资源。
 
-**已确认的工作方式**：独立新PR，不整批cherry-pick旧实现。按固定源码研究可复用UI、宿主边界和回归场景，逐项记录候选补丁。用户倾向优先复用官方Web协调能力，并要求先澄清用途和取舍再实施；这替代早先直接延续assistant-ui的方向，但不表示具体接入架构和功能已批准。
+**已确认的工作方式**：独立新PR，不整批cherry-pick旧实现。按固定源码研究可复用UI、宿主边界和回归场景，逐项记录候选补丁。用户倾向优先复用官方Web协调能力，并要求先澄清用途和取舍再实施；这替代早先直接延续assistant-ui的方向，随后用户明确选择旧验证的直接挂载，并授权在接入时作有收益的改进。
 
 **理由**：PR #10的[连接所有权](https://github.com/Vibes-college/Vibes/blob/e6e3bf863f6bb81b7b5a3206a31010cfca2e9214/src/lib/assistant/connection-owner.ts)、[恢复器](https://github.com/Vibes-college/Vibes/blob/e6e3bf863f6bb81b7b5a3206a31010cfca2e9214/src/lib/assistant/recovery.ts)、[会话store](https://github.com/Vibes-college/Vibes/blob/e6e3bf863f6bb81b7b5a3206a31010cfca2e9214/src/lib/assistant/store.ts)、[操作账本](https://github.com/Vibes-college/Vibes/blob/e6e3bf863f6bb81b7b5a3206a31010cfca2e9214/src/lib/assistant/operation-ledger.ts)已承担连接代次、生命周期、订阅和快照竞争、权威历史及未知结果。这些是原生协调层应覆盖的验收清单，不再作为新架构移植。
 
@@ -19,7 +19,7 @@ amended-by: []
 
 ## R2 固定官方版本，保留应用协调层
 
-**拟定基准**：官方v0.7.2，提交`9400a49af670fdb5db4af58e73f8df98588dbea9`。这是可追溯、已有构建证据的比较基准，不宣称它是届时最新版本或已经验收。实现开始前核实对应官方App/CLI发行支持与同版daemon，避免混用服务端版本把差异归因于UI。
+**选定基准**：官方v0.7.2，提交`9400a49af670fdb5db4af58e73f8df98588dbea9`。这是可追溯、已有构建证据的比较基准，不宣称它是届时最新版本或已经验收。实现开始前核实对应官方App/CLI发行支持与同版daemon，避免混用服务端版本把差异归因于UI。
 
 保留完整根providers、HostRuntimeController、HostSessionManager、SessionProvider、timeline/directory同步与原生操作路径；官方[根布局](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/src/app/_layout.tsx)、[host-runtime](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/src/runtime/host-runtime.ts)、[session-context](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/src/contexts/session-context.tsx)是核对入口。
 
@@ -68,15 +68,19 @@ v0.7.2固定源码的packages下没有chatWorkspace/resolveChatWorkspace/hidden-
 
 普通文件查看不依赖插件eval，但`file-pane/html-preview.web.tsx`与html-preview-csp.ts有独立sandbox/CSP，实际嵌入后须验证原有HTML呈现是否被父级策略破坏。以同版本官方支持范围选代表文件做回归，不要求用户逐项列格式，也不把上游限制描述为新实现失败。
 
-## R4 首选独立文档容器，降低宿主侵入
+## R4 采用已验证的直接挂载，精确保留容器边界
 
-**拟定方案**：同站专用Paseo文档运行完整原生Web；Explore持久外壳按需创建iframe。该文档是内部接入载体，不另建设独立使用页面；用户已明确standalone指独立模块便于维护。语言、presentation、可见/聚焦/前后台、公开作品草稿和ready/error通过受限桥接传递；会话事件、配对秘密和任意RPC不进入宿主。独立模块不自动等于iframe，具体接入仍在候选比较范围。
+**决定**：用户明确选择旧项目、旧PR验证过的接入方式；采用PR #11 H的同页完整根挂载，允许改善代码与使用路径，不整批复制。此前提出独立文档候选，因已有经验复用及用户选择，不再维护第二种架构。
 
-**理由**：PR #11直接挂载曾需要改11个源码文件及9个Expo Router、React Native Web、Unistyles依赖文件以适配容器、路由、弹层和CSSOM，见[research R10](https://github.com/Vibes-college/Vibes/blob/c8f9d8c522226f6658b37d003b5f7b566185bd4a/specs/012-paseo-webui-loading/research.md#r10-接入选择与真实审批)。独立文档让Paseo有自己的window、路由和样式，先验证能否免去这些深层适配。容器不是CPU隔离，也不是天然安全沙箱，不预判更流畅。
+**收益与代价**：沿用H的路由、容器尺寸、弹层/焦点、CSSOM保留和三项活动信号，减少重新验证未知接入方式的工作。H仍需9个依赖文件的精确适配，升级维护成本真实存在；直接挂载不自动意味着更稳定或更低CPU。出处见[PR #11 R10](https://github.com/Vibes-college/Vibes/blob/c8f9d8c522226f6658b37d003b5f7b566185bd4a/specs/012-paseo-webui-loading/research.md#r10-接入选择与真实审批)。
 
-**必须验证**：Astro导航保留同一iframe browsing context；root/sockets不重复；父页历史与iframe历史不互相劫持；键盘焦点、弹层、手机软键盘、宽度断点、中文/英文和独立刷新路径正确。若失败，先给出复现与最小补丁成本，再评估直接挂载；不同时维护两套交付架构。
+选取H源码补丁：g1-direct-source、h-host-boundary、h-public-work、h-reactive-history、h-operation-feedback；依赖补丁按g1-direct-dependencies→h-focus-dependency顺序。另采纳不涉及拆包的h-native-types修正。新的产品补丁替换H手动附带和JSON后缀，使用R7的原生可删附件；不带A1—A4、graph-capture或旧实验框架。
 
-**活动缺口**：旧`embedded/mount-environment.tsx`虽定义visible/focused/foreground，实际消费者只读surface；`use-client-activity.ts:69`和`utils/app-visibility.ts:22`仍看整页可见性。旧收起不能证明官方已inactive。v0.7.2也有[整页可见性入口](https://github.com/getpaseo/paseo/blob/9400a49af670fdb5db4af58e73f8df98588dbea9/packages/app/src/utils/app-visibility.ts)，CSS隐藏iframe不自动等于document隐藏。只把三个宿主信号合成到官方活动入口，不接管恢复算法；隐藏后真实CPU、渲染与必要消息处理分别测。
+**改进边界**：H的终止dispose会刷新文档，普通收起/导航/尺寸切换不得调用；加载失败只重试未完成资源。旧ChatScreen有文件打开noop，改为在当前原生WorkspaceScreen准备预设与顶部，完整保留产出链路。宿主与原生合同只增加surface和请求身份，不添加会话RPC。
+
+**活动与验证**：旧fork曾只消费surface，H已接入visible/focused/pageVisible，保留这个完整入口并核对后台成本。Astro切页、返回、compact/full、弹层、软键盘、中文/英文必须在同一根实测；CSS隐藏本身不作为inactive或低成本证据。两项生产hook修正保留最小范围，并用延迟历史/连接状态复现证明必要性。
+
+**依赖复用核查**：PR #11已安装官方树HEAD、origin、锁与9项依赖前置摘要匹配，Git干净；205个符号链接均为树内相对链接。复制到本任务独立目录后再次核对，不在原树应用补丁。采用独立普通/APFS写时复制，不使用文件硬链接或共享node_modules；无新增npm安装。
 
 ## R5 Onboarding预加载与阶段目标
 
@@ -90,7 +94,7 @@ PR #11 B0记录JS gzip总量4,690,481 B，单次首次请求4,687,382 B；A4静�
 
 ## R6 生产环境与操作边界
 
-当前main的`public/_headers`只有同源connect-src且不允许同站iframe。新实现需为明确的Paseo文档配置精确frame/relay/resource策略，父站与应用文档分别验证；同源iframe可访问同源内容，不把origin/source校验称为完整安全隔离。
+当前main的`public/_headers`只有同源connect-src。直接挂载需要固定relay及原生sandbox的精确策略，必须验证实际生产响应；同页挂载与严格字段校验不是安全沙箱。
 
 PR #11已在真实生产策略下发现插件`globalThis.eval(clientBundle)`被拒绝，见[research](https://github.com/Vibes-college/Vibes/blob/c8f9d8c522226f6658b37d003b5f7b566185bd4a/specs/012-paseo-webui-loading/research.md)。必须盘点普通聊天、工具详情与审批的必要面板是否涉及该机制。无关入口可以不呈现；必要能力若受阻，先比较上游支持的静态/隔离方式，不能全站添加unsafe-eval或展示不可用按钮。
 
@@ -116,4 +120,4 @@ PR #11已在真实生产策略下发现插件`globalThis.eval(clientBundle)`被�
 
 ## 证据状态
 
-以上是固定源码与既有PR证据的只读核查；新分支尚无实现、安装、运行、性能或真机结论。核心产品用途与旧引用已经澄清；plan是可审阅接入提案，用户确认后在同一PR展开实施，不把来源研究当作运行验收。
+以上是固定源码与既有PR证据的只读核查；来源研究不作为新分支的运行、性能或真机结论。核心用途与直接挂载已经确认，plan/tasks按选定方案实施；阶段结论以本PR实际验证和原始证据为准。
