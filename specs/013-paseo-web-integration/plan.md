@@ -11,11 +11,11 @@ amended-by: []
 
 ## 当前交付阶段
 
-当前先提供用户明确要求的可体验快照：暂停接回审计发现的入口，冻结已有原生接入，核对真实连接、执行与当前产出，并通过现有必要检查后给Cloudflare预览和操作说明。预览明确保留未接回的工作区操作入口、插件及首次准备需手动重试等限制；不能将这份试用快照称为完整第一阶段完成。
+当前在已有体验预览上实施用户确认的手机/电脑布局与本地英语听写：移除可见Chat/Build模式，保留首次默认预设，之后沿原生当前项目；compact为纯聊天，full保留完整原生标签和文件操作。同步处理iOS26输入缩放、compact键盘定位与full背景穿透。具体行为以spec的本轮确认和T033—T040为准，完成前不写成当前已实现。
 
-第一阶段最终完整性目标仍是完整Paseo Web的现有界面和功能均接入，保留原生项目、终端、Git、脚本、编辑器、文件、设置及已安装插件等入口，修复宿主造成的功能缺口。不能只以能连上和发消息作为完成，也不能通过隐藏被阻断的功能来宣称完整。桌面专属能力、设备权限与用户未配置的服务沿原生真实边界说明，不伪造可用；用户先体验当前快照后再继续改进。
+第一阶段最终完整性目标仍是保留完整Paseo Web现有功能，修复宿主造成的缺口。当前需要区分漏接的页头快捷入口与仍可通过原生命令中心、Changes或文件窗口操作的能力：不能笼统声称Git、终端或文本编辑全部缺失。其余工作区快捷入口、插件执行与首次准备的未测限制保留后续，不借本轮布局改动扩大为完整工作台重做。桌面专属能力、设备权限与用户未配置服务沿原生真实边界说明。
 
-PR保持Draft；此预览不以完整恢复矩阵、官方性能对照、60分钟负载或iPhone真机为前提，也不把这些未测项标为通过。
+PR #12保持Draft，复用当前分支，不新建PR；本轮阶段预览不以完整恢复矩阵、官方性能对照、60分钟负载或完整iPhone真机矩阵为前提，也不把这些未测项标为通过。新增iPhone Safari iOS26输入/键盘场景须单列真实手机待测状态，模拟通过仅覆盖模拟环境。
 
 后续根据用户可感知的问题和收益决定改进优先级。下述完整验收协议保留作后续定位与Ready依据；当前暂停新增长时测试或未经体验反馈的性能改造，不以缩小资源数字代替体验交付。
 
@@ -23,22 +23,22 @@ PR保持Draft；此预览不以完整恢复矩阵、官方性能对照、60分�
 
 直接挂载复用现有容器、路由、弹层和CSSOM适配经验，便于实现边读文章边聊、极简顶部与连续开合。代价是需维护精确的Expo Router、React Native Web与Unistyles依赖补丁，升级时必须重验。它不天然降低CPU，也不让模型执行更快；Agent费用仍取决于用户的provider与模型。
 
-完整原生应用保留连接所有权、订阅恢复、timeline和操作语义，减少自有客户端维护面。源自PR #11的窄范围生产状态hook修正与操作反馈补丁按原复现验证；不延续拆包加载器、首包减半目标或多候选性能引擎。新改进集中在轻量引导、原生默认配置、顶部呈现和原生文章附件，不改daemon协议与恢复算法。
+完整原生应用保留连接所有权、订阅恢复、timeline和操作语义，减少自有客户端维护面。源自PR #11的窄范围生产状态hook修正与操作反馈补丁按原复现验证；不延续拆包加载器、首包减半目标或多候选性能引擎。本轮改动限于首次预设、原生工作区呈现、宿主尺寸/焦点及听写控件，不改daemon协议、provider识别实现或恢复算法。
 
 ## 技术决定与职责
 
 固定Paseo v0.7.2 / `9400a49af670fdb5db4af58e73f8df98588dbea9`、官方锁摘要及Apache-2.0许可，保留官方Metro/Expo导出与完整根providers。先保留H有序源码/依赖补丁和无关拆包的native-types修正，再叠加职责明确的产品补丁；每个补丁记录来源、动机、验证与升级移除条件。原始可追溯差异保留，是否合并补丁按维护收益判断。
 
-| 位置                                                               | 职责及边界                                                                |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| third_party/paseo-webui/upstream.json、patches/                    | 固定源、锁、许可、补丁与依赖前后摘要；只有一个产品配置                    |
-| scripts/paseo-webui-build.ts及同前缀辅助模块                       | 独立源校验、按序重放官方构建、许可与资源回执、只恢复自己的临时修改        |
-| scripts/build.ts、content-security.ts、script-budget.ts、budget.ts | 主构建接入、原生连接/预览策略、精确sandbox哈希、资源核验与Explore硬预算   |
-| src/features/paseo-webui/asset-contract.ts、build-config.ts        | 构建端严格消费同源资源回执，浏览器仅收到入口与CSS的URL及SRI               |
-| src/components/LocalAssistant.astro、src/scripts/paseo-boot.ts     | 即时外壳、安装引导、compact/full、文章入口、Astro持久节点与无JS说明       |
-| src/features/paseo-webui/contract.ts、host.ts、page-context.ts     | 唯一挂载、加载失败重试、展示/语言/活动与公开引用；不创建SDK连接           |
-| 原生src/embedded/及Composer、WorkspaceScreen窄补丁                 | Chat预设、Build入口、极简顶部、原生可删附件与宿主活动输入                 |
-| tests/paseo-*.spec.ts、tests/fixtures/paseo-webui/                 | 现有Playwright链路覆盖加载/聊天/恢复/文件与分阶段对照；真实与模拟结果分开 |
+| 位置                                                                     | 职责及边界                                                                |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| third_party/paseo-webui/upstream.json、patches/                          | 固定源、锁、许可、补丁与依赖前后摘要；只有一个产品配置                    |
+| scripts/paseo-webui-build.ts及同前缀辅助模块                             | 独立源校验、按序重放官方构建、许可与资源回执、只恢复自己的临时修改        |
+| scripts/build.ts、content-security.ts、script-budget.ts、budget.ts       | 主构建接入、原生连接/预览策略、精确sandbox哈希、资源核验与Explore硬预算   |
+| src/features/paseo-webui/asset-contract.ts、build-config.ts              | 构建端严格消费同源资源回执，浏览器仅收到入口与CSS的URL及SRI               |
+| src/components/LocalAssistant.astro、src/scripts/paseo-boot.ts           | 即时外壳、安装引导、compact/full、文章入口、Astro持久节点与无JS说明       |
+| src/features/paseo-webui/contract.ts、host.ts、page-context.ts           | 唯一挂载、加载失败重试、展示/语言/活动与公开引用；不创建SDK连接           |
+| 原生src/embedded/及Composer、WorkspaceScreen、use-agent-form-state窄补丁 | 首次预设、新草稿默认模型、当前工作区与单头部、compact听写控件及原生附件   |
+| tests/paseo-*.spec.ts、tests/fixtures/paseo-webui/                       | 现有Playwright链路覆盖加载/聊天/恢复/文件与分阶段对照；真实与模拟结果分开 |
 
 Vibes沿用现有Astro/TypeScript；上游依赖在独立源码目录按锁文件构建。复用PR #11已核验的安装树时用独立普通复制或APFS写时复制，不把node_modules软链接回其他任务，也不硬链接会修改的文件。没有新增npm依赖安装；未来确需新增时先说明准确范围。构建默认启用产品助手，缺失或过期回执失败，不静默发布无助手；明确关闭仅用于未启动对照。CI用同一固定源、锁与补丁准备唯一产物。
 
@@ -46,7 +46,7 @@ Vibes沿用现有Astro/TypeScript；上游依赖在独立源码目录按锁文�
 
 同页调用仍严格校验版本、对象字段、字符串长度和URL；不提供任意RPC、代码执行或聊天事件转发。宿主安装`__vibesPaseoEnvironment`后加载入口，唯一`__vibesPaseo.mount`负责完整原生根。保留ResizeObserver非零容器尺寸、CSSOM真实节点和Astro持久根；站内导航、尺寸变化及重开不得卸载。
 
-- `Presentation`包含`visible/focused/pageVisible`和`surface: compact | full`。surface只控制宿主空间，不改变Chat/Build、工作区、草稿或连接。原生可发surface与close意图。
+- `Presentation`包含`visible/focused/pageVisible`和`surface: compact | full`。surface表达展示意图；原生在compact呈现当前工作区最近会话或草稿，不改变工作区、模型、草稿归属或连接。文件/终端标签保留在同一原生状态内，原生可发surface与close意图。
 - `PublicWorkDraft`只含`requestId/id/title/canonicalUrl`，其中id为作品slug，requestId为一次显式文章入口请求。canonicalUrl使用已发布https规范地址，拒绝认证信息、query和hash；不含summary、sourceUrl或全文。
 - `HostCommand`仅presentation、locale、draft/null、显式终止dispose；事件仅ready、state、error、close、surface与无设备信息的saved-hosts。后者表示原生已加载保存的设备，用于首次引导，不能声称设备在线。收起、切页、切大小与一般加载重试不能dispose。不可恢复根错误提供明确重新加载入口，不暗中刷新Vibes。
 
@@ -56,21 +56,49 @@ Vibes沿用现有Astro/TypeScript；上游依赖在独立源码目录按锁文�
 
 首次点击先呈现轻量引导，再并行准备原生资源；不在点击前下载或探测。引导说明电脑安装、Agent准备、官方配对及完成标志，手机说明电脑前提；已安装用户立即进入连接，已保存设备的回访直接交给原生恢复。安装命令和版本依据官方当前文档核对，缺省不替换用户全局服务。无倒计时，资源失败保留步骤和重试，卸载/退出不冒充停止远端任务。
 
-compact在宽屏占右侧有限空间，文章仍可读、滚动和操作，不用整页遮罩或滚动锁。full提供专注空间；窄屏按视口显示可用面板，返回文章保留位置。软键盘、触摸、焦点与宽度断点用实际浏览器验收。缩放尺寸、关闭或站内导航保留同一原生根、草稿和聊天滚动。
+compact在宽屏占右侧有限空间，在手机按可见视口和软键盘定位，文章可见区域仍可读、滚动和操作，不使用整页滚动锁。full独占交互区域，阻止背景文章接收点击/触摸/滚动，退出后恢复原页面位置。缩放尺寸、关闭或站内导航保留同一原生根、草稿和聊天滚动；不通过卸载工作台或重建history实现恢复。
 
 从文章入口打开时生成新的引用请求；普通FAB重开、路由变化、尺寸切换和恢复不生成请求。原生草稿hydrate后只更新附件，保留已有文字和其他附件；空文字也接受引用。附件显示原生AttachmentPill，可删除并随普通提交转换为不可信text资料；删除或发送后同请求不再次应用。只换文章不覆盖旧草稿。保持原生发送/失败/草稿持久化，宿主不复制会话真相。
 
 收起向原生活动入口提供visible/focused/pageVisible，保留必要同步并核对后台显示工作。仅CSS隐藏不足以证明后台成本达标。主动断开与忘记沿官方入口验证；迟到回调不得重新连接或影响其他设备，忘记不删除电脑文件。
 
-### Chat与Build的原生路径
+### 首次预设与原生当前项目
 
-Chat是默认配置，仍使用原生WorkspaceScreen、pane、文件Explorer与Composer。不要复制旧ChatScreen中会使openFile/openTab失效的简化runtime。首次在已配对电脑的home下准备`Vibes`普通目录，沿官方createProjectDirectory/addProject/openProject及原生草稿设置；不列整棵目录树、不执行shell安装、不每次打开创建Agent。
+首次预设仍使用原生WorkspaceScreen、pane、文件Explorer与Composer。不要复制旧ChatScreen中会使openFile/openTab失效的简化runtime。首次在已配对电脑的home下准备`Vibes`普通目录，沿官方createProjectDirectory/addProject/openProject及原生草稿设置；不列整棵目录树、不执行shell安装、不每次打开创建Agent。取消可见Chat/Build标签及双模式选择状态，后续以原生当前项目为准。
 
 按host缓存已确认目录/工作区选择，单窗口准备互斥。目录已存在先由官方校验其类型，保留原有内容；创建结果未知时先查现有项目/工作区，不盲目重发。原生openProject并非跨标签原子保证，验证边界据实记录，不能承诺协议没有提供的恰好一次。
 
-优先真实ready/enabled的Codex及可选择Luna，强度使用该模型原生默认项；无Codex、未登录、无Luna或目录权限错误进入针对性设置/选择，不默默换收费模型。只在首次发送时由官方Composer创建Agent。Build沿原生项目/目录选择；模式保存各自选择，不覆盖已有项目配置或把另一项目草稿发出。
+优先真实ready/enabled的Codex及可选择Luna，强度使用该模型原生默认项；无Codex、未登录、无Luna或目录权限错误进入针对性设置/选择，不默默换收费模型。只在首次发送时由官方Composer创建Agent。用户选择已有项目后沿用其原生配置、当前会话/草稿；再次打开、放大缩小不重套首次预设。
+
+原生`src/hooks/use-agent-form-state.ts`的初次解析调用`src/embedded/chat-form-defaults.ts`：仅嵌入、没有显式初始provider/model/mode/thinking、没有已存provider或providerPreferences、没有用户修改时，以真实Codex/Luna及原生默认模式/强度作为临时fallback。偏好和模型加载中等待，不可用时保留原生选择入口，不写preferences或覆盖用户主动清空。该规则同样覆盖新浏览器恢复工作区后点加号；真实hook测试在`src/embedded/chat-form-defaults.test.tsx`，不建立第二套偏好存储。
+
+进入compact时从当前工作区已有原生会话、草稿与标签状态选择最近聊天；从文件或终端缩小时不把它们关闭，也不创建第二份会话目录、聊天记录或恢复缓存。新会话由官方草稿入口创建；full原生标签仍可重新选择保留的文件或终端。
 
 产出复用聊天文件链接→工作区file pane→原生预览，保留所需CodeMirror、Markdown、图片及受限HTML等基础库。PDF/Office预览与纯relay下载沿固定版本真实边界；不新增服务。接入CSP或容器破坏原本支持的预览属于回归。
+
+### 单头部、手机文件位置与键盘
+
+| 展示                | 头部与正文                                                                | 原生状态边界                                          |
+| ------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------- |
+| compact，手机与电脑 | 一条44px白色头部；新会话、full、收起；无菜单/标签栏，正文只显示聊天       | 当前工作区最近会话或草稿；文件、终端及标签保留        |
+| full，原生窄屏布局  | 同一条头部与原生会话切换；菜单可新建工作区，Files入口打开原生全屏文件面板 | 不额外加Agent/Terminal新标签菜单，不复制文件树或状态  |
+| full，原生宽屏布局  | 同一条头部与官方标签栏，保留原生右侧面板                                  | 文件、终端、Changes及命令中心等原有操作按原生路径工作 |
+
+宿主和原生协调一条头部，避免外壳控制条与原生控制条重复占用手机空间。compact仅收敛呈现，窄屏full沿原生MobileWorkspaceTabSwitcher切换会话/标签，不额外挂Agent/Terminal新标签加号。左菜单的新建工作区继续走官方路由，关闭按钮外框以React Native Web的pointerEvents属性避免透明区域拦截点击。
+
+Files只在History/Plan下增加入口，点击先关闭左菜单，再分发官方workspace.tab.open（target files、placement supporting），由原生CompactExplorerSidebarHost与MobilePanelOverlay打开全宽高文件浏览面板；点文件开原生file tab并关闭overlay，不在菜单inline展开树或复制状态。复用官方useIsCompactFormFactor判断窄屏与宽屏，宽屏仍用原生右栏，不另设入口断点。
+
+iPhone输入使用不会触发Safari自动放大的文本尺寸，保持viewport允许用户手动缩放；不能用禁用页面缩放掩盖问题。compact尺寸基于实际visualViewport及其offset，键盘打开/关闭时输入、主按钮和头部仍可见，听写结束不主动focus。full隔离背景输入并保存/恢复文章位置；compact不全页锁滚动。自动化覆盖尺寸、定位及事件边界，iPhone Safari iOS26软键盘、缩放和真实触摸单列待测，不能由模拟结果代签。
+
+### 本轮本地英语听写
+
+沿固定官方local英语STT和现有daemon能力就绪状态，不增加中文识别或云STT，不启用实时voice/TTS，不改服务端识别协议。嵌入的compact和full均隐藏Realtime入口，使用呈现条件保留听写，不改daemon已有语音配置。电脑仍须运行Paseo并具备官方本地模型；模型未准备、连接不可用或浏览器麦克风权限被拒绝时给真实状态，保留文字输入，不静默改云端服务。
+
+compact只按当前文字决定文字发送呈现：有文字显示发送，空输入显示麦克风，聚焦或曾经点击textarea不改变规则，清空立即恢复麦克风，仅有文章引用或其他附件也保留麦克风。只有主动点击才调用原生startDictation；录音时的发送继续调用既有confirm→转写回调→原生onSubmit/onQueue并携带附件。删除粘性的文字输入模式状态，不能把confirm Promise结束、转写结束、输入框清空或按钮恢复当作发送成功。已有文字与附件按原生合并/提交，取消、失败重试/丢弃、未知结果与晚回调沿原生状态保护，不另存音频或建立第二套发送队列。
+
+主按钮直接从当前文字与原生录音状态派生，不另存键盘模式。录音、转写、提交失败和重试期间保留原生错误与草稿；权限拒绝或取消不误发，反复点击不重复提交。语音提交后不自动调用输入focus或由草稿→会话切换重新打开软键盘；compact停止Agent、关闭模型选择和拖入附件也不隐式聚焦，用户点textarea或使用明确文字快捷键时才主动输入。普通full中的官方控件与已有发送行为保持可用。
+
+相应验证使用原生hook/Composer单测及现有Playwright协议fixture，覆盖空输入聚焦、输入文字再清空、仅附件、主动录音、confirm与真实发送成功的区别、取消、失败重试/丢弃、重复点击与晚结果。手机模拟不证明真实录音/键盘，真实本地英语转写和iOS26使用结果单列证据。现有WebKit媒体失败与私密窗口Blob限制仍须据实保留，不修改无关断言来取得绿灯。
 
 ### 生产策略与可维护性
 

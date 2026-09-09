@@ -51,6 +51,7 @@ export function registerMockOperationTests() {
       await stop.click();
       await expect(page.getByTestId('paseo-stop-request-status')).toContainText('停止请求已获响应');
       await expect(stop).toBeHidden();
+      if (testInfo.project.use.hasTouch) await expect(input).not.toBeFocused();
       const plan = page.getByTestId('permission-plan-card');
       await send('Emit synthetic plan approval.');
       await expect(plan).toBeVisible();

@@ -16,6 +16,7 @@ type Stage =
   'idle' | 'loading' | 'initializing' | 'operable' | 'resource-error' | 'fatal' | 'disposed';
 interface Environment extends Presentation {
   root: HTMLElement;
+  toolbarRoot?: HTMLElement;
   width: number;
   height: number;
   locale: AssistantLocale;
@@ -32,6 +33,7 @@ declare global {
 }
 const panel = document.getElementById('local-assistant')!;
 const root = panel.querySelector<HTMLElement>('#root')!;
+const toolbarRoot = panel.querySelector<HTMLElement>('[data-paseo-native-toolbar]')!;
 const config = parsePaseoAssetConfig(JSON.parse(panel.dataset.paseoConfig || 'null'));
 if (!config) throw new Error('Invalid native asset configuration.');
 const notice = panel.querySelector<HTMLElement>('[data-paseo-notice]')!;
@@ -56,12 +58,14 @@ let nativeReady = false;
 let stalled = false;
 let timer: ReturnType<typeof setTimeout> | undefined;
 let retentionGeneration = 0;
+let lockedArticleY: number | undefined;
 const styleRequests = new Map<string, Promise<void>>();
 const notify = () => {
   for (const listener of listeners) listener();
 };
 const environment: Environment = {
   root,
+  toolbarRoot,
   width: root.clientWidth || Math.min(400, innerWidth),
   height: root.clientHeight || innerHeight - 100,
   visible: !panel.hidden && !guideOpen(),
@@ -113,12 +117,33 @@ function presentation() {
   const visible = !panel.hidden && !guideOpen() && stage !== 'fatal' && stage !== 'disposed';
   environment.setPresentation({
     visible,
-    focused: visible && root.contains(document.activeElement) && document.hasFocus(),
+    focused: visible && panel.contains(document.activeElement) && document.hasFocus(),
     pageVisible: !document.hidden,
     surface: surface(),
   });
 }
+function releaseArticleLock() {
+  if (lockedArticleY === undefined) return;
+  const articleY = lockedArticleY;
+  lockedArticleY = undefined;
+  delete document.documentElement.dataset.paseoFullscreen;
+  document.documentElement.style.removeProperty('--paseo-document-height');
+  document.body.style.removeProperty('--paseo-article-y');
+  window.scrollTo({ top: articleY, behavior: 'instant' });
+}
 function renderStatus() {
+  const lockArticle = !panel.hidden && surface() === 'full';
+  if (lockArticle && lockedArticleY === undefined) {
+    lockedArticleY = scrollY;
+    // Keep the document's scroll range while its body is fixed, so Astro's
+    // normal browser-history scroll tracking does not record a synthetic zero.
+    document.documentElement.style.setProperty(
+      '--paseo-document-height',
+      `${document.documentElement.scrollHeight}px`,
+    );
+    document.body.style.setProperty('--paseo-article-y', `${-lockedArticleY}px`);
+    document.documentElement.dataset.paseoFullscreen = 'true';
+  } else if (!lockArticle) releaseArticleLock();
   const text = shellCopy[locale()];
   updateShellCopy(panel, locale());
   const messages: Record<Stage, string> = {
@@ -151,7 +176,7 @@ function renderStatus() {
   panel.querySelector<HTMLButtonElement>('[data-paseo-expand]')!.hidden = surface() === 'full';
   panel.querySelector<HTMLButtonElement>('[data-paseo-compact]')!.hidden = surface() === 'compact';
   const close = panel.querySelector<HTMLButtonElement>('[data-paseo-close]')!;
-  close.setAttribute('aria-label', surface() === 'full' ? text.compact : text.close);
+  close.setAttribute('aria-label', text.close);
   close.title = close.getAttribute('aria-label')!;
   document
     .querySelectorAll('[data-paseo-open]')
@@ -253,6 +278,7 @@ async function start() {
     renderStatus();
     handle = await module.mount({
       root,
+      toolbarRoot,
       locale: locale(),
       presentation: {
         visible: environment.visible,
@@ -337,7 +363,7 @@ function captureSurface(): SurfaceRetention {
       : null,
     timeline,
     bottomOffset: timeline ? timeline.scrollHeight - timeline.clientHeight - timeline.scrollTop : 0,
-    articleY: scrollY,
+    articleY: lockedArticleY ?? scrollY,
   };
 }
 function restoreSurface(snapshot: SurfaceRetention, restoreArticle: boolean) {
@@ -345,7 +371,8 @@ function restoreSurface(snapshot: SurfaceRetention, restoreArticle: boolean) {
   let frames = 0;
   const restore = () => {
     if (generation !== retentionGeneration || panel.hidden) return;
-    if (restoreArticle) window.scrollTo({ top: snapshot.articleY, behavior: 'instant' });
+    if (restoreArticle && lockedArticleY === undefined)
+      window.scrollTo({ top: snapshot.articleY, behavior: 'instant' });
     if (snapshot.timeline?.isConnected) {
       snapshot.timeline.scrollTop = Math.max(
         0,
@@ -353,7 +380,8 @@ function restoreSurface(snapshot: SurfaceRetention, restoreArticle: boolean) {
       );
     }
     if (snapshot.active?.isConnected && !guideOpen()) {
-      snapshot.active.focus({ preventScroll: true });
+      // Resizing or reopening must not summon a phone's software keyboard.
+      if (!matchMedia('(pointer: coarse)').matches) snapshot.active.focus({ preventScroll: true });
       if (snapshot.active instanceof HTMLTextAreaElement && snapshot.selection) {
         const { start, end, direction } = snapshot.selection;
         snapshot.active.setSelectionRange(start, end, direction);
@@ -366,6 +394,8 @@ function restoreSurface(snapshot: SurfaceRetention, restoreArticle: boolean) {
 export function setSurface(value: AssistantSurface) {
   if (surface() === value || stage === 'disposed') return;
   const snapshot = captureSurface();
+  if (matchMedia('(pointer: coarse)').matches && snapshot.active === document.activeElement)
+    snapshot.active?.blur();
   panel.dataset.paseoSurface = value;
   renderStatus();
   presentation();
@@ -393,6 +423,8 @@ export async function openAssistant(button?: HTMLElement, visible = true) {
 }
 export function hideAssistant() {
   if (!panel.hidden) hiddenRetention = captureSurface();
+  if (document.activeElement instanceof HTMLElement && panel.contains(document.activeElement))
+    document.activeElement.blur();
   retentionGeneration++;
   panel.hidden = true;
   panel.dataset.openRequested = 'false';
@@ -403,8 +435,7 @@ export function hideAssistant() {
   );
 }
 export function closeAssistant() {
-  if (surface() === 'full') setSurface('compact');
-  else hideAssistant();
+  hideAssistant();
 }
 export function showSetup(show: boolean, focus = true) {
   panel.dataset.paseoGuide = String(show);
@@ -454,6 +485,7 @@ document.addEventListener('astro:page-load', () => {
   presentation();
 });
 document.addEventListener('astro:before-swap', (event) => {
+  releaseArticleLock();
   const next = (event as Event & { newDocument: Document }).newDocument;
   for (const element of document.head.querySelectorAll<HTMLElement>(
     'style[id], link[data-paseo-resource]',
@@ -470,5 +502,7 @@ document.addEventListener('astro:before-swap', (event) => {
     next.head.append(placeholder);
   }
 });
+// Astro has now installed the next body and restored that page's own scroll.
+document.addEventListener('astro:after-swap', renderStatus);
 viewport();
 renderStatus();

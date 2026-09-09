@@ -18,7 +18,7 @@ code-sources:
     'scripts/paseo-webui-preview.ts',
     'public/_headers',
   ]
-code-revision: 'd0016f13e37848c4e881df40f97d92d7e100aab39eccf148a4f0ab389b73139c'
+code-revision: 'a591f662bceb09e7cb46f6e708a024d7580d6b5712011aa6125c3895d0c1e7b8'
 ---
 
 # 接口与外部服务
@@ -113,7 +113,9 @@ MDX组件在文章内部按client指令启动，同页共享React模块，从本
 
 主页面script-src允许self、WebAssembly、blob及当前构建的精确内联哈希，仍不允许unsafe-inline或unsafe-eval；img-src加入blob以显示原生图片附件，worker-src显式保持self，避免blob脚本许可通过回退规则扩展到Worker。固定原生版本的插件执行仍使用eval，目前尚未接通；允许blob脚本本身不代表插件已可运行。禁用助手的本地对照构建保留基础同源连接策略。
 
-宿主与原生应用的本地合同在`src/features/paseo-webui/contract.ts`：宿主提供尺寸/可见性/焦点/语言及一次性公开文章引用，原生回报挂载、错误、尺寸请求或已加载保存设备。严格拒绝未知字段和不安全URL；合同不接收配对秘密或本地文件内容。文章引用只在用户提交时成为原生text附件，删除和失败恢复由原生草稿处理。完整数据和存储边界见[Paseo接入](local-assistant.md)。
+宿主与原生应用的本地合同在`src/features/paseo-webui/contract.ts`：宿主提供原生根与工具栏插槽、尺寸/可见性/焦点/语言及一次性公开文章引用，原生回报挂载、错误、尺寸请求或已加载保存设备。严格拒绝未知事件字段和不安全URL；合同不接收配对秘密或本地文件内容。文章引用只在用户提交时成为原生text附件，删除和失败恢复由原生草稿处理。完整数据和存储边界见[Paseo接入](local-assistant.md)。
+
+小窗听写使用原生dictation协议：浏览器用户授权麦克风后，音频经已有连接送到电脑，转写文字再通过原生Composer提交或排队。官方默认英语模型在电脑转写，实际provider仍由电脑配置；Vibes没有新增音频代理或转写API。真实麦克风与iPhone验收不由本地模型测试音频的协议结果代替，范围见[听写与音频边界](local-assistant.md#听写与音频边界)。
 
 原生文件预览包含文本、图片、Markdown及受限HTML。HTML用`/paseo-preview/`静态载体的独立响应策略，HTTP和iframe均使用不含allow-same-origin的sandbox allow-scripts；只在这个隔离文档允许文件内联脚本和eval。策略禁止fetch/WebSocket连接、子框架、表单、对象和base地址，图片/媒体仅允许data或blob。原生HTML仍可导航自己的窗口，因此不能把connect-src none解释为全面禁止网络。父页面验证来自该窗口的握手和随机标识后传入文件，载体写入HTML前删除消息桥；文件脚本不能访问父页面、配对存储或继续接收其他文件。
 

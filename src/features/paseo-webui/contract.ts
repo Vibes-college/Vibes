@@ -40,6 +40,8 @@ export type AssistantEvent =
     };
 export interface PaseoMountOptions {
   root: HTMLElement;
+  /** Native navigation shares the host's single toolbar without owning its size controls. */
+  toolbarRoot?: HTMLElement;
   locale: AssistantLocale;
   presentation: Presentation;
   onEvent(event: AssistantEvent): void;

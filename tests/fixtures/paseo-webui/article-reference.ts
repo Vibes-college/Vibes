@@ -63,6 +63,7 @@ export function registerArticleReferenceTests() {
       const reference = page.getByTestId('composer-public-work-attachment-pill');
       await expect(reference).toHaveCount(1);
       await expect(input).toHaveValue('');
+      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
       expect(sent).toHaveLength(0);
       await input.fill('Explain the linked article.');
       await page.getByRole('button', { name: '发送消息', exact: true }).click();

@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'a29cbd7a85df331587188905c0f4be4d6dce4e5d4c848fda844df604570f81a1'
+code-revision: '591a4bbde1ddcbb988dd71e434e1c25866c74f4d9f8d43318bff75d6ea1c0c95'
 ---
 
 # 检查与发布
@@ -138,6 +138,8 @@ content:validate核对媒体结构、引用、字节及真实数值；budget另�
 本地与CI使用同一配置和测试文件。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
 
 原生助手默认进入同一套三浏览器测试。首次运行先按[Paseo构建路径](local-assistant.md#重建与交付)准备固定Web产物与测试server；CI按锁执行相同准备。测试独占4396/6796，并使用本轮临时HOME、PASEO_HOME和mock provider；不读取真实账号执行任务。配对fixture只初始化一次，刷新、忘记设备和清除存储不得偷偷重种状态。mock通过与真实Agent、真机通过分别记录。
+
+助手用例覆盖单工具栏、当前会话与文件标签保留、新建工作区点击、窄屏原生全屏文件面板、全屏背景锁定、真实浏览器前进后退及受控visualViewport变化；原生构建另执行新草稿默认模型与偏好保护、窄屏文件入口、按文字切换按钮、听写取消/失败重试及主题边界测试。受控视口不是实际软件键盘，模型测试音频的真实dictation协议也不是浏览器麦克风或Agent提交证据；真实iPhone Safari与完整听写操作路径需要分别验收。
 
 WebKit图片附件用例单独使用本任务创建的空持久profile，按普通窗口验证Blob附件；同版WebKit临时/私密上下文的IndexedDB无法保存Blob/File。该profile只初始化一次配对状态，成功或失败后均关闭并删除；其他原生mock用例继续使用临时上下文。真实Safari私密模式仍需真机验证。
 

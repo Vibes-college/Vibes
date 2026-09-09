@@ -27,6 +27,10 @@
     {
       "path": "third_party/paseo-webui/patches/native-product.patch",
       "sha256": "3598f3bf2fcc65d37b38be1a1e8f49661c9b32f502f032f366dec4b10b5e1283"
+    },
+    {
+      "path": "third_party/paseo-webui/patches/compact-surface.patch",
+      "sha256": "b059743fe60e57675dc200a69d7982c3320f32723973480c7601662593e0375c"
     }
   ],
   "dependencies": [

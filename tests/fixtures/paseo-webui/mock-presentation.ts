@@ -1,7 +1,125 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { withMockSession } from './mock-session.ts';
 
+async function checkNativeMobileFiles(page: Page) {
+  await expect(page.getByTestId('workspace-new-tab-button')).toBeHidden();
+  await page.getByTestId('sidebar-files').click();
+  await expect(page.getByTestId('explorer-header')).toBeVisible();
+  await expect(page.getByTestId('sidebar-files-tree')).toHaveCount(0);
+  await expect(page.getByTestId('menu-button')).toHaveAttribute('aria-expanded', 'false');
+  const root = await page.locator('#root').boundingBox();
+  const header = await page.getByTestId('explorer-header').boundingBox();
+  const content = await page.getByTestId('explorer-content-area').boundingBox();
+  expect(root && header && content).toBeTruthy();
+  expect(Math.abs(header!.width - root!.width)).toBeLessThanOrEqual(2);
+  expect(Math.abs(content!.y + content!.height - (root!.y + root!.height))).toBeLessThanOrEqual(2);
+  expect(content!.height).toBeGreaterThan(root!.height * 0.7);
+  await page.getByTestId('explorer-close').click();
+  await expect(page.getByTestId('explorer-header')).toBeHidden();
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('sidebar-files').click();
+  await page.getByText('panel-regression.txt', { exact: true }).click();
+  await expect(page.getByTestId('workspace-file-pane')).toBeVisible();
+  await expect(page.locator('[contenteditable=true]:visible')).toContainText(
+    'FILES_NAVIGATION_PROBE',
+  );
+  await expect(page.getByTestId('explorer-header')).toBeHidden();
+}
+
 export function registerPresentationTests() {
+  test('narrow full menu opens native new workspace and preserves the current draft', async ({
+    browser,
+  }, info) => {
+    test.setTimeout(60000);
+    await withMockSession(browser, info, async ({ page, open }) => {
+      if (!info.project.use.isMobile) await page.setViewportSize({ width: 600, height: 800 });
+      await open();
+      const input = page.locator('#root textarea:visible');
+      await input.fill('UNSENT_NEW_WORKSPACE_NAVIGATION_DRAFT');
+      await page.locator('[data-paseo-expand]').click();
+      if ((await page.getByTestId('menu-button').getAttribute('aria-expanded')) !== 'true')
+        await page.getByTestId('menu-button').click();
+      await page.getByTestId('sidebar-global-new-workspace').click();
+      await expect(
+        page.getByRole('button', { name: 'Workspace project', exact: true }),
+      ).toBeVisible();
+      await expect(page.getByRole('button', { name: '创建', exact: true })).toBeVisible();
+      await expect(page.getByTestId('menu-button')).toHaveAttribute('aria-expanded', 'false');
+      await page.locator('[data-paseo-compact]').click();
+      await expect(input).toHaveValue('UNSENT_NEW_WORKSPACE_NAVIGATION_DRAFT');
+    });
+  });
+
+  test('compact uses one toolbar and voice-first input while full keeps native navigation', async ({
+    browser,
+  }, info) => {
+    test.setTimeout(90000);
+    await withMockSession(browser, info, async ({ page, open, cwd }) => {
+      writeFileSync(resolve(cwd, 'panel-regression.txt'), 'FILES_NAVIGATION_PROBE');
+      await open();
+      const toolbar = page.locator('.paseo-toolbar');
+      const input = page.locator('#root textarea:visible');
+      await expect(toolbar.getByRole('button')).toHaveCount(3);
+      await expect(page.getByTestId('embedded-new-conversation')).toBeVisible();
+      await expect(page.getByTestId('menu-button')).toBeHidden();
+      await expect(page.getByTestId('workspace-tabs-row')).toBeHidden();
+      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+      await expect(page.getByRole('button', { name: '启用语音模式', exact: true })).toBeHidden();
+      await input.click();
+      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+      if (info.project.use.hasTouch) {
+        expect(
+          await input.evaluate((element) => parseFloat(getComputedStyle(element).fontSize)),
+        ).toBeGreaterThanOrEqual(16);
+      }
+      await input.fill('UNSENT_COMPACT_DRAFT');
+      await expect(page.getByRole('button', { name: '发送消息', exact: true })).toBeVisible();
+      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeHidden();
+      await input.fill('');
+      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+      await page.locator('.paseo-toolbar').click({ position: { x: 100, y: 20 } });
+      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+      await input.fill('UNSENT_COMPACT_DRAFT');
+      await page.locator('[data-paseo-expand]').click();
+      await expect(toolbar.getByRole('button')).toHaveCount(3);
+      await expect(page.getByTestId('embedded-new-conversation')).toBeHidden();
+      await expect(page.getByTestId('menu-button')).toBeVisible();
+      await expect(page.getByRole('button', { name: '启用语音模式', exact: true })).toBeHidden();
+      await expect(
+        page.locator('[data-testid="workspace-tabs-row"]:visible').first(),
+      ).toBeVisible();
+      if ((await page.getByTestId('menu-button').getAttribute('aria-expanded')) !== 'true')
+        await page.getByTestId('menu-button').click();
+      if (info.project.use.isMobile) {
+        await expect(page.getByTestId('sidebar-files')).toBeVisible();
+        await expect(page.getByTestId('embedded-explorer-toggle')).toBeHidden();
+        await checkNativeMobileFiles(page);
+      } else {
+        await expect(page.getByTestId('sidebar-files')).toBeHidden();
+        await expect(page.getByTestId('embedded-explorer-toggle')).toBeVisible();
+        const viewport = page.viewportSize()!;
+        // A narrow desktop window follows the same native drawer layout as a phone.
+        await page.setViewportSize({ width: 600, height: viewport.height });
+        await expect(page.getByTestId('workspace-tab-switcher-trigger')).toBeVisible();
+        await expect(page.getByTestId('embedded-explorer-toggle')).toBeHidden();
+        if ((await page.getByTestId('menu-button').getAttribute('aria-expanded')) !== 'true')
+          await page.getByTestId('menu-button').click();
+        await expect(page.getByTestId('sidebar-files')).toBeVisible();
+        await expect(page.getByTestId('embedded-explorer-toggle')).toBeHidden();
+        await checkNativeMobileFiles(page);
+        await page.setViewportSize(viewport);
+      }
+      await page.locator('[data-paseo-compact]').click();
+      await expect(input).toHaveValue('UNSENT_COMPACT_DRAFT');
+      if (info.project.use.hasTouch) await expect(input).not.toBeFocused();
+      await page.getByTestId('embedded-new-conversation').click();
+      await expect(input).toHaveValue('');
+      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+    });
+  });
+
   test('presentation changes retain the native runtime and hidden stream subscription', async ({
     browser,
   }, info) => {

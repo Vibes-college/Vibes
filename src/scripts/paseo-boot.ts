@@ -109,7 +109,6 @@ document.addEventListener('click', (event) => {
   if (button.hasAttribute('data-paseo-reload')) location.reload();
   if (button.hasAttribute('data-paseo-close')) {
     if (host) host.closeAssistant();
-    else if (panel()?.dataset.paseoSurface === 'full') changeSurface('compact');
     else {
       show(false);
       latestOpener?.focus({ preventScroll: true });

@@ -163,11 +163,15 @@ export async function withMockSession(
         await page.goto('http://localhost:4396/zh/');
         await page.locator('[data-paseo-open]:not([data-paseo-article-open])').click();
       }
-      await page.locator('#root #menu-button:visible').first().waitFor({ timeout: 45000 });
-      await page.locator('#root #menu-button:visible').first().click();
+      if (await page.locator('[data-paseo-expand]').isVisible())
+        await page.locator('[data-paseo-expand]').click();
+      await page.getByTestId('menu-button').waitFor({ timeout: 45000 });
+      if ((await page.getByTestId('menu-button').getAttribute('aria-expanded')) !== 'true')
+        await page.getByTestId('menu-button').click();
       await page.getByRole('button', { name: '历史', exact: true }).click();
       await page.getByTestId(`agent-row-${serverId}-${selected.agentId}`).click();
       await expect(page.locator('#root textarea:visible')).toBeVisible();
+      await page.locator('[data-paseo-compact]').click();
     };
     await body({ ...session, page, client, serverId, createSession, open });
   } catch (error) {

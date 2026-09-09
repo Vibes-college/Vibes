@@ -83,16 +83,18 @@ export function registerMockSelectionTests() {
           .poll(async () => (await client.fetchAgent(agentId))?.agent.model)
           .toBe('ten-second-stream');
         const input = page.locator('#root textarea:visible');
+        if (info.project.use.hasTouch) await expect(input).not.toBeFocused();
         await input.fill('FIRST_WORKSPACE_UNSENT_DRAFT');
         await open(other);
         await expect(input).toHaveValue('');
         await input.fill('SECOND_WORKSPACE_UNSENT_DRAFT');
         const row = page.getByTestId(`sidebar-workspace-row-${serverId}:${workspaceId}`);
-        if (!(await row.isVisible()))
-          await page.locator('#root #menu-button:visible').first().click();
+        await page.locator('[data-paseo-expand]').click();
+        if (!(await row.isVisible())) await page.getByTestId('menu-button').click();
         await row.click();
         await expect(input).toHaveValue('FIRST_WORKSPACE_UNSENT_DRAFT');
         await expect(page.locator('#root')).toContainText(basename(cwd));
+        await page.locator('[data-paseo-compact]').click();
         expect((await client.fetchAgent(agentId))?.agent.workspaceId).toBe(workspaceId);
         await open(other);
         await expect(input).toHaveValue('SECOND_WORKSPACE_UNSENT_DRAFT');

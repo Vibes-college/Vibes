@@ -15,7 +15,7 @@ code-sources:
     'scripts/build.ts',
     'src/features/paseo-webui/host.ts',
   ]
-code-revision: 'e62da0bdd1aea49b261e9851079ef1db36c70b248e2bb24eba22174fdec5b7fe'
+code-revision: '1f3a4ccc110e4cda9de5bc03ede33128ead03a576f7856eb1138654ae67389d3'
 ---
 
 # VIBES项目总览
@@ -68,7 +68,7 @@ flowchart TD
 
 访客请求不会触发登录、订单或内容提交服务。robots.txt和sitemap.xml也在构建时生成，并非动态业务接口；说明见[接口与外部服务](system/interfaces.md)。
 
-访客可主动打开Paseo助手，配对自己的电脑后对话、执行并查看原生产出。Chat准备默认目录和Codex/Luna，Build选择已有项目；文章入口可带入能删除的公开链接引用。助手不提供云端执行或模型账号，不启用网站投稿和编辑。配对、会话、审批和文件沿用Paseo原生实现，宿主管理加载和阅读布局；当前阶段预览尚未接回部分工作区入口及插件运行，具体限制见[使用本地助手](features/local-assistant.md)，来源及维护见[Paseo接入](system/local-assistant.md)。
+访客可主动打开Paseo助手，配对自己的电脑后对话、执行并查看原生产出。首次无工作区时准备默认目录和Codex/Luna，以后沿用原生当前项目；无既有偏好或明确选择的新草稿暂用可用Luna，不覆盖用户选择。小窗只显示对话，全屏提供项目、历史和文件入口，文章入口可带入能删除的公开链接引用。小窗提供本地英语听写路径，真实麦克风与手机仍需验收。助手不提供云端执行或模型账号，不启用网站投稿和编辑。配对、会话、审批和文件沿用Paseo原生实现，宿主管理加载和阅读布局；尚缺的工作区快捷入口、插件运行及完整验收见[使用本地助手](features/local-assistant.md)，来源及维护见[Paseo接入](system/local-assistant.md)。
 
 ## 产品要求放在哪里维护
 
