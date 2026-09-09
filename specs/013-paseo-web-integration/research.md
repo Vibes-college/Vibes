@@ -27,7 +27,7 @@ amended-by: []
 
 PR #11已发现生产编译导致两个外部状态hook不更新，见其[research R13](https://github.com/Vibes-college/Vibes/blob/c8f9d8c522226f6658b37d003b5f7b566185bd4a/specs/012-paseo-webui-loading/research.md#r13公开作品草稿与生产历史状态失效)。候选先运行同类延迟恢复复现，确实仍失败才采纳函数级精确补丁；不照搬全部实验补丁，不因为出自官方就忽略缺口。
 
-## R3 旧UI可参考，但Chat不是纯界面
+## R3 旧Chat定制边界与新预设需求
 
 只读来源：`/Users/jachi/Desktop/Vibecoding-College/paseo-complete-root`，当前HEAD `0e3318a94feb4d6def3d8266a8faffc8dc98e0d6`；`docs/vibes-embedding.md`与Git对象指向官方基线v0.7.0-beta.1 / `1860a6f3afdf7710a7e86677dd183dc7eb9b8a0d`。该HEAD是定制fork，不是官方版本。
 
@@ -43,9 +43,30 @@ PR #11已发现生产编译导致两个外部状态hook不更新，见其[resear
 
 **实际问题**：`chat-runtime/chat-runtime-resolution.ts:79`要求`server_info.features.chatWorkspace`，随后调用`resolveChatWorkspace()`；旧server的`hidden-chat-workspace-service.ts:40`在Paseo运行目录建立Chat专用工作区。这是新增client/protocol/server协作，不是顶部tab或颜色变更。旧Build则回到完整工作区表面。
 
-**先问用途，再谈选择**：先确认旧Chat是为了免选目录、避免动文件还是区分讨论/执行。若普通官方会话可满足目的，可省去定制后端；若隐藏工作区语义必需，则须解释并确认后端安装维护成本。不能以默认目录或提示词宣称Chat是只读沙箱。
+**用户确认的目的**：省去聊天前的目录浏览/路径记忆及Agent、模型、强度选择。新Chat是默认配置，正常执行与原生产出能力保留，不要求讨论/动手隔离或旧隐藏工作区；因此不需承接旧daemon/protocol定制。
 
 v0.7.2固定源码的packages下没有chatWorkspace/resolveChatWorkspace/hidden-chat-workspace；虽有launchTarget kind=chat，却仍要求cwd。`packages/protocol/src/messages.ts:470`及`packages/server/src/server/session.ts:3496`要求实际目录；原生`new-workspace-screen.tsx:1975`提示先选项目。官方可通过`add-project-flow.tsx:709`调用createProjectDirectory，再以普通目录创建会话，因而无需定制后端也能一次选或新建一个普通文件夹；它会出现在官方工作区中，不具有旧Chat隐藏语义。
+
+### 默认预设的源码可行性及代价
+
+以下路径相对固定官方源；这是静态核查，尚未完成新预设的实际运行：
+
+- `packages/client/src/daemon-client.ts:2260`已有createProjectDirectory；传parentPath为`~`可由daemon电脑展开，见server的`utils/path.ts:8`。网页可代填默认位置，免除列目录和用户记路径，不需shell或新RPC。
+- `packages/server/src/server/project-directory-service.ts:72`的创建非幂等，同名EEXIST返回directory_exists，不保证既有对象是目录；`server/session.ts:6192`的addProject会验证目录。只复用验证过的目录，不删除或覆盖旧内容。注册失败还可能伴随回滚失败，必须保留实际错误。
+- `createWorkspace`每次建立新UUID；现有`openProject(cwd)`走`workspace-provisioning-service.ts:285`的findOrCreateWorkspaceForDirectory，可按路径复用，但list→create并非原子且当前app没有直接调用。预设要避免每次打开重建，不能把它当作跨设备恰好一次保证。
+- `packages/app/src/composer/draft/workspace-tab.tsx:174`接收workspace和provider/model/thinking默认值，继续由原生Draft/Composer创建会话。只准备草稿，首次发送再创建，减少空会话及初始化写操作。
+- `hooks/use-providers-snapshot.ts:35`、`provider-selection/model-catalog.ts:3`与`resolve-agent-form.ts:164`提供实际模型及强度选择；Codex模型来自连接电脑的app-server model/list。Luna是用户偏好，强度可采用该模型原生默认项，不静态承诺所有安装可用。
+- 原生RPC断线会reject等待响应，requestId不是持久幂等键。默认初始化在结果未知时先通过原生查询核对，不盲目重放目录/工作区/Agent创建，不借此引入第二套客户端恢复或账本。
+
+新增维护面为有限的首次准备、默认值与异常提示；收益是免去必经设置。原生运行与同步完整保留，但上游升级仍需检查这些入口。
+
+### 产出查看直接复用原生
+
+用户已明确Paseo能查看哪些就沿用哪些，不新增格式能力。`components/message.tsx:2538`和`assistant-file-links/use-file-link.ts:286`将聊天结果文件交给工作区`panels/file-panel.tsx:31`；`file-pane/pane.tsx:237`使用原生readFile/subscribeFile读取。内部工作区和文件面板是这条基础路径的依赖，不能随“不要复杂文件管理”裁掉。
+
+固定v0.7.2原生支持文本/代码、图片、Markdown与受限制HTML预览；`file-pane/source/view.web.tsx:1`的只读源码仍依赖CodeMirror。PDF/Office没有内建预览；`stores/download-store.ts:247`仅使用directTcp下载，纯relay不具备相同下载路径。以上是上游边界，不转化为新增预览/下载需求。
+
+普通文件查看不依赖插件eval，但`file-pane/html-preview.web.tsx`与html-preview-csp.ts有独立sandbox/CSP，实际嵌入后须验证原有HTML呈现是否被父级策略破坏。以同版本官方支持范围选代表文件做回归，不要求用户逐项列格式，也不把上游限制描述为新实现失败。
 
 ## R4 首选独立文档容器，降低宿主侵入
 

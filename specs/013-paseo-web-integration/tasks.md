@@ -12,8 +12,8 @@ amended-by: []
 ## 需求与取舍
 
 - [x] T001 核对main、PR #10/#11和旧complete-root固定源码，把可复用经验与证据限度写入research.md。
-- [ ] T002 在spec.md记录用户举出的核心例子：看到什么、想让助手做什么、最终得到什么，以及为什么需要本地Agent。
-- [ ] T003 在spec.md澄清Chat/Build原本解决的问题、必要权限和目录设置负担，区分真实需求与旧实现手段。
+- [x] T002 在spec.md确认基础对话、执行、结果与产出查看；产出范围直接沿用Paseo原生，不新增格式预览或下载服务。
+- [x] T003 在spec.md明确Chat为默认目录/Codex/Luna/合理强度的快捷预设，Build按需进入已有项目；两者保留原生执行能力，不区分讨论与动手、不要求旧隐藏工作区。
 - [ ] T004 在spec.md澄清compact/full/standalone各自场景，标记必需、可选、不需要的功能，补成功与失败路径。
 - [ ] T005 基于回答修订plan.md，向用户解释候选在使用体验、稳定性、维护、安装和费用上的收益与代价，再确定接入路径与依赖范围。
 - [ ] T006 按确认结果重写spec.md/plan.md及checklists/requirements.md，敲定有依据的验收门槛与边界。
@@ -21,8 +21,8 @@ amended-by: []
 
 ## 实施与交付关卡（确认后细化）
 
-- [ ] T008 [US1] 在确认的宿主与构建路径完成最小原生接入、安装引导与准备/失败重试，tests/paseo.spec.ts验证首次与回访路径。
-- [ ] T009 [US2] 按确认后的模式/表面范围完成原生会话、草稿、公开资料、工具与审批，测试与真实运行证据保存resources/evidence/013-paseo-web-integration/。
+- [ ] T008 [US1] 在确认的宿主与构建路径完成最小原生接入、安装引导和默认配置准备，tests/paseo.spec.ts覆盖真实模型能力、目录已存在、重复点击、初始化中断与回访。
+- [ ] T009 [US2] 按确认后的模式/表面范围完成原生会话、草稿、工具/审批和产出文件查看；公开资料附带按后续确认范围实现，测试与真实运行证据保存resources/evidence/013-paseo-web-integration/。
 - [ ] T010 [US3] 在确认的宿主活动适配与tests/paseo.spec.ts验证收起、重开、导航、刷新、断线及未知操作边界。
 - [ ] T011 [US4] 以plan.md冻结的同设备负载完成六阶段对照，证据保存resources/evidence/013-paseo-web-integration/；只按实际体验瓶颈决定修正。
 - [ ] T012 在docs/features/local-assistant.md及受影响features/system说明中同步最终行为、源码对应和有效验收；更新两个索引与PROJECT_ANALYSIS.md。
