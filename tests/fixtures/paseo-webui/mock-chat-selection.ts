@@ -52,16 +52,15 @@ export function registerMockSelectionTests() {
         await page.getByTestId('combined-model-selector').click();
         // Native layout follows the embedded panel width, including compact on desktop.
         const narrowModelControls = page.getByTestId('agent-controls-model');
-        if (await narrowModelControls.isVisible()) await narrowModelControls.click();
+        await expect(narrowModelControls).toBeVisible();
+        await narrowModelControls.click();
         await page.getByTestId('model-row-mock-one-minute-stream').click();
-        if (await page.getByTestId('agent-controls-model-sheet').isVisible()) {
-          await expect(page.getByTestId('agent-controls-model-browser-sheet')).toBeHidden();
-          await page
-            .getByTestId('agent-controls-model-sheet')
-            .getByRole('button', { name: '关闭', exact: true })
-            .click();
-          await expect(page.getByTestId('agent-controls-model-sheet')).toBeHidden();
-        }
+        await expect(page.getByTestId('agent-controls-model-browser-sheet')).toBeHidden();
+        await page
+          .getByTestId('agent-controls-model-sheet')
+          .getByRole('button', { name: '关闭', exact: true })
+          .click();
+        await expect(page.getByTestId('agent-controls-model-sheet')).toBeHidden();
         await expect
           .poll(async () => (await client.fetchAgent(agentId))?.agent.model)
           .toBe('one-minute-stream');
@@ -69,16 +68,15 @@ export function registerMockSelectionTests() {
           'One minute stream',
         );
         await page.getByTestId('combined-model-selector').click();
-        if (await narrowModelControls.isVisible()) await narrowModelControls.click();
+        await expect(narrowModelControls).toBeVisible();
+        await narrowModelControls.click();
         await page.getByTestId('model-row-mock-ten-second-stream').click();
-        if (await page.getByTestId('agent-controls-model-sheet').isVisible()) {
-          await expect(page.getByTestId('agent-controls-model-browser-sheet')).toBeHidden();
-          await page
-            .getByTestId('agent-controls-model-sheet')
-            .getByRole('button', { name: '关闭', exact: true })
-            .click();
-          await expect(page.getByTestId('agent-controls-model-sheet')).toBeHidden();
-        }
+        await expect(page.getByTestId('agent-controls-model-browser-sheet')).toBeHidden();
+        await page
+          .getByTestId('agent-controls-model-sheet')
+          .getByRole('button', { name: '关闭', exact: true })
+          .click();
+        await expect(page.getByTestId('agent-controls-model-sheet')).toBeHidden();
         await expect
           .poll(async () => (await client.fetchAgent(agentId))?.agent.model)
           .toBe('ten-second-stream');
