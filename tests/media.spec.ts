@@ -481,7 +481,10 @@ test('published English media and no-JS fallback remain readable', async ({ page
   const context = await browser.newContext({ javaScriptEnabled: false });
   const plain = await context.newPage();
   await plain.goto('http://127.0.0.1:4322' + detail('video'));
-  await expect(plain.locator('noscript a')).toHaveAttribute('href', '/media/sintel/full.mp4');
+  await expect(plain.locator('.media-detail noscript a')).toHaveAttribute(
+    'href',
+    '/media/sintel/full.mp4',
+  );
   await expect(plain.getByRole('heading', { level: 1 })).toContainText('Sintel');
   await plain.waitForLoadState('networkidle');
   await context.close();

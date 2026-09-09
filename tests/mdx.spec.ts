@@ -186,8 +186,8 @@ test('demo drag, touch and wheel belong to the component at narrow widths', asyn
   await expect(page).toHaveURL(zh + '#reading');
   await expect(page.locator('.detail-page')).toHaveAttribute('data-detail-page', 'reading');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.locator('h2').last().scrollIntoViewIfNeeded();
-  await expect(page.locator('h2').last()).toBeInViewport();
+  await page.locator('.reading-section h2').last().scrollIntoViewIfNeeded();
+  await expect(page.locator('.reading-section h2').last()).toBeInViewport();
   expect(await page.evaluate(() => scrollY)).toBeGreaterThan(1000);
 });
 
