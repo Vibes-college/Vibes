@@ -395,6 +395,8 @@ test('independent pages turn deliberately, stay settled and cancel safely', asyn
   test.skip(!isMobile, '整页手势在手机模拟项目验证');
   await page.goto('/zh/works/transformers-js/');
   await page.evaluate(() => document.fonts.ready);
+  // Start on the article rather than the fixed controls at the viewport edge.
+  const gestureX = Math.floor(page.viewportSize()!.width / 2);
   const session = browserName === 'chromium' ? await context.newCDPSession(page) : undefined;
   const gesture = async (
     type: 'touchStart' | 'touchMove' | 'touchEnd' | 'touchCancel',
@@ -403,13 +405,13 @@ test('independent pages turn deliberately, stay settled and cancel safely', asyn
     if (session)
       await session.send('Input.dispatchTouchEvent', {
         type,
-        touchPoints: type === 'touchEnd' || type === 'touchCancel' ? [] : [{ x: 340, y }],
+        touchPoints: type === 'touchEnd' || type === 'touchCancel' ? [] : [{ x: gestureX, y }],
       });
     else
       await page.locator('.detail-page').dispatchEvent(type.toLowerCase(), {
         touches:
-          type === 'touchEnd' || type === 'touchCancel' ? [] : [{ clientX: 340, clientY: y }],
-        changedTouches: [{ clientX: 340, clientY: y }],
+          type === 'touchEnd' || type === 'touchCancel' ? [] : [{ clientX: gestureX, clientY: y }],
+        changedTouches: [{ clientX: gestureX, clientY: y }],
       });
   };
   try {
@@ -448,14 +450,14 @@ test('independent pages turn deliberately, stay settled and cancel safely', asyn
       await session.send('Input.dispatchTouchEvent', {
         type: 'touchStart',
         touchPoints: [
-          { id: 0, x: 340, y: 420 },
+          { id: 0, x: gestureX, y: 420 },
           { id: 1, x: 280, y: 420 },
         ],
       });
     else
       await page.locator('.detail-page').dispatchEvent('touchstart', {
         touches: [
-          { clientX: 340, clientY: 420 },
+          { clientX: gestureX, clientY: 420 },
           { clientX: 280, clientY: 420 },
         ],
       });
@@ -484,16 +486,17 @@ test('vertical paging lands on reading and long content stays reachable', async 
   await page.goto('/zh/works/transformers-js/');
   await expect(page.locator('.detail-page')).toHaveAttribute('data-detail-page', 'cover');
   await page.evaluate(() => document.fonts.ready);
+  const gestureX = Math.floor(page.viewportSize()!.width / 2);
   if (isMobile && browserName === 'chromium') {
     const session = await context.newCDPSession(page);
     await session.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
-      touchPoints: [{ x: 340, y: 600 }],
+      touchPoints: [{ x: gestureX, y: 600 }],
     });
     for (const y of [540, 480, 420, 360, 300, 240]) {
       await session.send('Input.dispatchTouchEvent', {
         type: 'touchMove',
-        touchPoints: [{ x: 340, y }],
+        touchPoints: [{ x: gestureX, y }],
       });
       await page.waitForTimeout(40);
     }
@@ -504,8 +507,8 @@ test('vertical paging lands on reading and long content stays reachable', async 
   } else if (isMobile && browserName === 'webkit') {
     // DOM touch events test our page state; native iPhone inertia requires device QA.
     const detail = page.locator('.detail-page');
-    await detail.dispatchEvent('touchstart', { touches: [{ clientX: 340, clientY: 600 }] });
-    await detail.dispatchEvent('touchmove', { touches: [{ clientX: 340, clientY: 420 }] });
+    await detail.dispatchEvent('touchstart', { touches: [{ clientX: gestureX, clientY: 600 }] });
+    await detail.dispatchEvent('touchmove', { touches: [{ clientX: gestureX, clientY: 420 }] });
     await detail.dispatchEvent('touchend', { touches: [] });
   } else {
     await page.locator('.detail-description').hover();

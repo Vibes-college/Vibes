@@ -84,6 +84,7 @@ amended-by: []
 - [x] T038 在tests/paseo-chat.spec.ts、paseo-recovery.spec.ts及既有同配置fixture补本轮三浏览器专项：无可见模式、单头部、当前工作区最近聊天、file/terminal保留、窄屏无新增加号、新建工作区真实点击、Files原生全屏面板与打开文件后关闭、键盘尺寸与full背景隔离、听写主按钮和失败恢复。核对真实local英语能力与操作证据；iPhone Safari iOS26软键盘、缩放与真录音若未实测则明确待测，并继续保留T029未完成。
 - [x] T039 源码与补丁稳定后，对照实际行为同步docs/features/local-assistant.md、浏览/阅读路径及docs/system/local-assistant.md和相关接口/配置/检查说明；解释操作与已知边界，保留有效旧证据及未测项，再更新code-revision，不提前宣称新布局或听写已实现。
 - [x] T040 将本轮产品补丁按既有series/maintenance登记并重建唯一产物，运行原生必要测试/类型、整站verify与budget及同SHA阶段预览验收；在现有PR #12保存推送进度、更新操作说明和实际限制。不得删改断言或照抄旧SHA结果宣称全通过；若最终检查仅复现已获许可的同一WebKit音频限制，可按既有授权发布同PR阶段预览，并记录新SHA实际结果。不新建PR、不自动Ready/合并，完整工作继续按T019、T022—T032推进。
+- [ ] T041 使用用户提供的透明PNG作为右下角吉祥物，文章按钮改成约5秒后隐藏的说话气泡；保留键盘/鼠标重显与触屏关闭助手后的再次提示，普通入口与文章引用语义不变。验证定时隐藏、焦点保持、触屏不常驻、站内导航重置及真实浏览器外观；翻页测试从非交互区域起手，不以新的按钮命中区域代替文章手势。同步功能/系统说明并按最终SHA运行verify、budget与同PR阶段预览。
 
 T038局部证据：2026-09-09在本任务隔离Paseo home与6797端口，复用电脑已存在的官方local模型，用模型自带7.435秒PCM16/16k英语样例经真实DaemonClient的start/chunk/finish取得转写，耗时2.618秒；原始结果见resources/evidence/013-paseo-web-integration/dictation/local-model-protocol.json。该证据只覆盖本地模型与官方协议，没有下载模型、配置云Key、录真实麦克风、验证手机或向Agent发消息；本项不单独证明T038界面路径，也不替代T029真机验收；本轮组合结果见下方。
 

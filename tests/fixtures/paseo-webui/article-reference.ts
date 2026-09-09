@@ -5,6 +5,11 @@ async function openArticle(page: Page) {
   await page.locator('[data-paseo-close]').click();
   await page.locator('a[href="/zh/works/attention-is-all-you-need/"]').first().click();
   await expect(page).toHaveURL(/\/zh\/works\/attention-is-all-you-need\/$/);
+  // The article bubble expires; keyboard focus can reveal it again without opening chat.
+  await page.keyboard.press('Tab');
+  await page.locator('[data-paseo-open]:not([data-paseo-article-open])').focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.locator('[data-paseo-article-open]')).toBeFocused();
   await page.locator('[data-paseo-article-open]').click();
 }
 

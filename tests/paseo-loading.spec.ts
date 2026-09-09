@@ -45,6 +45,76 @@ test('browsing and no-JS do not fetch or connect Paseo', async ({ page, browser,
   }
 });
 
+test('article speech bubble expires, stays usable with focus, and renews on article navigation', async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
+  const resources: string[] = [];
+  page.on('request', (request) => resources.push(request.url()));
+  await page.goto('/zh/works/attention-is-all-you-need/');
+  const bubble = page.locator('[data-paseo-article-open]');
+  await expect(bubble).toBeVisible();
+  const bubbleBox = await bubble.boundingBox();
+  const mascotBox = await launcher(page).boundingBox();
+  expect(bubbleBox!.y + bubbleBox!.height).toBeLessThan(mascotBox!.y);
+  await expect(bubble).toBeHidden({ timeout: 6500 });
+  await expect(launcher(page)).toBeVisible();
+
+  await launcher(page).focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(bubble).toBeFocused();
+  await page.waitForTimeout(5200);
+  await expect(bubble).toBeVisible();
+  const next = page.getByRole('link', { name: '下一个作品：Transformers.js', exact: true });
+  await next.focus();
+  await expect(bubble).toBeVisible();
+  await expect(bubble).toBeHidden({ timeout: 6500 });
+  await next.click();
+  await expect(page).toHaveURL(/\/zh\/works\/transformers-js\/$/);
+  await expect(bubble).toBeVisible();
+  await expect(bubble).toBeHidden({ timeout: 6500 });
+  expect(resources.filter((url) => /\/vendor\/paseo\/|\/host\.[^/]+\.js/.test(url))).toEqual([]);
+});
+
+test('article speech bubble supports mouse hover and touch rediscovery without changing ordinary chat', async ({
+  page,
+}, info) => {
+  test.setTimeout(60_000);
+  await page.goto('/zh/works/attention-is-all-you-need/');
+  const bubble = page.locator('[data-paseo-article-open]');
+  await expect(bubble).toBeVisible();
+  await expect(bubble).toBeHidden({ timeout: 6500 });
+  if (!info.project.use.hasTouch) {
+    await launcher(page).hover();
+    await expect(bubble).toBeVisible();
+    await page.waitForTimeout(5200);
+    await expect(bubble).toBeVisible();
+    await bubble.hover();
+    await expect(bubble).toBeVisible();
+    await page.mouse.move(0, 0);
+    await expect(bubble).toBeVisible();
+    await expect(bubble).toBeHidden({ timeout: 6500 });
+    return;
+  }
+  // A real touch must not leave a synthetic hover holding the bubble open.
+  await page.route(native, (route) => route.abort());
+  await launcher(page).tap();
+  await expect(page.locator(panel)).toBeVisible();
+  await page.locator('[data-paseo-close]').tap();
+  await expect(page.locator(panel)).toBeHidden();
+  await expect(bubble).toBeVisible();
+  await expect(bubble).toBeHidden({ timeout: 6500 });
+  await launcher(page).tap();
+  await page.locator('[data-paseo-close]').tap();
+  await expect(bubble).toBeVisible();
+  await bubble.tap();
+  await expect(page.locator(panel)).toBeVisible();
+  await page.locator('[data-paseo-close]').tap();
+  await expect(page.locator(panel)).toBeHidden();
+  await expect(bubble).toBeVisible();
+  await expect(bubble).toBeHidden({ timeout: 6500 });
+});
+
 test('first click shows usable onboarding while the native bundle is pending', async ({ page }) => {
   let release!: () => void;
   const pending = new Promise<void>((resolve) => {

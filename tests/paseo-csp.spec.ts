@@ -53,8 +53,8 @@ test('native image attachment thumbnail and lightbox decode blob images under pr
       if (info.project.use.isMobile) {
         // Native touch controls appear after touching the image canvas.
         await page.getByTestId('attachment-lightbox-canvas').tap();
-        await expect(page.getByTestId('attachment-lightbox-close')).toHaveCSS('opacity', '1');
-      }
+      } else await page.getByTestId('attachment-lightbox-canvas').hover();
+      await expect(page.getByTestId('attachment-lightbox-close')).toHaveCSS('opacity', '1');
       await page.getByTestId('attachment-lightbox-close').click();
       await expect(page.getByTestId('attachment-lightbox')).toHaveCount(0);
       await expect(thumbnail).toBeVisible();
