@@ -29,3 +29,7 @@ shaped-by: ['002']
 | [009 按需交互的MDX文章](009-mdx-articles/spec.md) | complete | article-read, content-maintenance |
 
 | [010 多媒体作品封面](010-media-previews/spec.md) | complete | article-read, content-maintenance, explore-browse, project-commands |
+
+| [013 Paseo原生助手接入与分阶段体验](013-paseo-web-integration/spec.md) | draft | article-read, explore-browse, local-assistant, project-commands |
+
+011、012分别保留在[PR #10](https://github.com/Vibes-college/Vibes/pull/10)与[PR #11](https://github.com/Vibes-college/Vibes/pull/11)的未合并分支；编号不复用，其源码和证据通过013的research引用。
