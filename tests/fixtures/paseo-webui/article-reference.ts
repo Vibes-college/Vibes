@@ -46,7 +46,7 @@ export function registerArticleReferenceTests() {
     browser,
   }, info) => {
     test.setTimeout(90_000);
-    await withMockSession(browser, info, async ({ page, open }) => {
+    await withMockSession(browser, info, async ({ page, open, serverId, workspaceId }) => {
       const sent: { text: string; attachments?: { type: string; text?: string }[] }[] = [];
       await page.routeWebSocket('ws://localhost:4396/ws', (socket) => {
         const upstream = socket.connectToServer();
@@ -63,13 +63,15 @@ export function registerArticleReferenceTests() {
         upstream.onMessage((data) => socket.send(data));
       });
       await open();
-      const input = page.locator('#root textarea:visible');
+      const workspace = page.getByTestId(`workspace-deck-entry-${serverId}:${workspaceId}`);
+      await expect(workspace).toBeVisible();
+      const input = workspace.locator('textarea:visible');
       await expect(input).toHaveValue('');
       await openArticle(page, browser.browserType().name());
       const reference = page.getByTestId('composer-public-work-attachment-pill');
       await expect(reference).toHaveCount(1);
       await expect(input).toHaveValue('');
-      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+      await expect(workspace.getByTestId('paseo-compact-dictation-start')).toBeVisible();
       expect(sent).toHaveLength(0);
       await input.fill('Explain the linked article.');
       await page.getByRole('button', { name: '发送消息', exact: true }).click();

@@ -56,19 +56,23 @@ export function registerPresentationTests() {
     browser,
   }, info) => {
     test.setTimeout(90000);
-    await withMockSession(browser, info, async ({ page, open, cwd }) => {
+    await withMockSession(browser, info, async ({ page, open, cwd, serverId, workspaceId }) => {
       writeFileSync(resolve(cwd, 'panel-regression.txt'), 'FILES_NAVIGATION_PROBE');
       await open();
       const toolbar = page.locator('.paseo-toolbar');
-      const input = page.locator('#root textarea:visible');
+      const workspace = page.getByTestId(`workspace-deck-entry-${serverId}:${workspaceId}`);
+      await expect(workspace).toBeVisible();
+      // Native decks keep inactive projects mounted; assert the selected workspace's composer.
+      const microphone = workspace.getByTestId('paseo-compact-dictation-start');
+      const input = workspace.locator('textarea:visible');
       await expect(toolbar.getByRole('button')).toHaveCount(3);
       await expect(page.getByTestId('embedded-new-conversation')).toBeVisible();
       await expect(page.getByTestId('menu-button')).toBeHidden();
       await expect(page.getByTestId('workspace-tabs-row')).toBeHidden();
-      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+      await expect(microphone).toBeVisible();
       await expect(page.getByRole('button', { name: '启用语音模式', exact: true })).toBeHidden();
       await input.click();
-      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+      await expect(microphone).toBeVisible();
       if (info.project.use.hasTouch) {
         expect(
           await input.evaluate((element) => parseFloat(getComputedStyle(element).fontSize)),
@@ -76,11 +80,11 @@ export function registerPresentationTests() {
       }
       await input.fill('UNSENT_COMPACT_DRAFT');
       await expect(page.getByRole('button', { name: '发送消息', exact: true })).toBeVisible();
-      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeHidden();
+      await expect(microphone).toBeHidden();
       await input.fill('');
-      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+      await expect(microphone).toBeVisible();
       await page.locator('.paseo-toolbar').click({ position: { x: 100, y: 20 } });
-      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+      await expect(microphone).toBeVisible();
       await input.fill('UNSENT_COMPACT_DRAFT');
       await page.locator('[data-paseo-expand]').click();
       await expect(toolbar.getByRole('button')).toHaveCount(3);
@@ -116,7 +120,7 @@ export function registerPresentationTests() {
       if (info.project.use.hasTouch) await expect(input).not.toBeFocused();
       await page.getByTestId('embedded-new-conversation').click();
       await expect(input).toHaveValue('');
-      await expect(page.getByTestId('paseo-compact-dictation-start')).toBeVisible();
+      await expect(microphone).toBeVisible();
     });
   });
 

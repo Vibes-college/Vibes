@@ -49,7 +49,10 @@ export function registerMockSelectionTests() {
         });
         const other = await createSession();
         await open();
-        await page.getByTestId('combined-model-selector').click();
+        const workspace = page.getByTestId(`workspace-deck-entry-${serverId}:${workspaceId}`);
+        await expect(workspace).toBeVisible();
+        const modelSelector = workspace.getByTestId('combined-model-selector');
+        await modelSelector.click();
         // Native layout follows the embedded panel width, including compact on desktop.
         const narrowModelControls = page.getByTestId('agent-controls-model');
         await expect(narrowModelControls).toBeVisible();
@@ -64,10 +67,8 @@ export function registerMockSelectionTests() {
         await expect
           .poll(async () => (await client.fetchAgent(agentId))?.agent.model)
           .toBe('one-minute-stream');
-        await expect(page.getByTestId('combined-model-selector')).toContainText(
-          'One minute stream',
-        );
-        await page.getByTestId('combined-model-selector').click();
+        await expect(modelSelector).toContainText('One minute stream');
+        await modelSelector.click();
         await expect(narrowModelControls).toBeVisible();
         await narrowModelControls.click();
         await page.getByTestId('model-row-mock-ten-second-stream').click();
