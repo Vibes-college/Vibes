@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '通过GitHub贡献并独立发布文章'
-status: 'in-progress'
+status: 'complete'
 feature-ids: ['article-read', 'content-maintenance', 'project-commands']
 amends: ['004', '009', '014', '015']
 amended-by: []

@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '内容通道的技术决定'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

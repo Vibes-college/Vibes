@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'MDX与发布凭据边界取舍'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

@@ -99,6 +99,8 @@ MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器14
 
 媒体维护验收：2026-09-07，tests/unit/media.test.ts及media-tools.test.ts覆盖素材引用、地址/体积/字幕/数据拒绝和处理行为；实际图片、视频、音频处理产生独立清单及可用文件。完整verify/budget通过，处理清单与验收记录保存在resources/evidence/010-media-previews及.scratch/media-previews；不把外部原作加载状态当作素材校验结果。
 
+内容通道有效验收：2026-09-12，分类及协议边界包含在143项单元测试中；完整回归247项通过、5项按设备跳过，budget通过。已上传PR #15阶段预览，并用内置浏览器核对正文排版与对应语言的GitHub编辑入口；这是基础设施预览证据，文章独立发布与生产耗时仍以PR收尾实际记录为准。原始记录在resources/evidence/ai-native-ui-publication。
+
 ## 对应的自动化测试
 
 - `tests/unit/content.test.ts`：真实作品身份、正文、HTTPS来源、MDX文件及重复语言拒绝；`tests/mdx.spec.ts`验证互动文章真实构建后的阅读路径。
@@ -116,4 +118,4 @@ MDX专项验收按`tests/mdx.spec.ts`及`resources/evidence/009-mdx-articles/`�
 
 ## 已知问题 / 待办
 
-来源真实性、使用授权和翻译质量必须由编辑核对，自动校验无法证明。英文是否发布取决于各作品文件，AI审核不等于人工审核；当前数量运行content:validate查看。没有公众投稿、在线编辑或自动发布译文功能。
+来源真实性、使用授权和翻译质量必须由编辑核对，自动校验无法证明。英文是否发布取决于各作品文件，AI审核不等于人工审核；当前数量运行content:validate查看。没有站内投稿、在线编辑或自动发布译文功能；GitHub贡献按上述PR路径处理。

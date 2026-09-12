@@ -157,6 +157,8 @@ MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器14
 
 媒体验收：2026-09-07，完整verify与budget通过，测试数及设备适用性跳过见原始日志。tests/media.spec.ts覆盖图库、音视频、循环、游戏、数据图表、延迟加载、重试、无JS、搜索/双语、暂停与返回，并保存三环境首次/缓存访问的真实首帧时间。内置浏览器在Cloudflare预览实际播放Sintel并进入正文，另实际验证YouTube、Spotify试听和2048键盘操作。原始截图、日志和时间数据在resources/evidence/010-media-previews；iPhone Safari真机未验，第三方限制见下方已知问题。
 
+内容通道有效验收：2026-09-12，分类及协议边界包含在143项单元测试中；完整回归247项通过、5项按设备跳过，budget通过。已上传PR #15阶段预览，并用内置浏览器核对正文排版与对应语言的GitHub编辑入口；这是基础设施预览证据，文章独立发布与生产耗时仍以PR收尾实际记录为准。原始记录在resources/evidence/ai-native-ui-publication。
+
 ## 对应的自动化测试
 
 `tests/explore.spec.ts`：
