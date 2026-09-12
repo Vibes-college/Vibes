@@ -1,12 +1,12 @@
 ---
 tense: 'frozen'
 describes: '按任务范围执行的Agent指导规则'
-status: 'in-progress'
+status: 'complete'
 feature-ids: ['document-governance', 'project-commands']
 amends: ['002', '004', '014']
 amended-by: []
 approved-artifacts: []
-research-trigger: '确认Spec Kit原生预设与workflow覆盖方式，避免直接修改上游安装资产'
+research-trigger: '确认Spec Kit原生预设与workflow执行边界，避免直接修改上游安装资产'
 ---
 
 # 按任务范围执行Agent指导规则
@@ -30,10 +30,10 @@ research-trigger: '确认Spec Kit原生预设与workflow覆盖方式，避免直
 - FR-009：checklist描述精确限定为需求质量审查，不误触发功能测试或发布验收任务。
 - FR-010：spec/plan/tasks模板引用唯一交付流程，相关经验措施只记录一次；不要求多个文件反复写无相关经验。
 - FR-011：公共hook规则按需读取；未配置扩展时静默跳过，不在每个Skill内重复长篇流程。配置存在时仍遵守声明的执行条件和授权边界。
-- FR-012：使用可维护的项目预设与workflow覆盖层，保留上游来源及生成方式；保持已安装命令名称，实际生成的Skills与源文件一致。
+- FR-012：使用可维护的项目预设；由当前对话推进阶段并承接必要问题，原生完整workflow不作为执行入口，保留上游来源及生成方式；保持已安装命令名称，实际生成的Skills与源文件一致。
 - FR-013：纯文档、Agent规则、Skills和Spec Kit流程配置的PR仅运行轻量文档检查，不启动网站构建、浏览器测试或部署；Draft同样按影响选择。混入网页、脚本、依赖或GitHub CI执行配置时保守回退，不跳过必要的保护状态。
-- SC-001：上述11项审查发现逐项对应修正文件与验证证据；已授权与需要审批两类workflow路径均可复核。
-- SC-002：按项目要求完成检查及独立审查，修复阻塞项；文档准确说明使用、更新与恢复项目适配的方法。
+- SC-001：上述11项审查发现逐项对应修正文件与验证证据；已授权连续实施与明确阶段审阅两类调用边界均可复核。
+- SC-002：完成本地必要检查及独立审查，修复阻塞项；文档准确说明使用、更新与恢复项目适配的方法。用户为节省Actions额度明确要求本次跳过远端完整CI，PR保留Draft，不伪造完整验收状态。
 
 ## 明确不做
 
@@ -41,10 +41,10 @@ research-trigger: '确认Spec Kit原生预设与workflow覆盖方式，避免直
 
 ## 端差异
 
-规则用于本仓库Agent、项目Skills及Spec Kit CLI工作流；网页访客行为无变化。CLI覆盖必须通过解析验证，不能只靠自然语言声称固定gate已取消。无需为本需求制作网页预览。
+规则用于本仓库Agent与项目Skills；网页访客行为无变化。CLI用于生成与结构检查，原生完整workflow保留为上游资产，不作为项目执行入口；不能声称未执行的模型流程已经验收。无需为本需求制作网页预览。
 
 ## 研究与交付
 
-research记录原生预设与workflow覆盖机制；不生成数据模型、接口合同或quickstart。任务与证据见同目录tasks，交付遵循docs/system/checks-and-release.md。相关经验在plan记录一次。
+research记录原生预设与workflow执行边界；不生成数据模型、接口合同或quickstart。任务与证据见同目录tasks，交付遵循docs/system/checks-and-release.md。相关经验在plan记录一次。
 
 参考：[OpenAI关于Skills与prompts的文章](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra)。

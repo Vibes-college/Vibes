@@ -1,7 +1,0 @@
-id: scoped-execution
-extends: speckit
-priority: 10
-enabled: true
-edits:
-  - remove: review-spec
-  - remove: review-plan

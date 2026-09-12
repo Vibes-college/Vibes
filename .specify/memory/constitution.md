@@ -49,7 +49,7 @@ living白名单：AGENTS.md、README.md、宪章、docs/README.md、PROJECT_ANAL
 
 frozen白名单：specs/NNN-_/spec.md、plan.md、tasks.md、research.md、checklists/_.md；docs/DECISIONS.md保存原LESSONS中的冻结决策，迁移时完整保留旧正文，之后只能追加。docs/LESSONS.md为living失败经验，最多30条、固定三行；达到重复两次/回滚/耗时超一小时/用户同问题抱怨两次之一才记录，已转化项有验证和转化日期，满30天且仍有效时复核清退。research即ADR，仅在技术未知或重要取舍需要长期解释时生成，research-trigger说明理由，不另建decisions目录。
 
-data-model.md、contracts/*.md、quickstart.md默认不生成；Agent仅在必要时于spec的approved-artifacts列出并在正文说明用途（字段表示规格采纳，不等同用户授权）；不逐文件请求批准。项目文档模板通过.specify/templates/overrides裁剪；项目命令源通过.specify/presets/vibes及原生注册机制生成Skills，workflow使用项目overlay，上游原件和生成文件不手改。项目命令及hook参考使用工具原生格式，不存放无关治理文档；维护方式见docs/system/agent-guidance.md。产品文章使用内容schema，第三方/上游Markdown使用其自身格式，显式排除治理检查；不能把自有治理文档放进排除目录规避规则。
+data-model.md、contracts/*.md、quickstart.md默认不生成；Agent仅在必要时于spec的approved-artifacts列出并在正文说明用途（字段表示规格采纳，不等同用户授权）；不逐文件请求批准。项目文档模板通过.specify/templates/overrides裁剪；项目命令源通过.specify/presets/vibes及原生注册机制生成Skills，阶段推进留在当前对话，上游原件和生成文件不手改。项目命令及hook参考使用工具原生格式，不存放无关治理文档；维护方式见docs/system/agent-guidance.md。产品文章使用内容schema，第三方/上游Markdown使用其自身格式，显式排除治理检查；不能把自有治理文档放进排除目录规避规则。
 
 ### 同步、预算和索引
 
@@ -73,7 +73,7 @@ AI负责配置真实环境值，缺信息向用户询问；本人操作需明确
 
 ## Governance
 
-AGENTS是执行入口，本宪章维护长期规则，docs维护现状，specs维护变更依据。新功能、跨模块改造或重要规则变更按需执行specify→clarify→plan→tasks→analyze→implement→converge；已明确事项不重复澄清，小修复与文档修正不强制创建规格或完整流程；本项目文档纪律覆盖上游默认大量产物的示例。按任务读取相关资料，已读且未变化的材料不重复读。完整自动workflow仅用于已授权完整实施的需求；阶段审阅使用单阶段Skill。辅助清单不自动成为审批门槛，只有当前阻塞项或明确人工审阅暂停依赖步骤；保留审阅者勾选权。用户最新明确指令优先。
+AGENTS是执行入口，本宪章维护长期规则，docs维护现状，specs维护变更依据。新功能、跨模块改造或重要规则变更按需执行specify→clarify→plan→tasks→analyze→implement→converge；已明确事项不重复澄清，小修复与文档修正不强制创建规格或完整流程；本项目文档纪律覆盖上游默认大量产物的示例。按任务读取相关资料，已读且未变化的材料不重复读。当前对话使用阶段Skills承接授权、问题和暂停点；不启动原生完整workflow，其独立命令无法传回可靠的必要问题暂停状态。辅助清单不自动成为审批门槛，只有当前阻塞项或明确人工审阅暂停依赖步骤；保留审阅者勾选权。用户最新明确指令优先。
 
 原则重大变更在DECISIONS添加不可改写的决策条目；不记录工作流水账。版本按不兼容原则变更升主版本、新增原则升次版本、澄清升修订版本。模板、规则和检查必须一致，验收证据不得虚构；网站资源体积预算仍为硬性检查。
 

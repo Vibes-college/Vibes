@@ -62,7 +62,7 @@ flowchart TD
 - 协作入口与规则：`AGENTS.md`、`.specify/memory/constitution.md`。
 - 当前功能：`docs/features/README.md`、`docs/features/_TEMPLATE.md`；历史变更入口：`specs/README.md`。
 - 项目模板：`.specify/templates/overrides/spec-template.md`、`.specify/templates/overrides/plan-template.md`、`.specify/templates/overrides/tasks-template.md`。
-- 工具：`.specify/feature.json`、`.specify/scripts/bash/check-prerequisites.sh`；项目命令源在`.specify/presets/vibes/`，生成Skills在`.agents/skills/`，workflow适配在`.specify/workflows/overlays/`。按[Agent规则维护](../system/agent-guidance.md)使用、重建和恢复，不直接手改生成文件。
+- 工具：`.specify/feature.json`、`.specify/scripts/bash/check-prerequisites.sh`；项目命令源在`.specify/presets/vibes/`，生成Skills在`.agents/skills/`；阶段Skills在当前对话中推进，原生完整workflow不作为执行入口。按[Agent规则维护](../system/agent-guidance.md)使用、重建和恢复，不直接手改生成文件。
 - 检查器：`scripts/docs-check.ts`、`scripts/docs-frontmatter.ts`、`scripts/docs-policy.ts`、`scripts/docs-index.ts`、`scripts/docs-sources.ts`。
 
 ## 验收标准
@@ -73,8 +73,11 @@ flowchart TD
 - [x] 缺标签、错误索引、无效关联、已合并清单未完成时检查失败。
 - [x] 冻结正文修改、删除和状态回退失败，合法的状态与后继关系更新可通过。
 - [x] 源码变化未复核、缺少对应说明、失效现状链接被拒绝；全部任务完成但仍in-progress被拒绝。
+- [x] 项目10个Skills与preset源一致，原生CLI重复生成两次结果相同；完整授权与阶段审阅均由当前对话承接，未把自动workflow结构检查冒称模型执行验收。
 
 最近有效验收：2026-09-06实际工作区npm run check通过，45项单元测试全绿。真实临时Git用例验证源码漂移、未覆盖新代码和冻结改写失败；complete稿在分支可修订，进入main后冻结；索引排序不改变规格字段；当前索引、链接、源码对应通过，001/002历史正文未改。此结果只覆盖文档及检查器，不表示网站重新发布。
+
+2026-09-12，137项本地单元测试通过，覆盖项目原生格式边界与源码映射；docs:check与format:check通过。Spec Kit 1.0.4隔离原生生成两次一致，最终resolve保留上游workflow；执行边界与未运行模型/hooks的限制见[Agent规则维护](../system/agent-guidance.md)，原始证据在resources/evidence/015-agent-guidance/。
 
 ## 对应的自动化测试
 
