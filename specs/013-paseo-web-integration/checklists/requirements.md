@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Paseo原生助手规格质量检查'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Paseo原生接入的来源证据与维护边界'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
