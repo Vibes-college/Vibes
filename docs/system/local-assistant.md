@@ -23,7 +23,7 @@ code-sources:
     'tests/unit/paseo-webui-contract.test.ts',
     'tests/unit/paseo-page-context.test.ts',
   ]
-code-revision: '8f6904d39a1b9e3cf9718633d0f81fb3e2fb3afe7fa4dce19ed6512097f4d004'
+code-revision: '8b050286bf8c011c1f80ac46701054af8b91dfd5da99cf54119ca6088699b4dc'
 ---
 
 # Paseo原生助手
@@ -50,7 +50,7 @@ Vibes在已有页面内直接挂载固定Paseo Web应用。宿主只管理首次
 
 ## 固定上游与补丁
 
-来源为官方`getpaseo/paseo`的v0.7.2，提交`9400a49af670fdb5db4af58e73f8df98588dbea9`。`third_party/paseo-webui/upstream.json`固定仓库、提交、依赖锁和Apache-2.0许可证摘要；`patches/series.json`规定源码与已安装依赖补丁的顺序和摘要。补丁覆盖直接挂载、宿主尺寸与活动边界、生产状态订阅修正、首次目录与新草稿模型预设、单工具栏与compact展示、听写操作和文章引用接线，不包含旧PR的减包实验。
+来源为官方`getpaseo/paseo`的v0.7.2，提交`9400a49af670fdb5db4af58e73f8df98588dbea9`。`third_party/paseo-webui/upstream.json`固定仓库、提交、依赖锁和Apache-2.0许可证摘要；`patches/series.json`规定源码与已安装依赖补丁的顺序和摘要。补丁覆盖直接挂载、宿主尺寸与活动边界、生产状态订阅修正、首次目录与原生草稿选择、单工具栏与compact展示、听写操作和文章引用接线，不包含旧PR的减包实验。
 
 每项补丁的目的、验证和移除条件由`third_party/paseo-webui/patches/maintenance.json`登记。升级时先在独立源码验证官方变化，再决定保留、改写或移除补丁；不能只改版本号或刷新摘要。原生测试与类型检查随构建执行；上游源码和node_modules不提交本仓库。
 
@@ -70,13 +70,13 @@ Vibes在已有页面内直接挂载固定Paseo Web应用。宿主只管理首次
 
 ## 首次预设与数据边界
 
-首次进入且没有原生已选工作区时，准备发生在连接的电脑：官方API创建或检查`~/Vibes`目录，再寻找或打开对应项目工作区。已有同名目录不会被清空；同名文件、权限错误会显示失败。每个host保留准备阶段，同一个页面并发进入共用一次准备；不确定的工作区创建先查询原生列表，无法确认时给原生项目入口，不盲目再次创建。多浏览器标签页不承诺只创建一次。
+首次进入且没有原生已选工作区时，准备发生在连接的电脑：官方API逐级创建或检查`~/Vibes`与其下的`Chat`，核对目录类型/权限，再寻找或打开`~/Vibes/Chat`对应项目工作区。已有同名目录不清空；同名文件、权限错误显示失败。官方目录API会登记项目，最终只打开Chat工作区。每个host保留准备阶段，同页并发共用一次准备；不确定创建先查询列表，不盲目重发，多标签不承诺只创建一次。
 
-准备完成后，已有会话或草稿沿用原生状态；需要初始草稿时读取真实provider/model列表，使用Codex的`gpt-5.6-luna`或其`luna`别名及该模型原生默认思考强度。缺少Codex或Luna时显示原因和重试、选择Agent/项目、连接设置入口。只准备草稿，首次提交才创建Agent。默认目录只是方便使用的路径，不构成执行权限沙箱。
+准备完成后，已有会话或草稿沿用原生状态；初始草稿不带provider/model setup，不查询或等待Codex/Luna。原生Composer恢复已存偏好，没有偏好时由用户选择本机可用的Agent和模型；Vibes不自动选择provider、模型、模式或强度，也不要求ChatGPT订阅。只准备草稿，首次提交才创建Agent。默认目录不是权限沙箱。
 
 界面不提供Chat/Build模式。后续启动沿用原生当前工作区选择与恢复逻辑；项目选择保留原生路由参数和草稿标识。已有Agent的配置、消息草稿和附件由Paseo原生存储维护，不承诺每个项目独立保存所有模型设置。初始目录预设不会反复覆盖用户之后选择的项目。
 
-原生`src/hooks/use-agent-form-state.ts`初次解析新草稿时调用`src/embedded/chat-form-defaults.ts`：仅嵌入场景、没有明确初始provider/model/mode/thinking、没有已存provider或providerPreferences、也没有用户修改时，临时补入真实可用的Codex Luna及原生默认模式/思考强度。加载中等待；不可用时保留原生选择入口。该解析过程不写preferences，不覆盖已有选择或用户主动清空；新浏览器恢复工作区后点加号也遵循该规则，独立Paseo不变。
+新草稿直接使用原生`src/hooks/use-agent-form-state.ts`解析，不再注入嵌入专用模型fallback，不写第二份preferences。已有选择、显式初始配置和用户主动清空按原生规则保留；已保存的旧`~/Vibes`准备记录继续复用，既有工作区不搬迁，新浏览器恢复当前工作区也不强制改到Chat。
 
 文章页面只提供公开标题、slug和HTTPS标准网址。点击“和Agent聊这篇”才产生一次请求标识，在原生草稿水合后附加可删除的引用；替换已有Vibes文章引用，保留普通附件和输入文字。正常重开、缩放或切页不会重新添加已删除引用，再次明确点击文章入口可带入新的引用。
 

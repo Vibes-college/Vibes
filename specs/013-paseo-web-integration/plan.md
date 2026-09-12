@@ -11,13 +11,11 @@ amended-by: []
 
 ## 当前交付阶段
 
-当前在已有体验预览上实施用户确认的手机/电脑布局与本地英语听写：移除可见Chat/Build模式，保留首次默认预设，之后沿原生当前项目；compact为纯聊天，full保留完整原生标签和文件操作。同步处理iOS26输入缩放、compact键盘定位与full背景穿透。具体行为以spec的本轮确认和T033—T040为准，完成前不写成当前已实现。
+用户于2026-09-11确认快速收尾：保留当前预览布局与已有能力，仅把首次默认目录调整为`~/Vibes/Chat`并移除Vibes的Codex/Luna预设。已有原生选择与工作区不迁移；用户从Paseo原生入口选择自己可用的Agent/模型。
 
-第一阶段最终完整性目标仍是保留完整Paseo Web现有功能，修复宿主造成的缺口。当前需要区分漏接的页头快捷入口与仍可通过原生命令中心、Changes或文件窗口操作的能力：不能笼统声称Git、终端或文本编辑全部缺失。其余工作区快捷入口、插件执行与首次准备的未测限制保留后续，不借本轮布局改动扩大为完整工作台重做。桌面专属能力、设备权限与用户未配置服务沿原生真实边界说明。
+宿主漏接的工作区菜单、Scripts、Git网页快捷入口和插件eval兼容记录为已知限制，不在本PR补接。外部编辑器启动、Browser与remote SSH依赖官方桌面端；Web不伪造支持。完整恢复矩阵、六阶段性能对照、60分钟负载与实体iPhone专项列为后续验收，不计为已通过。
 
-PR #12保持Draft，复用当前分支，不新建PR；本轮阶段预览不以完整恢复矩阵、官方性能对照、60分钟负载或完整iPhone真机矩阵为前提，也不把这些未测项标为通过。新增iPhone Safari iOS26输入/键盘场景须单列真实手机待测状态，模拟通过仅覆盖模拟环境。
-
-后续根据用户可感知的问题和收益决定改进优先级。下述完整验收协议保留作后续定位与Ready依据；当前暂停新增长时测试或未经体验反馈的性能改造，不以缩小资源数字代替体验交付。
+同一PR #12和当前分支完成目录/选择回归、现有全套verify/budget、真实基本使用、同SHA预览及最终独立审查；达到这些条件才转Ready。此前阶段证据按实际覆盖保留，旧失败日志不覆盖；上线和合并状态以Git及部署记录为准。
 
 ## 方案收益、代价与改进边界
 
@@ -37,7 +35,7 @@ PR #12保持Draft，复用当前分支，不新建PR；本轮阶段预览不以�
 | src/features/paseo-webui/asset-contract.ts、build-config.ts              | 构建端严格消费同源资源回执，浏览器仅收到入口与CSS的URL及SRI               |
 | src/components/LocalAssistant.astro、src/scripts/paseo-boot.ts           | 即时外壳、安装引导、compact/full、文章入口、Astro持久节点与无JS说明       |
 | src/features/paseo-webui/contract.ts、host.ts、page-context.ts           | 唯一挂载、加载失败重试、展示/语言/活动与公开引用；不创建SDK连接           |
-| 原生src/embedded/及Composer、WorkspaceScreen、use-agent-form-state窄补丁 | 首次预设、新草稿默认模型、当前工作区与单头部、compact听写控件及原生附件   |
+| 原生src/embedded/及Composer、WorkspaceScreen、use-agent-form-state窄补丁 | 首次预设、原生模型选择、当前工作区与单头部、compact听写控件及原生附件     |
 | tests/paseo-*.spec.ts、tests/fixtures/paseo-webui/                       | 现有Playwright链路覆盖加载/聊天/恢复/文件与分阶段对照；真实与模拟结果分开 |
 
 Vibes沿用现有Astro/TypeScript；上游依赖在独立源码目录按锁文件构建。复用PR #11已核验的安装树时用独立普通复制或APFS写时复制，不把node_modules软链接回其他任务，也不硬链接会修改的文件。没有新增npm依赖安装；未来确需新增时先说明准确范围。构建默认启用产品助手，缺失或过期回执失败，不静默发布无助手；明确关闭仅用于未启动对照。CI用同一固定源、锁与补丁准备唯一产物。
@@ -64,13 +62,13 @@ compact在宽屏占右侧有限空间，在手机按可见视口和软键盘定�
 
 ### 首次预设与原生当前项目
 
-首次预设仍使用原生WorkspaceScreen、pane、文件Explorer与Composer。不要复制旧ChatScreen中会使openFile/openTab失效的简化runtime。首次在已配对电脑的home下准备`Vibes`普通目录，沿官方createProjectDirectory/addProject/openProject及原生草稿设置；不列整棵目录树、不执行shell安装、不每次打开创建Agent。取消可见Chat/Build标签及双模式选择状态，后续以原生当前项目为准。
+首次预设仍使用原生WorkspaceScreen、pane、文件Explorer与Composer。不要复制旧ChatScreen中会使openFile/openTab失效的简化runtime。首次在已配对电脑的home下逐级准备`Vibes/Chat`普通目录，沿官方createProjectDirectory/addProject/openProject及原生草稿设置；不列整棵目录树、不执行shell安装、不每次打开创建Agent。取消可见Chat/Build标签及双模式选择状态，后续以原生当前项目为准。
 
 按host缓存已确认目录/工作区选择，单窗口准备互斥。目录已存在先由官方校验其类型，保留原有内容；创建结果未知时先查现有项目/工作区，不盲目重发。原生openProject并非跨标签原子保证，验证边界据实记录，不能承诺协议没有提供的恰好一次。
 
-优先真实ready/enabled的Codex及可选择Luna，强度使用该模型原生默认项；无Codex、未登录、无Luna或目录权限错误进入针对性设置/选择，不默默换收费模型。只在首次发送时由官方Composer创建Agent。用户选择已有项目后沿用其原生配置、当前会话/草稿；再次打开、放大缩小不重套首次预设。
+默认目录准备不读取或等待provider/model快照。准备后创建无setup的原生draft tab，让原生Composer恢复已有偏好；没有偏好时由用户选择Agent和模型。移除`chat-form-defaults.ts`及`use-agent-form-state.ts`中的嵌入Luna fallback；不写第二份偏好，也不自动选择另一provider。只在首次发送时创建Agent，后续放大缩小、收起重开不重套预设。
 
-原生`src/hooks/use-agent-form-state.ts`的初次解析调用`src/embedded/chat-form-defaults.ts`：仅嵌入、没有显式初始provider/model/mode/thinking、没有已存provider或providerPreferences、没有用户修改时，以真实Codex/Luna及原生默认模式/强度作为临时fallback。偏好和模型加载中等待，不可用时保留原生选择入口，不写preferences或覆盖用户主动清空。该规则同样覆盖新浏览器恢复工作区后点加号；真实hook测试在`src/embedded/chat-form-defaults.test.tsx`，不建立第二套偏好存储。
+官方目录API只接受单个目录名：先创建或核对`~/Vibes`，再创建或核对其下的`Chat`，复用官方类型/权限校验；不递归读取、不运行shell。保留已保存的旧准备记录和原生当前选择，不搬迁旧`~/Vibes`项目、覆盖内容或自动建立新会话。原生目录创建API会登记项目，最终只打开`Chat`对应工作区；目录不是权限沙箱。
 
 进入compact时从当前工作区已有原生会话、草稿与标签状态选择最近聊天；从文件或终端缩小时不把它们关闭，也不创建第二份会话目录、聊天记录或恢复缓存。新会话由官方草稿入口创建；full原生标签仍可重新选择保留的文件或终端。
 
@@ -114,7 +112,7 @@ HTML采用独立响应策略和不含allow-same-origin的sandbox载体，主页�
 
 范围明确且已确认；原生依赖按既有锁与安装树复用，不新造客户端/协议，不新增站内编辑或云执行。唯一产品路线、分支PR、同批文档、完整verify/budget及用户合并门槛保留。默认目录不代表沙箱，模型操作与权限遵循官方。性能参数在采样前冻结，不见结果后放宽。
 
-### 分阶段测量协议
+### 后续分阶段测量协议（当前未验收）
 
 同一设备/浏览器版本、视口、CPU设置、网络、daemon/provider版本及固定内容，对照未改官方Web；Explore用同SHA未启动助手的页面作对照。记录硬件、环境、构建SHA、源/补丁摘要、样本顺序和原始文件。每组20次交互；冷与暖各独立profile组，交替运行对照和候选，不跨组共享缓存污染结论。这些是工程对照，不能称真实用户现场INP或公网统计。
 
@@ -137,7 +135,7 @@ HTML采用独立响应策略和不含allow-same-origin的sandbox载体，主页�
 
 产品、构建或测试改动按项目full执行verify与budget；不改变检查分类或降低必需门槛。
 
-第一阶段按上方阶段要求提供预览，并核对同SHA实际响应头和资源路径。完整官方配对/中继、模型、工具、审批、停止边界、断线、刷新、导航与长期使用通过后才认定完整需求验收；iPhone真机缺席时保留明确待测，不能用模拟结果勾选真机。阶段体验反馈可调整后续实施顺序，不能把尚未测试的结论写为通过。
+快速收尾按上方当前阶段提供预览并核对同SHA响应头与资源，完成现有自动回归、默认目录/原生模型选择和真实基本使用，再执行独立审查。下方完整中断/性能/iPhone矩阵作为后续验收协议；未执行时如实记录，不影响用户已收窄的本轮范围，也不能标为这些矩阵已通过。
 
 代码同步docs/features/local-assistant.md、浏览/阅读入口、docs/system/local-assistant.md及configuration/interfaces/rules/checks-and-release对应段落与code-sources，再复核文字后更新摘要；索引和PROJECT_ANALYSIS随最终行为变更。全部任务实做后spec/plan/tasks与索引改complete。
 

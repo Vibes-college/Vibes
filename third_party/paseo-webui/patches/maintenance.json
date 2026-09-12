@@ -67,6 +67,13 @@
       "purpose": "单一白色工具栏与浅色主题、compact纯对话、原生当前工作区恢复、新草稿默认模型、窄屏左侧文件入口打开原生完整面板、修复新建工作区点击与按文字切换的听写按钮；嵌入界面暂不显示Realtime入口",
       "verification": "原生导航/模型偏好/主题/听写/焦点与失败恢复单测和typecheck；生产浏览器compact/full、窄屏文件、草稿、真实本地STT与手机输入路径",
       "removeWhen": "上游提供等效嵌入工具栏与展示策略时逐项替换；保留原生会话/文件/听写状态所有权并重新验收"
+    },
+    {
+      "file": "default-chat-directory.patch",
+      "origin": "013-paseo-web-integration 快速收尾确认",
+      "purpose": "首次准备~/Vibes/Chat并取消Codex/Luna预设；恢复原生Agent/模型选择与已有偏好，不迁移既有工作区",
+      "verification": "原生目录失败/重复/中断与模型偏好单测、lint/typecheck；无Codex/Luna的原生草稿浏览器回归与真实基本对话",
+      "removeWhen": "上游具备等效首次目录策略时移除，保留原生配置所有权并重新核验旧工作区恢复"
     }
   ]
 }

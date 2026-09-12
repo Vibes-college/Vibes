@@ -31,6 +31,10 @@
     {
       "path": "third_party/paseo-webui/patches/compact-surface.patch",
       "sha256": "b059743fe60e57675dc200a69d7982c3320f32723973480c7601662593e0375c"
+    },
+    {
+      "path": "third_party/paseo-webui/patches/default-chat-directory.patch",
+      "sha256": "72af4ea8ed4e8d8dd1db7e499000f038c2edb136f58409dbb17169d8616191f0"
     }
   ],
   "dependencies": [

@@ -1,4 +1,5 @@
 import { test, expect } from './browser-test.ts';
+import { trackLocalRequests } from './local-request-drain.ts';
 
 const first = '/zh/works/attention-is-all-you-need/';
 const second = '/zh/works/transformers-js/';
@@ -201,6 +202,7 @@ test('completed prefetch is reused in a persistent browser context', async ({
       hasTouch,
     },
   );
+  const drain = trackLocalRequests(context, 'http://127.0.0.1:4322');
   try {
     const page = await context.newPage();
     await page.goto('/zh/');
@@ -257,9 +259,7 @@ test('completed prefetch is reused in a persistent browser context', async ({
   } finally {
     // This independent profile does not use browser-test's page teardown fixture.
     try {
-      await Promise.all(
-        context.pages().map((page) => page.waitForLoadState('networkidle', { timeout: 10_000 })),
-      );
+      await drain();
     } finally {
       await context.close();
     }

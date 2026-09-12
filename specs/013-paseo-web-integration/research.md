@@ -55,7 +55,7 @@ v0.7.2固定源码的packages下没有chatWorkspace/resolveChatWorkspace/hidden-
 - `packages/server/src/server/project-directory-service.ts:72`的创建非幂等，同名EEXIST返回directory_exists，不保证既有对象是目录；`server/session.ts:6192`的addProject会验证目录。只复用验证过的目录，不删除或覆盖旧内容。注册失败还可能伴随回滚失败，必须保留实际错误。
 - `createWorkspace`每次建立新UUID；现有`openProject(cwd)`走`workspace-provisioning-service.ts:285`的findOrCreateWorkspaceForDirectory，可按路径复用，但list→create并非原子且当前app没有直接调用。预设要避免每次打开重建，不能把它当作跨设备恰好一次保证。
 - `packages/app/src/composer/draft/workspace-tab.tsx:174`接收workspace和provider/model/thinking默认值，继续由原生Draft/Composer创建会话。只准备草稿，首次发送再创建，减少空会话及初始化写操作。
-- `hooks/use-providers-snapshot.ts:35`、`provider-selection/model-catalog.ts:3`与`resolve-agent-form.ts:164`提供实际模型及强度选择；Codex模型来自连接电脑的app-server model/list。Luna是用户偏好，强度可采用该模型原生默认项，不静态承诺所有安装可用。
+- `hooks/use-providers-snapshot.ts:35`、`provider-selection/model-catalog.ts:3`与`resolve-agent-form.ts:164`提供实际模型及强度选择；Codex模型来自连接电脑的app-server model/list。当前需求已取消Luna预设：模型与Agent由用户从原生入口选择或恢复原生偏好，不能把本机Codex配置作为所有用户的前提。
 - 原生RPC断线会reject等待响应，requestId不是持久幂等键。默认初始化在结果未知时先通过原生查询核对，不盲目重放目录/工作区/Agent创建，不借此引入第二套客户端恢复或账本。
 
 新增维护面为有限的首次准备、默认值与异常提示；收益是免去必经设置。原生运行与同步完整保留，但上游升级仍需检查这些入口。
