@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '阅读作品详情'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '008', '009', '010', '013']
+shaped-by: ['001', '003', '005', '006', '007', '008', '009', '010', '013', '016']
 code-sources:
   [
     'src/components/WorkDetail.astro',
@@ -53,7 +53,7 @@ code-sources:
     'tests/fixtures/paseo-webui/article-reference.ts',
     'tests/explore.spec.ts',
   ]
-code-revision: 'efb975ba4d5d87f9a2325ea87399af3730599a26b7284f1df205ce45563a1b52'
+code-revision: 'fde82620a31c3bf4c1121a39093dfb0898ca02554a38773df73abc86177d0d18'
 ---
 
 # 功能名：阅读作品详情
@@ -63,6 +63,8 @@ code-revision: 'efb975ba4d5d87f9a2325ea87399af3730599a26b7284f1df205ce45563a1b52
 访客在作品概览与正文之间整屏翻阅，连续阅读正文并用进度目录跳转，并继续阅读相邻作品。
 
 ## 用户操作路径
+
+正文上方可进入该语言源文件的GitHub编辑页；登录、fork、PR审阅和发布步骤见[GitHub内容贡献](../system/content-contributions.md)。站内不保存编辑。
 
 1. 从目录点击卡片，进入`/{locale}/works/{id}/`，先看来源、预览、标题、介绍和已有的作者/类型等信息。
 2. 点击原站链接，在新标签页打开原始作品；有媒体的封面按下面的路径播放或操作，未配置媒体的作品保留静态预览。
@@ -154,6 +156,8 @@ flowchart TD
 MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器140项通过及4项按设备适用性跳过；新增英文文章使旧数量断言失败，修正该测试后在三种浏览器专项3项通过，其余代码未变。budget通过。原版十组件、双语调色、无JS、减少动画、320px、加载隔离与MDX横拖禁用均有覆盖；证据在`resources/evidence/009-mdx-articles/`，真机iOS未专项验收。
 
 媒体验收：2026-09-07，完整verify与budget通过，测试数及设备适用性跳过见原始日志。tests/media.spec.ts覆盖图库、音视频、循环、游戏、数据图表、延迟加载、重试、无JS、搜索/双语、暂停与返回，并保存三环境首次/缓存访问的真实首帧时间。内置浏览器在Cloudflare预览实际播放Sintel并进入正文，另实际验证YouTube、Spotify试听和2048键盘操作。原始截图、日志和时间数据在resources/evidence/010-media-previews；iPhone Safari真机未验，第三方限制见下方已知问题。
+
+内容通道有效验收：2026-09-12，分类及协议边界包含在143项单元测试中；完整回归247项通过、5项按设备跳过，budget通过。已上传PR #15阶段预览，并用内置浏览器核对正文排版与对应语言的GitHub编辑入口；这是基础设施预览证据，文章独立发布与生产耗时仍以PR收尾实际记录为准。原始记录在resources/evidence/ai-native-ui-publication。
 
 ## 对应的自动化测试
 

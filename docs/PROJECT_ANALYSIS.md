@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '给维护者阅读的项目总览与代码导航'
 status: 'current'
-shaped-by: ['001', '002', '003', '005', '009', '013']
+shaped-by: ['001', '002', '003', '005', '009', '013', '016']
 code-sources:
   [
     'package.json',
@@ -15,7 +15,7 @@ code-sources:
     'scripts/build.ts',
     'src/features/paseo-webui/host.ts',
   ]
-code-revision: '5f1042406514aac80978f45bf3423728ffadb8a3e02005f98dcf6cc586296916'
+code-revision: '5d9cad76d11a5d16c3ef26c41fd6ae5cdad94f2c012e20c242893a9c2e8c7158'
 ---
 
 # VIBES项目总览
@@ -49,7 +49,7 @@ Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物
 | 怎样检查并发布网站       | [检查与发布](features/project-commands.md)  | scripts/release.ts、.github/workflows/check.yml        |
 | 怎样让文档跟代码一起变化 | [维护文档](features/document-governance.md) | scripts/docs-check.ts、scripts/docs-sources.ts         |
 
-中英文路由、原文先发布、译文复核状态和全文搜索均已实现；英文内容量取决于实际发布文件，不代表全部译文完成。当前数量以`npm run content:validate`输出为准，不在多篇文档手抄同一组易过期数字。几千条内容与日更是规模目标，日常编辑发布仍由维护者执行。
+中英文路由、原文先发布、译文复核状态和全文搜索均已实现；英文内容量取决于实际发布文件，不代表全部译文完成。当前数量以`npm run content:validate`输出为准，不在多篇文档手抄同一组易过期数字。几千条内容与日更是规模目标，文章可通过GitHub PR贡献，维护者审阅合并后发布；[内容贡献流程](system/content-contributions.md)说明独立检查与预览。
 
 ## 从内容到页面的链路
 

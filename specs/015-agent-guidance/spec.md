@@ -4,7 +4,7 @@ describes: '按任务范围执行的Agent指导规则'
 status: 'complete'
 feature-ids: ['document-governance', 'project-commands']
 amends: ['002', '004', '014']
-amended-by: []
+amended-by: ['016']
 approved-artifacts: []
 research-trigger: '确认Spec Kit原生预设与workflow执行边界，避免直接修改上游安装资产'
 ---

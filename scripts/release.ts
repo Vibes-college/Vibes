@@ -5,6 +5,7 @@ import { assertAssetBudget } from './budget-policy.ts';
 import { assetSizes } from './asset-sizes.ts';
 import { prepareArtifact } from './release-artifact.ts';
 import { smokeRelease } from './release-smoke.ts';
+import { changedScope } from './check-scope.ts';
 import { run, wrangler } from './local-tools.ts';
 
 // 阶段预览在本机完整验收后上传版本，不切生产域名或提升正式版本。
@@ -45,14 +46,20 @@ async function main(): Promise<void> {
   const pr = github(`pulls/${argument}`) as {
     state: string;
     head: { sha: string; repo: { full_name: string } };
+    base: { sha: string };
   };
   if (pr.state !== 'open' || pr.head.sha !== sha || pr.head.repo.full_name !== repository)
     throw new Error('Preview must match the current pushed head of an open repository PR');
   process.env.SITE_URL = releaseTarget.origin;
   process.env.VIBES_DEPLOY = '1';
   process.env.CLOUDFLARE_ACCOUNT_ID = releaseTarget.accountId;
-  run('npm', ['run', 'verify']);
-  run('npm', ['run', 'budget']);
+  process.env.CONTENT_BASE_REF = pr.base.sha;
+  if (changedScope(pr.base.sha) === 'content') {
+    run('npm', ['run', 'verify:content']);
+  } else {
+    run('npm', ['run', 'verify']);
+    run('npm', ['run', 'budget']);
+  }
   if (
     capture('git', ['rev-parse', 'HEAD']).trim() !== sha ||
     capture('git', ['status', '--porcelain']).trim()

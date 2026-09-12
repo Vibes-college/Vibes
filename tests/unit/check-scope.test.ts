@@ -16,7 +16,6 @@ test('check scope limits only known documentation and document tools', () => {
     'tools',
   );
   for (const path of [
-    'src/content/works/a/zh.md',
     'src/pages/index.astro',
     'db/seed.sql',
     'package-lock.json',
@@ -33,6 +32,8 @@ test('check scope limits only known documentation and document tools', () => {
   ]) {
     assert.equal(classifyChanges(['docs/README.md', path]), 'full', path);
   }
+  assert.equal(classifyChanges(['src/content/works/a/zh.md']), 'content');
+  assert.equal(classifyChanges(['src/content/works/a/zh.md', 'scripts/docs-check.ts']), 'full');
   assert.equal(classifyChanges([]), 'full');
 });
 
@@ -92,6 +93,58 @@ test('real Git changes include deletions, rename sources and untracked website f
     rmSync(join(root, 'src/page.ts'));
     assert.equal(changedScope(base, root), 'full');
     assert.equal(changedScope('missing-ref', root), 'full');
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('content classification inspects both sides, rejects mixed code and follows cumulative base', () => {
+  const root = mkdtempSync(join(tmpdir(), 'vibes-content-scope-'));
+  const git = (args: string[]) =>
+    execFileSync('git', args, {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
+  const article = join(root, 'src/content/works/example/zh.mdx');
+  try {
+    mkdirSync(join(root, 'src/content/works/example'), { recursive: true });
+    writeFileSync(article, '# Before');
+    git(['init', '-b', 'main']);
+    git(['add', '.']);
+    git(['-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-m', 'base']);
+    const base = git(['rev-parse', 'HEAD']);
+    writeFileSync(article, '# After\n\n<details>\n<summary>More</summary>\n\nText\n\n</details>');
+    assert.equal(changedScope(base, root), 'content');
+    writeFileSync(article, 'export const execution = 1;\n\n# Text');
+    assert.equal(changedScope(base, root), 'full');
+    assert.equal(
+      changedScope(base, root, false),
+      'content',
+      'path candidate is not syntax approval',
+    );
+    git(['add', '.']);
+    git([
+      '-c',
+      'user.name=Test',
+      '-c',
+      'user.email=test@example.invalid',
+      'commit',
+      '-m',
+      'executable',
+    ]);
+    const executable = git(['rev-parse', 'HEAD']);
+    rmSync(article);
+    assert.equal(
+      changedScope(executable, root),
+      'full',
+      'removing executable MDX needs full regression',
+    );
+    writeFileSync(article, '# Safe');
+    assert.equal(changedScope(executable, root), 'full', 'previous execution is part of the diff');
+    assert.equal(changedScope(base, root), 'content');
+    writeFileSync(join(root, 'src/code.ts'), 'export const x=1');
+    assert.equal(changedScope(base, root), 'full');
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

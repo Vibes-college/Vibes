@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
 import { requireProductionPreparation } from '../../scripts/paseo-webui-build.ts';
 import { ciNodeVersion, fullSteps } from '../../scripts/ci-acceptance-policy.ts';
@@ -76,4 +78,48 @@ test('full acceptance keeps one native preparation and an exact-attempt proof af
   assert.ok(workflow.includes(`node-version: ${ciNodeVersion}`));
   const beforeDeploy = workflow.split('\n  deploy:\n')[0];
   assert.ok(!beforeDeploy.includes('CLOUDFLARE_API_TOKEN'));
+});
+
+test('content cache miss falls back to full and content remains a real budget gate', () => {
+  const block = workflow.match(
+    /name: Resolve verification lane[\s\S]+?run: \|\n([\s\S]+?) {8}env:\n/,
+  )?.[1];
+  assert.ok(block);
+  const script = block
+    .split('\n')
+    .map((line) => line.replace(/^ {10}/, ''))
+    .join('\n');
+  const directory = mkdtempSync(join(tmpdir(), 'vibes-lane-'));
+  const output = join(directory, 'output');
+  try {
+    for (const [scope, hit, expected] of [
+      ['content', 'true', 'content'],
+      ['content', '', 'full'],
+      ['content', 'false', 'full'],
+      ['full', 'true', 'full'],
+      ['docs', '', 'docs'],
+    ]) {
+      const run = spawnSync('bash', ['-e', '-c', script], {
+        env: {
+          ...process.env,
+          SCOPE: scope,
+          CACHE_HIT: hit,
+          GITHUB_OUTPUT: output,
+          GITHUB_STEP_SUMMARY: '/dev/null',
+        },
+        encoding: 'utf8',
+      });
+      assert.equal(run.status, 0, run.stderr);
+      assert.ok(readFileSync(output, 'utf8').endsWith(`scope=${expected}\n`));
+    }
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+  assert.ok(workflow.includes('full|content) test "$BUDGET_RESULT" = passed'));
+  assert.ok(
+    workflow.includes(
+      "if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.lane.outputs.scope == 'full'",
+    ),
+  );
+  assert.ok(workflow.includes('CONTENT_BASE_REF: ${{ needs.scope.outputs.base }}'));
 });

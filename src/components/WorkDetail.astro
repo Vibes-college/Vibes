@@ -13,6 +13,10 @@ const { work } = Astro.props;
 const { previous, next } = adjacentWorks(getWorks(work.locale), work.slug);
 const source = new URL(work.url);
 const t = messages[work.locale];
+const sourceFile = catalog.works.find((item) => item.meta.id === work.slug)?.versions[work.locale]
+  ?.file;
+const extension = sourceFile?.endsWith('.mdx') ? 'mdx' : 'md';
+const editUrl = `https://github.com/Vibes-college/Vibes/edit/main/src/content/works/${work.slug}/${work.locale}.${extension}`;
 const meta = {
   id: work.slug,
   type: work.type,
@@ -172,6 +176,13 @@ const meta = {
   <img src="/icons/chevron-down.svg" width="22" height="22" alt="" />
 </div>
 <section id="reading" class="reading-page" aria-label={t.body} tabindex="-1">
-  <div class="prose prose-ui light" lang={htmlLanguages[work.locale]}><slot /></div>
+  <div class="prose prose-ui light" lang={htmlLanguages[work.locale]}>
+    <p data-pagefind-ignore>
+      <a href={editUrl} target="_blank" rel="noopener noreferrer"
+        >{work.locale === 'zh' ? '在 GitHub 上改进这篇文章' : 'Improve this article on GitHub'}</a
+      >
+    </p>
+    <slot />
+  </div>
 </section>
 <script src="../scripts/detail.ts"></script>
