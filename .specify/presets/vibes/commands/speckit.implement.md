@@ -1,13 +1,6 @@
 ---
-name: speckit-implement
-description: 执行当前未冻结tasks，修复本任务导致的失败并完成必要验证与文档；遵守已约定审阅点。
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:vibes
+description: '执行当前未冻结tasks，修复本任务导致的失败并完成必要验证与文档；遵守已约定审阅点。'
 ---
-
-# Speckit Implement Skill
 
 # implement
 

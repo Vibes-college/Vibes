@@ -1,13 +1,6 @@
 ---
-name: speckit-constitution
-description: 按明确的规则变更更新项目宪章，保留现有结构、有效原则与必要同步。
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:vibes
+description: '按明确的规则变更更新项目宪章，保留现有结构、有效原则与必要同步。'
 ---
-
-# Speckit Constitution Skill
 
 # constitution
 

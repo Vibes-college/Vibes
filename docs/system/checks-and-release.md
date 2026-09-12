@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003', '004', '005', '009', '010', '013', '014']
+shaped-by: ['002', '003', '004', '005', '009', '010', '013', '014', '015']
 code-sources:
   [
     'package.json',
@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '260c9b3e27b93fa05732e6456386e60fbdf2ee9dd3921d2ab448e97d2006ccc0'
+code-revision: '196b281bc86bafd01f2a561ddc107287e96c8956014264f250776877504f09e8'
 ---
 
 # 检查与发布
@@ -21,11 +21,11 @@ code-revision: '260c9b3e27b93fa05732e6456386e60fbdf2ee9dd3921d2ab448e97d2006ccc0
 
 工作流.github/workflows/check.yml只监听PR活动与main push，保留手动检查和每周文档体检。PR活动为opened/synchronize/reopened/ready_for_review/converted_to_draft；描述/评论编辑不触发。分支push不再重复运行。scope通过scripts/check-scope.ts与ci-policy.ts输出范围与模式，失败或非法输出使正式检查失败。
 
-Draft仅运行独立的Draft progress（npm run check，不启动浏览器或预算构建）；verify/budget跳过，不能视为已验收。Ready及后续修改按整个PR差异执行下表。PR较新运行取消旧检查；main运行不在上传途中取消，正式发布单独串行并拒绝旧SHA。Node22.20；scope只额外读取Actions和PR证据，权限为actions:read、pull-requests:read及contents:read，其他普通检查contents:read，只有发布job持有Cloudflare secret；阶段预览在本机按需运行，不产生额外GitHub CI。
+Draft仅运行独立的Draft progress：docs范围运行docs:check与format:check，其他范围运行npm run check，不启动浏览器或预算构建；verify/budget跳过，不能视为已验收。Ready及后续修改按整个PR差异执行下表。PR较新运行取消旧检查；main运行不在上传途中取消，正式发布单独串行并拒绝旧SHA。Node22.20；scope只额外读取Actions和PR证据，权限为actions:read、pull-requests:read及contents:read，其他普通检查contents:read，只有发布job持有Cloudflare secret；阶段预览在本机按需运行，不产生额外GitHub CI。
 
 | 差异范围                                                      | verify实际执行                                           | budget结果检查                 |
 | ------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------ |
-| docs：治理Markdown、宪章、项目模板                            | docs:check和format:check，不安装浏览器                   | 要求verify成功且预算明确不适用 |
+| docs：治理Markdown、宪章、项目模板及已知Agent指导文件         | docs:check和format:check，不安装浏览器                   | 要求verify成功且预算明确不适用 |
 | tools：文档检查器及其单元测试，可混合文档                     | npm run check，不安装浏览器                              | 要求verify成功且预算明确不适用 |
 | full：网站内容、源码、数据库、依赖、CI/测试配置、其他未知路径 | 一次paseo:ci→npm run verify→npm run budget→产物preflight | 要求verify成功且预算明确通过   |
 
@@ -37,7 +37,7 @@ verify与预算构建共享一个runner，budget仍是同名必需检查，以al
 
 满足全部条件时，main运行paseo:production、基础check、生产budget构建及preflight，不重复完整E2E或原生回归；仍生成当前main的production artifact。Draft/docs/tools不产生完整证明；旧CI、直接push、最新失败/取消/未完成、不同tree、Fork、过期/歧义或API错误均自动完整回退，不向旧绿灯回溯。读取有数量、大小与超时上限；记录只作为JSON解析，不执行PR产物或搬运依赖。Actions摘要说明复用来源或回退原因。
 
-手动触发、空差异或范围基线不可读均选择full。分类包含删除、改名前后路径和本地未跟踪文件；src中的文章也属于网站变化。路径白名单由脚本与tests/unit/check-scope.test.ts维护。分类不取代测试：需要缩减新的工具范围时先证明它不影响网站。
+手动触发、空差异或范围基线不可读均选择full。分类包含删除、改名前后路径和本地未跟踪文件；src中的文章也属于网站变化。路径白名单由脚本与tests/unit/check-scope.test.ts维护。分类不取代测试：需要缩减新的工具范围时先证明它不影响网站。纯Agent指导包括Skills入口及参考Markdown、preset命令/参考/声明与登记、Spec Kit workflow及overlay声明、安装manifest和PR描述模板；这些文件不参与网站构建。相同目录里的脚本、未知文件及任何GitHub workflow仍归full，混合差异取较重范围。纯规则PR仍产生轻量成功状态，以满足分支保护；不使用paths-ignore或跳过CI标记造成必需状态缺失。
 
 PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA累计比较到当前源码，无法读取/非法/非当前历史时完整检查，防止旧网页提交被后续文档提交挤掉而漏发；checkout获取完整历史。冻结检查仍以事件比较提交和main共同祖先为准。DOCS_BASE_REF提供比较提交；冻结检查取它与origin/main的共同祖先，仅冻结已进入main的历史，不把未合并分支的complete稿提前冻结。无远端main的本地测试仓库可使用本地main，找不到有效基线仍失败。CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
 
@@ -89,7 +89,7 @@ commit是保存进度，推送是备份或触发CI，PR是提交一批变化供�
 
 代码与功能文档在同一PR准备好；合并操作者核对清单全部完成、功能及spec索引、shaped-by和amends关系，实现完成时把该规格与plan/tasks、索引统一设为complete并通过检查，再执行用户明确授权的合并。未进入main的稿件尚未冻结；main中的complete/历史merged记录冻结，允许状态前进、追加amended-by及首次据实补记frozen-at；日期可省略，实际合并时间以GitHub PR记录为准，不提前虚构。合并后的核对不要求立即创建补丁PR；仅可选日期可延后；实现状态应在代码交付前完成，PR是否合并由Git记录。
 
-最终行为随代码合并生效，必要说明仍须在同一PR交付。合并后逐个审阅PR中commit的实际差异，定位其影响的用户路径、配置、接口、规则与相关docs说明，再检查PR整体差异及合并后的代码，确认文档没有遗漏、冲突或过时描述。后续commit撤销或替换的行为以最终实现为准；每个commit不必新增或修改文档，未影响现有说明的改动无需凑写内容。PR收尾评论记录审阅范围、对应文档及发现的漏项和处理状态，不在docs写commit流水账；code-revision及自动检查通过不能代替语义核对。发现漏项及时补齐，不能把合并后补文档作为正常交付流程。
+最终行为随代码合并生效，必要说明仍须在同一PR交付。合并后依据PR最终差异及合并后的代码，定位受影响的用户路径、配置、接口、规则与所有相关docs说明，确认没有遗漏、冲突或过时描述；最终差异不足以解释变更时才追查具体commit。撤销或替换的行为以最终实现为准，未影响现有说明的改动无需凑写内容。PR收尾评论记录审阅范围、对应文档及发现的漏项和处理状态，不在docs写commit流水账；code-revision及自动检查通过不能代替语义核对。发现漏项及时补齐，不能把合并后补文档作为正常交付流程。
 
 main不要求通过PR；目标提交仍须取得verify/budget成功并包含最新main，管理员同样受限，禁止force push和删除main。小改动可先在保存该提交的工作分支手动运行Project checks，检查通过后再直接推送main；需要Spec Kit的需求仍按项目规则使用PR。检查失败时保留进度并修复，不擅自削弱保护。
 

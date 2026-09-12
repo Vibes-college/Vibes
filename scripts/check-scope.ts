@@ -13,8 +13,19 @@ export function classifyChanges(paths: string[]): CheckScope {
     if (
       /^(docs|specs)\/.*\.md$/.test(path) ||
       /^(AGENTS|README)\.md$/.test(path) ||
+      path === '.github/pull_request_template.md' ||
       path === 'resources/README.md' ||
-      /^\.specify\/(memory|templates\/overrides)\/.*\.md$/.test(path)
+      /^\.specify\/(memory|templates\/overrides)\/.*\.md$/.test(path) ||
+      // Agent文案及原生流程声明不参与网站构建；同目录的脚本仍保守回退。
+      /^\.agents\/skills\/[^/]+\/(?:SKILL\.md|references\/.+\.md)$/.test(path) ||
+      /^\.specify\/presets\/[^/]+\/(?:preset\.ya?ml|commands\/[^/]+\.md|references\/.+\.md)$/.test(
+        path,
+      ) ||
+      path === '.specify/presets/.registry' ||
+      /^\.specify\/workflows\/(?:[^/]+\/workflow\.ya?ml|overlays\/[^/]+\/[^/]+\.ya?ml|workflow-registry\.json)$/.test(
+        path,
+      ) ||
+      /^\.specify\/integrations\/[^/]+\.manifest\.json$/.test(path)
     )
       continue;
     if (/^(scripts|tests\/unit)\/docs-[a-z-]+(?:\.test)?\.ts$/.test(path)) {

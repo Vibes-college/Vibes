@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '规划开发与维护文档'
 status: 'current'
-shaped-by: ['002', '003', '004', '013', '014']
+shaped-by: ['002', '003', '004', '013', '014', '015']
 legacy-feature-ids: ['spec-kit-workflow']
 code-sources:
   [
@@ -13,7 +13,7 @@ code-sources:
     'scripts/docs-sources.ts',
     'scripts/docs-lessons.ts',
   ]
-code-revision: '1ec44cbfaeec95b8094704c4ae5978dabfcc46cae177c2c856815d6479758418'
+code-revision: '818fdcbf979d43653d70747df5a4716692dc13566f4ab5624e0611dc5dada6c0'
 ---
 
 # 功能名：规划开发与维护文档
@@ -24,8 +24,8 @@ code-revision: '1ec44cbfaeec95b8094704c4ae5978dabfcc46cae177c2c856815d6479758418
 
 ## 用户操作路径
 
-1. 用户描述要完成的事情；AI从[功能索引](README.md)找到相关操作路径，先读现状，再查对应代码。
-2. 新功能或跨模块改造先明确用户、成功路径与不做范围，使用Spec Kit形成spec、plan、tasks；计划经用户确认后执行；首版spec形成就建Draft PR并提供可打开链接与任务摘要。小修复、文档和小型规则补充直接在当前工作分支修改、验证与提交，不开spec或独立PR；仅需要Spec Kit的需求走PR。
+1. 用户描述要完成的事情；AI按任务从[功能索引](README.md)找到相关操作路径；已知路径的小修正直接读相关文件，已读且未变化的资料不重复读取。
+2. 新功能或跨模块改造先明确用户、成功路径与不做范围，使用Spec Kit形成spec、plan、tasks；范围明确且用户已授权时连续执行；只有缺少关键决定或用户要求阶段审阅才暂停；首版spec形成就建Draft PR并提供可打开链接与任务摘要。小修复、文档和小型规则补充直接在当前工作分支修改、验证与提交，不开spec或独立PR；仅需要Spec Kit的需求走PR。
 3. 采用Spec Kit的需求在开发时通过PR描述更新当前进度、阻塞、下一步、阶段预览，重要证据写评论；详细清单以tasks.md为准，阶段/交接/暂停前提交推送，不强制逐commit push；功能说明按[模板](./_TEMPLATE.md)描述一条完整操作路径，包括成功、失败和必要的系统响应图，不按组件或样式拆篇。
 4. 更新功能现状与索引；技术配置和完整命令链接到docs/system，历史原因从shaped-by找到specs。
 5. 运行`npm run docs:check`与`npm run format:check`。遇到缺标签、索引不一致或冻结改写时，按错误定位修正，不通过就不称文档检查完成。
@@ -41,7 +41,7 @@ code-revision: '1ec44cbfaeec95b8094704c4ae5978dabfcc46cae177c2c856815d6479758418
 flowchart TD
   A[用户描述要完成的事情] --> B[读取相关现状和代码]
   B --> C{是否需要新规格与计划}
-  C -->|新功能或重要变更| D[明确边界，确认计划]
+  C -->|新功能或重要变更| D[明确边界，沿用已有授权]
   C -->|小修复| E[直接修改受影响内容]
   D --> E
   E --> F[按操作路径更新功能说明及索引]
@@ -62,7 +62,7 @@ flowchart TD
 - 协作入口与规则：`AGENTS.md`、`.specify/memory/constitution.md`。
 - 当前功能：`docs/features/README.md`、`docs/features/_TEMPLATE.md`；历史变更入口：`specs/README.md`。
 - 项目模板：`.specify/templates/overrides/spec-template.md`、`.specify/templates/overrides/plan-template.md`、`.specify/templates/overrides/tasks-template.md`。
-- 工具：`.specify/feature.json`、`.specify/scripts/bash/check-prerequisites.sh`；上游技能在`.agents/skills/`，不按产品文档格式改写。
+- 工具：`.specify/feature.json`、`.specify/scripts/bash/check-prerequisites.sh`；项目命令源在`.specify/presets/vibes/`，生成Skills在`.agents/skills/`；阶段Skills在当前对话中推进，原生完整workflow不作为执行入口。按[Agent规则维护](../system/agent-guidance.md)使用、重建和恢复，不直接手改生成文件。
 - 检查器：`scripts/docs-check.ts`、`scripts/docs-frontmatter.ts`、`scripts/docs-policy.ts`、`scripts/docs-index.ts`、`scripts/docs-sources.ts`。
 
 ## 验收标准
@@ -73,8 +73,11 @@ flowchart TD
 - [x] 缺标签、错误索引、无效关联、已合并清单未完成时检查失败。
 - [x] 冻结正文修改、删除和状态回退失败，合法的状态与后继关系更新可通过。
 - [x] 源码变化未复核、缺少对应说明、失效现状链接被拒绝；全部任务完成但仍in-progress被拒绝。
+- [x] 项目10个Skills与preset源一致，原生CLI重复生成两次结果相同；完整授权与阶段审阅均由当前对话承接，未把自动workflow结构检查冒称模型执行验收。
 
 最近有效验收：2026-09-06实际工作区npm run check通过，45项单元测试全绿。真实临时Git用例验证源码漂移、未覆盖新代码和冻结改写失败；complete稿在分支可修订，进入main后冻结；索引排序不改变规格字段；当前索引、链接、源码对应通过，001/002历史正文未改。此结果只覆盖文档及检查器，不表示网站重新发布。
+
+2026-09-12，137项本地单元测试通过，覆盖项目原生格式边界与源码映射；docs:check与format:check通过。Spec Kit 1.0.4隔离原生生成两次一致，最终resolve保留上游workflow；执行边界与未运行模型/hooks的限制见[Agent规则维护](../system/agent-guidance.md)，原始证据在resources/evidence/015-agent-guidance/。
 
 ## 对应的自动化测试
 

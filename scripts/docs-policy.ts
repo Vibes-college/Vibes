@@ -24,6 +24,7 @@ const livingFiles = new Set([
   'docs/system/interfaces.md',
   'docs/system/local-assistant.md',
   'docs/system/checks-and-release.md',
+  'docs/system/agent-guidance.md',
 ]);
 export const featurePattern = /^docs\/features\/([a-z][a-z0-9-]*)\.md$/;
 export const specPattern = /^specs\/(\d{3}-[a-z0-9-]+)\//;
@@ -35,6 +36,10 @@ export function isExempt(path: string): boolean {
     path.startsWith('src/content/articles/') ||
     /^src\/content\/works\/[a-z0-9-]+\/(zh|en)\.md$/.test(path) ||
     path.startsWith('.agents/skills/speckit-') ||
+    // 项目命令与hook参考使用Spec Kit原生格式，现状说明仍放docs/system。
+    /^\.specify\/presets\/vibes\/(?:commands\/speckit\.[a-z]+\.md|references\/hooks\.md)$/.test(
+      path,
+    ) ||
     (path.startsWith('.specify/templates/') && !path.startsWith('.specify/templates/overrides/')) ||
     path.startsWith('.specify/integrations/') ||
     path.startsWith('.specify/workflows/')

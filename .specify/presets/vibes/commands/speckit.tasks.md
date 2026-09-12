@@ -1,13 +1,6 @@
 ---
-name: speckit-tasks
-description: 将已确认范围的spec与plan转为可执行且按依赖排序的任务；保留已有有效进度。
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:vibes
+description: '将已确认范围的spec与plan转为可执行且按依赖排序的任务；保留已有有效进度。'
 ---
-
-# Speckit Tasks Skill
 
 # tasks
 

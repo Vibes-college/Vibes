@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '检查与发布网站'
 status: 'current'
-shaped-by: ['001', '002', '003', '004', '005', '009', '010', '013', '014']
+shaped-by: ['001', '002', '003', '004', '005', '009', '010', '013', '014', '015']
 legacy-feature-ids: ['delivery-setup', 'local-database', 'site-metadata']
 code-sources:
   [
@@ -35,7 +35,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: 'c0a1fb0a766e25bb22ffa075bbeb8db3ae0569f7f86984610c7d2a9c486370c1'
+code-revision: '4717ab0be8c07abf3195cae24e92b214d0b4cc9b12e7190d9a4156d6857835e8'
 ---
 
 # 功能名：检查与发布网站
@@ -49,10 +49,10 @@ code-revision: 'c0a1fb0a766e25bb22ffa075bbeb8db3ae0569f7f86984610c7d2a9c486370c1
 首次准备环境或修改原生补丁时，先按[Paseo构建路径](../system/local-assistant.md#重建与交付)准备固定上游和原生产物。普通build/verify会核对产物与当前源码补丁一致；不会默默拿旧包通过。仅本地对照可以关闭助手，发布构建必须包含。
 
 1. 仅需要Spec Kit的需求使用PR；小修复、文档和小型规则补充按影响检查后直接提交，不单独开PR。远端保护限制见[发布规则](../system/checks-and-release.md)。采用Spec Kit时，AI在首版spec形成时建立Draft PR，给用户可打开的链接和任务摘要；当前进度、阻塞、下一步、预览范围放PR描述，重要决定和证据放评论。
-2. 浏览器验收包含桌面Chromium与手机Chromium/WebKit模拟，真实iPhone另验；本地按[检查规则](../system/checks-and-release.md)验证；Draft云端运行独立check，不把跳过的verify/budget当作完成验收。阶段、交接和暂停前提交推送，不逐commit强制push。
+2. 浏览器验收包含桌面Chromium与手机Chromium/WebKit模拟，真实iPhone另验；本地按[检查规则](../system/checks-and-release.md)验证；Draft云端按范围运行独立检查：纯文档与Agent规则只检查文档/格式，其余运行check，不把跳过的verify/budget当作完成验收。阶段、交接和暂停前提交推送，不逐commit强制push。
 3. 可体验阶段由AI运行`npm run release:preview -- <PR号>`：干净且已推送的PR head在本机verify/budget通过后上传预览版本，提供实际URL与SHA；不会提升生产。未跟踪的用户文件不删除，必要时用隔离worktree。
 4. 基础设施或重要PR完成实现后，AI主动新建独立会话，让另一Agent审查整个PR，按实际风险检查功能是否正确、安全边界、性能与资源、代码是否易维护，以及测试和交付是否可信。问题修复并由审查者复核最终SHA后才转Ready，按整个PR差异运行verify/budget（文档和工具按范围缩减）；全部通过后通知你点合并。Ready之后再改代码须退回Draft、复核并重跑检查；具体范围见[独立审查规则](../system/checks-and-release.md#ready前的独立审查)。普通小改动保留按影响检查的路径，AI不自动合并。
-5. 网站变更合并到main后，系统先核对最终全部文件是否与可信PR完整验收完全一致；有证明时复用验收结论，省去重复的完整浏览器和原生回归，仍重新构建Paseo及生产网站、运行基础检查、预算和产物核验。没有证明、内容变化、最新运行失败或证据查询异常则自动完整检查；Actions摘要显示路径及原因，无需手动选择。两条路径的verify/budget都成功后才部署本次main产物至`https://vibes.college`，拒绝过时版本。纯治理文档不重建网站；main仍按实际上线版本累计差异，避免漏发旧网页改动。
+5. 网站变更合并到main后，系统先核对最终全部文件是否与可信PR完整验收完全一致；有证明时复用验收结论，省去重复的完整浏览器和原生回归，仍重新构建Paseo及生产网站、运行基础检查、预算和产物核验。没有证明、内容变化、最新运行失败或证据查询异常则自动完整检查；Actions摘要显示路径及原因，无需手动选择。两条路径的verify/budget都成功后才部署本次main产物至`https://vibes.college`，拒绝过时版本。纯治理文档与Agent指导文件不重建网站，也不启动浏览器回归或部署；混入脚本、网页、依赖或GitHub CI配置时按影响升级。main仍按实际上线版本累计差异，避免漏发旧网页改动。
 6. 云端核对线上SHA/摘要、中英文首页实际字节与CSP、Paseo脚本/样式的SRI和缓存，以及HTML预览载体的隔离策略；AI再用内置浏览器核对浏览、搜索、详情、语言与404，PR记录真实结果。失败或不确定状态停止收尾，保留恢复证据；不能将上传成功当作页面验收。
 7. 需要恢复时使用`npm run release:restore -- <已记录生产版本>`，从CI artifact取回记录后核对目标与版本；首次切换前旧Worker保留，具体恢复路径见交付说明。
 8. 上线验收后AI运行`npm run cleanup:task -- <PR号>`查看候选，确认无额外提交、无脏文件或其他任务占用，再执行清理；从待删除worktree之外执行，不切换其他任务的分支。收尾时同步空闲的本地主目录；有本地提交则保留并合并origin/main，没有则快进，冲突处理后按影响验证，不建立定时跟进。分支删除不删除Git历史或回滚版本。
@@ -99,6 +99,7 @@ flowchart TD
 - [x] 正式域名构建与来源校验通过，发布前保持明确目标和容量门槛。
 - [x] 既有main完整检查后的自动发布实际成功，线上版本与页面验收通过，再执行清理。
 - [x] 可信复用、完整回退、读取期间重跑保护和单次准备通过本地判定/工作流测试；生产产物与线上响应检查覆盖成功和失败边界。每轮正式CI及首次快速生产部署以PR/Actions的实际证据验收。
+- [x] 纯Agent文案与已知流程声明分类为docs，混入脚本、网页、依赖、GitHub工作流或未知路径回退；2026-09-12本地范围分类测试通过。
 - [x] 清理拒绝未合并、未上线、额外提交、脏文件/ignored配置/依赖PR，占用由AI核对声明；保护测试通过，保留恢复版本。
 - [x] 本地D1只用于命令验收，拒绝线上参数；2026-09-05本地verify验证有效，网站不读取此库。
 
@@ -107,6 +108,8 @@ flowchart TD
 多媒体交付验收：2026-09-07，release:preview在干净已推送源码上完成完整verify与budget、上传版本并核对发布SHA；内置浏览器实际播放预览中的Sintel并进入正文。该证据仅覆盖阶段预览，原始日志在resources/evidence/010-media-previews/release-preview.log，具体预览SHA和地址见PR #9；不代表main合并或正式网站已更新。
 
 2026-09-12，可信复用实现的原生构建159项测试和类型检查通过；基础check135项单元通过，完整浏览器247通过、5项按设备适用性跳过，生产budget与5个关键响应preflight通过。新增强smoke对既有线上PR12产物只读核验通过；这不代表新流程已部署。原始证据在resources/evidence/014-ci-release-reuse/，独立审查、正式CI及首次main快速发布结果见[PR #13](https://github.com/Vibes-college/Vibes/pull/13)。
+
+2026-09-12，Agent规则分类与文档检查共137项单元通过，budget通过。完整浏览器回归246通过、5项按设备适用性跳过，既有WebKit音频恢复用例1项失败；相同代码与断言随后定向连续3次通过，保留首轮失败，不记为一次全绿回归。原始证据在resources/evidence/015-agent-guidance/；本次远端完整CI按用户要求未运行，见[PR #14](https://github.com/Vibes-college/Vibes/pull/14)。
 
 ## 对应的自动化测试
 

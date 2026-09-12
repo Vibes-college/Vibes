@@ -23,11 +23,45 @@ test('check scope limits only known documentation and document tools', () => {
     '.github/workflows/check.yml',
     'scripts/check-scope.ts',
     'scripts/test-e2e.ts',
+    '.agents/skills/example/scripts/check.ts',
+    '.agents/skills/example/check.sh',
+    '.specify/presets/vibes/scripts/build.sh',
+    '.specify/workflows/steps/check.py',
+    '.specify/scripts/bash/setup-plan.sh',
+    '.specify/init-options.json',
     'unknown.md',
   ]) {
     assert.equal(classifyChanges(['docs/README.md', path]), 'full', path);
   }
   assert.equal(classifyChanges([]), 'full');
+});
+
+test('agent guidance stays lightweight, including mixed rule documents and generated files', () => {
+  const guidance = [
+    'AGENTS.md',
+    '.github/pull_request_template.md',
+    '.agents/skills/speckit-plan/SKILL.md',
+    '.agents/skills/example/references/guide.md',
+    '.specify/templates/overrides/plan-template.md',
+    '.specify/presets/vibes/preset.yml',
+    '.specify/presets/vibes/commands/speckit.plan.md',
+    '.specify/presets/vibes/references/hooks.md',
+    '.specify/presets/.registry',
+    '.specify/workflows/speckit/workflow.yml',
+    '.specify/workflows/overlays/speckit/scoped-execution.yml',
+    '.specify/workflows/workflow-registry.json',
+    '.specify/integrations/codex.manifest.json',
+  ];
+  for (const path of guidance) assert.equal(classifyChanges([path]), 'docs', path);
+  assert.equal(classifyChanges(guidance), 'docs');
+  assert.equal(classifyChanges([...guidance, 'scripts/docs-policy.ts']), 'tools');
+  for (const path of [
+    'src/pages/index.astro',
+    'package-lock.json',
+    '.github/workflows/check.yml',
+  ]) {
+    assert.equal(classifyChanges([...guidance, path]), 'full', path);
+  }
 });
 
 test('real Git changes include deletions, rename sources and untracked website files', () => {

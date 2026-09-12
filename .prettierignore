@@ -15,7 +15,8 @@ public/
 .specify/templates/*
 !.specify/templates/overrides/
 .specify/integrations/
-.specify/workflows/
+.specify/workflows/*
+!.specify/workflows/overlays/
 .specify/memory/.constitution-template.json
 
 .scratch/

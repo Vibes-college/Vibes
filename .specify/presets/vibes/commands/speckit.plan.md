@@ -1,13 +1,6 @@
 ---
-name: speckit-plan
-description: 为已有规格制定实现计划；仅研究影响实现的未决问题，按需生成附加产物。
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:vibes
+description: '为已有规格制定实现计划；仅研究影响实现的未决问题，按需生成附加产物。'
 ---
-
-# Speckit Plan Skill
 
 # plan
 

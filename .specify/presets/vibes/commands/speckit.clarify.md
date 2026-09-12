@@ -1,13 +1,6 @@
 ---
-name: speckit-clarify
-description: 澄清未冻结规格中影响范围、权限或实现正确性的未决事项；已明确时直接结束。
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:vibes
+description: '澄清未冻结规格中影响范围、权限或实现正确性的未决事项；已明确时直接结束。'
 ---
-
-# Speckit Clarify Skill
 
 # clarify
 

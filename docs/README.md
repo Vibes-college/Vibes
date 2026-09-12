@@ -20,6 +20,7 @@ Markdown是给你看的代码说明，不是另一套可以晚些更新的报告
 | 页面提供什么资源、调用了哪些外部服务     | [接口与服务](system/interfaces.md)         |
 | 数值限制、样式约束和校验规则是什么       | [系统规则](system/rules.md)                |
 | 怎样检查、审阅、发布与恢复               | [检查与发布](system/checks-and-release.md) |
+| Agent规则与Skills怎样使用、更新及恢复    | [Agent规则维护](system/agent-guidance.md)  |
 | 原生助手怎样连接电脑、重建与维护         | [Paseo接入](system/local-assistant.md)     |
 
 正文组件与扩展语法见[Markdown排版](system/markdown.md)。
