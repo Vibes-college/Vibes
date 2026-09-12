@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '在Explore中使用稳定、连贯的Paseo原生助手'
-status: 'in-progress'
+status: 'complete'
 feature-ids: ['local-assistant', 'explore-browse', 'article-read', 'project-commands']
 amends: []
 amended-by: []
@@ -13,7 +13,7 @@ approved-artifacts: []
 
 ## 已确认的目的与接入方案
 
-通过多轮具体场景确认用途后，用户选择直接采用旧项目和旧PR验证过的接入方式，并授权接入时作有明确收益的改进，不要求完整复制旧代码。采用完整官方Web直接挂载及薄宿主边界；下列US/FR是完整实施范围，SC数值是测量前固定的工程验收目标。当前阶段和有效验证范围见plan与tasks，未覆盖项不写成通过。
+通过多轮具体场景确认用途后，用户选择直接采用旧项目和旧PR验证过的接入方式，并授权接入时作有明确收益的改进，不要求完整复制旧代码。采用完整官方Web直接挂载及薄宿主边界；下列US/FR保留原始完整目标，SC数值是测量前固定的工程验收目标；本规格的complete仅表示下方用户确认的快速收尾范围已完成。完整目标中延期的功能与专项验收保留未完成状态，后续另立修订规格；有效范围和证据见plan与tasks。
 
 已确认：建立新分支和Draft PR，吸收并保留过去经验，优先复用官方Web协调能力，按用户感知分阶段评价，不先为减包而裁剪。基础能力至少包括与Agent对话、执行任务、返回结果和查看相关产出文件。
 

@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Paseo接入的实施与分阶段交付清单'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -36,7 +36,7 @@ amended-by: []
 - [x] T013 [P] 在tests/paseo-loading.spec.ts与tests/fixtures/paseo-webui/覆盖无首次点击请求、即时外壳、慢网/失败/重试、加载中收起、单根和回访，测试纳入正常test:e2e。
 - [x] T014 在src/components/LocalAssistant*.astro、src/scripts/paseo-boot.ts、src/features/paseo-webui/host.ts、src/layouts/Layout.astro实现轻量引导、原生预载/挂载和明确重试；核验官方安装/Agent/配对入口与无JS说明。
 - [x] T015 [P] 在原生src/embedded/、packages/app/index.ts及根布局补丁保留完整H挂载与原生协调层，扩展约定surface/requestId合同，限定dispose，复测生产状态hook修正。
-- [ ] T016 核对官方安装与配对说明，用现有真实兼容Paseo和浏览器完成官方relay连接/已配对恢复及基本对话；资源加载与失败重试沿现有三浏览器自动化验收。新电脑安装、任意直连/自建中继与完整真机矩阵不冒充已测。
+- [x] T016 核对官方安装与配对说明，用现有真实兼容Paseo和浏览器完成官方relay连接/已配对恢复及基本对话；资源加载与失败重试沿现有三浏览器自动化验收。新电脑安装、任意直连/自建中继与完整真机矩阵不冒充已测。
 
 ## 4. US2：默认预设与已有项目做事并查看产出（P1）
 
@@ -47,7 +47,7 @@ amended-by: []
 
 - [x] T020 [P] 在原生src/attachments/types.ts、src/composer/、src/embedded/中实现可删文章AttachmentPill及普通text附件提交；按requestId一次性投递，保留既有草稿与原生失败行为。
 - [x] T021 在src/components/LocalAssistant.astro、src/scripts/paseo-boot.ts及src/pages/[locale]/works/[id].astro实现显式文章引用入口和compact/full，保留文章阅读、原生根/草稿/焦点/滚动，手机不挤出不可用双栏。
-- [ ] T022 按快速收尾范围运行现有聊天、草稿/文章引用、compact/full、审批/停止与原生文件路径回归；补无Codex/Luna的新草稿选择回归，用真实Agent与内置浏览器核对默认目录和基本对话。插件加载及用户任意配置直连/relay矩阵留后续，主页面不开放unsafe-eval。
+- [x] T022 按快速收尾范围运行现有聊天、草稿/文章引用、compact/full、审批/停止与原生文件路径回归；补无Codex/Luna的新草稿选择回归，用真实Agent与内置浏览器核对默认目录和基本对话。插件加载及用户任意配置直连/relay矩阵留后续，主页面不开放unsafe-eval。
 
 ## 5. US3：继续浏览与恢复（P1）
 
@@ -61,9 +61,9 @@ amended-by: []
 
 ## 7. 文档与交付
 
-- [ ] T030 在docs/features/local-assistant.md、相关阅读/浏览说明、docs/system/local-assistant.md及配置/接口/规则/交付文档同步完整操作路径、来源与有效验收；更新索引、PROJECT_ANALYSIS.md、docs-policy/docs-sources登记，语义审阅后再更新摘要。
-- [ ] T031 第一阶段先完成整个当前PR的verify与budget、真实基本使用及同SHA release:preview的实际响应头/资源/原有媒体回归；PR工作台记录已测/未测、环境和预览，保存推送有效进度，交用户体验后再安排下一阶段。
-- [ ] T032 由独立工作区的另一Agent审查整个PR及最终SHA，修复后复核；必要检查和实际验收全部完成才转Ready并同步spec/plan/tasks与索引complete，用户决定合并。
+- [x] T030 在docs/features/local-assistant.md、相关阅读/浏览说明、docs/system/local-assistant.md及配置/接口/规则/交付文档同步完整操作路径、来源与有效验收；更新索引、PROJECT_ANALYSIS.md、docs-policy/docs-sources登记，语义审阅后再更新摘要。
+- [x] T031 第一阶段先完成整个当前PR的verify与budget、真实基本使用及同SHA release:preview的实际响应头/资源/原有媒体回归；PR工作台记录已测/未测、环境和预览，保存推送有效进度，交用户体验后再安排下一阶段。
+- [x] T032 由独立工作区的另一Agent审查整个PR及最终SHA，修复后复核；必要检查和实际验收全部完成才转Ready并同步spec/plan/tasks与索引complete，用户决定合并。
 
 ## 8. 本轮反馈：统一布局与本地英语听写
 
@@ -77,7 +77,7 @@ amended-by: []
 - [x] T038 在tests/paseo-chat.spec.ts、paseo-recovery.spec.ts及既有同配置fixture补本轮三浏览器专项：无可见模式、单头部、当前工作区最近聊天、file/terminal保留、窄屏无新增加号、新建工作区真实点击、Files原生全屏面板与打开文件后关闭、键盘尺寸与full背景隔离、听写主按钮和失败恢复。核对真实local英语能力与操作证据；iPhone Safari iOS26软键盘、缩放与真录音若未实测则明确待测，并继续保留T029未完成。
 - [x] T039 源码与补丁稳定后，对照实际行为同步docs/features/local-assistant.md、浏览/阅读路径及docs/system/local-assistant.md和相关接口/配置/检查说明；解释操作与已知边界，保留有效旧证据及未测项，再更新code-revision，不提前宣称新布局或听写已实现。
 - [x] T040 将本轮产品补丁按既有series/maintenance登记并重建唯一产物，运行原生必要测试/类型、整站verify与budget及同SHA阶段预览验收；在现有PR #12保存推送进度、更新操作说明和实际限制。不得删改断言或照抄旧SHA结果宣称全通过；若最终检查仅复现已获许可的同一WebKit音频限制，可按既有授权发布同PR阶段预览，并记录新SHA实际结果。不新建PR、不自动合并；当前范围按T018/T022/T030—T032收尾，延期项见文末。
-- [ ] T041 使用用户提供的透明PNG作为右下角吉祥物，文章按钮改成约5秒后隐藏的说话气泡；保留键盘/鼠标重显与触屏关闭助手后的再次提示，普通入口与文章引用语义不变。验证定时隐藏、焦点保持、触屏不常驻、站内导航重置及真实浏览器外观；翻页测试从非交互区域起手，不以新的按钮命中区域代替文章手势。同步功能/系统说明并按最终SHA运行verify、budget与同PR阶段预览。
+- [x] T041 使用用户提供的透明PNG作为右下角吉祥物，文章按钮改成约5秒后隐藏的说话气泡；保留键盘/鼠标重显与触屏关闭助手后的再次提示，普通入口与文章引用语义不变。验证定时隐藏、焦点保持、触屏不常驻、站内导航重置及真实浏览器外观；翻页测试从非交互区域起手，不以新的按钮命中区域代替文章手势。同步功能/系统说明并按最终SHA运行verify、budget与同PR阶段预览。
 
 T038局部证据：2026-09-09在本任务隔离Paseo home与6797端口，复用电脑已存在的官方local模型，用模型自带7.435秒PCM16/16k英语样例经真实DaemonClient的start/chunk/finish取得转写，耗时2.618秒；原始结果见resources/evidence/013-paseo-web-integration/dictation/local-model-protocol.json。该证据只覆盖本地模型与官方协议，没有下载模型、配置云Key、录真实麦克风、验证手机或向Agent发消息；本项不单独证明T038界面路径，也不替代T029真机验收；本轮组合结果见下方。
 
@@ -88,6 +88,16 @@ T038窄屏导航局部证据：2026-09-09原生资源`/vendor/paseo/2a1ab1b13702
 T038/T040本轮完成证据：2026-09-09产品提交`39a52ce924953d859e639da9e82737ef8b3736c9`正常执行`release:preview 12`退出码0；121项单测通过，三浏览器E2E 235项通过、5项条件跳过、0失败，budget通过；原生20个测试文件156项及app类型检查通过。跳过项为桌面不适用的2项触摸和1项移动可见视口测试，以及仅在桌面运行的内容生命周期在两个移动项目的2项跳过。本轮WebKit原生音频恢复用例通过，未使用发布例外，历史裸audio复现证据保留。原始发布日志及结果见resources/evidence/013-paseo-web-integration/preview-checks/39a52ce/{release.log,result.json}。
 
 同SHA的[PR #12预览](https://pr-12-vibes-explore.topologic-relay.workers.dev/zh/)已核对release标识、中英200、CSP、noindex及原生前缀`/vendor/paseo/2a1ab1b13702f684/`。实际531×766云端浏览器确认窄屏无额外加号、新建工作区官方页面可达、Files打开44px宿主页头下的531×722原生完整面板、白色单行页头、清空输入恢复麦克风；compact/full均隐藏Realtime且麦克风可用，实际默认模型为Luna。未创建工作区，未把模拟浏览器或既有合成音频证据作为实体iPhone、云端物理麦克风验收；T029及其他完整范围仍未完成，PR保留Draft。验收结果绑定上述产品提交，后续规格状态记录不作为新SHA的整站验收。
+
+### 快速收尾完成证据
+
+2026-09-12产品提交`010f66fedade48e778357e654c2195e9f94c83e3`正常执行`release:preview 12`退出码0：check含121项单测及类型/lint/格式/文档全部通过，三浏览器E2E 244项通过、5项条件跳过、0失败，budget通过。5项跳过仍是设备不适用的触摸/移动可见视口及非桌面内容生命周期测试。原生补丁构建20个测试文件159项与app类型检查通过，原生资源为`/vendor/paseo/61a852015cc19b54/`；目录/模型补丁之后未再修改产品源码。
+
+现有真实兼容v0.7.2主机在内置浏览器经relay显示Online，用户实际对话确认`~/Vibes/Chat`；小窗/全屏、收起重开、中英切换和刷新恢复通过。云端同SHA预览已核对中英与文章200、CSP、noindex及原生资源，实际浏览器确认已保存relay连接与会话恢复、两种布局、吉祥物/文章气泡，并验证Carefree音频实际解码播放及暂停。新电脑安装、其他Daemon版本、直连、真机麦克风和本页后续清单未作通过结论。
+
+原始证据位于`resources/evidence/013-paseo-web-integration/converge/`：`release-010f66f.log`、`real-relay-result.json`、`preview-010f66f-headers.json`、`preview-010f66f-relay.txt`、`preview-010f66f-{compact,full,article}.png`及`preview-010f66f-audio.json`。此前7c18cb1中止运行、bbd55a5整轮6处测试定位失败与修复前专项日志均保留；最终全绿来自完整重跑，没有使用旧预览例外。定位修复按明确工作区身份限定，保留模型、文章提交次数、草稿和麦克风全部业务断言。
+
+独立审查者Newton（任务`/root/independent_review`，独立工作区）审查整个PR并复核上述产品SHA，覆盖行为、安全/数据、性能/资源、维护性及验证交付，结论无阻塞。最终状态文档的提交与复核、Ready及GitHub必需检查以PR工作台记录为准；合并和生产发布仍由Git/部署证明，不以complete代替。T016/T018/T022/T030—T032/T041当前范围完成，延期清单继续保留。
 
 ## 依赖与并行
 

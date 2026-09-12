@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Paseo原生助手接入与分阶段验证计划'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

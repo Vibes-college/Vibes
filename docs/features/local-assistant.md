@@ -107,7 +107,7 @@ code-revision: '6257b8984d6b8b965443d8aeefc9c7540c6780f0d11ed4f013ebb67c25f6a8d7
 
 2026-09-12在内置浏览器使用用户已配对的兼容v0.7.2主机，确认Online/Relay、实际对话与`~/Vibes/Chat`目录；小窗/全屏、收起重开、中英切换及刷新恢复通过，证据为`resources/evidence/013-paseo-web-integration/converge/real-relay-result.json`。新电脑安装、其他Daemon版本和直接连接未纳入本轮验收。
 
-本轮布局与听写组合回归、云端预览的导航及输入状态已验收，具体范围与证据见[013任务验收记录](../../specs/013-paseo-web-integration/tasks.md#8-本轮反馈统一布局与本地英语听写)。完整能力矩阵、长时与真机仍待验收，范围见[013规格](../../specs/013-paseo-web-integration/spec.md)。
+2026-09-12当前产品的完整verify（244项浏览器通过、5项设备条件跳过）、budget与同版本云端预览核对通过；既有布局与听写证据仍按原范围保留。具体范围与证据见[013任务验收记录](../../specs/013-paseo-web-integration/tasks.md#8-本轮反馈统一布局与本地英语听写)。完整能力矩阵、长时与真机仍待验收，范围见[013规格](../../specs/013-paseo-web-integration/spec.md)。
 
 ## 对应的自动化测试
 
