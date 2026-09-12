@@ -53,7 +53,7 @@ code-sources:
     'tests/fixtures/paseo-webui/article-reference.ts',
     'tests/explore.spec.ts',
   ]
-code-revision: '9803be9603b62f915cbbf8d26a89a66e8e8835c7b10031b86d2b9a9dd0910066'
+code-revision: '76a84e513b627690927d1a2df5fd2f90ab4375755c6a1b94ea6f049a18f2c0b2'
 ---
 
 # 功能名：阅读作品详情

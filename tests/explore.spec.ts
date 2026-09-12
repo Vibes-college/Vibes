@@ -10,6 +10,10 @@ const publishedPapers = readCatalog().works.filter(
 ).length;
 
 test('local filtering, empty state, and URL survive refresh', async ({ page }) => {
+  // Filtering does not test YouTube availability; a remote thumbnail must not stall teardown.
+  await page.route(/^https:\/\/i\.ytimg\.com\//, (route) =>
+    route.fulfill({ path: 'public/media/sintel/poster.webp', contentType: 'image/webp' }),
+  );
   await page.goto('/');
   await expect(page.locator('.work-card:visible')).toHaveCount(24);
   await page.locator('.category-nav a[href="/zh/tags/paper/"]').click();
