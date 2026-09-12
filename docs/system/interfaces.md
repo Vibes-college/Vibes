@@ -24,7 +24,7 @@ code-sources:
     'scripts/paseo-webui-preview.ts',
     'public/_headers',
   ]
-code-revision: '30583795e46c2bfccb28460abcc82de049b751fe469f125af335a4effc3521ad'
+code-revision: '0f62c4b36d309df4b4cb7c2e03fc84d0279b6464780f7948e4c6820276fb2e00'
 ---
 
 # 接口与外部服务

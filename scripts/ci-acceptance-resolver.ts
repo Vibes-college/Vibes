@@ -38,6 +38,21 @@ function page<T>(value: unknown, field: string): T[] {
   return data[field] as T[];
 }
 
+async function latestRun(headSha: string, io: AcceptanceIO): Promise<AcceptanceRun> {
+  const runs = page<AcceptanceRun>(
+    await io.github(
+      `actions/workflows/check.yml/runs?event=pull_request&head_sha=${headSha}&per_page=100`,
+    ),
+    'workflow_runs',
+  );
+  // Merged runs can have an empty PR association. Select before checking success.
+  requireProof(
+    runs.length && runs.every((run) => validId(run.id)),
+    'No matching PR verification run',
+  );
+  return runs.sort((a, b) => b.id - a.id)[0];
+}
+
 // All uncertainty selects the existing full path. Never search past a newer failure.
 export async function resolveAcceptance(
   context: AcceptanceContext,
@@ -51,19 +66,7 @@ export async function resolveAcceptance(
     );
     const pr = (await io.github(`pulls/${associated[0].number}`)) as AcceptancePr;
     requireMergedPr(context, pr);
-    const runs = page<AcceptanceRun>(
-      await io.github(
-        `actions/workflows/check.yml/runs?event=pull_request&head_sha=${pr.head.sha}&per_page=100`,
-      ),
-      'workflow_runs',
-    );
-    // Merged runs can have an empty pull_requests array. Select the newest run
-    // for the queried head before checking success, then bind its saved PR identity.
-    requireProof(
-      runs.length && runs.every((run) => validId(run.id)),
-      'No matching PR verification run',
-    );
-    const run = runs.sort((a, b) => b.id - a.id)[0];
+    const run = await latestRun(pr.head.sha, io);
     requireSuccessfulRun(context, pr, run);
     const jobs = page<AcceptanceJob>(
       await io.github(`actions/runs/${run.id}/attempts/${run.run_attempt}/jobs?per_page=100`),
@@ -90,6 +93,14 @@ export async function resolveAcceptance(
       `git/commits/${record.checkoutSha}`,
     )) as AcceptanceProof['checkout'];
     requireAcceptance({ ...context, pr, run, jobs, artifact, record, checkout });
+    // Artifact/commit requests take time: do not reuse a snapshot superseded
+    // by a rerun while its evidence was being collected.
+    const current = await latestRun(pr.head.sha, io);
+    requireSuccessfulRun(context, pr, current);
+    requireProof(
+      current.id === run.id && current.run_attempt === run.run_attempt,
+      'PR verification changed while collecting acceptance evidence',
+    );
     return {
       mode: 'reuse',
       reason: 'Exact main tree covered by successful full PR verification',

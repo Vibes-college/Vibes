@@ -238,6 +238,33 @@ test('latest failed, cancelled or unfinished run is not hidden by an older green
   }
 });
 
+test('a new run or attempt during evidence collection invalidates the earlier success', async () => {
+  for (const change of ['new-run', 'new-attempt', 'unfinished', 'failed']) {
+    const f = fixture();
+    f.io.artifact = async () => {
+      if (change === 'new-run') f.p.run.id = 101;
+      if (change === 'new-attempt') f.p.run.run_attempt = 3;
+      if (change === 'unfinished') f.p.run.status = 'in_progress';
+      if (change === 'failed') f.p.run.conclusion = 'failure';
+      return structuredClone(f.p.record);
+    };
+    assert.equal((await resolveAcceptance(f.context, f.io)).mode, 'full', change);
+  }
+});
+
+test('the final freshness query must succeed before acceptance can be reused', async () => {
+  const f = fixture();
+  const github = f.io.github;
+  let reads = 0;
+  f.io.github = async (path) => {
+    if (path.startsWith('actions/workflows') && ++reads === 2)
+      throw new Error('Latest run unavailable');
+    return github(path);
+  };
+  assert.equal((await resolveAcceptance(f.context, f.io)).mode, 'full');
+  assert.equal(reads, 2);
+});
+
 test('direct push, ambiguous or expired artifacts, malformed responses and IO failures fall back', async () => {
   const mutations: ((f: ReturnType<typeof fixture>) => void)[] = [
     (f) => f.values.set(`commits/${mainSha}/pulls?per_page=100`, []),

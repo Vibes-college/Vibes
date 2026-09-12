@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '812e373bf97a115bcb0334e710d9cf047317dad6aba57b24c17a7bc97328ffb1'
+code-revision: '260c9b3e27b93fa05732e6456386e60fbdf2ee9dd3921d2ab448e97d2006ccc0'
 ---
 
 # 检查与发布
@@ -33,7 +33,7 @@ verify与预算构建共享一个runner，budget仍是同名必需检查，以al
 
 ### main的可信验收复用
 
-仅main push且网站范围full时，scope尝试复用本仓库已合并PR的完整验收：合并SHA对应唯一PR；最新对应head运行与当前attempt的verify/budget及重型步骤成功；同run/attempt的唯一小JSON artifact未过期且摘要正确；仓库/PR/head身份、schema与Node版本一致；记录的实际模拟合并提交由GitHub复核，完整tree与最终main完全相同。合并后run的PR列表可能为空，因此用不可变记录绑定PR身份；出现相反关联仍拒绝。完整tree包含工作流、测试、锁和补丁，提交号不同但tree相同可复用。
+仅main push且网站范围full时，scope尝试复用本仓库已合并PR的完整验收：合并SHA对应唯一PR；最新对应head运行与当前attempt的verify/budget及重型步骤成功；同run/attempt的唯一小JSON artifact未过期且摘要正确；仓库/PR/head身份、schema与Node版本一致；记录的实际模拟合并提交由GitHub复核，完整tree与最终main完全相同。合并后run的PR列表可能为空，因此用不可变记录绑定PR身份；出现相反关联仍拒绝。完整tree包含工作流、测试、锁和补丁，提交号不同但tree相同可复用。收集记录和提交证据后再次读取最新运行，run/attempt或成功状态变化即完整回退，避免采信读取期间已被重跑替代的快照。
 
 满足全部条件时，main运行paseo:production、基础check、生产budget构建及preflight，不重复完整E2E或原生回归；仍生成当前main的production artifact。Draft/docs/tools不产生完整证明；旧CI、直接push、最新失败/取消/未完成、不同tree、Fork、过期/歧义或API错误均自动完整回退，不向旧绿灯回溯。读取有数量、大小与超时上限；记录只作为JSON解析，不执行PR产物或搬运依赖。Actions摘要说明复用来源或回退原因。
 
