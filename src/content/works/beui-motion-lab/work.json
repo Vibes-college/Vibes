@@ -2,7 +2,7 @@
   "id": "beui-motion-lab",
   "originalLocale": "zh",
   "order": 1002,
-  "sourceUrl": "https://beui.dev/components/motion",
+  "sourceUrl": "https://github.com/Vibes-college/Vibes/blob/main/src/content/works/beui-motion-lab/zh.mdx",
   "typeId": "article",
   "tagIds": [],
   "preview": {
@@ -30,8 +30,8 @@
         "en": "Purpose"
       },
       "value": {
-        "zh": "beUI 组件体验",
-        "en": "beUI component demo"
+        "zh": "AI 原生 UI 开发实践指南",
+        "en": "AI-native UI development guide"
       }
     }
   ],

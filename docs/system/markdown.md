@@ -76,9 +76,9 @@ GIF放public后用图片引用；本地视频可用`<video controls src="/media/
 
 MDX是可信仓库源码，会在构建中执行import；不接收公众输入、远程MDX或秘密值。普通Markdown正文不需要React；曾访问互动页后，共享运行时可留在同一标签页缓存，不承诺卸载已下载代码。主动打开[本地助手](../features/local-assistant.md)会另行加载其固定原生运行时，与文章island的加载条件分开。
 
-## beUI 组件文章
+## UI开发实践文章
 
-[十组件介绍](../../src/content/works/beui-motion-lab/zh.mdx)是一篇永久中文体验文章，每节包括用途、操作、预期与上游来源。src/components/beui保存MIT组件与本地许可，src/components/demos/beui每项单独入口，正文使用client:visible。Motion处理交互动画，Marquee使用CSS，悬停暂停。黑色演示容器统一16px圆角与左右16px留白；最窄手机略缩页签按钮的横向内边距，避免三项挤出内容区。
+[AI原生UI实践指南](../../src/content/works/beui-motion-lab/zh.mdx)是中文互动文章，结合方法、资源表、任务模板与十种beUI演示，保留原地址。部分演示放在原生details里，先展开再进入可视区启动；演示与设计设想分别说明。src/components/beui保存MIT组件与本地许可，src/components/demos/beui每项单独入口，正文使用client:visible。Motion处理交互动画，Marquee使用CSS，悬停暂停。黑色演示容器统一16px圆角与左右16px留白；最窄手机略缩页签按钮的横向内边距，避免三项挤出内容区。
 
 beui.css通过Tailwind Vite插件编译，只扫描上述两个目录，不导入Preflight；主题和基础元素修正限定.beui-demo。预览保留原站英文文案、参数与变体，使用原站Geist本地字体及lucide-react图标；cn使用clsx与tailwind-merge处理类合并。维护上游组件时保留许可证并重新对照原站。新增演示目录须加入CSS的@source。每篇MDX预算包含该文全部延迟组件和共享运行时，见[系统规则](rules.md)。
 
