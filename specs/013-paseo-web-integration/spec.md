@@ -4,7 +4,7 @@ describes: '在Explore中使用稳定、连贯的Paseo原生助手'
 status: 'complete'
 feature-ids: ['local-assistant', 'explore-browse', 'article-read', 'project-commands']
 amends: []
-amended-by: []
+amended-by: ['014']
 research-trigger: '官方客户端复用边界、旧Chat后端兼容性、安装引导预加载与分阶段体验验收'
 approved-artifacts: []
 ---

@@ -20,6 +20,11 @@ jobs:
     outputs:
       scope: ${{ steps.scope.outputs.scope }}
       mode: ${{ steps.scope.outputs.mode }}
+      acceptance: ${{ steps.acceptance.outputs.acceptance }}
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,12 +36,19 @@ jobs:
         run: npm run ci:scope
         env:
           CHECK_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
+      - id: acceptance
+        if: steps.scope.outputs.mode == 'required' && steps.scope.outputs.scope == 'full' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: node --experimental-strip-types scripts/ci-acceptance.ts resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
   verify:
     needs: scope
     name: verify
     if: always() && github.event_name != 'schedule' && needs.scope.outputs.mode != 'draft'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
+    outputs:
+      budget: ${{ steps.resource_budget.outputs.budget || steps.no_budget.outputs.budget }}
     steps:
       - name: Require a successful scope classification
         run: |
@@ -55,7 +67,7 @@ jobs:
           node-version: 22.20.0
           cache: npm
       - run: npm ci
-      - if: needs.scope.outputs.scope == 'full'
+      - if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance != 'reuse'
         run: npx playwright install --with-deps chromium webkit
       - if: needs.scope.outputs.scope == 'docs'
         run: npm run docs:check && npm run format:check
@@ -65,53 +77,57 @@ jobs:
         run: npm run check
         env:
           DOCS_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
-      - if: needs.scope.outputs.scope == 'full'
+      - name: Prepare Paseo for full verification
+        id: native_full
+        if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance != 'reuse'
         run: npm run paseo:ci
-      - if: needs.scope.outputs.scope == 'full'
+      - name: Run full regression
+        id: regression_full
+        if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance != 'reuse'
         run: npm run verify
         env:
           SITE_URL: https://vibes.college
           VIBES_DEPLOY: '1'
           DOCS_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
-      - uses: actions/upload-artifact@v4
-        if: failure() && needs.scope.outputs.scope == 'full'
-        with:
-          name: playwright-failures
-          path: test-results/
-          retention-days: 7
-          if-no-files-found: ignore
-  budget:
-    needs: scope
-    name: budget
-    if: always() && github.event_name != 'schedule' && needs.scope.outputs.mode != 'draft'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Require a successful scope classification
-        run: |
-          test "$SCOPE_RESULT" = success
-          test "$CHECK_MODE" = required
-          case "$CHECK_SCOPE" in docs|tools|full) ;; *) exit 1 ;; esac
+      - name: Prepare verified production source
+        if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance == 'reuse'
+        run: npm run paseo:production && npm run check
         env:
-          SCOPE_RESULT: ${{ needs.scope.result }}
-          CHECK_MODE: ${{ needs.scope.outputs.mode }}
-          CHECK_SCOPE: ${{ needs.scope.outputs.scope }}
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.20.0
-          cache: npm
-      - if: needs.scope.outputs.scope == 'full'
-        run: npm ci
-      - if: needs.scope.outputs.scope == 'full'
-        run: npm run paseo:ci
-      - if: needs.scope.outputs.scope == 'full'
-        run: npm run budget
+          CI_ACCEPTANCE_REUSED: 'true'
+          DOCS_BASE_REF: ${{ github.event.before || 'origin/main' }}
+      - name: Build and check resource budget
+        id: resource_budget
+        if: needs.scope.outputs.scope == 'full'
+        run: |
+          npm run budget
+          echo "budget=passed" >> "$GITHUB_OUTPUT"
         env:
           SITE_URL: https://vibes.college
           VIBES_DEPLOY: '1'
+      - id: no_budget
+        if: needs.scope.outputs.scope != 'full'
+        run: |
+          echo "No website output changed; resource budget is not applicable."
+          echo "budget=not-applicable" >> "$GITHUB_OUTPUT"
+      - name: Validate production files and policies
+        if: needs.scope.outputs.scope == 'full'
+        run: node --experimental-strip-types scripts/release-preflight.ts
+      - name: Record full PR acceptance
+        if: github.event_name == 'pull_request' && needs.scope.outputs.scope == 'full'
+        run: node --experimental-strip-types scripts/ci-acceptance.ts record
+        env:
+          CI_SCOPE: ${{ needs.scope.outputs.scope }}
+          CI_NATIVE_VERIFIED: ${{ steps.native_full.outcome }}
+          CI_FULL_VERIFIED: ${{ steps.regression_full.outcome }}
+          CI_BUDGET_PASSED: ${{ steps.resource_budget.outcome }}
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request' && needs.scope.outputs.scope == 'full'
+        with:
+          name: acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .scratch/ci-acceptance/acceptance.json
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: error
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.scope.outputs.scope == 'full'
         run: node --experimental-strip-types scripts/release-artifact.ts
       - uses: actions/upload-artifact@v4
@@ -121,8 +137,37 @@ jobs:
           path: dist/
           include-hidden-files: true
           retention-days: 7
-      - if: needs.scope.outputs.scope != 'full'
-        run: echo "No website output changed; resource budget is not applicable."
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure() && needs.scope.outputs.scope == 'full'
+        with:
+          name: playwright-failures
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+  budget:
+    needs: [scope, verify]
+    name: budget
+    if: always() && github.event_name != 'schedule' && needs.scope.outputs.mode != 'draft'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require the budget result from this verification
+        run: |
+          test "$SCOPE_RESULT" = success
+          test "$CHECK_MODE" = required
+          test "$VERIFY_RESULT" = success
+          case "$CHECK_SCOPE" in
+            full) test "$BUDGET_RESULT" = passed ;;
+            docs|tools) test "$BUDGET_RESULT" = not-applicable ;;
+            *) exit 1 ;;
+          esac
+        env:
+          SCOPE_RESULT: ${{ needs.scope.result }}
+          CHECK_MODE: ${{ needs.scope.outputs.mode }}
+          CHECK_SCOPE: ${{ needs.scope.outputs.scope }}
+          VERIFY_RESULT: ${{ needs.verify.result }}
+          BUDGET_RESULT: ${{ needs.verify.outputs.budget }}
   draft-check:
     name: Draft progress (not release acceptance)
     needs: scope

@@ -2,9 +2,10 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '009', '010', '013']
+shaped-by: ['001', '003', '005', '006', '007', '009', '010', '013', '014']
 code-sources:
   [
+    '.github/workflows/check.yml',
     'src/lib/content/',
     'src/lib/i18n/',
     'src/scripts/',
@@ -22,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'd1e5ca84b6f4329d4827e34f10b15b648de6f9ca8c932afd620c28fa811149b8'
+code-revision: '2304ab491d15dc9890c801ee941ac1fdb67a3ccc454ca2f62f24af52e4a0409f'
 ---
 
 # 常量、规则表与正则
@@ -58,7 +59,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 | 格式            | 单引号、100 字符目标行宽、Astro parser；完整检查范围见忽略文件                                                   | .prettierrc.json；.prettierignore                                            |
 | Node 与工具版本 | Node >=22.20.0；具体依赖版本由锁文件决定                                                                         | package.json；package-lock.json                                              |
 | 类型规则        | 网站 strict；工具 NodeNext/ES2023/strict/noEmit                                                                  | tsconfig.json；tsconfig.tools.json                                           |
-| CI              | main push、PR活动、手动及每周文档检查；verify 与 budget 各最多 30 分钟；检查只读 contents                        | .github/workflows/check.yml                                                  |
+| CI              | main push、PR活动、手动及每周文档检查；verify 最多35分钟、budget结果gate最多5分钟；scope额外只读Actions/PR证据   | .github/workflows/check.yml                                                  |
 | 浏览器选择      | 本地与CI统一Playwright Chromium和WebKit                                                                          | playwright.config.ts                                                         |
 | 预览端口        | 本机 4322；E2E 要求端口空闲；开发默认端口以 Astro 打印为准                                                       | package.json；scripts/test-e2e.ts；playwright.config.ts                      |
 | 服务等待        | Playwright webServer最多60000ms                                                                                  | playwright.config.ts                                                         |
@@ -143,7 +144,7 @@ scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序�
 
 ## 交付与失败经验
 
-生产origin固定https://vibes.college，worker/account见scripts/release-policy.ts与wrangler.jsonc；ci-policy.ts只允许main push确切SHA和两个成功检查进入生产。release-artifact.ts验证产物SHA与摘要；release-smoke.ts每请求10秒超时、最多6轮、轮间5秒。cleanup-policy.ts拒绝未合并/未部署/合并未进入线上/额外提交/脏文件/占用/其他open PR依赖；具体占用由本机AI核对后显式声明；真实配置与证据等ignored文件受保护，当前目录及其子目录/符号链接不得被移除。
+生产origin固定https://vibes.college，worker/account见scripts/release-policy.ts与wrangler.jsonc；ci-policy.ts只允许main push确切SHA和两个成功检查进入生产。release-artifact.ts验证产物SHA与摘要；release-smoke.ts版本请求10秒、强核验资源15秒超时，最多6轮、轮间5秒；main按本次dist核对响应字节、安全策略及Paseo资源。可信同树验收复用条件与自动完整回退见checks-and-release.md；预算和产物身份门槛不变。cleanup-policy.ts拒绝未合并/未部署/合并未进入线上/额外提交/脏文件/占用/其他open PR依赖；具体占用由本机AI核对后显式声明；真实配置与证据等ignored文件受保护，当前目录及其子目录/符号链接不得被移除。
 
 docs/DECISIONS.md只能追加，原LESSONS历史迁移时保留旧正文；新的docs/LESSONS.md为living。docs-lessons.ts要求经验三行、日期有效、现象/原因/证据/措施/状态齐全，不超过30条；已转化另需验证和转化日期。30天后的有效性和是否适合清退由AI审阅，不自动删除。记录条件见经验文档，规则不能证明叙事真实性。
 

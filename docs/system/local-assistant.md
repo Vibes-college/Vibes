@@ -2,7 +2,7 @@
 tense: 'living'
 describes: 'Paseo原生助手的来源、接入边界和构建维护'
 status: 'current'
-shaped-by: ['013']
+shaped-by: ['013', '014']
 code-sources:
   [
     'src/features/paseo-webui/',
@@ -23,7 +23,7 @@ code-sources:
     'tests/unit/paseo-webui-contract.test.ts',
     'tests/unit/paseo-page-context.test.ts',
   ]
-code-revision: '8b050286bf8c011c1f80ac46701054af8b91dfd5da99cf54119ca6088699b4dc'
+code-revision: 'e5c3c26b17eaeb6aad2d727af9c543d902e8845aee086fc203a619927d387614'
 ---
 
 # Paseo原生助手
@@ -52,7 +52,7 @@ Vibes在已有页面内直接挂载固定Paseo Web应用。宿主只管理首次
 
 来源为官方`getpaseo/paseo`的v0.7.2，提交`9400a49af670fdb5db4af58e73f8df98588dbea9`。`third_party/paseo-webui/upstream.json`固定仓库、提交、依赖锁和Apache-2.0许可证摘要；`patches/series.json`规定源码与已安装依赖补丁的顺序和摘要。补丁覆盖直接挂载、宿主尺寸与活动边界、生产状态订阅修正、首次目录与原生草稿选择、单工具栏与compact展示、听写操作和文章引用接线，不包含旧PR的减包实验。
 
-每项补丁的目的、验证和移除条件由`third_party/paseo-webui/patches/maintenance.json`登记。升级时先在独立源码验证官方变化，再决定保留、改写或移除补丁；不能只改版本号或刷新摘要。原生测试与类型检查随构建执行；上游源码和node_modules不提交本仓库。
+每项补丁的目的、验证和移除条件由`third_party/paseo-webui/patches/maintenance.json`登记。升级时先在独立源码验证官方变化，再决定保留、改写或移除补丁；不能只改版本号或刷新摘要。本地产品构建和完整CI准备执行原生测试与类型检查；仅main可信复用路径可按下方规则省去重复回归。上游源码和node_modules不提交本仓库。
 
 ## 重建与交付
 
@@ -60,7 +60,8 @@ Vibes在已有页面内直接挂载固定Paseo Web应用。宿主只管理首次
 2. `npm run paseo:build`校验源码、锁、许可证、补丁和依赖修改前后内容，顺序应用补丁，运行官方Web构建、原生专项测试与类型检查，再恢复本次应用的补丁。若构建改动了受跟踪源码，保留现场供检查，不用reset覆盖未知修改。
 3. 成功产物位于`.scratch/paseo-webui/artifacts/product`。入口、资源清单和每个文件大小/摘要写入回执；许可和已安装第三方声明随产物交付。输出先写临时目录，全部成功才替换正式产物；失败不能沿用旧成功产物。
 4. `npm run build`验证当前源码/补丁对应的产物，再将清单资源复制到`dist/vendor/paseo/{内容标识}/`。缺失、过期、被篡改或含符号链接的产物会阻断构建。网页引用版本化地址，用户首次打开时加载；更新部署后重新打开页面才使用新版本。
-5. GitHub Actions的`npm run paseo:ci`按同一固定锁安装指定workspace，禁用任意生命周期脚本，再明确执行固定上游包修补和server构建，最后执行同一产品构建。该命令只接受CI环境，不是本地绕过安装确认的入口。
+5. GitHub Actions的`npm run paseo:ci`按同一固定锁安装指定workspace，禁用任意生命周期脚本，再明确执行固定上游包修补和server构建，最后执行同一产品构建。该命令只接受CI环境，不是本地绕过安装确认的入口。完整CI在同一verify环境中只执行一次，再依次进行网站完整验收与预算；budget检查读取明确结果。
+6. main已证明最终文件树与完整PR验收一致时，`npm run paseo:production`重新安装固定依赖、应用补丁并构建Web和回执，省去测试server构建、原生测试及类型复查；来源、锁、许可证、补丁摘要和恢复检查继续执行。入口要求GitHub main push及可信复用标志，普通PR、本地和手动运行不能借它跳过测试；证据判定和失败回退见[交付规则](checks-and-release.md)。
 
 `npm run paseo:test-prepare`只构建测试所需的同版官方server，不安装依赖。Playwright同时拥有网站预览和隔离mock daemon，测试后清理自己创建的进程和会话。内置mock验证真实协议与UI状态，不代表真实模型或真机验收。
 

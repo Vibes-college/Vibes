@@ -7,6 +7,7 @@ import { wrangler } from './local-tools.ts';
 import { assertAssetBudget } from './budget-policy.ts';
 import { assetSizes } from './asset-sizes.ts';
 import { smokeRelease } from './release-smoke.ts';
+import { preflightRelease } from './release-preflight.ts';
 
 // 发布只消费同一main运行验收过的产物；不重复安装浏览器、构建或执行整套测试。
 async function main(): Promise<void> {
@@ -23,6 +24,7 @@ async function main(): Promise<void> {
     throw new Error('Checkout SHA mismatch');
   verifyArtifact(sha);
   assertAssetBudget(assetSizes('dist'));
+  const expectations = preflightRelease('dist');
   process.env.CLOUDFLARE_ACCOUNT_ID = releaseTarget.accountId;
   const directory = 'resources/evidence/releases';
   mkdirSync(directory, { recursive: true });
@@ -43,7 +45,7 @@ async function main(): Promise<void> {
   };
   writeFileSync(`${directory}/${sha}.json`, JSON.stringify(record, null, 2));
   if (!version) throw new Error('Deployment outcome uncertain; inspect record before retrying');
-  await smokeRelease(releaseTarget.origin, sha);
+  await smokeRelease(releaseTarget.origin, sha, expectations);
   const verified = JSON.stringify(
     {
       ...record,

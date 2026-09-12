@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '接口与外部服务'
 status: 'current'
-shaped-by: ['001', '003', '004', '005', '009', '010', '013']
+shaped-by: ['001', '003', '004', '005', '009', '010', '013', '014']
 code-sources:
   [
     'src/scripts/search.ts',
@@ -10,6 +10,12 @@ code-sources:
     'src/pages/robots.txt.ts',
     'src/pages/sitemap.xml.ts',
     'scripts/release.ts',
+    'scripts/release-ci.ts',
+    'scripts/release-smoke.ts',
+    'scripts/release-preflight.ts',
+    'scripts/ci-acceptance.ts',
+    'scripts/ci-acceptance-resolver.ts',
+    'scripts/ci-acceptance-policy.ts',
     'scripts/release-policy.ts',
     'src/components/WorkDetail.astro',
     'src/features/paseo-webui/contract.ts',
@@ -18,7 +24,7 @@ code-sources:
     'scripts/paseo-webui-preview.ts',
     'public/_headers',
   ]
-code-revision: 'a591f662bceb09e7cb46f6e708a024d7580d6b5712011aa6125c3895d0c1e7b8'
+code-revision: '0f62c4b36d309df4b4cb7c2e03fc84d0279b6464780f7948e4c6820276fb2e00'
 ---
 
 # 接口与外部服务
@@ -85,11 +91,11 @@ code-revision: 'a591f662bceb09e7cb46f6e708a024d7580d6b5712011aa6125c3895d0c1e7b8
 
 ## 外部平台与认证
 
-release-utils.ts通过gh api GET读取固定仓库Vibes-college/Vibes的pulls/{number}、git/ref/heads/main以及Actions运行/jobs。preview核对open PR的head，production核对当前main与同一运行verify/budget依赖结果；cleanup核对已合并、上线SHA包含合并、main部署job成功。查询错误阻断，不绕过限流。clean-up通过git远端引用查询与带预期SHA的删除操作防止清理额外提交。
+release-utils.ts通过gh api GET读取固定仓库Vibes-college/Vibes的pulls/{number}、git/ref/heads/main以及Actions运行/jobs。preview核对open PR的head，production核对当前main与同一运行verify/budget依赖结果；ci-acceptance按当前commit关联PR、指定workflow/head的最新运行、当前attempt jobs、artifact和Git commit tree读取复用证据。每请求最多15秒，列表最多100项，关联PR必须唯一；小artifact上限16KiB，下载和JSON输出有界且验证GitHub摘要，不解压执行文件。失败完整回退；cleanup核对已合并、上线SHA包含合并、main部署job成功。查询错误阻断，不绕过限流。clean-up通过git远端引用查询与带预期SHA的删除操作防止清理额外提交。
 
 本机预览使用Wrangler OAuth，生产job仅注入GitHub环境secret CLOUDFLARE_API_TOKEN，账户/Worker/origin固定在release-policy.ts。release.ts只做versions upload/rollback，release-ci.ts做deployments list与deploy；生产仅绑定vibes.college，不同时启用另一套Git自动发布。平台上传错误传递，不盲目重试不确定发布。
 
-范围分类读取已上线/__release.json确定main累计影响，未知基线完整验证。线上验收fetch每请求10秒超时，最多6轮、轮间5秒，检查确切SHA及两种语言首页；失败保留证据，不清理。只有验收轮询重试，上传不自动重试。详细边界与实际状态见[交付](checks-and-release.md)。
+范围分类读取已上线/__release.json确定main累计影响，未知基线完整验证。线上验收marker每请求10秒、强核验资源每请求15秒超时，最多6轮、轮间5秒。main从已核验dist生成预期，检查确切SHA/摘要、双语页和关键Paseo响应的字节、安全头、MIME与缓存；资源路径限定本源双语页、版本化Paseo脚本/样式与预览载体。旧恢复/阶段预览保留SHA及双语页检查；失败保留证据，不清理。只有验收轮询重试，上传不自动重试。详细边界与实际状态见[交付](checks-and-release.md)。
 
 ## 新增服务时需要说明
 

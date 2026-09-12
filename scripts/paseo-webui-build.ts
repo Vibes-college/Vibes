@@ -216,17 +216,31 @@ export function buildWebUI(options: {
   return JSON.parse(readFileSync(join(output, 'build-receipt.json'), 'utf8'));
 }
 
+export function requireProductionPreparation(environment: NodeJS.ProcessEnv): void {
+  if (
+    environment.CI !== 'true' ||
+    environment.GITHUB_ACTIONS !== 'true' ||
+    environment.GITHUB_EVENT_NAME !== 'push' ||
+    environment.GITHUB_REF !== 'refs/heads/main' ||
+    environment.CI_ACCEPTANCE_REUSED !== 'true'
+  )
+    throw new Error(
+      'Production-only preparation requires verified acceptance reuse on a main push.',
+    );
+}
+
 function main() {
   const [action, ...extra] = process.argv.slice(2);
-  if (!['fetch', 'build', 'ci', 'test-prepare'].includes(action) || extra.length)
-    throw new Error('Usage: paseo-webui-build.ts fetch | build | ci | test-prepare');
+  if (!['fetch', 'build', 'ci', 'production', 'test-prepare'].includes(action) || extra.length)
+    throw new Error('Usage: paseo-webui-build.ts fetch | build | ci | production | test-prepare');
+  if (action === 'production') requireProductionPreparation(process.env);
   const identity: UpstreamSource & { workspaces: string[] } = JSON.parse(
     readFileSync(join(root, 'third_party/paseo-webui/upstream.json'), 'utf8'),
   );
   const source = join(root, '.scratch/paseo-webui/upstream');
   if (action === 'ci' && (process.env.CI !== 'true' || process.env.GITHUB_ACTIONS !== 'true'))
     throw new Error('The CI dependency preparation command only runs in GitHub Actions.');
-  if (action === 'fetch' || action === 'ci') {
+  if (action === 'fetch' || action === 'ci' || action === 'production') {
     if (!existsSync(source)) {
       mkdirSync(dirname(source), { recursive: true });
       execFileSync('git', ['clone', '--no-checkout', identity.repository, source], {
@@ -309,6 +323,9 @@ function main() {
           stdio: 'inherit',
         },
       );
+      // The main gate reuses the exact tree's native tests and typecheck, but
+      // always rebuilds source + patches + Web output and verifies its receipt.
+      if (action === 'production') return;
       execFileSync(
         'npm',
         [
