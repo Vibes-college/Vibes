@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '196b281bc86bafd01f2a561ddc107287e96c8956014264f250776877504f09e8'
+code-revision: '819bfe25e895aa2d9d0c79a545ae647c9f0f560302fc74e7ff114fef9d52c8d3'
 ---
 
 # 检查与发布
@@ -142,6 +142,8 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 content:validate核对媒体结构、引用、字节及真实数值；budget另报告mediaJavascriptGzip，保留公共脚本门槛。tests/media.spec.ts覆盖三个浏览器项目的延迟加载、章节、跳转暂停、连续迟到播放与保护解除后的恢复、原生播放/暂停与页面按钮同步、慢章节补充下载取消、失败重试、图库、数据、搜索替换与无JS；外站响应在自动化中隔离，实际第三方播放须用内置浏览器另验，不能将测试桩当作原站证据。
 
 ## 浏览器测试
+
+UI开发实践文章的beUI回归会先展开原生details再操作其中控件，覆盖折叠后的按需启动、十组件交互与320px减少动态效果。
 
 连续注入原生play的模拟压力用例仍要求真正触发播放、正确暂停及重新播放的进度；该合成场景的按钮pressed/loading状态只保存诊断，不阻断CI，普通原生控件与页面按钮同步仍保留断言。文章引用fixture等待Astro启用入口后验证草稿和引用，键盘遍历只由paseo-loading的独立用例覆盖，不在引用业务里重复。
 

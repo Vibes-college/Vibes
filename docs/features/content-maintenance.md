@@ -49,7 +49,7 @@ code-revision: 'c7d7547a8e14e9ce8d659ed04b4ca42b49f132e3308f9c6e4af5267e30445634
 1. 提供要嵌入的组件源码、来源/许可与希望读者完成的操作，让AI检查字体、样式、框架、浏览器API和后台依赖。需要新npm依赖时先说明用途并征得同意；不能保证复制即用。
 2. 只把需要交互的语言正文改为`zh.mdx`或`en.mdx`，保留原文件头。同一语言只能有一个.md或.mdx，旧文件应移除，其他文章不用迁移。
 3. 将审核后的组件放在`src/components/`，在MDX中import并传入参数。正文下方演示通常用`client:visible`，进入可视区才启动；首屏必须立即操作才选`client:load`。无client指令只有静态初始展示，更多写法见[MDX规则](../system/markdown.md#mdx互动文章)。
-4. 十种不同组件的完整操作文章见[beUI体验](../../src/content/works/beui-motion-lab/zh.mdx)。参考[中文互动示例](../../src/content/works/mdx-interaction-lab/zh.mdx)与[英文示例](../../src/content/works/mdx-interaction-lab/en.mdx)，保留静态`##`主章节，检查目录、回应、搜索与语言；组件内部标题不作为文章章节。
+4. 结合开发流程、资源选择、可复制任务模板与十种演示的文章见[AI原生UI实践指南](../../src/content/works/beui-motion-lab/zh.mdx)。参考[中文互动示例](../../src/content/works/mdx-interaction-lab/zh.mdx)与[英文示例](../../src/content/works/mdx-interaction-lab/en.mdx)，保留静态`##`主章节，检查目录、回应、搜索与语言；组件内部标题不作为文章章节。
 5. 运行内容校验与完整构建；在浏览器实际操作按钮、拖动和键盘，再按[交付流程](project-commands.md)验收。修改组件里的文案/逻辑后也应复核译文，因为原文摘要不追踪import目标文件的字节。
 6. 效果难以适配时可使用GIF或视频，明确它只能展示、不能交互；本地资源放public并遵守[媒体与体积规则](../system/markdown.md)。
 
