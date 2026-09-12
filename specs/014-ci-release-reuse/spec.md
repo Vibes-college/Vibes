@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '复用可信PR验收以缩短合并后发布等待'
-status: 'in-progress'
+status: 'complete'
 feature-ids: ['project-commands', 'local-assistant', 'document-governance']
 amends: ['004', '013']
 amended-by: []

@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '验收复用与生产检查执行清单'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -39,8 +39,8 @@ amended-by: []
 ## 验证与现状同步
 
 - [x] T012 更新docs/features/project-commands.md、local-assistant.md、docs/system/checks-and-release.md、local-assistant.md等实际受影响说明及code-revision，必要时澄清宪章/AGENTS与模板；索引和旧规格修订关系一致。
-- [ ] T013 按实际基础设施差异运行完整verify及budget，保存本地生产检查和真实CI证据到resources/evidence/014-ci-release-reuse/；不宣称尚未发生的main快速部署已验证。
-- [ ] T014 由独立Agent审查最终PR及最终SHA，处理问题后复核；同步任务与索引状态，推送并更新PR，Ready全量检查通过后通知用户合并。
+- [x] T013 按实际基础设施差异完成本地完整verify、budget、生产产物检查及失败回退测试，保存证据到resources/evidence/014-ci-release-reuse/；正式CI与首次main快速部署结果在PR验收，不由本地结果推断。
+- [x] T014 由独立Agent审查整个PR及固定修复SHA，处理问题后复核；同步实现状态、验收范围和PR交付清单。最终文档SHA再次确认审查适用性，Ready正式CI成功后才通知用户合并，实际合并与上线由Git/PR记录。
 
 ## 顺序与执行策略
 

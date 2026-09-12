@@ -98,13 +98,15 @@ flowchart TD
 - [x] Draft与Ready触发分离，分支push不重复CI；失败/旧SHA/产物漂移阻断发布。
 - [x] 正式域名构建与来源校验通过，发布前保持明确目标和容量门槛。
 - [x] 既有main完整检查后的自动发布实际成功，线上版本与页面验收通过，再执行清理。
-- [ ] 可信复用、完整回退及单次Paseo准备通过最终本地/CI验证；首次合并后的快速生产部署另按实际记录验收。
+- [x] 可信复用、完整回退、读取期间重跑保护和单次准备通过本地判定/工作流测试；生产产物与线上响应检查覆盖成功和失败边界。每轮正式CI及首次快速生产部署以PR/Actions的实际证据验收。
 - [x] 清理拒绝未合并、未上线、额外提交、脏文件/ignored配置/依赖PR，占用由AI核对声明；保护测试通过，保留恢复版本。
 - [x] 本地D1只用于命令验收，拒绝线上参数；2026-09-05本地verify验证有效，网站不读取此库。
 
 2026-09-06本地verify（52单元、26浏览器通过、2按设计跳过）、budget、Wrangler生产配置dry-run通过；专用worktreecheck再次通过。Draft运行34028631687通过；预览372ced7经ego-browser验证搜索、详情、语言切换及noindex，canonical指向正式域名；Ready运行34028923187和main运行34029233677全部通过；main合并提交bd34b7d已部署至vibes.college，2026-09-06实际浏览搜索、详情、语言与404通过，本任务分支/worktree已清理，证据和回滚版本保留。见[PR #3收尾记录](https://github.com/Vibes-college/Vibes/pull/3#issuecomment-5558821204)。历史证据在resources/evidence/001-multilingual-explore/cloudflare-release.md，仅说明旧流程当时通过。
 
 多媒体交付验收：2026-09-07，release:preview在干净已推送源码上完成完整verify与budget、上传版本并核对发布SHA；内置浏览器实际播放预览中的Sintel并进入正文。该证据仅覆盖阶段预览，原始日志在resources/evidence/010-media-previews/release-preview.log，具体预览SHA和地址见PR #9；不代表main合并或正式网站已更新。
+
+2026-09-12，可信复用实现的原生构建159项测试和类型检查通过；基础check135项单元通过，完整浏览器247通过、5项按设备适用性跳过，生产budget与5个关键响应preflight通过。新增强smoke对既有线上PR12产物只读核验通过；这不代表新流程已部署。原始证据在resources/evidence/014-ci-release-reuse/，独立审查、正式CI及首次main快速发布结果见[PR #13](https://github.com/Vibes-college/Vibes/pull/13)。
 
 ## 对应的自动化测试
 

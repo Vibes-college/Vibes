@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'PR模拟合并验收复用与准备去重依据'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

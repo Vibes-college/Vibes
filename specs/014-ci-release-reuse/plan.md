@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '可信验收复用与生产检查设计'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
