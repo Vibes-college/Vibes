@@ -30,6 +30,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
   let disposed = false;
   let pendingSeek: number | undefined;
   let pausedSeek = false;
+  let seekPauseTimer: ReturnType<typeof setTimeout> | undefined;
   let seekRequest: AbortController | undefined;
   let objectUrl: string | undefined;
   let failedSources = 0;
@@ -87,9 +88,27 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     root.classList.add('has-source');
     element.load();
   }
+  function clearSeekPause() {
+    clearTimeout(seekPauseTimer);
+    seekPauseTimer = undefined;
+    pausedSeek = false;
+  }
+  function settleSeekPause() {
+    clearTimeout(seekPauseTimer);
+    seekPauseTimer = undefined;
+    if (!pausedSeek || wanted || !element?.paused || element.seeking) return;
+    const ticket = generation;
+    // WebKit can emit play after seeked. Require a quiet paused interval before
+    // accepting native play again; the explicit Vibes play button unlocks at once.
+    // Native controls expose no input intent, so clicks inside this short window
+    // may need repeating. This is a bounded compatibility guard, not a UA guarantee.
+    seekPauseTimer = setTimeout(() => {
+      if (ticket === generation && !wanted && element.paused && !element.seeking) clearSeekPause();
+    }, 250);
+  }
   function failed() {
     wanted = false;
-    pausedSeek = false;
+    clearSeekPause();
     controller.pending = false;
     controller.manual = false;
     controller.userPaused = true;
@@ -115,7 +134,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
       announceManual();
     } else controller.manual = false;
     wanted = true;
-    pausedSeek = false;
+    clearSeekPause();
     controller.pending = true;
     const ticket = ++generation;
     status.textContent = '';
@@ -164,12 +183,13 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
     }
     display(false);
     root.classList.remove('is-loading');
+    settleSeekPause();
   }
   function dispose() {
     if (disposed) return;
     pause();
     disposed = true;
-    pausedSeek = false;
+    clearSeekPause();
     lifetime.abort();
     pageSignal.removeEventListener('abort', dispose);
     if (element) {
@@ -224,7 +244,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
         // Outside a cancelled seek, their play event is the explicit new intent.
         if (!wanted && element.controls && !element.paused) controller.manual = true;
         if (controller.manual) {
-          pausedSeek = false;
+          clearSeekPause();
           controller.userPaused = false;
           wanted = true;
           announceManual();
@@ -251,7 +271,11 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
       () => {
         // Ignore an already-handled pause or a queued source-reset event after
         // playback has resumed. A flag could otherwise swallow the next native pause.
-        if (!element.paused || !wanted) return;
+        if (!element.paused) return;
+        if (!wanted) {
+          settleSeekPause();
+          return;
+        }
         pause(!element.ended);
         root.dispatchEvent(new CustomEvent('media:idle', { bubbles: true }));
       },
@@ -261,7 +285,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
       'ended',
       () => {
         wanted = false;
-        pausedSeek = false;
+        clearSeekPause();
         controller.manual = false;
         controller.userPaused = true;
         display(false);
@@ -362,7 +386,7 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
       'seeked',
       () => {
         if (!wanted) pause();
-        if (!element.seeking) pausedSeek = false;
+        settleSeekPause();
       },
       { signal },
     );

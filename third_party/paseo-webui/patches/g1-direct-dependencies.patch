@@ -1,0 +1,189 @@
+diff --git a/node_modules/expo-router/build/ExpoRoot.js b/node_modules/expo-router/build/ExpoRoot.js
+--- a/node_modules/expo-router/build/ExpoRoot.js
++++ b/node_modules/expo-router/build/ExpoRoot.js
+@@ -141,7 +141,7 @@
+         }
+     }
+     return (<storeContext_1.StoreContext.Provider value={store}>
+-      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={documentTitle} onReady={store.onReady}>
++      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={{...store.linking, ...linking}} onUnhandledAction={onUnhandledAction} documentTitle={documentTitle} onReady={store.onReady}>
+         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
+           <WrapperComponent>
+             <Content />
+diff --git a/node_modules/react-native-unistyles/lib/module/web/runtime.js b/node_modules/react-native-unistyles/lib/module/web/runtime.js
+--- a/node_modules/react-native-unistyles/lib/module/web/runtime.js
++++ b/node_modules/react-native-unistyles/lib/module/web/runtime.js
+@@ -8,7 +8,7 @@
+ export class UnistylesRuntime {
+   lightMedia = this.getLightMedia();
+   darkMedia = this.getDarkMedia();
+-  rootElement = isServer() ? null : document.querySelector(':root');
++  rootElement = isServer() ? null : globalThis.__vibesPaseoEnvironment?.root ?? document.querySelector(':root');
+   constructor(services) {
+     this.services = services;
+   }
+@@ -85,8 +85,8 @@
+       };
+     }
+     return {
+-      width: window.innerWidth,
+-      height: window.innerHeight
++      width: globalThis.__vibesPaseoEnvironment?.width ?? window.innerWidth,
++      height: globalThis.__vibesPaseoEnvironment?.height ?? window.innerHeight
+     };
+   }
+   get fontScale() {
+@@ -170,7 +170,7 @@
+     if (isServer()) {
+       return;
+     }
+-    document.documentElement.style.backgroundColor = color;
++    (globalThis.__vibesPaseoEnvironment?.root ?? document.documentElement).style.backgroundColor = color;
+   };
+   setImmersiveMode = () => {};
+   updateTheme = (themeName, updater) => {
+diff --git a/node_modules/react-native-unistyles/lib/module/web/state.js b/node_modules/react-native-unistyles/lib/module/web/state.js
+--- a/node_modules/react-native-unistyles/lib/module/web/state.js
++++ b/node_modules/react-native-unistyles/lib/module/web/state.js
+@@ -33,7 +33,7 @@
+     // Ensure we have a themeName before calling this
+     // classList.add throws a "SyntaxError" DOMException if one of the arguments is an empty string.
+     if (!this.hasAdaptiveThemes && this.CSSVars && this.themeName) {
+-      document.querySelector(':root')?.classList.add(this.themeName);
++      (globalThis.__vibesPaseoEnvironment?.root ?? document.querySelector(':root'))?.classList.add(this.themeName);
+     }
+     this.services.listener.initListeners();
+   };
+@@ -90,6 +90,17 @@
+     if (breakpointsEntries?.[0]?.[1] !== 0) {
+       throw error("StyleSheet.configure's first breakpoint must start from 0.");
+     }
++    if (globalThis.__vibesPaseoEnvironment) {
++      const update = () => {
++        for (const [key, value] of breakpointsEntries.sort(([, a], [, b]) => a - b)) {
++          this.matchingBreakpoints.set(key, globalThis.__vibesPaseoEnvironment.width >= value);
++        }
++        this.services.listener.emitChanges([UnistyleDependency.Breakpoints, UnistyleDependency.Dimensions]);
++      };
++      update();
++      globalThis.__vibesPaseoEnvironment.subscribe(update);
++      return;
++    }
+     breakpointsEntries.sort(([, a], [, b]) => a - b).forEach(([breakpoint, value]) => {
+       if (isServer()) {
+         return;
+diff --git a/node_modules/react-native-unistyles/lib/module/web/css/state.js b/node_modules/react-native-unistyles/lib/module/web/css/state.js
+--- a/node_modules/react-native-unistyles/lib/module/web/css/state.js
++++ b/node_modules/react-native-unistyles/lib/module/web/css/state.js
+@@ -64,9 +64,9 @@
+     };
+     Object.entries(values).forEach(([key, value]) => convertToCSS(key, value));
+     if (theme === 'light' || theme === 'dark') {
+-      this.themesCSS.set(`media ${theme}`, `@media (prefers-color-scheme: ${theme}){:root{${themeVars}}}`);
++      this.themesCSS.set(`media ${theme}`, `@media (prefers-color-scheme: ${theme}){${globalThis.__vibesPaseoEnvironment ? "#root" : ":root"}{${themeVars}}}`);
+     }
+-    this.themesCSS.set(theme, `:root.${theme}{${themeVars}}`);
++    this.themesCSS.set(theme, `${globalThis.__vibesPaseoEnvironment ? "#root" : ":root"}.${theme}{${themeVars}}`);
+   };
+   remove = hash => {
+     this.mainMap.forEach(styles => {
+@@ -82,6 +82,7 @@
+       return acc + themeCss;
+     }, '');
+     const generate = (mediaQuery, secondLevelMap) => {
++      if (globalThis.__vibesPaseoEnvironment && /width:/.test(mediaQuery)) mediaQuery = mediaQuery.replace('@media', '@container paseo');
+       if (mediaQuery) {
+         styles += `${mediaQuery}{`;
+       }
+diff --git a/node_modules/react-native-web/dist/exports/Dimensions/index.js b/node_modules/react-native-web/dist/exports/Dimensions/index.js
+--- a/node_modules/react-native-web/dist/exports/Dimensions/index.js
++++ b/node_modules/react-native-web/dist/exports/Dimensions/index.js
+@@ -56,6 +56,7 @@
+     height = docEl.clientHeight;
+     width = docEl.clientWidth;
+   }
++  if (globalThis.__vibesPaseoEnvironment) { width = globalThis.__vibesPaseoEnvironment.width; height = globalThis.__vibesPaseoEnvironment.height; }
+   dimensions.window = {
+     fontScale: 1,
+     height,
+@@ -114,6 +115,7 @@
+   }
+ }
+ if (canUseDOM) {
++  globalThis.__vibesPaseoEnvironment?.subscribe(handleResize);
+   if (window.visualViewport) {
+     window.visualViewport.addEventListener('resize', handleResize, false);
+   } else {
+diff --git a/node_modules/react-native-web/dist/exports/UIManager/index.js b/node_modules/react-native-web/dist/exports/UIManager/index.js
+--- a/node_modules/react-native-web/dist/exports/UIManager/index.js
++++ b/node_modules/react-native-web/dist/exports/UIManager/index.js
+@@ -83,6 +83,10 @@
+           left = _getBoundingClientRec.left,
+           top = _getBoundingClientRec.top,
+           width = _getBoundingClientRec.width;
++        const root = globalThis.__vibesPaseoEnvironment?.root;
++        if (root && root.contains(node)) {
++          const rect = root.getBoundingClientRect(); left -= rect.left; top -= rect.top;
++        }
+         callback(left, top, width, height);
+       }, 0);
+     }
+diff --git a/node_modules/react-native-web/dist/exports/Modal/ModalPortal.js b/node_modules/react-native-web/dist/exports/Modal/ModalPortal.js
+--- a/node_modules/react-native-web/dist/exports/Modal/ModalPortal.js
++++ b/node_modules/react-native-web/dist/exports/Modal/ModalPortal.js
+@@ -17,7 +17,7 @@
+   if (canUseDOM && !elementRef.current) {
+     var element = document.createElement('div');
+     if (element && document.body) {
+-      document.body.appendChild(element);
++      (globalThis.__vibesPaseoEnvironment?.root ?? document.body).appendChild(element);
+       elementRef.current = element;
+     }
+   }
+@@ -25,7 +25,7 @@
+     if (canUseDOM) {
+       return () => {
+         if (document.body && elementRef.current) {
+-          document.body.removeChild(elementRef.current);
++          elementRef.current.remove();
+           elementRef.current = null;
+         }
+       };
+diff --git a/node_modules/react-native-web/dist/exports/StyleSheet/dom/index.js b/node_modules/react-native-web/dist/exports/StyleSheet/dom/index.js
+--- a/node_modules/react-native-web/dist/exports/StyleSheet/dom/index.js
++++ b/node_modules/react-native-web/dist/exports/StyleSheet/dom/index.js
+@@ -29,7 +29,10 @@
+     if (sheets.length === 0) {
+       sheet = createOrderedCSSStyleSheet(createCSSStyleSheet(id));
+       initialRules.forEach(rule => {
+-        sheet.insert(rule, 0);
++        const scoped = globalThis.__vibesPaseoEnvironment
++          ? rule.replace(/^(html|body)/, '#root').replace(/(^|,)(button|input)/g, '$1#root $2')
++          : rule;
++        sheet.insert(scoped, 0);
+       });
+       roots.set(rootNode, sheets.length);
+       sheets.push(sheet);
+@@ -52,7 +55,10 @@
+     if (sheets.length === 0) {
+       sheet = createOrderedCSSStyleSheet(createCSSStyleSheet(id));
+       initialRules.forEach(rule => {
+-        sheet.insert(rule, 0);
++        const scoped = globalThis.__vibesPaseoEnvironment
++          ? rule.replace(/^(html|body)/, '#root').replace(/(^|,)(button|input)/g, '$1#root $2')
++          : rule;
++        sheet.insert(scoped, 0);
+       });
+       sheets.push(sheet);
+     } else {
+diff --git a/node_modules/react-native-web/dist/exports/Modal/ModalFocusTrap.js b/node_modules/react-native-web/dist/exports/Modal/ModalFocusTrap.js
+--- a/node_modules/react-native-web/dist/exports/Modal/ModalFocusTrap.js
++++ b/node_modules/react-native-web/dist/exports/Modal/ModalFocusTrap.js
+@@ -70,6 +70,7 @@
+   React.useEffect(() => {
+     if (canUseDOM) {
+       var trapFocus = () => {
++        if (globalThis.__vibesPaseoEnvironment && !globalThis.__vibesPaseoEnvironment.visible) return;
+         // We should not trap focus if:
+         // - The modal hasn't fully initialized with an HTMLElement ref
+         // - Focus is already in the process of being trapped (e.g., we're refocusing)

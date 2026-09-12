@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '维护作品内容'
 status: 'current'
-shaped-by: ['001', '003', '008', '009', '010']
+shaped-by: ['001', '003', '008', '009', '010', '013']
 code-sources:
   [
     'src/lib/content/',
@@ -13,7 +13,7 @@ code-sources:
     'scripts/migrate-content.ts',
     'tests/content-lifecycle.spec.ts',
   ]
-code-revision: 'af33eb96e96f7165de3794c3854dc5c49c8d916820be9f4de7ba4b371a97cbce'
+code-revision: 'c7d7547a8e14e9ce8d659ed04b4ca42b49f132e3308f9c6e4af5267e30445634'
 ---
 
 # 功能名：维护作品内容
@@ -32,6 +32,8 @@ code-revision: 'af33eb96e96f7165de3794c3854dc5c49c8d916820be9f4de7ba4b371a97cbce
 6. 发布译文前核对全文，运行`npm run content:revision -- <id>`取得原文摘要，再填写`sourceRevision`和发布状态；命令不会替你审核或自动修改文件。
 7. 原文更新后，旧译文继续可读但提示待复核；重新核对译文并更新摘要后解除提示。
 8. 进入[检查与发布网站](project-commands.md)，通过检查并发布后再核对线上页面和搜索。
+
+首次准备维护环境时，网站构建还需按[检查与发布网站](project-commands.md)准备固定Paseo产物；内容校验本身不需要连接电脑或模型账号。
 
 ### 添加真实媒体封面
 

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: 'Markdown正文组件、样式与编译规则'
 status: 'current'
-shaped-by: ['008', '009', '010']
+shaped-by: ['008', '009', '010', '013']
 code-sources:
   [
     'src/lib/markdown/',
@@ -74,7 +74,7 @@ MDX的标签须闭合，花括号是表达式，HTML注释改为JSX注释；普�
 
 GIF放public后用图片引用；本地视频可用`<video controls src="/media/demo.mp4" width="640" height="360" />`，文件放public/media并提供说明/字幕或文字替代；响应头允许同源及已登记媒体来源；封面播放优先使用work.json媒体结构，获得暂停、章节和离页清理。GIF和视频只展示，不能交互。单文件和文件数仍受[资产预算](rules.md)约束，不把大媒体写进代码或内联为base64。
 
-MDX是可信仓库源码，会在构建中执行import；不接收公众输入、远程MDX或秘密值。普通页面不加载React；曾访问互动页后，共享运行时可留在同一标签页缓存，不承诺卸载已下载代码。
+MDX是可信仓库源码，会在构建中执行import；不接收公众输入、远程MDX或秘密值。普通Markdown正文不需要React；曾访问互动页后，共享运行时可留在同一标签页缓存，不承诺卸载已下载代码。主动打开[本地助手](../features/local-assistant.md)会另行加载其固定原生运行时，与文章island的加载条件分开。
 
 ## beUI 组件文章
 

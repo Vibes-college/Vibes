@@ -1,0 +1,483 @@
+diff --git a/packages/app/index.ts b/packages/app/index.ts
+--- a/packages/app/index.ts
++++ b/packages/app/index.ts
+@@ -13,26 +13,62 @@
+ import { AppRegistry } from "react-native";
+ import { ExpoRoot } from "expo-router";
+ import { ctx } from "expo-router/_ctx";
++import { getEmbeddedHost } from "./src/embedded/environment";
++import { parseHostCommand, type PaseoModule, type PaseoHandle, type PaseoMountOptions } from "./src/embedded/contract";
+ 
+ let mounted: HTMLElement | null = null;
+-let instance: unknown;
++let boot: Promise<PaseoHandle> | undefined;
++let disposed = false;
+ let mountCount = 0;
+-const api = {
+-  mount(element: HTMLElement) {
+-    if (mounted && mounted !== element) throw new Error("Paseo already mounted");
+-    if (mounted) return instance;
+-    mounted = element;
++let options: PaseoMountOptions | undefined;
++const handle: PaseoHandle = {
++  async dispatch(input) {
++    const command = parseHostCommand(input);
++    if (!command || disposed) throw new Error("Invalid or disposed assistant command");
++    const host = getEmbeddedHost();
++    if (!host) throw new Error("Assistant host missing");
++    if (command.type === "presentation") host.setPresentation(command.value);
++    if (command.type === "locale") host.setLocale(command.value);
++    if (command.type === "draft") throw new Error("Public work draft integration is not available yet");
++    if (command.type === "dispose") {
++      disposed = true;
++      options?.onEvent({ version: 1, type: "state", value: "disposed" });
++      if (mounted) AppRegistry.unmountApplicationComponentAtRootTag(mounted);
++      // A document exit releases the singleton runtime and native module listeners
++      // without editing its sync/cache internals or erasing the saved host registry.
++      window.location.reload();
++    }
++  },
++};
++const api: PaseoModule & { readonly mountCount: number } = {
++  mount(input) {
++    if (disposed) return Promise.reject(new Error("Reload before reopening the assistant"));
++    if (mounted && mounted !== input.root) return Promise.reject(new Error("Assistant root changed"));
++    if (boot) return boot;
++    const host = getEmbeddedHost();
++    if (!host || host.root !== input.root || typeof input.onEvent !== "function")
++      return Promise.reject(new Error("Invalid assistant host"));
++    if (!parseHostCommand({ version: 1, type: "presentation", value: input.presentation }) ||
++        !parseHostCommand({ version: 1, type: "locale", value: input.locale }))
++      return Promise.reject(new Error("Invalid assistant presentation"));
++    options = input;
++    mounted = input.root;
+     mountCount += 1;
+-    AppRegistry.registerComponent("VibesPaseo", () => () =>
+-      React.createElement(ExpoRoot, { context: ctx, location: "/", linking: { enabled: false } }));
+-    instance = AppRegistry.runApplication("VibesPaseo", { rootTag: element });
+-    return instance;
++    host.onEvent = input.onEvent;
++    host.setPresentation(input.presentation);
++    host.setLocale(input.locale);
++    input.onEvent({ version: 1, type: "state", value: "initializing" });
++    boot = Promise.resolve().then(() => {
++      AppRegistry.registerComponent("VibesPaseo", () => () =>
++        React.createElement(ExpoRoot, { context: ctx, location: "/", linking: { enabled: false } }));
++      AppRegistry.runApplication("VibesPaseo", { rootTag: input.root });
++      return handle;
++    }).catch(() => {
++      input.onEvent({ version: 1, type: "error", code: "initialization", retryable: false });
++      throw new Error("Assistant initialization failed; reload to retry");
++    });
++    return boot;
+   },
+-  presentation(visible: boolean) {
+-    if (!mounted) throw new Error("Paseo is not mounted");
+-    mounted.hidden = !visible;
+-  },
+-  get mounted() { return Boolean(mounted); },
+   get mountCount() { return mountCount; },
+ };
+ Object.defineProperty(globalThis, "__vibesPaseo", { value: api });
+diff --git a/packages/app/app.config.js b/packages/app/app.config.js
+--- a/packages/app/app.config.js
++++ b/packages/app/app.config.js
+@@ -179,7 +179,7 @@
+       ...(isProfileBuild ? [withAndroidProfileable] : []),
+     ],
+     experiments: {
+-      baseUrl: "/vendor/paseo/g1-direct",
++      baseUrl: process.env.VIBES_PASEO_BASE_URL,
+       typedRoutes: true,
+       reactCompiler: true,
+       autolinkingModuleResolution: true,
+diff --git a/packages/app/src/embedded/environment.ts b/packages/app/src/embedded/environment.ts
+--- a/packages/app/src/embedded/environment.ts
++++ b/packages/app/src/embedded/environment.ts
+@@ -1,16 +1,17 @@
+-export interface EmbeddedHost {
++import type { AssistantEvent, AssistantLocale, Presentation } from "./contract";
++export interface EmbeddedHost extends Presentation {
+   readonly root: HTMLElement;
+   readonly width: number;
+   readonly height: number;
+-  readonly visible: boolean;
++  readonly locale: AssistantLocale;
+   subscribe(listener: () => void): () => void;
++  setPresentation(value: Presentation): void;
++  setLocale(value: AssistantLocale): void;
++  onEvent(event: AssistantEvent): void;
+ }
+-
+ declare global {
+   var __vibesPaseoEnvironment: EmbeddedHost | undefined;
+ }
+-
+-// Only the separately built embedding profile installs this host boundary.
+ export function getEmbeddedHost(): EmbeddedHost | undefined {
+   return globalThis.__vibesPaseoEnvironment;
+ }
+diff --git a/packages/app/src/embedded/contract.ts b/packages/app/src/embedded/contract.ts
+new file mode 100644
+--- /dev/null
++++ b/packages/app/src/embedded/contract.ts
+@@ -0,0 +1,153 @@
++/** Only public presentation data crosses this boundary. Native pairing, chat,
++ * approvals, stop and host removal remain owned by Paseo. No generic RPC exists. */
++export const CONTRACT_VERSION = 1 as const;
++export const PUBLIC_DRAFT_LIMITS = Object.freeze({ id: 100, title: 240, summary: 2000, url: 2048 });
++export type AssistantLocale = 'zh' | 'en';
++export interface PublicWorkDraft {
++  id: string;
++  title: string;
++  canonicalUrl: string;
++  sourceUrl: string | null;
++  summary: string;
++}
++export interface Presentation {
++  visible: boolean;
++  focused: boolean;
++  pageVisible: boolean;
++}
++export type HostCommand =
++  | { version: 1; type: 'presentation'; value: Presentation }
++  | { version: 1; type: 'locale'; value: AssistantLocale }
++  | { version: 1; type: 'draft'; value: PublicWorkDraft | null }
++  | { version: 1; type: 'dispose' };
++export type AssistantEvent =
++  | { version: 1; type: 'ready' }
++  | { version: 1; type: 'close' }
++  | { version: 1; type: 'state'; value: 'initializing' | 'operable' | 'disposed' }
++  | {
++      version: 1;
++      type: 'error';
++      code: 'resource' | 'initialization' | 'fatal';
++      retryable: boolean;
++    };
++export interface PaseoMountOptions {
++  root: HTMLElement;
++  locale: AssistantLocale;
++  presentation: Presentation;
++  onEvent(event: AssistantEvent): void;
++}
++export interface PaseoModule {
++  /** The same root returns the same handle, including concurrent calls. A second
++   * root fails. A disposed instance cannot remount until the document reloads. */
++  mount(options: PaseoMountOptions): Promise<PaseoHandle>;
++}
++export interface PaseoHandle {
++  /** Hide/navigation never dispose. Dispose is an explicit terminal lifecycle
++   * operation; it does not stop remote agents or erase the saved host registry. */
++  dispatch(command: HostCommand): Promise<void>;
++}
++
++function record(value: unknown, keys: string[]): value is Record<string, unknown> {
++  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
++  const prototype = Object.getPrototypeOf(value);
++  if (prototype !== Object.prototype && prototype !== null) return false;
++  const descriptors = Object.getOwnPropertyDescriptors(value);
++  const ownKeys = Reflect.ownKeys(value);
++  return (
++    ownKeys.length === keys.length &&
++    keys.every((key) => descriptors[key] && 'value' in descriptors[key]) &&
++    ownKeys.every((key) => typeof key === 'string' && keys.includes(key))
++  );
++}
++function hasControlCharacters(value: string): boolean {
++  for (const character of value) {
++    const code = character.charCodeAt(0);
++    if ((code < 32 && code !== 9 && code !== 10 && code !== 13) || code === 127) return true;
++  }
++  return false;
++}
++function text(value: unknown, max: number, empty = false): value is string {
++  return (
++    typeof value === 'string' &&
++    (empty || value.trim().length > 0) &&
++    value.length <= max &&
++    !hasControlCharacters(value)
++  );
++}
++function publicUrl(value: unknown): value is string {
++  if (!text(value, PUBLIC_DRAFT_LIMITS.url)) return false;
++  try {
++    const url = new URL(value);
++    // Draft URLs come from published metadata, never the current browser URL.
++    // No connection/auth material is accepted in credentials, queries or hashes.
++    return url.protocol === 'https:' && !url.username && !url.password && !url.search && !url.hash;
++  } catch {
++    return false;
++  }
++}
++export function parsePublicWorkDraft(value: unknown): PublicWorkDraft | null {
++  if (!record(value, ['id', 'title', 'canonicalUrl', 'sourceUrl', 'summary'])) return null;
++  if (
++    !text(value.id, PUBLIC_DRAFT_LIMITS.id) ||
++    !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value.id) ||
++    !text(value.title, PUBLIC_DRAFT_LIMITS.title) ||
++    !text(value.summary, PUBLIC_DRAFT_LIMITS.summary, true) ||
++    !publicUrl(value.canonicalUrl) ||
++    (value.sourceUrl !== null && !publicUrl(value.sourceUrl))
++  )
++    return null;
++  return {
++    id: value.id,
++    title: value.title,
++    summary: value.summary,
++    canonicalUrl: value.canonicalUrl,
++    sourceUrl: value.sourceUrl as string | null,
++  };
++}
++export function parseHostCommand(value: unknown): HostCommand | null {
++  if (record(value, ['version', 'type']) && value.version === 1 && value.type === 'dispose')
++    return { version: 1, type: 'dispose' };
++  if (!record(value, ['version', 'type', 'value']) || value.version !== 1) return null;
++  if (value.type === 'locale' && (value.value === 'zh' || value.value === 'en'))
++    return { version: 1, type: 'locale', value: value.value };
++  if (value.type === 'draft') {
++    if (value.value === null) return { version: 1, type: 'draft', value: null };
++    const draft = parsePublicWorkDraft(value.value);
++    return draft ? { version: 1, type: 'draft', value: draft } : null;
++  }
++  if (value.type === 'presentation' && record(value.value, ['visible', 'focused', 'pageVisible'])) {
++    const { visible, focused, pageVisible } = value.value;
++    if (
++      typeof visible === 'boolean' &&
++      typeof focused === 'boolean' &&
++      typeof pageVisible === 'boolean'
++    )
++      return { version: 1, type: 'presentation', value: { visible, focused, pageVisible } };
++  }
++  return null;
++}
++export function parseAssistantEvent(value: unknown): AssistantEvent | null {
++  if (record(value, ['version', 'type']) && value.version === 1) {
++    if (value.type === 'ready' || value.type === 'close') return { version: 1, type: value.type };
++  }
++  if (
++    record(value, ['version', 'type', 'value']) &&
++    value.version === 1 &&
++    value.type === 'state'
++  ) {
++    if (value.value === 'initializing' || value.value === 'operable' || value.value === 'disposed')
++      return { version: 1, type: 'state', value: value.value };
++  }
++  if (
++    record(value, ['version', 'type', 'code', 'retryable']) &&
++    value.version === 1 &&
++    value.type === 'error'
++  ) {
++    if (
++      (value.code === 'resource' || value.code === 'initialization' || value.code === 'fatal') &&
++      typeof value.retryable === 'boolean'
++    )
++      return { version: 1, type: 'error', code: value.code, retryable: value.retryable };
++  }
++  return null;
++}
+diff --git a/packages/app/src/embedded/ready.tsx b/packages/app/src/embedded/ready.tsx
+new file mode 100644
+--- /dev/null
++++ b/packages/app/src/embedded/ready.tsx
+@@ -0,0 +1,19 @@
++import { useEffect } from "react";
++import { usePathname } from "expo-router";
++import { useHostRegistryLoaded } from "@/runtime/host-runtime";
++import { getEmbeddedHost } from "./environment";
++
++// Operable means the native startup route has yielded to its UI. Connection and
++// authoritative history readiness remain separate native states, never inferred here.
++export function EmbeddedReady() {
++  const path = usePathname();
++  const registryLoaded = useHostRegistryLoaded();
++  useEffect(() => {
++    if (!registryLoaded || path === "/") return;
++    const frame = requestAnimationFrame(() => {
++      getEmbeddedHost()?.onEvent({ version: 1, type: "ready" });
++    });
++    return () => cancelAnimationFrame(frame);
++  }, [path, registryLoaded]);
++  return null;
++}
+diff --git a/packages/app/src/app/_layout.tsx b/packages/app/src/app/_layout.tsx
+--- a/packages/app/src/app/_layout.tsx
++++ b/packages/app/src/app/_layout.tsx
+@@ -1,3 +1,5 @@
++import { EmbeddedReady } from "@/embedded/ready";
++import { getEmbeddedHost } from "@/embedded/environment";
+ import "@/styles/unistyles";
+ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+ import { PortalProvider } from "@gorhom/portal";
+@@ -385,7 +387,7 @@
+   const anyOnlineHostServerId = useEarliestOnlineHostServerId();
+   const daemonStartError = useDaemonStartLastError();
+   const daemonStartIsRunning = useDaemonStartIsRunning();
+-  const [hasGivenUpWaitingForHost, setHasGivenUpWaitingForHost] = useState(false);
++  const [hasGivenUpWaitingForHost, setHasGivenUpWaitingForHost] = useState(Boolean(getEmbeddedHost() && !("__PASEO_INITIAL_DAEMON_CONNECTION__" in globalThis)));
+   const isDesktopRuntime = shouldUseDesktopDaemon();
+   const startupBlocker = useMemo(
+     () =>
+@@ -915,6 +917,7 @@
+ function AppShell() {
+   return (
+     <MobilePanelsProvider>
++      <EmbeddedReady />
+       <HorizontalScrollProvider>
+         <OpenProjectListener />
+         <AgentNavigationListener />
+diff --git a/packages/app/src/components/root-error-boundary.tsx b/packages/app/src/components/root-error-boundary.tsx
+--- a/packages/app/src/components/root-error-boundary.tsx
++++ b/packages/app/src/components/root-error-boundary.tsx
+@@ -1,3 +1,4 @@
++import { getEmbeddedHost } from "@/embedded/environment";
+ import React, { Component, Fragment, type ErrorInfo, type ReactNode } from "react";
+ import { Text, View } from "react-native";
+ import { useTranslation } from "react-i18next";
+@@ -28,6 +29,11 @@
+   }
+ 
+   componentDidCatch(error: unknown, errorInfo: ErrorInfo) {
++    const host = getEmbeddedHost();
++    if (host) {
++      host.onEvent({ version: 1, type: "error", code: "fatal", retryable: false });
++      return;
++    }
+     console.error("[RootErrorBoundary] Unhandled render error", {
+       error: formatCaughtValue(error),
+       componentStack: errorInfo.componentStack,
+diff --git a/packages/app/src/i18n/provider.tsx b/packages/app/src/i18n/provider.tsx
+--- a/packages/app/src/i18n/provider.tsx
++++ b/packages/app/src/i18n/provider.tsx
+@@ -1,5 +1,6 @@
++import { getEmbeddedHost } from "@/embedded/environment";
+ import * as Localization from "expo-localization";
+-import { type ReactNode, useMemo } from "react";
++import { type ReactNode, useMemo, useSyncExternalStore } from "react";
+ import { I18nextProvider } from "react-i18next";
+ import { isWeb } from "@/constants/platform";
+ import { useAppSettings } from "@/hooks/use-settings";
+@@ -21,7 +22,9 @@
+ 
+ export function I18nProvider({ children }: I18nProviderProps) {
+   const { settings } = useAppSettings();
+-  const systemLocales = useMemo(() => getSystemLocales(), []);
++  const host = getEmbeddedHost();
++  const hostLocale = useSyncExternalStore(host?.subscribe ?? (() => () => {}), () => host?.locale, () => undefined);
++  const systemLocales = useMemo(() => hostLocale ? [hostLocale === "zh" ? "zh-CN" : "en"] : getSystemLocales(), [hostLocale]);
+   const locale = resolveSupportedLocale(settings.language, systemLocales);
+ 
+   ensureI18nLanguageForRender(locale, i18n);
+diff --git a/packages/app/src/runtime/host-runtime.ts b/packages/app/src/runtime/host-runtime.ts
+--- a/packages/app/src/runtime/host-runtime.ts
++++ b/packages/app/src/runtime/host-runtime.ts
+@@ -1476,7 +1476,7 @@
+ 
+     if (override) {
+       this.bootstrapConfiguredOverride(override);
+-    } else {
++    } else if (!("__vibesPaseoEnvironment" in globalThis)) {
+       await this.bootstrapDefaultLocalhost();
+     }
+   }
+diff --git a/packages/app/src/hooks/use-client-activity.ts b/packages/app/src/hooks/use-client-activity.ts
+--- a/packages/app/src/hooks/use-client-activity.ts
++++ b/packages/app/src/hooks/use-client-activity.ts
+@@ -1,3 +1,4 @@
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { useEffect, useRef } from "react";
+ import { AppState } from "react-native";
+ import type { DaemonClient } from "@getpaseo/client/internal/daemon-client";
+@@ -30,6 +31,11 @@
+   focusedTerminalId,
+   onAppResumed,
+ }: ClientActivityOptions): void {
++  const host = getEmbeddedHost();
++  const appVisible = () => AppState.currentState === "active" &&
++    (typeof document === "undefined" || document.visibilityState === "visible") &&
++    (!host || (host.visible && host.pageVisible));
++  const assistantFocused = () => !host || (appVisible() && host.focused);
+   const onAppResumedRef = useRef(onAppResumed);
+   onAppResumedRef.current = onAppResumed;
+ 
+@@ -38,9 +44,9 @@
+     trackerRef.current = createClientActivityTracker({
+       client,
+       deviceType: isWeb ? "web" : "mobile",
+-      initialFocusedAgentId: focusedAgentId,
+-      initialFocusedTerminalId: focusedTerminalId,
+-      initialAppVisible: AppState.currentState === "active",
++      initialFocusedAgentId: assistantFocused() ? focusedAgentId : null,
++      initialFocusedTerminalId: assistantFocused() ? focusedTerminalId : null,
++      initialAppVisible: appVisible(),
+       now: () => Date.now(),
+       onAppResumed: (awayMs) => onAppResumedRef.current?.(awayMs),
+     });
+@@ -50,7 +56,7 @@
+   // Track app visibility via AppState (native).
+   useEffect(() => {
+     const subscription = AppState.addEventListener("change", (nextState) => {
+-      tracker.notifyAppVisibility(nextState === "active");
++      tracker.notifyAppVisibility(nextState === "active" && (!host || (host.visible && host.pageVisible)));
+       tracker.sendHeartbeat();
+     });
+     return () => subscription.remove();
+@@ -61,13 +67,15 @@
+     if (isNative) return;
+     if (typeof document === "undefined") return;
+ 
+-    const handleUserActivity = () => {
++    const handleUserActivity = (event: Event) => {
++      const target = event.target instanceof Node ? event.target : document.activeElement;
++      if (host && (!appVisible() || !host.root.contains(target))) return;
+       tracker.recordUserActivity();
+       tracker.maybeSendImmediateHeartbeat();
+     };
+ 
+     const handleVisibilityChange = () => {
+-      const visible = document.visibilityState === "visible";
++      const visible = appVisible();
+       const { changed } = tracker.notifyAppVisibility(visible);
+       if (changed && visible) {
+         tracker.maybeSendImmediateHeartbeat();
+@@ -114,13 +122,27 @@
+ 
+   // Send heartbeat on focused agent change.
+   useEffect(() => {
+-    tracker.setFocusedAgentId(focusedAgentId);
++    tracker.setFocusedAgentId(assistantFocused() ? focusedAgentId : null);
+   }, [focusedAgentId, tracker]);
+ 
+   // Send heartbeat on focused terminal change.
+   useEffect(() => {
+-    tracker.setFocusedTerminalId(focusedTerminalId);
++    tracker.setFocusedTerminalId(assistantFocused() ? focusedTerminalId : null);
+   }, [focusedTerminalId, tracker]);
++
++  // Presentation changes feed the existing tracker; hidden UI still keeps its
++  // provider, socket, heartbeat and authoritative recovery machinery mounted.
++  useEffect(() => {
++    if (!host) return;
++    const update = () => {
++      const { changed } = tracker.notifyAppVisibility(appVisible());
++      tracker.setFocusedAgentId(assistantFocused() ? focusedAgentId : null);
++      tracker.setFocusedTerminalId(assistantFocused() ? focusedTerminalId : null);
++      if (changed) tracker.sendHeartbeat();
++    };
++    update();
++    return host.subscribe(update);
++  }, [host, tracker, focusedAgentId, focusedTerminalId]);
+ 
+   // Periodic heartbeat gated by connection status.
+   useEffect(() => {
+diff --git a/packages/app/src/lib/overlay-root.ts b/packages/app/src/lib/overlay-root.ts
+--- a/packages/app/src/lib/overlay-root.ts
++++ b/packages/app/src/lib/overlay-root.ts
+@@ -101,7 +101,7 @@
+ 
+ function getTopWebOverlay(): WebOverlayEntry | undefined {
+   const host = getEmbeddedHost();
+-  if (host && !host.visible) return undefined;
++  if (host && (!host.visible || !host.root.contains(document.activeElement))) return undefined;
+   return webOverlayEntries.reduce<WebOverlayEntry | undefined>((top, entry) => {
+     if (!top) return entry;
+     const layerDifference = entry.getLayer() - top.getLayer();

@@ -1,0 +1,702 @@
+diff --git a/packages/app/src/embedded/chat-form-defaults.test.tsx b/packages/app/src/embedded/chat-form-defaults.test.tsx
+index fe9752d..d3f4424 100644
+--- a/packages/app/src/embedded/chat-form-defaults.test.tsx
++++ b/packages/app/src/embedded/chat-form-defaults.test.tsx
+@@ -78,7 +78,7 @@ let latest: UseAgentFormStateResult;
+ function Probe({ initialValues }: { initialValues?: FormInitialValues }) {
+   latest = useAgentFormState({
+     initialServerId: "host",
+-    initialValues: { workingDir: "/home/test/Vibes", ...initialValues },
++    initialValues: { workingDir: "/home/test/Vibes/Chat", ...initialValues },
+     onlineServerIds: ["host"],
+   });
+   return null;
+@@ -111,40 +111,40 @@ afterEach(() => {
+   vi.unstubAllGlobals();
+ });
+ 
+-it("defaults every fresh embedded native draft to the actual Luna model without writing preferences", () => {
+-  render();
+-  expect(latest).toMatchObject({
+-    selectedProvider: "codex",
+-    selectedModel: "current-luna-id",
+-    selectedThinkingOptionId: "medium",
+-    workingDir: "/home/test/Vibes",
+-    isModelLoading: false,
+-  });
+-  render(undefined, "second-native-draft");
+-  expect(latest.selectedModel).toBe("current-luna-id");
+-  expect(mock.preferences).toEqual({});
+-  expect(mock.updatePreferences).not.toHaveBeenCalled();
+-});
++it.each([{ entries: ready }, { entries: [ready[1]] }])(
++  "leaves a new embedded draft unselected without writing preferences",
++  ({ entries }) => {
++    mock.entries = entries;
++    render();
++    expect(latest).toMatchObject({
++      selectedProvider: null,
++      selectedModel: "",
++      workingDir: "/home/test/Vibes/Chat",
++    });
++    render(undefined, "second-native-draft");
++    expect(latest.selectedProvider).toBeNull();
++    expect(latest.selectedModel).toBe("");
++    expect(mock.preferences).toEqual({});
++    expect(mock.updatePreferences).not.toHaveBeenCalled();
++  },
++);
+ 
+-it("waits for native preference hydration and the Codex loading snapshot before resolving", () => {
++it("waits for native preference hydration and restores a non-Codex choice", () => {
+   mock.preferencesLoading = true;
+   render();
+   expect(latest.selectedProvider).toBeNull();
++  mock.preferences = {
++    provider: "claude",
++    providerPreferences: { claude: { model: "claude-choice" } },
++  };
++  mock.entries = [ready[1]];
+   mock.preferencesLoading = false;
+-  mock.entries = [{ ...ready[0], status: "loading", models: [] }, ready[1]];
+-  mock.loading = true;
+   render();
+-  expect(latest.isModelLoading).toBe(true);
+-  expect(latest.selectedProvider).toBeNull();
+-  mock.entries = ready;
+-  mock.loading = false;
+-  render();
+-  expect(latest.selectedModel).toBe("current-luna-id");
+-  expect(latest.isModelLoading).toBe(false);
++  expect(latest).toMatchObject({ selectedProvider: "claude", selectedModel: "claude-choice" });
+   expect(mock.updatePreferences).not.toHaveBeenCalled();
+ });
+ 
+-it("keeps a saved native model preference ahead of the embedded default", () => {
++it("keeps a saved native model preference", () => {
+   mock.preferences = {
+     provider: "codex",
+     providerPreferences: { codex: { model: "other-model" } },
+diff --git a/packages/app/src/embedded/chat-form-defaults.ts b/packages/app/src/embedded/chat-form-defaults.ts
+deleted file mode 100644
+index bc415c8..0000000
+--- a/packages/app/src/embedded/chat-form-defaults.ts
++++ /dev/null
+@@ -1,53 +0,0 @@
+-import type { ProviderSnapshotEntry } from "@getpaseo/protocol/agent-types";
+-import {
+-  mergeProviderPreferences,
+-  type FormPreferences,
+-} from "@/create-agent-preferences/preferences";
+-import type {
+-  FormInitialValues,
+-  UserModifiedFields,
+-} from "@/provider-selection/resolve-agent-form";
+-import { ChatPresetError, resolveChatSetup } from "./chat-preset";
+-import { getEmbeddedHost } from "./environment";
+-
+-/** Supply a default to the native form resolver, without persisting a second preference. */
+-export function resolveEmbeddedFormPreferences(input: {
+-  preferences: FormPreferences;
+-  initialValues: FormInitialValues | undefined;
+-  userModified: UserModifiedFields;
+-  entries: ProviderSnapshotEntry[];
+-  loading: boolean;
+-  cwd: string;
+-}): FormPreferences | null {
+-  const fields = ["provider", "model", "modeId", "thinkingOptionId"] as const;
+-  if (
+-    !getEmbeddedHost() ||
+-    fields.some(
+-      (field) => input.initialValues?.[field] !== undefined || input.userModified[field],
+-    ) ||
+-    input.preferences.provider !== undefined ||
+-    Object.keys(input.preferences.providerPreferences ?? {}).length > 0
+-  ) {
+-    return input.preferences;
+-  }
+-  if (input.loading && !input.entries.some((entry) => entry.provider === "codex")) return null;
+-  try {
+-    const setup = resolveChatSetup(input.entries, input.cwd);
+-    if (!setup) return null;
+-    return mergeProviderPreferences({
+-      preferences: input.preferences,
+-      provider: setup.provider,
+-      updates: {
+-        model: setup.model ?? undefined,
+-        mode: setup.modeId ?? undefined,
+-        ...(setup.model && setup.thinkingOptionId
+-          ? { thinkingByModel: { [setup.model]: setup.thinkingOptionId } }
+-          : {}),
+-      },
+-    });
+-  } catch (error) {
+-    // Missing Codex/Luna keeps the official model picker available.
+-    if (error instanceof ChatPresetError) return input.preferences;
+-    throw error;
+-  }
+-}
+diff --git a/packages/app/src/embedded/chat-preset.test.ts b/packages/app/src/embedded/chat-preset.test.ts
+index 7ab0840..77ccf7f 100644
+--- a/packages/app/src/embedded/chat-preset.test.ts
++++ b/packages/app/src/embedded/chat-preset.test.ts
+@@ -1,39 +1,17 @@
+ import { describe, expect, it, vi } from "vitest";
+-import type { ProviderSnapshotEntry } from "@getpaseo/protocol/agent-types";
+ import {
+   ChatPresetInitializer,
+-  resolveChatSetup,
+   type ChatPreparation,
+   type ChatPresetDependencies,
+ } from "./chat-preset";
+ 
+-const cwd = "/home/test/Vibes";
++const cwd = "/home/test/Vibes/Chat";
+ const workspace = { id: "workspace-chat", projectId: "project-chat", workspaceDirectory: cwd };
+-const entries: ProviderSnapshotEntry[] = [
+-  {
+-    provider: "codex",
+-    enabled: true,
+-    status: "ready",
+-    models: [
+-      {
+-        provider: "codex",
+-        id: "model-from-daemon",
+-        aliases: ["gpt-5.6-luna"],
+-        label: "Luna",
+-        thinkingOptions: [
+-          { id: "medium", label: "Medium" },
+-          { id: "high", label: "High" },
+-        ],
+-        defaultThinkingOptionId: "medium",
+-      },
+-    ],
+-  },
+-];
+ function fixture(initial: ChatPreparation | null = null) {
+   let saved = initial;
+   const methods = {
+-    createProjectDirectory: vi.fn(async () => ({
+-      directoryPath: cwd,
++    createProjectDirectory: vi.fn(async ({ name }: { parentPath: string; name: string }) => ({
++      directoryPath: name === "Vibes" ? "/home/test/Vibes" : cwd,
+       error: null,
+       errorCode: null,
+     })),
+@@ -54,23 +32,6 @@ function fixture(initial: ChatPreparation | null = null) {
+   return { methods, deps, getSaved: () => saved };
+ }
+ describe("Chat native preset", () => {
+-  it("selects only the real selectable Luna id and its native default strength", () => {
+-    expect(resolveChatSetup(entries, cwd)).toMatchObject({
+-      cwd,
+-      provider: "codex",
+-      model: "model-from-daemon",
+-      thinkingOptionId: "medium",
+-    });
+-    expect(() => resolveChatSetup([{ ...entries[0], enabled: false }], cwd)).toThrow("Codex");
+-    expect(resolveChatSetup([{ ...entries[0], status: "loading" }], cwd)).toBeNull();
+-    expect(() =>
+-      resolveChatSetup(
+-        [{ ...entries[0], models: [{ ...entries[0].models![0], isSelectable: false }] }],
+-        cwd,
+-      ),
+-    ).toThrow("Luna");
+-    expect(() => resolveChatSetup([{ ...entries[0], models: [] }], cwd)).toThrow("Luna");
+-  });
+   it("prepares a normal directory and workspace once for concurrent entry, without creating an agent", async () => {
+     const f = fixture();
+     const initializer = new ChatPresetInitializer();
+@@ -84,6 +45,12 @@ describe("Chat native preset", () => {
+       parentPath: "~",
+       name: "Vibes",
+     });
++    expect(f.methods.createProjectDirectory).toHaveBeenNthCalledWith(2, {
++      parentPath: "/home/test/Vibes",
++      name: "Chat",
++    });
++    expect(f.methods.createProjectDirectory).toHaveBeenCalledTimes(2);
++    expect(f.methods.openProject).toHaveBeenCalledWith(cwd);
+     expect(f.methods.openProject).toHaveBeenCalledTimes(1);
+     expect(f.getSaved()).toMatchObject({ phase: "ready", workspaceId: workspace.id });
+   });
+@@ -167,3 +134,59 @@ describe("Chat native preset", () => {
+     expect(b.methods.openProject).toHaveBeenCalledTimes(1);
+   });
+ });
++
++it("keeps an existing preparation in the original folder instead of silently migrating it", async () => {
++  const legacy = {
++    cwd: "/home/test/Vibes",
++    projectId: "original",
++    phase: "ready" as const,
++    workspaceId: "original-workspace",
++  };
++  const f = fixture(legacy);
++  const original = {
++    id: "original-workspace",
++    projectId: "original",
++    workspaceDirectory: legacy.cwd,
++  };
++  f.methods.fetchWorkspaces.mockResolvedValueOnce({
++    entries: [original],
++    pageInfo: { hasMore: false, nextCursor: null },
++  });
++  await expect(new ChatPresetInitializer().run("host", f.deps)).resolves.toEqual({
++    workspace: original,
++    cwd: legacy.cwd,
++  });
++  expect(f.methods.createProjectDirectory).not.toHaveBeenCalled();
++  expect(f.methods.openProject).not.toHaveBeenCalled();
++});
++
++it("stops at a parent file and does not try to create Chat below it", async () => {
++  const f = fixture();
++  f.methods.addProject.mockResolvedValueOnce({
++    project: null as never,
++    error: "Not a directory" as never,
++  });
++  await expect(new ChatPresetInitializer().run("host", f.deps)).rejects.toThrow("Not a directory");
++  expect(f.methods.createProjectDirectory).toHaveBeenCalledTimes(1);
++  expect(f.methods.openProject).not.toHaveBeenCalled();
++});
++
++it("can resume after creating the parent when Chat creation failed", async () => {
++  const f = fixture();
++  f.methods.createProjectDirectory.mockResolvedValueOnce({
++    directoryPath: "/home/test/Vibes",
++    error: null,
++    errorCode: null,
++  });
++  f.methods.createProjectDirectory.mockRejectedValueOnce(new Error("connection lost"));
++  const initializer = new ChatPresetInitializer();
++  await expect(initializer.run("host", f.deps)).rejects.toThrow("connection lost");
++  expect(f.methods.openProject).not.toHaveBeenCalled();
++  f.methods.createProjectDirectory.mockResolvedValueOnce({
++    directoryPath: "/home/test/Vibes",
++    error: "exists" as never,
++    errorCode: "directory_exists" as never,
++  });
++  await expect(initializer.run("host", f.deps)).resolves.toMatchObject({ cwd });
++  expect(f.methods.openProject).toHaveBeenCalledTimes(1);
++});
+diff --git a/packages/app/src/embedded/chat-preset.ts b/packages/app/src/embedded/chat-preset.ts
+index b117707..52b57d4 100644
+--- a/packages/app/src/embedded/chat-preset.ts
++++ b/packages/app/src/embedded/chat-preset.ts
+@@ -1,14 +1,7 @@
+-import type { ProviderSnapshotEntry } from "@getpaseo/protocol/agent-types";
+ import type { DaemonClient } from "@getpaseo/client/internal/daemon-client";
+-import type { WorkspaceDraftTabSetup } from "@/workspace-tabs/model";
+-import { filterSelectableModels, findModelByReference } from "@/provider-selection/model-catalog";
+ 
+-export const CHAT_DIRECTORY_NAME = "Vibes";
+-export type ChatPresetIssue =
+-  | "directory"
+-  | "codex-unavailable"
+-  | "luna-unavailable"
+-  | "unknown-workspace";
++export const CHAT_DIRECTORY_NAME = "Chat";
++export type ChatPresetIssue = "directory" | "unknown-workspace";
+ export class ChatPresetError extends Error {
+   constructor(
+     readonly issue: ChatPresetIssue,
+@@ -35,40 +28,6 @@ export interface ChatPresetDependencies {
+   save(value: ChatPreparation): Promise<void>;
+ }
+ 
+-export function resolveChatSetup(
+-  entries: ProviderSnapshotEntry[],
+-  cwd: string,
+-): WorkspaceDraftTabSetup | null {
+-  const codex = entries.find((entry) => entry.provider === "codex");
+-  if (codex?.status === "loading") return null;
+-  if (!codex?.enabled || codex.status !== "ready") {
+-    throw new ChatPresetError(
+-      "codex-unavailable",
+-      "Codex is not installed, signed in, or available on this computer.",
+-    );
+-  }
+-  const models = filterSelectableModels(codex.models ?? null);
+-  const luna = findModelByReference(models, "gpt-5.6-luna") ?? findModelByReference(models, "luna");
+-  if (!luna)
+-    throw new ChatPresetError(
+-      "luna-unavailable",
+-      "Luna is not available in this computer's Codex model list.",
+-    );
+-  const thinking = luna.thinkingOptions ?? [];
+-  const thinkingOptionId =
+-    thinking.find((option) => option.id === luna.defaultThinkingOptionId)?.id ??
+-    thinking.find((option) => option.isDefault)?.id ??
+-    null;
+-  return {
+-    provider: "codex",
+-    cwd,
+-    model: luna.id,
+-    thinkingOptionId,
+-    modeId: codex.defaultModeId ?? null,
+-    featureValues: {},
+-  };
+-}
+-
+ /** One preparation per host in this module. RPC ids are correlations, not
+  * idempotency keys: after an uncertain open, query and never replay that write. */
+ export class ChatPresetInitializer {
+@@ -87,26 +46,11 @@ export class ChatPresetInitializer {
+ async function prepare({ client, read, save }: ChatPresetDependencies) {
+   let saved = await read();
+   if (!saved) {
+-    const directory = await client.createProjectDirectory({
+-      parentPath: "~",
+-      name: CHAT_DIRECTORY_NAME,
+-    });
+-    if (
+-      !directory.directoryPath ||
+-      (directory.error && directory.errorCode !== "directory_exists")
+-    ) {
+-      throw new ChatPresetError(
+-        "directory",
+-        directory.error ?? "The default folder could not be prepared.",
+-      );
+-    }
+-    // EEXIST also covers a file. The official project API checks directory type.
+-    const checked = await client.addProject(directory.directoryPath);
+-    if (!checked.project || checked.error)
+-      throw new ChatPresetError(
+-        "directory",
+-        checked.error ?? "The default path is not a usable directory.",
+-      );
++    // The native API accepts one path segment. Validate the parent before preparing
++    // Chat so an existing file or a permission failure cannot be mistaken for a folder.
++    const parent = await prepareDirectory(client, "~", "Vibes");
++    const directory = await prepareDirectory(client, parent.directoryPath, CHAT_DIRECTORY_NAME);
++    const checked = directory;
+     saved = {
+       cwd: directory.directoryPath,
+       projectId: checked.project.projectId,
+@@ -150,3 +94,22 @@ async function prepare({ client, read, save }: ChatPresetDependencies) {
+   await save({ ...saved, phase: "ready", workspaceId: workspace.id });
+   return { workspace, cwd: saved.cwd };
+ }
++
++async function prepareDirectory(client: PresetClient, parentPath: string, name: string) {
++  const directory = await client.createProjectDirectory({ parentPath, name });
++  if (!directory.directoryPath || (directory.error && directory.errorCode !== "directory_exists")) {
++    throw new ChatPresetError(
++      "directory",
++      directory.error ?? "The default folder could not be prepared.",
++    );
++  }
++  // EEXIST also covers a file. The official project API checks directory type.
++  const checked = await client.addProject(directory.directoryPath);
++  if (!checked.project || checked.error) {
++    throw new ChatPresetError(
++      "directory",
++      checked.error ?? "The default path is not a usable directory.",
++    );
++  }
++  return { directoryPath: directory.directoryPath, project: checked.project };
++}
+diff --git a/packages/app/src/embedded/chat-start-screen.tsx b/packages/app/src/embedded/chat-start-screen.tsx
+index 7a74c94..bb181e8 100644
+--- a/packages/app/src/embedded/chat-start-screen.tsx
++++ b/packages/app/src/embedded/chat-start-screen.tsx
+@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
+ import { Pressable, Text, View } from "react-native";
+ import { useLocalSearchParams, useRouter, type Href } from "expo-router";
+ import { useTranslation } from "react-i18next";
+-import { useUnistyles } from "react-native-unistyles";
++import { StyleSheet } from "react-native-unistyles";
+ import { useEarliestOnlineHostServerId } from "@/app/_layout";
+ import { useHosts, useHostRuntimeClient, useHostRuntimeIsConnected } from "@/runtime/host-runtime";
+ import { useSessionStore, normalizeWorkspaceDescriptor } from "@/stores/session-store";
+@@ -15,14 +15,12 @@ import {
+ import { navigateToWorkspace } from "@/stores/navigation-active-workspace-store";
+ import { navigateToHostWorkspaceRoute } from "@/navigation/workspace-route-navigation";
+ import { buildHostWorkspaceRoute } from "@/utils/host-routes";
+-import { ChatPresetError, ChatPresetInitializer, resolveChatSetup } from "./chat-preset";
+-import { useProvidersSnapshot } from "@/hooks/use-providers-snapshot";
++import { ChatPresetError, ChatPresetInitializer } from "./chat-preset";
+ import { getEmbeddedHost } from "./environment";
+ import { readChatPreparation, saveChatPreparation } from "./chat-preparation";
+ 
+ const initializer = new ChatPresetInitializer();
+ export default function ChatStartScreen() {
+-  const { theme } = useUnistyles();
+   const { i18n } = useTranslation();
+   const zh = i18n.language.startsWith("zh");
+   const router = useRouter();
+@@ -36,15 +34,6 @@ export default function ChatStartScreen() {
+   const layoutHydrated = useWorkspaceLayoutStoreHydrated();
+   const [error, setError] = useState<Error | null>(null);
+   const [attempt, setAttempt] = useState(0);
+-  const [prepared, setPrepared] = useState<{
+-    serverId: string;
+-    workspaceId: string;
+-    cwd: string;
+-  } | null>(null);
+-  const providers = useProvidersSnapshot(serverId, {
+-    enabled: isFocused && prepared?.serverId === serverId,
+-    cwd: prepared?.serverId === serverId ? prepared.cwd : null,
+-  });
+   useEffect(() => {
+     if (!isFocused || !client || !connected || !serverId || !layoutHydrated) return;
+     let cancelled = false;
+@@ -55,8 +44,8 @@ export default function ChatStartScreen() {
+         read: () => readChatPreparation(serverId),
+         save: (value) => saveChatPreparation(serverId, value),
+       })
+-      .then(({ workspace, cwd }) => {
+-        if (cancelled) return;
++      .then(({ workspace }) => {
++        if (cancelled) return undefined;
+         // Merge the authoritative reply through the official store, without a second replica.
+         useSessionStore
+           .getState()
+@@ -71,7 +60,15 @@ export default function ChatStartScreen() {
+           );
+         if (hasConversationTab) {
+           navigateToHostWorkspaceRoute(buildHostWorkspaceRoute(serverId, workspace.id));
+-        } else setPrepared({ ...selection, cwd });
++        } else {
++          // A native draft with no setup leaves provider/model selection to Paseo.
++          navigateToWorkspace({
++            ...selection,
++            target: { kind: "draft", draftId: crypto.randomUUID() },
++            pin: true,
++          });
++        }
++        return undefined;
+       })
+       .catch((failure: unknown) => {
+         if (!cancelled)
+@@ -81,114 +78,26 @@ export default function ChatStartScreen() {
+       cancelled = true;
+     };
+   }, [isFocused, client, connected, serverId, layoutHydrated, attempt]);
+-  useEffect(() => {
+-    if (
+-      !isFocused ||
+-      !connected ||
+-      !prepared ||
+-      prepared.serverId !== serverId ||
+-      !providers.entries
+-    )
+-      return;
+-    try {
+-      const setup = resolveChatSetup(providers.entries, prepared.cwd);
+-      if (!setup) {
+-        setError(null);
+-        return;
+-      }
+-      navigateToWorkspace({
+-        serverId: prepared.serverId,
+-        workspaceId: prepared.workspaceId,
+-        target: { kind: "draft", draftId: crypto.randomUUID(), setup },
+-        pin: true,
+-      });
+-    } catch (failure) {
+-      setError(failure instanceof Error ? failure : new Error("Conversation preparation failed."));
+-    }
+-  }, [isFocused, connected, prepared, serverId, providers.entries]);
+-  useEffect(() => {
+-    if (prepared && providers.error) setError(new Error(providers.error));
+-  }, [prepared, providers.error]);
+-  const issue = error instanceof ChatPresetError ? error.issue : null;
+-  const message = !serverId
+-    ? zh
+-      ? "先连接你的电脑，再开始对话。"
+-      : "Connect your computer to start a conversation."
+-    : !connected
+-      ? zh
+-        ? "正在等待这台电脑连接。可在连接设置中查看状态。"
+-        : "Waiting for this computer. Check connection settings for its status."
+-      : issue === "codex-unavailable"
+-        ? zh
+-          ? "这台电脑的 Codex 尚不可用。请安装并登录 Codex 后重试，也可以自行选择其他 Agent。"
+-          : "Codex is not available on this computer. Install and sign in to Codex, then retry, or choose another agent."
+-        : issue === "luna-unavailable"
+-          ? zh
+-            ? "这台电脑的 Codex 没有提供 Luna。可以重试获取模型，或自行选择其他模型。"
+-            : "This computer's Codex does not offer Luna. Retry the model list or choose another model."
+-          : issue === "unknown-workspace"
+-            ? zh
+-              ? "上次准备的结果仍未确认。已查询项目，暂不重复创建；恢复连接后重试查询，或打开原生项目列表核对。"
+-              : "The previous preparation is still unconfirmed. Retry the query after reconnecting, or inspect the native project list."
+-            : error
+-              ? zh
+-                ? `对话准备失败：${error.message}`
+-                : `Conversation preparation failed: ${error.message}`
+-              : zh
+-                ? "正在准备默认文件夹和 Codex / Luna…"
+-                : "Preparing the default folder and Codex / Luna…";
++  const message = preparationMessage({ serverId, connected, error, zh });
++  const hostLabel = hosts.find((host) => host.serverId === serverId)?.label;
++  const settingsRoute = serverId ? `/settings/hosts/${encodeURIComponent(serverId)}` : "/welcome";
+   const button = (label: string, action: () => void) => (
+-    <Pressable
+-      key={label}
+-      accessibilityRole="button"
+-      onPress={action}
+-      style={{
+-        minHeight: 44,
+-        justifyContent: "center",
+-        paddingHorizontal: 12,
+-        borderWidth: 1,
+-        borderColor: theme.colors.border,
+-        borderRadius: 8,
+-      }}
+-    >
+-      <Text style={{ color: theme.colors.foreground }}>{label}</Text>
++    <Pressable key={label} accessibilityRole="button" onPress={action} style={styles.button}>
++      <Text style={styles.foreground}>{label}</Text>
+     </Pressable>
+   );
+   return (
+-    <View style={{ flex: 1 }}>
+-      <View
+-        style={{
+-          flex: 1,
+-          padding: 24,
+-          justifyContent: "center",
+-          gap: 16,
+-          backgroundColor: theme.colors.surface0,
+-        }}
+-      >
+-        <Text
+-          accessibilityRole="header"
+-          style={{ fontSize: 20, fontWeight: "600", color: theme.colors.foreground }}
+-        >
++    <View style={styles.root}>
++      <View style={styles.content}>
++        <Text accessibilityRole="header" style={styles.heading}>
+           {zh ? "开始对话" : "Start a conversation"}
+         </Text>
+-        <Text style={{ color: theme.colors.foregroundMuted, lineHeight: 22 }}>{message}</Text>
+-        {hosts.find((host) => host.serverId === serverId)?.label ? (
+-          <Text style={{ color: theme.colors.foregroundMuted }}>
+-            {hosts.find((host) => host.serverId === serverId)!.label}
+-          </Text>
+-        ) : null}
+-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
++        <Text style={styles.message}>{message}</Text>
++        {hostLabel ? <Text style={styles.muted}>{hostLabel}</Text> : null}
++        <View style={styles.actions}>
+           {error && connected
+             ? button(zh ? "重试" : "Retry", () => {
+-                if (prepared)
+-                  void providers
+-                    .refresh(["codex"])
+-                    .catch((failure: unknown) =>
+-                      setError(
+-                        failure instanceof Error ? failure : new Error("Model refresh failed."),
+-                      ),
+-                    );
+-                else setAttempt((value) => value + 1);
++                setAttempt((value) => value + 1);
+               })
+             : null}
+           {error
+@@ -200,11 +109,7 @@ export default function ChatStartScreen() {
+           {!connected || error
+             ? button(zh ? "连接设置" : "Connection settings", () => {
+                 getEmbeddedHost()?.onEvent({ version: 1, type: "surface", value: "full" });
+-                router.push(
+-                  (serverId
+-                    ? `/settings/hosts/${encodeURIComponent(serverId)}`
+-                    : "/welcome") as Href,
+-                );
++                router.push(settingsRoute as Href);
+               })
+             : null}
+         </View>
+@@ -212,3 +117,56 @@ export default function ChatStartScreen() {
+     </View>
+   );
+ }
++
++function preparationMessage({
++  serverId,
++  connected,
++  error,
++  zh,
++}: {
++  serverId: string | null;
++  connected: boolean;
++  error: Error | null;
++  zh: boolean;
++}) {
++  if (!serverId)
++    return zh ? "先连接你的电脑，再开始对话。" : "Connect your computer to start a conversation.";
++  if (!connected)
++    return zh
++      ? "正在等待这台电脑连接。可在连接设置中查看状态。"
++      : "Waiting for this computer. Check connection settings for its status.";
++  if (error instanceof ChatPresetError && error.issue === "unknown-workspace") {
++    return zh
++      ? "上次准备的结果仍未确认。已查询项目，暂不重复创建；恢复连接后重试查询，或打开原生项目列表核对。"
++      : "The previous preparation is still unconfirmed. Retry the query after reconnecting, or inspect the native project list.";
++  }
++  if (error)
++    return zh
++      ? `对话准备失败：${error.message}`
++      : `Conversation preparation failed: ${error.message}`;
++  return zh ? "正在准备默认文件夹 ~/Vibes/Chat…" : "Preparing the default folder ~/Vibes/Chat…";
++}
++
++const styles = StyleSheet.create((theme) => ({
++  root: { flex: 1 },
++  content: {
++    flex: 1,
++    padding: 24,
++    justifyContent: "center",
++    gap: 16,
++    backgroundColor: theme.colors.surface0,
++  },
++  button: {
++    minHeight: 44,
++    justifyContent: "center",
++    paddingHorizontal: 12,
++    borderWidth: 1,
++    borderColor: theme.colors.border,
++    borderRadius: 8,
++  },
++  foreground: { color: theme.colors.foreground },
++  muted: { color: theme.colors.foregroundMuted },
++  heading: { fontSize: 20, fontWeight: "600", color: theme.colors.foreground },
++  message: { color: theme.colors.foregroundMuted, lineHeight: 22 },
++  actions: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
++}));
+diff --git a/packages/app/src/hooks/use-agent-form-state.ts b/packages/app/src/hooks/use-agent-form-state.ts
+index b1d8fd2..0f67c36 100644
+--- a/packages/app/src/hooks/use-agent-form-state.ts
++++ b/packages/app/src/hooks/use-agent-form-state.ts
+@@ -39,7 +39,6 @@ import {
+   type ProviderModelsByProvider,
+ } from "@/provider-selection/resolve-agent-form";
+ import type { MaterializedAgentProfile } from "@/agent-profiles";
+-import { resolveEmbeddedFormPreferences } from "@/embedded/chat-form-defaults";
+ 
+ export type { FormInitialValues } from "@/provider-selection/resolve-agent-form";
+ 
+@@ -369,19 +368,10 @@ export function useAgentFormState(options: UseAgentFormStateOptions = {}): UseAg
+       return;
+     }
+ 
+-    const resolvedPreferences = resolveEmbeddedFormPreferences({
+-      preferences,
+-      initialValues: combinedInitialValues,
+-      userModified,
+-      entries: snapshotEntries ?? [],
+-      loading: snapshotIsLoading,
+-      cwd: formState.workingDir,
+-    });
+-    if (!resolvedPreferences) return;
+     dispatch({
+       type: "COMPLETE_RESOLUTION",
+       initialValues: combinedInitialValues,
+-      preferences: resolvedPreferences,
++      preferences,
+       providerModelsByProvider: snapshotProviderModelsByProvider,
+       allowedProviderMap: snapshotResolvableProviderDefinitionMap,
+     });

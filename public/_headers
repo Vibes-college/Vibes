@@ -10,3 +10,6 @@
   Cache-Control: public, max-age=60, must-revalidate
 /en/*
   Cache-Control: public, max-age=60, must-revalidate
+
+/vendor/paseo/*
+  Cache-Control: public, max-age=31536000, immutable

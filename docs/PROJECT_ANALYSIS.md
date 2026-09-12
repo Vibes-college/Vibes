@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '给维护者阅读的项目总览与代码导航'
 status: 'current'
-shaped-by: ['001', '002', '003', '005', '009']
+shaped-by: ['001', '002', '003', '005', '009', '013']
 code-sources:
   [
     'package.json',
@@ -13,8 +13,9 @@ code-sources:
     'src/lib/content/catalog.ts',
     'src/scripts/search.ts',
     'scripts/build.ts',
+    'src/features/paseo-webui/host.ts',
   ]
-code-revision: '960886857e5e7c68fd001ec6172ac54cf8bf02d0df5bef83c7a01b820b95de65'
+code-revision: '1f3a4ccc110e4cda9de5bc03ede33128ead03a576f7856eb1138654ae67389d3'
 ---
 
 # VIBES项目总览
@@ -27,13 +28,13 @@ code-revision: '960886857e5e7c68fd001ec6172ac54cf8bf02d0df5bef83c7a01b820b95de65
 
 VIBES是AI经济的校园，让人和Agent认识AI、认识彼此、交易成果并共同创造。Explore关注两条线：Learn what’s shaping AI. Learn what’s changed by AI.
 
-| 板块    | Slogan                      | 与当前代码的关系               |
-| ------- | --------------------------- | ------------------------------ |
-| Explore | Discover and understand AI  | 当前网站唯一的产品板块         |
-| Market  | Buy and sell AI outcomes    | 愿景，没有页面或业务接口       |
-| Events  | Meet the people shaping AI  | 愿景，没有页面或业务接口       |
-| Tag     | Work with people and agents | 愿景，没有独立产品实现         |
-| Paseo   | 连接VIBES和你的本地Agent    | 独立工具方向，不在当前网站实现 |
+| 板块    | Slogan                      | 与当前代码的关系            |
+| ------- | --------------------------- | --------------------------- |
+| Explore | Discover and understand AI  | 当前网站唯一的产品板块      |
+| Market  | Buy and sell AI outcomes    | 愿景，没有页面或业务接口    |
+| Events  | Meet the people shaping AI  | 愿景，没有页面或业务接口    |
+| Tag     | Work with people and agents | 愿景，没有独立产品实现      |
+| Paseo   | 连接VIBES和你的本地Agent    | Explore内的可选原生本地助手 |
 
 Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物、公司和成果的人。没有公众/Agent在线编辑、Markdown投稿、账号、收藏、评论、支付或协作；这些愿景不自动成为开发任务。
 
@@ -43,6 +44,7 @@ Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物
 | ------------------------ | ------------------------------------------- | ------------------------------------------------------ |
 | 访客怎样找到作品         | [浏览与搜索](features/explore-browse.md)    | src/components/Explore.astro、src/scripts/explore.ts   |
 | 怎样阅读与继续探索       | [阅读详情](features/article-read.md)        | src/components/WorkDetail.astro、src/scripts/detail.ts |
+| 怎样和自己的Agent做事    | [使用本地助手](features/local-assistant.md) | src/features/paseo-webui/、third_party/paseo-webui/    |
 | 怎样日常更新原文与译文   | [维护内容](features/content-maintenance.md) | src/lib/content/、scripts/validate-content.ts          |
 | 怎样检查并发布到测试站   | [检查与发布](features/project-commands.md)  | scripts/release.ts、.github/workflows/check.yml        |
 | 怎样让文档跟代码一起变化 | [维护文档](features/document-governance.md) | scripts/docs-check.ts、scripts/docs-sources.ts         |
@@ -65,6 +67,8 @@ flowchart TD
 构建框架是Astro，语言是TypeScript，样式是普通CSS，正文复用Prose UI独立样式，并在构建时编译Markdown组件与公式。站内阅读使用Astro ClientRouter连续切换并有限预取详情，搜索仍按需加载；规则和缓存边界见[系统规则](system/rules.md)。普通文章继续使用.md；互动文章可选.mdx与按需React islands，维护方式见[内容维护](features/content-maintenance.md)。beUI组件使用构建期Tailwind样式与Motion动效；没有线上业务数据库；Node与依赖版本以[运行配置](system/configuration.md)所链接的package.json/锁文件为准。
 
 访客请求不会触发登录、订单或内容提交服务。robots.txt和sitemap.xml也在构建时生成，并非动态业务接口；说明见[接口与外部服务](system/interfaces.md)。
+
+访客可主动打开Paseo助手，配对自己的电脑后对话、执行并查看原生产出。首次无工作区时准备`~/Vibes/Chat`，以后沿用原生当前项目；Agent和模型由用户通过原生入口选择或恢复已有偏好，不要求Codex或ChatGPT订阅。小窗只显示对话，全屏提供项目、历史和文件入口，文章入口可带入能删除的公开链接引用。小窗提供本地英语听写路径，真实麦克风与手机仍需验收。助手不提供云端执行或模型账号，不启用网站投稿和编辑。配对、会话、审批和文件沿用Paseo原生实现，宿主管理加载和阅读布局；尚缺的工作区快捷入口、插件运行及完整验收见[使用本地助手](features/local-assistant.md)，来源及维护见[Paseo接入](system/local-assistant.md)。
 
 ## 产品要求放在哪里维护
 

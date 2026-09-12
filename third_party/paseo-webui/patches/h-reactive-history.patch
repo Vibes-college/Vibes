@@ -1,0 +1,29 @@
+diff --git a/packages/app/src/hooks/use-agent-history.ts b/packages/app/src/hooks/use-agent-history.ts
+index b24c5f8..d39befe 100644
+--- a/packages/app/src/hooks/use-agent-history.ts
++++ b/packages/app/src/hooks/use-agent-history.ts
+@@ -296,6 +296,10 @@ export function useAgentHistory(options: {
+   enabled?: boolean;
+   search?: string;
+ }): AgentHistoryResult {
++  "use no memo";
++  // The production compiler drops the aggregate version used with this mutable
++  // runtime. Preserve manual dependencies until compiled recovery tests prove
++  // an upstream/compiler upgrade keeps connection changes reactive (Vibes 012).
+   const { t } = useTranslation();
+   const daemons = useHosts();
+   const runtime = getHostRuntimeStore();
+diff --git a/packages/app/src/runtime/host-runtime.ts b/packages/app/src/runtime/host-runtime.ts
+index ba7a34c..35a9cb6 100644
+--- a/packages/app/src/runtime/host-runtime.ts
++++ b/packages/app/src/runtime/host-runtime.ts
+@@ -2436,6 +2436,9 @@ export function useHostRuntimeConnectionStatus(serverId: string): HostRuntimeCon
+ export function useHostRuntimeConnectionStatuses(
+   serverIds: readonly string[],
+ ): ReadonlyMap<string, HostRuntimeConnectionStatus> {
++  "use no memo";
++  // Like useAgentHistory, this reads mutable snapshots through an aggregate
++  // version; production compilation must not discard that invalidation input.
+   const store = getHostRuntimeStore();
+   const version = useSyncExternalStore(
+     (onStoreChange) => store.subscribeAll(onStoreChange),

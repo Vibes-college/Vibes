@@ -31,7 +31,11 @@
     "content:revision": "node --experimental-strip-types scripts/validate-content.ts revision",
     "release:restore": "node --experimental-strip-types scripts/release.ts restore",
     "release:preview": "node --experimental-strip-types scripts/release.ts preview",
-    "cleanup:task": "node --experimental-strip-types scripts/cleanup-task.ts"
+    "cleanup:task": "node --experimental-strip-types scripts/cleanup-task.ts",
+    "paseo:fetch": "node --experimental-strip-types scripts/paseo-webui-build.ts fetch",
+    "paseo:build": "node --experimental-strip-types scripts/paseo-webui-build.ts build",
+    "paseo:ci": "node --experimental-strip-types scripts/paseo-webui-build.ts ci",
+    "paseo:test-prepare": "node --experimental-strip-types scripts/paseo-webui-build.ts test-prepare"
   },
   "dependencies": {
     "@astrojs/mdx": "8.0.0",

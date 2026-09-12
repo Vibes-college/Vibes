@@ -22,6 +22,7 @@ const livingFiles = new Set([
   'docs/system/content-model.md',
   'docs/system/rules.md',
   'docs/system/interfaces.md',
+  'docs/system/local-assistant.md',
   'docs/system/checks-and-release.md',
 ]);
 export const featurePattern = /^docs\/features\/([a-z][a-z0-9-]*)\.md$/;

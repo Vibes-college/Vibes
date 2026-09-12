@@ -2,12 +2,15 @@
 tense: 'living'
 describes: '配置和环境变量'
 status: 'current'
-shaped-by: ['001', '004', '005', '009', '010']
+shaped-by: ['001', '004', '005', '009', '010', '013']
 code-sources:
   [
     'package.json',
     'package-lock.json',
     'astro.config.mjs',
+    'scripts/paseo-webui-dev.ts',
+    'src/features/paseo-webui/build-config.ts',
+    'scripts/content-security.ts',
     'wrangler.jsonc',
     'wrangler.local.jsonc',
     'tsconfig.json',
@@ -23,7 +26,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: '612deb01672bdd91ce0088d8f2cea3a81c364ed4c2f65152b45a6ce57d662a3c'
+code-revision: '55750fb70fd1a9301a20bfccfc99a1769c8f316e23d6c19655813d62d630e48e'
 ---
 
 # 配置和环境变量
@@ -51,9 +54,11 @@ code-revision: '612deb01672bdd91ce0088d8f2cea3a81c364ed4c2f65152b45a6ce57d662a3c
 
 ## Markdown与排版依赖
 
-Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，普通Markdown页面不加载React。@astrojs/mdx与@astrojs/react分别提供MDX编译和React islands；react/react-dom仅在需要交互的岛上加载，@types/react及@types/react-dom用于类型检查，tsconfig.json使用react-jsx。Motion用于beUI组件动画，lucide-react提供其原版图标，clsx与tailwind-merge保留原版类合并行为；Tailwind与@tailwindcss/vite在构建期生成组件样式，不加载浏览器运行库，不导入全局Preflight，仅扫描beUI组件及演示目录。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
+Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，普通Markdown正文不需要React。@astrojs/mdx与@astrojs/react分别提供MDX编译和React islands；网站的react/react-dom在需要交互的岛上加载，@types/react及@types/react-dom用于类型检查，tsconfig.json使用react-jsx。Paseo另带固定原生运行时，仅首次主动打开助手后加载。Motion用于beUI组件动画，lucide-react提供其原版图标，clsx与tailwind-merge保留原版类合并行为；Tailwind与@tailwindcss/vite在构建期生成组件样式，不加载浏览器运行库，不导入全局Preflight，仅扫描beUI组件及演示目录。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
 
-构建后scripts/content-security.ts扫描HTML中的内联可执行脚本，并接收固定2048打包模板的脚本摘要，按精确内容补充dist/_headers的SHA256许可，支持从普通页面连续导航到互动文章；其他CSP指令保持public/_headers定义。Astro内置CSP当前不兼容ClientRouter，因此不同时开启两套策略；脚本不使用unsafe-inline。
+构建后scripts/content-security.ts扫描HTML中的内联可执行脚本，并接收固定2048打包模板与原生Mermaid沙盒的脚本摘要，按精确内容补充dist/_headers的SHA256许可，支持从普通页面连续导航到互动文章。Astro内置CSP当前不兼容ClientRouter，因此不同时开启两套策略；主页面脚本不使用unsafe-inline或unsafe-eval。
+
+Paseo按固定上游及补丁独立构建，默认产品构建必须包含有效原生产物；本地对照可用VIBES_PASEO=disabled，发布拒绝禁用。首次打开前不下载其专用资源或连接电脑；启用构建的主页面响应策略允许原生手工连接所需协议和blob资源，实际浏览器与daemon限制见[接口与服务](interfaces.md#paseo本地助手)。安装树、构建命令、公开资源版本及本地SITE_URL要求见[Paseo接入](local-assistant.md)，不需要网站AI API密钥。
 
 ## 环境变量名称
 
@@ -67,7 +72,7 @@ Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、rem
 | `GITHUB_TOKEN`                                  | GitHub Actions 临时提供 | CI 读取代码所需的平台身份；普通检查授予 `contents: read`，发布job另有 `deployments: write`；无需手填 |
 | `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` | Wrangler 自动部署身份   | Token仅放GitHub production环境secret；account由固定releaseTarget提供；本机OAuth用于阶段预览          |
 
-本地与CI均以1个worker串行运行Playwright Chromium和WebKit，包括reactions.spec.ts的分章评价加载与保存回归；按实际环境报告结果。生产发布由GitHub检查工作流负责，不再配置第二套Cloudflare Git自动发布，以免抢先上线或重复构建。
+本地与CI均以1个worker串行运行Playwright Chromium和WebKit，包括分章评价、媒体与Paseo专项回归；按实际环境报告结果。Paseo测试另启动仅回环地址可达的隔离官方mock daemon，子进程使用独立HOME、PASEO_HOME及临时工作目录，不继承用户模型凭据或启用真实provider；4396为测试页面/协议代理，6796为测试daemon，冲突时失败并保留其他服务。浏览器配对状态只在新context建立时种入一次，刷新或清除之后遵循真实存储行为。生产发布由GitHub检查工作流负责，不再配置第二套Cloudflare Git自动发布，以免抢先上线或重复构建。
 
 ## 本地与线上如何保存值
 

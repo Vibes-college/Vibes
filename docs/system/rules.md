@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '009', '010']
+shaped-by: ['001', '003', '005', '006', '007', '009', '010', '013']
 code-sources:
   [
     'src/lib/content/',
@@ -12,6 +12,9 @@ code-sources:
     'src/config/site.ts',
     'public/_headers',
     'scripts/budget-policy.ts',
+    'scripts/script-budget.ts',
+    'scripts/paseo-webui-preview.ts',
+    'scripts/content-security.ts',
     'playwright.config.ts',
     'scripts/docs-check.ts',
     'scripts/docs-frontmatter.ts',
@@ -19,7 +22,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '85324e5fc9c7134369d36262bf2352a5df9a2a0ed5969e728a2d817d21cd1de4'
+code-revision: 'd1e5ca84b6f4329d4827e34f10b15b648de6f9ca8c932afd620c28fa811149b8'
 ---
 
 # 常量、规则表与正则
@@ -35,7 +38,7 @@ code-revision: '85324e5fc9c7134369d36262bf2352a5df9a2a0ed5969e728a2d817d21cd1de4
 - 目录路径`/{locale}/`、分类`/{locale}/tags/{tagId}/`、分页`page/{n}/`、详情`/{locale}/works/{id}/`；旧根路径转中文，旧type转分类。UI文案在src/lib/i18n/messages.ts。
 - `src/config/site.ts`统一来源；发布要求HTTPS SITE_URL，拒绝localhost和非纯origin地址，vibes.college已获授权。canonical去查询，语言替代链接仅含实际版本，sitemap不含搜索或草稿。
 - 外部目标HTTPS且新标签noopener noreferrer；事实无有效目标显示纯文本。正文锚点在构建时核对，翻译缺失值显示原文标注。
-- CSP只为Pagefind WebAssembly加入`wasm-unsafe-eval`，普通eval仍禁用；定义public/_headers。
+- 主页面CSP为Pagefind WebAssembly加入`wasm-unsafe-eval`，普通eval仍禁用；定义public/_headers。助手HTML预览使用独立的隔离响应策略，见[接口与服务](interfaces.md#paseo本地助手)。
 
 ## 连续导航、预取与缓存
 
@@ -55,7 +58,7 @@ Astro ClientRouter使用swap回退并关闭页面过渡动画；每次astro:page
 | 格式            | 单引号、100 字符目标行宽、Astro parser；完整检查范围见忽略文件                                                   | .prettierrc.json；.prettierignore                                            |
 | Node 与工具版本 | Node >=22.20.0；具体依赖版本由锁文件决定                                                                         | package.json；package-lock.json                                              |
 | 类型规则        | 网站 strict；工具 NodeNext/ES2023/strict/noEmit                                                                  | tsconfig.json；tsconfig.tools.json                                           |
-| CI              | push、PR、手动触发；verify 最多 15 分钟，budget 最多 10 分钟；只读 contents                                      | .github/workflows/check.yml                                                  |
+| CI              | main push、PR活动、手动及每周文档检查；verify 与 budget 各最多 30 分钟；检查只读 contents                        | .github/workflows/check.yml                                                  |
 | 浏览器选择      | 本地与CI统一Playwright Chromium和WebKit                                                                          | playwright.config.ts                                                         |
 | 预览端口        | 本机 4322；E2E 要求端口空闲；开发默认端口以 Astro 打印为准                                                       | package.json；scripts/test-e2e.ts；playwright.config.ts                      |
 | 服务等待        | Playwright webServer最多60000ms                                                                                  | playwright.config.ts                                                         |
@@ -126,13 +129,15 @@ src/config/media.ts统一素材地址和平台登记。短视频≤1MiB且≤12�
 
 公共脚本保留21000字节gzip硬门槛；仅由媒体启动器动态引用且没有静态/预加载/公共引用的media模块及其独有依赖，另计mediaJavascriptGzip≤16000字节（含MIT 2048游戏脚本）。共享与未归属模块仍计公共；MDX额外依赖仍按每篇150000字节检查，媒体完整依赖不因延迟而免预算。普通无媒体详情通过网络测试验证不请求媒体模块。
 
-可见阈值50%、停留200ms，≤800px最多1个自动动态卡片、桌面最多2个；减少动态、省流量关闭自动。手动音视频/外站体验互斥，失焦后台、离屏、搜索替换、详情翻页和历史切换清理。音视频使用preload=none且启动时才挂source；本地服务没有Range时，明确请求章节跳转才有界读取Blob补足seek，暂停会取消读取，销毁会释放URL；原生暂停与页面暂停共用取消路径；play/playing先忽略已暂停元素的迟到事件，正常原生继续播放恢复手动意图并参与互斥，seeked、canplay及timeupdate仍核对播放意图，拦住跳转结束后只恢复原生进度的异步播放，章节跳转中暂停不会因异步恢复而继续播放。下载失败保留原作入口，外站平台限制不能靠iframe load事件判断。
+Paseo的轻量入口仍计普通公共脚本，首次点击后才加载的宿主模块与固定原生资源另行报告完整gzip；只有通过当前构建身份、资源清单和实际字节摘要核验的资源才可归入助手。未知vendor、额外脚本、静态或预加载引用进入普通页均失败，不能靠改路径逃逸预算。助手体积是诊断数据；首开、操作、收起和恢复需实际体验验证，不用体积代替流畅性。来源与维护见[Paseo接入](local-assistant.md)。
 
-public/_headers只允许已登记播放器/原站frame来源、指定视频源和本地blob，主页面脚本仍不允许外站或任意内联代码。注册新来源须同步策略并做实际嵌入验收；iframe内容由原平台管理。
+可见阈值50%、停留200ms，≤800px最多1个自动动态卡片、桌面最多2个；减少动态、省流量关闭自动。手动音视频/外站体验互斥，失焦后台、离屏、搜索替换、详情翻页和历史切换清理。音视频使用preload=none且启动时才挂source；本地服务没有Range时，明确请求章节跳转才有界读取Blob补足seek，暂停会取消读取，销毁会释放URL；原生暂停与页面暂停共用取消路径；play/playing先忽略已暂停元素的迟到事件，正常原生继续播放恢复手动意图并参与互斥，seeked、canplay及timeupdate仍核对播放意图，拦住跳转结束后只恢复原生进度的异步播放，取消进行中的章节跳转后，保护持续到暂停且不再seeking的状态连续稳定250毫秒；期间迟到play会再次暂停并重新计时，显式页面播放、失败、结束和销毁会清理计时器，旧代次不能覆盖新的播放。原生控件不提供可区分的用户输入信号，因此保护窗口内原生播放可能需再点一次；超出静稳窗口的异常恢复不作保证。下载失败保留原作入口，外站平台限制不能靠iframe load事件判断。
+
+public/_headers提供已登记播放器/原站frame来源、指定视频源和本地blob；启用Paseo的构建加入原生手工host所需连接协议、blob图片/脚本和同源预览载体，worker-src仍显式限定self。主页面脚本仍不允许外站脚本地址、unsafe-inline或unsafe-eval；连接继续受浏览器与daemon校验限制。注册新来源须同步策略并做实际嵌入验收；完整连接与预览边界见[接口与服务](interfaces.md#paseo本地助手)。
 
 ## 可读代码说明的对应规则
 
-scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序与样式、taxonomy、SQL、静态代码资产、根配置与工作流），作品正文和work.json不重复当作架构说明。code-sources是实际文件或以斜杠结束的目录，禁止越界路径、空列表和无匹配条目；code-revision是路径与字节的SHA256。全体结构代码必须有说明覆盖，当前文档本地链接必须存在。
+scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序与样式、taxonomy、SQL、静态代码资产、根配置与工作流），Paseo固定来源的JSON声明和补丁也纳入说明覆盖；作品正文和work.json不重复当作架构说明。code-sources是实际文件或以斜杠结束的目录，禁止越界路径、空列表和无匹配条目；code-revision是路径与字节的SHA256。全体结构代码必须有说明覆盖，当前文档本地链接必须存在。
 
 新规格实现完成状态为complete，保留旧merged兼容；complete进入main后同样冻结，已完成任务不允许继续in-progress。实现/合并/发布是不同事实；测试与完整命令见checks-and-release.md。
 
@@ -144,6 +149,6 @@ docs/DECISIONS.md只能追加，原LESSONS历史迁移时保留旧正文；新�
 
 正文组件、暖白底色、字体与扩展参数统一见[Markdown排版](markdown.md)。
 
-MDX仅为需要交互的文章启用React islands；普通Markdown不加载React，多实例共享模块。章节和事实锚点限制见[MDX规则](markdown.md#mdx互动文章)。detail.ts、detail-gestures.ts与detail-paging.ts共用组件区域排除，避免键盘、横滑和纵向翻页抢走组件输入。scripts/content-security.ts仅为本次构建产物的确切内联脚本追加SHA256许可，不启用脚本unsafe-inline。
+MDX仅为需要交互的文章启用React islands；普通Markdown正文不需要React，多实例共享模块，主动打开助手另行加载其原生运行时。章节和事实锚点限制见[MDX规则](markdown.md#mdx互动文章)。detail.ts、detail-gestures.ts与detail-paging.ts共用组件区域排除，避免键盘、横滑和纵向翻页抢走组件输入。scripts/content-security.ts仅为本次构建产物的确切内联脚本向主页面追加SHA256许可，主页面不启用脚本unsafe-inline。
 
 MDX格式整篇关闭左右拖动及长按拖动换篇，作品概览页顶部的相邻文章链接保留；普通Markdown维持原有手势。组件区域仍排除阅读键盘和纵向封面翻页手势。

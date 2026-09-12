@@ -1,0 +1,4035 @@
+diff --git a/packages/app/index.ts b/packages/app/index.ts
+index 4b060a4..f38b5c6 100644
+--- a/packages/app/index.ts
++++ b/packages/app/index.ts
+@@ -14,7 +14,12 @@ import { AppRegistry } from "react-native";
+ import { ExpoRoot } from "expo-router";
+ import { ctx } from "expo-router/_ctx";
+ import { getEmbeddedHost } from "./src/embedded/environment";
+-import { parseHostCommand, type PaseoModule, type PaseoHandle, type PaseoMountOptions } from "./src/embedded/contract";
++import {
++  parseHostCommand,
++  type PaseoModule,
++  type PaseoHandle,
++  type PaseoMountOptions,
++} from "./src/embedded/contract";
+ 
+ let mounted: HTMLElement | null = null;
+ let boot: Promise<PaseoHandle> | undefined;
+@@ -35,8 +40,10 @@ const handle: PaseoHandle = {
+       options?.onEvent({ version: 1, type: "state", value: "disposed" });
+       // React Native declares numeric tags; the verified react-native-web export
+       // delegates this call to unmountComponentAtNode and requires the DOM root.
+-      if (mounted) (AppRegistry.unmountApplicationComponentAtRootTag as unknown as
+-        (root: HTMLElement) => void)(mounted);
++      if (mounted)
++        (
++          AppRegistry.unmountApplicationComponentAtRootTag as unknown as (root: HTMLElement) => void
++        )(mounted);
+       // A document exit releases the singleton runtime and native module listeners
+       // without editing its sync/cache internals or erasing the saved host registry.
+       window.location.reload();
+@@ -46,33 +53,48 @@ const handle: PaseoHandle = {
+ const api: PaseoModule & { readonly mountCount: number } = {
+   mount(input) {
+     if (disposed) return Promise.reject(new Error("Reload before reopening the assistant"));
+-    if (mounted && mounted !== input.root) return Promise.reject(new Error("Assistant root changed"));
++    if (mounted && mounted !== input.root)
++      return Promise.reject(new Error("Assistant root changed"));
+     if (boot) return boot;
+     const host = getEmbeddedHost();
+     if (!host || host.root !== input.root || typeof input.onEvent !== "function")
+       return Promise.reject(new Error("Invalid assistant host"));
+-    if (!parseHostCommand({ version: 1, type: "presentation", value: input.presentation }) ||
+-        !parseHostCommand({ version: 1, type: "locale", value: input.locale }))
++    if (
++      !parseHostCommand({ version: 1, type: "presentation", value: input.presentation }) ||
++      !parseHostCommand({ version: 1, type: "locale", value: input.locale })
++    )
+       return Promise.reject(new Error("Invalid assistant presentation"));
+     options = input;
+     mounted = input.root;
+     mountCount += 1;
+     host.onEvent = input.onEvent;
++    host.toolbarRoot = input.toolbarRoot;
+     host.setPresentation(input.presentation);
+     host.setLocale(input.locale);
+     input.onEvent({ version: 1, type: "state", value: "initializing" });
+-    boot = Promise.resolve().then(() => {
+-      AppRegistry.registerComponent("VibesPaseo", () => () =>
+-        React.createElement(ExpoRoot, { context: ctx, location: "/", linking: { enabled: false } }));
+-      AppRegistry.runApplication("VibesPaseo", { rootTag: input.root });
+-      return handle;
+-    }).catch(() => {
+-      input.onEvent({ version: 1, type: "error", code: "initialization", retryable: false });
+-      throw new Error("Assistant initialization failed; reload to retry");
+-    });
++    boot = Promise.resolve()
++      .then(() => {
++        AppRegistry.registerComponent(
++          "VibesPaseo",
++          () => () =>
++            React.createElement(ExpoRoot, {
++              context: ctx,
++              location: "/",
++              linking: { enabled: false },
++            }),
++        );
++        AppRegistry.runApplication("VibesPaseo", { rootTag: input.root });
++        return handle;
++      })
++      .catch(() => {
++        input.onEvent({ version: 1, type: "error", code: "initialization", retryable: false });
++        throw new Error("Assistant initialization failed; reload to retry");
++      });
+     return boot;
+   },
+-  get mountCount() { return mountCount; },
++  get mountCount() {
++    return mountCount;
++  },
+ };
+ Object.defineProperty(globalThis, "__vibesPaseo", { value: api });
+ window.dispatchEvent(new Event("vibes:paseo-module-ready"));
+diff --git a/packages/app/src/app/_layout.tsx b/packages/app/src/app/_layout.tsx
+index 5ffdaa2..de2d39b 100644
+--- a/packages/app/src/app/_layout.tsx
++++ b/packages/app/src/app/_layout.tsx
+@@ -1,3 +1,5 @@
++import { EmbeddedToolbar } from "@/embedded/toolbar";
++import { useEmbeddedSurface } from "@/embedded/use-embedded-surface";
+ import { EmbeddedReady } from "@/embedded/ready";
+ import { getEmbeddedHost } from "@/embedded/environment";
+ import "@/styles/unistyles";
+@@ -464,6 +466,7 @@ interface AppContainerProps {
+ const WINDOW_SIDEBAR_TOGGLE_HORIZONTAL_PADDING = 12;
+ 
+ function AppContainer({ children, chromeEnabled: chromeEnabledOverride }: AppContainerProps) {
++  const embeddedSurface = useEmbeddedSurface();
+   const keyboardActionDispatcher = useKeyboardActionDispatcher();
+   const daemons = useHosts();
+   const { settings, updateSettings } = useAppSettings();
+@@ -488,7 +491,8 @@ function AppContainer({ children, chromeEnabled: chromeEnabledOverride }: AppCon
+   const pathname = usePathname();
+   const isWorkspaceRoute = parseHostWorkspaceRouteFromPathname(pathname) !== null;
+   const isWorkspaceFocusModeEnabled = isWorkspaceRoute && isFocusModeEnabled;
+-  const chromeEnabled = chromeEnabledOverride ?? daemons.length > 0;
++  const chromeEnabled =
++    embeddedSurface !== "compact" && (chromeEnabledOverride ?? daemons.length > 0);
+   const hasMountedDesktopSidebar = useLatchedBoolean(chromeEnabled);
+   const toggleAgentList = isCompactLayout ? toggleMobileAgentList : toggleDesktopAgentList;
+   const toggleDesktopSidebars = useCallback(() => {
+@@ -576,7 +580,7 @@ function AppContainer({ children, chromeEnabled: chromeEnabledOverride }: AppCon
+   const surface = (
+     <View style={layoutStyles.surfaceFill}>
+       {workspaceChrome}
+-      {!isCompactLayout && appChromeLayout.sidebarToggleOwner === "window" ? (
++      {!embeddedSurface && !isCompactLayout && appChromeLayout.sidebarToggleOwner === "window" ? (
+         <WindowChromeRegion corners="top-left">
+           <WindowChromeSafeArea
+             placement="inline"
+@@ -855,6 +859,7 @@ function OpenProjectListener() {
+ }
+ 
+ function AppWithSidebar({ children }: { children: ReactNode }) {
++  const embeddedSurface = useEmbeddedSurface();
+   const pathname = usePathname();
+   const hosts = useHosts();
+   const storeReady = useStoreReady();
+@@ -863,7 +868,8 @@ function AppWithSidebar({ children }: { children: ReactNode }) {
+     routeServerId !== null && hosts.some((host) => host.serverId === routeServerId);
+   const shouldShowAppChrome =
+     storeReady &&
+-    (pathname === "/vibes-chat" ||
++    ((embeddedSurface === "full" && hosts.length > 0) ||
++      pathname === "/vibes-chat" ||
+       pathname === "/open-project" ||
+       pathname === "/new" ||
+       pathname === "/sessions" ||
+@@ -922,6 +928,7 @@ function AppShell() {
+   return (
+     <MobilePanelsProvider>
+       <EmbeddedReady />
++      <EmbeddedToolbar />
+       <HorizontalScrollProvider>
+         <OpenProjectListener />
+         <AgentNavigationListener />
+diff --git a/packages/app/src/app/h/[serverId]/index.tsx b/packages/app/src/app/h/[serverId]/index.tsx
+index bd86416..cf91674 100644
+--- a/packages/app/src/app/h/[serverId]/index.tsx
++++ b/packages/app/src/app/h/[serverId]/index.tsx
+@@ -1,6 +1,4 @@
+ import { getEmbeddedHost } from "@/embedded/environment";
+-import { useProductMode } from "@/embedded/product-mode";
+-import { buildHostWorkspaceRoute } from "@/utils/host-routes";
+ import { Redirect, type Href } from "expo-router";
+ import { useHostRouteServerId } from "@/navigation/host-route-context";
+ import {
+@@ -16,7 +14,6 @@ import {
+ 
+ export default function HostIndexRoute() {
+   const serverId = useHostRouteServerId();
+-  const product = useProductMode();
+   const workspaceSelection = useLastWorkspaceSelection();
+   const isWorkspaceSelectionLoaded = useIsLastWorkspaceSelectionHydrated();
+   const workspaceSelectionWorkspaceId =
+@@ -28,13 +25,10 @@ export default function HostIndexRoute() {
+     return <StartupSplashScreen />;
+   }
+ 
+-  if (getEmbeddedHost()) {
+-    if (!product.hydrated) return <StartupSplashScreen />;
+-    const selected = product[product.mode];
+-    if (selected?.serverId === serverId)
+-      return <Redirect href={buildHostWorkspaceRoute(serverId, selected.workspaceId)} />;
+-    if (product.mode === "chat")
+-      return <Redirect href={{ pathname: "/vibes-chat", params: { serverId } } as Href} />;
++  // Only the first local launch without a native workspace selection uses the
++  // ordinary ~/Vibes preset. Every subsequent launch follows the native resolver.
++  if (getEmbeddedHost() && !workspaceSelection) {
++    return <Redirect href={{ pathname: "/vibes-chat", params: { serverId } } as Href} />;
+   }
+ 
+   return (
+diff --git a/packages/app/src/app/index.tsx b/packages/app/src/app/index.tsx
+index 6298997..e0649f6 100644
+--- a/packages/app/src/app/index.tsx
++++ b/packages/app/src/app/index.tsx
+@@ -1,8 +1,5 @@
+-import { getEmbeddedHost } from "@/embedded/environment";
+-import { useProductMode, getProductDestination } from "@/embedded/product-mode";
+-import { buildHostRootRoute } from "@/utils/host-routes";
+ import React from "react";
+-import { Redirect, usePathname, type Href } from "expo-router";
++import { Redirect, usePathname } from "expo-router";
+ import { StartupSplashScreen } from "@/screens/startup-splash-screen";
+ import { useEarliestOnlineHostServerId, useHostRuntimeBootstrapState } from "@/app/_layout";
+ import {
+@@ -21,7 +18,6 @@ const isDesktop = shouldUseDesktopDaemon();
+ 
+ export default function Index() {
+   const pathname = usePathname();
+-  const product = useProductMode();
+   const bootstrapState = useHostRuntimeBootstrapState();
+   const anyOnlineHostServerId = useEarliestOnlineHostServerId();
+   const hosts = useHosts();
+@@ -52,16 +48,6 @@ export default function Index() {
+   });
+ 
+   if (startupRoute.kind === "redirect") {
+-    if (getEmbeddedHost() && hosts.length > 0) {
+-      if (!product.hydrated) return <StartupSplashScreen />;
+-      const destination = getProductDestination(product.mode);
+-      if (product.mode === "build" && destination.kind === "picker")
+-        return <Redirect href={destination.entry as Href} />;
+-      const selected = product[product.mode];
+-      if (selected && hosts.some((host) => host.serverId === selected.serverId)) {
+-        return <Redirect href={buildHostRootRoute(selected.serverId)} />;
+-      }
+-    }
+     return <Redirect href={startupRoute.href} />;
+   }
+ 
+diff --git a/packages/app/src/app/new.tsx b/packages/app/src/app/new.tsx
+index b04a355..281ec33 100644
+--- a/packages/app/src/app/new.tsx
++++ b/packages/app/src/app/new.tsx
+@@ -1,7 +1,3 @@
+-import { useEffect } from "react";
+-import { useIsFocused } from "@react-navigation/native";
+-import { getEmbeddedHost } from "@/embedded/environment";
+-import { rememberBuildEntry } from "@/embedded/product-mode";
+ import { useLocalSearchParams } from "expo-router";
+ import { HostRouteBootstrapBoundary } from "@/components/host-route-bootstrap-boundary";
+ import { NewWorkspaceScreen } from "@/screens/new-workspace-screen";
+@@ -14,25 +10,11 @@ export default function NewWorkspaceRoute() {
+     projectId?: string;
+     draftId?: string;
+   }>();
+-  const isFocused = useIsFocused();
+   const serverId = typeof params.serverId === "string" ? params.serverId : "";
+   const sourceDirectory = typeof params.dir === "string" ? params.dir : undefined;
+   const displayName = typeof params.name === "string" ? params.name : undefined;
+   const projectId = typeof params.projectId === "string" ? params.projectId : undefined;
+   const draftId = typeof params.draftId === "string" ? params.draftId : undefined;
+-  useEffect(() => {
+-    if (getEmbeddedHost() && isFocused)
+-      rememberBuildEntry({
+-        pathname: "/new",
+-        params: {
+-          serverId: serverId || undefined,
+-          dir: sourceDirectory,
+-          name: displayName,
+-          projectId,
+-          draftId,
+-        },
+-      });
+-  }, [isFocused, serverId, sourceDirectory, displayName, projectId, draftId]);
+   const screenKey = JSON.stringify([
+     serverId,
+     sourceDirectory ?? null,
+diff --git a/packages/app/src/appearance/provider.test.tsx b/packages/app/src/appearance/provider.test.tsx
+new file mode 100644
+index 0000000..587dfce
+--- /dev/null
++++ b/packages/app/src/appearance/provider.test.tsx
+@@ -0,0 +1,151 @@
++import React, { act } from "react";
++import { createRoot, type Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import { darkTheme, type ThemePreference } from "@/styles/theme";
++import type { PluginThemeOption } from "@/plugins/themes";
++import { AppearanceProvider, useContributedThemes } from "./provider";
++
++const mock = vi.hoisted(() => ({
++  settings: {
++    theme: "dark" as ThemePreference,
++    pluginThemeId: "saved-dark-plugin",
++    uiFontFamily: "",
++    monoFontFamily: "",
++    uiBaseFontSize: 14,
++    contentFontSize: 15,
++    codeFontSize: 12,
++    syntaxTheme: "one",
++  },
++  isLoading: false,
++  options: [] as PluginThemeOption[],
++  updateSettings: vi.fn(),
++  rememberPluginThemeHost: vi.fn(),
++  applyAppearance: vi.fn(),
++  runtime: {
++    setAdaptiveThemes: vi.fn(),
++    setTheme: vi.fn(),
++    updateTheme: vi.fn(),
++  },
++}));
++vi.mock("react-native-unistyles", () => ({ UnistylesRuntime: mock.runtime }));
++vi.mock("@/hooks/use-settings", () => ({
++  DEFAULT_THEME_PREFERENCE: "auto",
++  useAppSettings: () => ({
++    settings: mock.settings,
++    isLoading: mock.isLoading,
++    updateSettings: mock.updateSettings,
++  }),
++}));
++vi.mock("@/plugins/themes", () => ({
++  usePluginThemeCatalog: () => mock.options,
++  rememberPluginThemeHost: mock.rememberPluginThemeHost,
++}));
++vi.mock("./apply", () => ({ applyAppearance: mock.applyAppearance }));
++
++let dom: JSDOM;
++let root: Root;
++let selected: PluginThemeOption | null;
++function SelectedTheme() {
++  selected = useContributedThemes().selected;
++  return null;
++}
++function render() {
++  act(() => {
++    root.render(
++      <AppearanceProvider>
++        <SelectedTheme />
++      </AppearanceProvider>,
++    );
++  });
++}
++
++beforeEach(() => {
++  vi.clearAllMocks();
++  dom = new JSDOM("<div id='root'></div>");
++  vi.stubGlobal("window", dom.window);
++  vi.stubGlobal("document", dom.window.document);
++  vi.stubGlobal("React", React);
++  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
++  vi.stubGlobal("__vibesPaseoEnvironment", {});
++  mock.settings.theme = "dark";
++  mock.isLoading = false;
++  mock.options = [
++    {
++      id: "saved-dark-plugin",
++      name: "Saved dark theme",
++      serverId: "host",
++      swatch: "#111111",
++      theme: darkTheme,
++    },
++  ];
++  selected = null;
++  root = createRoot(document.getElementById("root")!);
++});
++afterEach(() => {
++  act(() => root.unmount());
++  expect(mock.updateSettings).not.toHaveBeenCalled();
++  expect(mock.rememberPluginThemeHost).not.toHaveBeenCalled();
++  dom.window.close();
++  vi.unstubAllGlobals();
++});
++
++it.each(["auto", "dark", "pureBlack", "plugin"] as const)(
++  "uses embedded light without overwriting the saved %s preference",
++  (preference) => {
++    mock.settings.theme = preference;
++    render();
++    expect(mock.runtime.setAdaptiveThemes).toHaveBeenCalledExactlyOnceWith(false);
++    expect(mock.runtime.setTheme).toHaveBeenCalledExactlyOnceWith("light");
++    expect(mock.runtime.updateTheme).not.toHaveBeenCalled();
++    expect(mock.settings.theme).toBe(preference);
++    expect(selected).toBeNull();
++    expect(mock.applyAppearance).toHaveBeenCalledWith(
++      expect.objectContaining({ uiBaseFontSize: 14, contentFontSize: 15 }),
++    );
++  },
++);
++
++it("keeps the embedded palette when persisted settings hydrate or later change", () => {
++  mock.isLoading = true;
++  render();
++  expect(mock.runtime.setTheme).not.toHaveBeenCalled();
++  mock.isLoading = false;
++  render();
++  mock.settings.theme = "plugin";
++  render();
++  expect(mock.runtime.setTheme).toHaveBeenCalledExactlyOnceWith("light");
++  expect(mock.runtime.setAdaptiveThemes).toHaveBeenCalledExactlyOnceWith(false);
++  expect(mock.runtime.updateTheme).not.toHaveBeenCalled();
++  expect(mock.settings.theme).toBe("plugin");
++});
++
++it.each([
++  ["dark", "dark"],
++  ["pureBlack", "darkPureBlack"],
++] as const)("preserves standalone %s appearance", (preference, themeName) => {
++  vi.stubGlobal("__vibesPaseoEnvironment", undefined);
++  mock.settings.theme = preference;
++  render();
++  expect(mock.runtime.setAdaptiveThemes).toHaveBeenCalledExactlyOnceWith(false);
++  expect(mock.runtime.setTheme).toHaveBeenCalledExactlyOnceWith(themeName);
++});
++
++it("preserves standalone system appearance", () => {
++  vi.stubGlobal("__vibesPaseoEnvironment", undefined);
++  mock.settings.theme = "auto";
++  render();
++  expect(mock.runtime.setAdaptiveThemes).toHaveBeenCalledExactlyOnceWith(true);
++  expect(mock.runtime.setTheme).not.toHaveBeenCalled();
++});
++
++it("preserves the selected standalone plugin theme", () => {
++  vi.stubGlobal("__vibesPaseoEnvironment", undefined);
++  mock.settings.theme = "plugin";
++  render();
++  expect(mock.runtime.setAdaptiveThemes).toHaveBeenCalledExactlyOnceWith(false);
++  expect(mock.runtime.setTheme).toHaveBeenCalledExactlyOnceWith("pluginDark");
++  expect(mock.runtime.updateTheme).toHaveBeenCalledWith("pluginDark", expect.any(Function));
++  expect(mock.runtime.updateTheme.mock.calls[0][1]()).toBe(darkTheme);
++  expect(selected).toBe(mock.options[0]);
++});
+diff --git a/packages/app/src/appearance/provider.tsx b/packages/app/src/appearance/provider.tsx
+index 03fb22b..40ce994 100644
+--- a/packages/app/src/appearance/provider.tsx
++++ b/packages/app/src/appearance/provider.tsx
+@@ -1,5 +1,6 @@
+ import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo } from "react";
+ import { UnistylesRuntime } from "react-native-unistyles";
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { DEFAULT_THEME_PREFERENCE, useAppSettings, type AppSettings } from "@/hooks/use-settings";
+ import {
+   rememberPluginThemeHost,
+@@ -44,15 +45,17 @@ function applyTheme({ preference, contributedTheme }: ApplyThemeInput): void {
+ 
+ export function AppearanceProvider({ children }: { children: ReactNode }) {
+   const { settings, updateSettings, isLoading } = useAppSettings();
++  // Vibes owns its surface appearance without changing the user's saved Paseo preference.
++  const themePreference = getEmbeddedHost() ? "light" : settings.theme;
+   const options = usePluginThemeCatalog();
+   const selected = useMemo(() => {
+-    if (settings.theme !== PLUGIN_THEME_PREFERENCE) return null;
++    if (themePreference !== PLUGIN_THEME_PREFERENCE) return null;
+     return options.find((option) => option.id === settings.pluginThemeId) ?? null;
+-  }, [options, settings.pluginThemeId, settings.theme]);
++  }, [options, settings.pluginThemeId, themePreference]);
+ 
+   useEffect(() => {
+     if (isLoading) return;
+-    applyTheme({ preference: settings.theme, contributedTheme: selected });
++    applyTheme({ preference: themePreference, contributedTheme: selected });
+     applyAppearance({
+       uiFontFamily: settings.uiFontFamily,
+       monoFontFamily: settings.monoFontFamily,
+@@ -64,7 +67,7 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
+   }, [
+     isLoading,
+     selected,
+-    settings.theme,
++    themePreference,
+     settings.uiFontFamily,
+     settings.monoFontFamily,
+     settings.uiBaseFontSize,
+diff --git a/packages/app/src/components/dictation-controls.tsx b/packages/app/src/components/dictation-controls.tsx
+index 5c8a990..aab2cf1 100644
+--- a/packages/app/src/components/dictation-controls.tsx
++++ b/packages/app/src/components/dictation-controls.tsx
+@@ -139,6 +139,7 @@ export function DictationControls({
+  * Uses blue background with white icons.
+  */
+ export function DictationOverlay({
++  sendOnly = false,
+   volume,
+   duration,
+   isRecording,
+@@ -150,7 +151,10 @@ export function DictationOverlay({
+   onAcceptAndSend,
+   onRetry,
+   onDiscard,
+-}: Omit<DictationControlsProps, "onStart" | "disabled" | "transcript"> & { errorText?: string }) {
++}: Omit<DictationControlsProps, "onStart" | "disabled" | "transcript"> & {
++  errorText?: string;
++  sendOnly?: boolean;
++}) {
+   const { theme } = useUnistyles();
+   const { t } = useTranslation();
+   const isFailed = status === "failed";
+@@ -191,6 +195,7 @@ export function DictationOverlay({
+     <View style={containerStyle}>
+       <Pressable
+         onPress={handleCancel}
++        testID={sendOnly ? "paseo-compact-dictation-cancel" : undefined}
+         disabled={actionsDisabled && !isFailed}
+         accessibilityRole="button"
+         accessibilityLabel={t("message.dictation.cancel")}
+@@ -228,6 +233,7 @@ export function DictationOverlay({
+         {!actionsDisabled && isFailed ? (
+           <Pressable
+             onPress={onRetry}
++            testID={sendOnly ? "paseo-compact-dictation-retry" : undefined}
+             accessibilityRole="button"
+             accessibilityLabel={t("message.dictation.retry")}
+             style={overlayRetryButtonStyle}
+@@ -237,20 +243,23 @@ export function DictationOverlay({
+         ) : null}
+         {!actionsDisabled && !isFailed ? (
+           <>
+-            <Pressable
+-              onPress={onAccept}
+-              accessibilityRole="button"
+-              accessibilityLabel={t("message.dictation.insert")}
+-              style={[overlayStyles.actionButton, OVERLAY_ACCEPT_BUTTON_BG]}
+-            >
+-              <Pencil
+-                size={theme.iconSize.lg}
+-                color={theme.colors.accentForeground}
+-                strokeWidth={2.5}
+-              />
+-            </Pressable>
++            {!sendOnly ? (
++              <Pressable
++                onPress={onAccept}
++                accessibilityRole="button"
++                accessibilityLabel={t("message.dictation.insert")}
++                style={[overlayStyles.actionButton, OVERLAY_ACCEPT_BUTTON_BG]}
++              >
++                <Pencil
++                  size={theme.iconSize.lg}
++                  color={theme.colors.accentForeground}
++                  strokeWidth={2.5}
++                />
++              </Pressable>
++            ) : null}
+             <Pressable
+               onPress={onAcceptAndSend}
++              testID={sendOnly ? "paseo-compact-dictation-send" : undefined}
+               accessibilityRole="button"
+               accessibilityLabel={t("message.dictation.insertAndSend")}
+               style={overlayConfirmButtonStyle}
+diff --git a/packages/app/src/components/left-sidebar.tsx b/packages/app/src/components/left-sidebar.tsx
+index d4e3375..5131b15 100644
+--- a/packages/app/src/components/left-sidebar.tsx
++++ b/packages/app/src/components/left-sidebar.tsx
+@@ -1,3 +1,4 @@
++import { EmbeddedMobileFiles } from "@/embedded/mobile-files";
+ import { router, usePathname } from "expo-router";
+ import {
+   CalendarClock,
+@@ -696,9 +697,15 @@ function MobileSidebar({
+             testID="sidebar-schedules"
+             variant="compact"
+           />
++          <EmbeddedMobileFiles closeSidebar={closeSidebar} />
+           <PluginSidebarItems onBeforeNavigate={closeSidebar} />
+         </View>
+-        <WindowChromeSafeArea placement="inline" style={styles.mobileCloseButtonRow}>
++        {/* RN Web must compile box-none; Unistyles otherwise emits it as invalid CSS. */}
++        <WindowChromeSafeArea
++          placement="inline"
++          pointerEvents="box-none"
++          style={styles.mobileCloseButtonRow}
++        >
+           <Pressable
+             style={styles.mobileCloseButton}
+             onPress={closeSidebar}
+@@ -1096,7 +1103,6 @@ const styles = StyleSheet.create((theme) => ({
+     right: 0,
+     zIndex: 2,
+     alignItems: "flex-end",
+-    pointerEvents: "box-none",
+   },
+   mobileCloseButton: {
+     // The 16px X paints farther inside its 32px hit target than the 14px Settings2 glyph.
+diff --git a/packages/app/src/components/welcome-screen.tsx b/packages/app/src/components/welcome-screen.tsx
+index 1b3cdbe..2f513ce 100644
+--- a/packages/app/src/components/welcome-screen.tsx
++++ b/packages/app/src/components/welcome-screen.tsx
+@@ -1,3 +1,4 @@
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+ import { useTranslation } from "react-i18next";
+ import { Pressable, Text, View, ScrollView } from "react-native";
+@@ -20,7 +21,7 @@ import { PairLinkModal } from "./pair-link-modal";
+ import { Button } from "@/components/ui/button";
+ import { resolveAppVersion } from "@/utils/app-version";
+ import { formatVersionWithPrefix } from "@/desktop/updates/desktop-updates";
+-import { buildOpenProjectRoute } from "@/utils/host-routes";
++import { buildHostRootRoute, buildOpenProjectRoute } from "@/utils/host-routes";
+ import { PaseoLogo } from "@/components/icons/paseo-logo";
+ import { openExternalUrl } from "@/utils/open-external-url";
+ import { isFdroidBuild } from "@/constants/build-profile";
+@@ -181,12 +182,17 @@ export function WelcomeScreen({ onHostAdded }: WelcomeScreenProps) {
+ 
+   useEffect(() => {
+     if (!anyOnlineServerId) return;
+-    router.replace(buildOpenProjectRoute());
++    router.replace(
++      getEmbeddedHost() ? buildHostRootRoute(anyOnlineServerId) : buildOpenProjectRoute(),
++    );
+   }, [anyOnlineServerId, router]);
+ 
+-  const finishOnboarding = useCallback(() => {
+-    router.replace(buildOpenProjectRoute());
+-  }, [router]);
++  const finishOnboarding = useCallback(
++    (serverId: string) => {
++      router.replace(getEmbeddedHost() ? buildHostRootRoute(serverId) : buildOpenProjectRoute());
++    },
++    [router],
++  );
+ 
+   const handleOpenPaseoSite = useCallback(() => {
+     void openExternalUrl("https://paseo.sh");
+@@ -207,9 +213,9 @@ export function WelcomeScreen({ onHostAdded }: WelcomeScreenProps) {
+   }, [router]);
+ 
+   const handleHostSaved = useCallback(
+-    ({ profile }: { profile: HostProfile; serverId: string }) => {
++    ({ profile, serverId }: { profile: HostProfile; serverId: string }) => {
+       onHostAdded?.(profile);
+-      finishOnboarding();
++      finishOnboarding(serverId);
+     },
+     [onHostAdded, finishOnboarding],
+   );
+diff --git a/packages/app/src/composer/index.tsx b/packages/app/src/composer/index.tsx
+index a03599d..d07d939 100644
+--- a/packages/app/src/composer/index.tsx
++++ b/packages/app/src/composer/index.tsx
+@@ -98,6 +98,7 @@ import {
+ import { resolveAgentControlsMode } from "@/composer/agent-controls/mode";
+ import { resolveComposerInputMode, type ComposerInputMode } from "@/composer/input-mode";
+ import { resolveActiveSendBehavior } from "./input/state";
++import { useEmbeddedCompactSurface } from "./input/compact-voice";
+ import { useKeyboardShiftStyle } from "@/hooks/use-keyboard-shift-style";
+ import { useKeyboardActionHandler } from "@/hooks/use-keyboard-action-handler";
+ import type { KeyboardActionDefinition } from "@/keyboard/keyboard-action-dispatcher";
+@@ -569,6 +570,7 @@ function dispatchComposerKeyboardAction(args: DispatchComposerKeyboardActionArgs
+     focusMessageInputForKeyboardAction,
+   } = args;
+   if (!isPaneFocused) return false;
++  if (getEmbeddedHost() && action.id === "message-input.voice-toggle") return false;
+ 
+   if (action.id === "agent.interrupt") {
+     if (messageInputRef.current?.runKeyboardAction("dictation-cancel")) return true;
+@@ -1094,7 +1096,12 @@ function ComposerRightControlsSlot({
+ }: ComposerRightControlsSlotProps) {
+   const hideVoiceForCompactInput = isCompact && hasSendableContent;
+   const showVoiceModeButton =
+-    showVoice && !isVoiceModeForAgent && hasAgent && !isAgentRunning && !hideVoiceForCompactInput;
++    !getEmbeddedHost() &&
++    showVoice &&
++    !isVoiceModeForAgent &&
++    hasAgent &&
++    !isAgentRunning &&
++    !hideVoiceForCompactInput;
+   if (!showVoiceModeButton) return null;
+   return (
+     <View style={styles.rightControls}>
+@@ -1203,6 +1210,7 @@ function ComposerContentImpl({
+   placeholder,
+ }: ComposerContentProps) {
+   const mode = resolveComposerInputMode(inputMode);
++  const embeddedCompact = useEmbeddedCompactSurface();
+   const { t } = useTranslation();
+   const buttonIconSize = resolveComposerButtonIconSize();
+   const client = useHostRuntimeClient(serverId);
+@@ -1283,6 +1291,7 @@ function ComposerContentImpl({
+   const [lightboxMetadata, setLightboxMetadata] = useState<AttachmentMetadata | null>(null);
+   const attachButtonRef = useRef<View | null>(null);
+   const messageInputRef = useRef<MessageInputRef>(null);
++  const submissionInFlightRef = useRef(false);
+   const pluginAttachments = usePluginAttachmentPicker({
+     serverId,
+     client,
+@@ -1403,7 +1412,7 @@ function ComposerContentImpl({
+   );
+ 
+   const focusInput = useCallback(() => {
+-    if (isNative) return;
++    if (isNative || embeddedCompact) return;
+     focusWithRetries({
+       focus: () => messageInputRef.current?.focus(),
+       isFocused: () => {
+@@ -1411,7 +1420,7 @@ function ComposerContentImpl({
+         return el != null && document.activeElement === el;
+       },
+     });
+-  }, []);
++  }, [embeddedCompact]);
+ 
+   const handleWorkspaceFileDropped = useCallback(
+     (payload: WorkspaceFileDragPayload) => {
+@@ -1539,6 +1548,7 @@ function ComposerContentImpl({
+       setSelectedAttachments([]);
+       resetSuppression();
+       clearSentAttachments(queuedAttachments);
++      messageInputRef.current?.notifySubmitSuccess?.();
+     },
+     [
+       agentId,
+@@ -1592,6 +1602,9 @@ function ComposerContentImpl({
+         result,
+         outgoingAttachments,
+       });
++      if (result === "submitted" || result === "queued") {
++        messageInputRef.current?.notifySubmitSuccess?.();
++      }
+     },
+     [
+       allowEmptySubmit,
+@@ -1611,6 +1624,8 @@ function ComposerContentImpl({
+ 
+   const handleSubmit = useCallback(
+     (payload: MessagePayload) => {
++      // A second tap can arrive before the loading state reaches the button.
++      if (submissionInFlightRef.current) return;
+       const outgoingAttachments = buildOutgoingAttachments(attachments);
+       const clientSlashCommand = resolveClientSlashCommand({
+         text: payload.text,
+@@ -1623,7 +1638,12 @@ function ComposerContentImpl({
+       if (blurOnSubmit) {
+         messageInputRef.current?.blur();
+       }
+-      void sendMessageWithContent(payload.text, outgoingAttachments, payload.forceSend);
++      submissionInFlightRef.current = true;
++      void sendMessageWithContent(payload.text, outgoingAttachments, payload.forceSend).finally(
++        () => {
++          submissionInFlightRef.current = false;
++        },
++      );
+     },
+     [
+       attachments,
+@@ -1809,10 +1829,11 @@ function ComposerContentImpl({
+       .finally(() => {
+         settleAgentCancellation(serverId, targetAgentId, requestId);
+       });
+-    messageInputRef.current?.focus();
++    if (!embeddedCompact) messageInputRef.current?.focus();
+   }, [
+     beginAgentCancellation,
+     client,
++    embeddedCompact,
+     isAgentRunning,
+     isCancellingAgent,
+     isConnected,
+diff --git a/packages/app/src/composer/input/compact-voice.test.tsx b/packages/app/src/composer/input/compact-voice.test.tsx
+new file mode 100644
+index 0000000..65cabfe
+--- /dev/null
++++ b/packages/app/src/composer/input/compact-voice.test.tsx
+@@ -0,0 +1,351 @@
++import React, { act } from "react";
++import type { Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
++import type { EmbeddedHost } from "@/embedded/environment";
++import type { MessageInputProps, MessageInputRef } from "./input";
++import type { UseDictationOptions, UseDictationResult } from "@/hooks/use-dictation.shared";
++
++const mock = vi.hoisted(() => ({
++  dictation: null as UseDictationResult | null,
++  options: null as UseDictationOptions | null,
++  toast: { error: vi.fn() },
++  autofocus: vi.fn(),
++}));
++vi.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
++vi.mock("@/hooks/use-dictation", () => ({
++  useDictation: (options: UseDictationOptions) => {
++    mock.options = options;
++    return mock.dictation;
++  },
++}));
++vi.mock("@/contexts/voice-context", () => ({ useVoiceOptional: () => null }));
++vi.mock("@/contexts/toast-context", () => ({ useToast: () => mock.toast }));
++vi.mock("@/stores/session-store", () => ({ useSessionStore: () => null }));
++vi.mock("@/hooks/use-shortcut-keys", () => ({ useShortcutKeys: () => null }));
++vi.mock("@/hooks/use-ios-hardware-keyboard-submit", () => ({
++  useIosHardwareKeyboardSubmit: () => undefined,
++}));
++vi.mock("@/composer/keyboard-scope", () => ({
++  useComposerKeyboardScope: () => ({ isActiveComposer: true }),
++}));
++vi.mock("@/utils/web-focus", () => ({
++  focusWithRetries: (...args: unknown[]) => mock.autofocus(...args),
++}));
++vi.mock("@/constants/layout", () => ({ useIsCompactFormFactor: () => false, FOOTER_HEIGHT: 80 }));
++vi.mock("./height", () => ({
++  useComposerHeight: () => ({ mode: "fixed", style: {}, scrollEnabled: true }),
++}));
++vi.mock("@/components/realtime-voice-overlay", () => ({ RealtimeVoiceOverlay: () => null }));
++vi.mock("@/components/volume-meter", () => ({ VolumeMeter: () => null }));
++vi.mock("@/components/ui/shortcut", () => ({ Shortcut: () => null }));
++vi.mock("@/components/ui/loading-spinner", () => ({ LoadingSpinner: () => <span>loading</span> }));
++vi.mock("@/utils/render-profiler", () => ({
++  RenderProfile: ({ children }: React.PropsWithChildren) => children,
++}));
++vi.mock("@/components/ui/tooltip", () => ({
++  Tooltip: ({ children }: React.PropsWithChildren) => children,
++  TooltipContent: () => null,
++  TooltipTrigger: ({
++    children,
++    asChild,
++    onPress,
++    accessibilityLabel,
++    disabled,
++    testID,
++  }: {
++    children?: React.ReactNode | ((state: object) => React.ReactNode);
++    asChild?: boolean;
++    onPress?: () => void;
++    accessibilityLabel?: string;
++    disabled?: boolean;
++    testID?: string;
++  }) =>
++    asChild ? (
++      children
++    ) : (
++      <button
++        type="button"
++        onClick={onPress}
++        aria-label={accessibilityLabel}
++        disabled={disabled}
++        data-testid={testID}
++      >
++        {typeof children === "function" ? children({}) : children}
++      </button>
++    ),
++}));
++vi.mock("@/components/ui/dropdown-menu", () => ({
++  DropdownMenu: ({ children }: React.PropsWithChildren) => children,
++  DropdownMenuContent: () => null,
++  DropdownMenuItem: () => null,
++  DropdownMenuTrigger: () => null,
++}));
++
++let MessageInput: typeof import("./input").MessageInput;
++let createRoot: typeof import("react-dom/client").createRoot;
++let root: Root;
++let container: HTMLDivElement;
++let dom: JSDOM;
++let surface: "compact" | "full";
++let hostListeners: Set<() => void>;
++let props: MessageInputProps;
++let inputRef: React.RefObject<MessageInputRef | null>;
++
++beforeAll(async () => {
++  Object.defineProperty(globalThis, "React", { configurable: true, value: React });
++  dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost" });
++  for (const key of [
++    "window",
++    "document",
++    "navigator",
++    "HTMLElement",
++    "HTMLTextAreaElement",
++    "Element",
++    "Node",
++    "ShadowRoot",
++  ] as const) {
++    Object.defineProperty(globalThis, key, { configurable: true, value: dom.window[key] });
++  }
++  Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", {
++    configurable: true,
++    value: true,
++  });
++  ({ createRoot } = await import("react-dom/client"));
++  ({ MessageInput } = await import("./input"));
++});
++
++beforeEach(() => {
++  mock.autofocus.mockClear();
++  mock.toast.error.mockClear();
++  mock.dictation = {
++    isRecording: false,
++    isRecordingActive: () => Boolean(mock.dictation?.isRecording),
++    isProcessing: false,
++    partialTranscript: "",
++    volume: 0,
++    duration: 0,
++    error: null,
++    status: "idle",
++    startDictation: vi.fn(async () => undefined),
++    cancelDictation: vi.fn(async () => undefined),
++    confirmDictation: vi.fn(async () => undefined),
++    retryFailedDictation: vi.fn(async () => undefined),
++    discardFailedDictation: vi.fn(),
++    reset: vi.fn(),
++  };
++  surface = "compact";
++  hostListeners = new Set();
++  globalThis.__vibesPaseoEnvironment = {
++    root: document.createElement("div"),
++    width: 520,
++    height: 600,
++    visible: true,
++    focused: true,
++    pageVisible: true,
++    publicWork: null,
++    locale: "en",
++    setPublicWork: () => undefined,
++    setPresentation: () => undefined,
++    setLocale: () => undefined,
++    onEvent: () => undefined,
++    get surface() {
++      return surface;
++    },
++    subscribe(listener) {
++      hostListeners.add(listener);
++      return () => {
++        hostListeners.delete(listener);
++      };
++    },
++  } satisfies EmbeddedHost;
++  props = {
++    value: "",
++    onChangeText: vi.fn(),
++    onSubmit: vi.fn(),
++    attachments: [],
++    cwd: "/workspace",
++    attachmentMenuItems: [],
++    client: { isConnected: true } as MessageInputProps["client"],
++    defaultSendBehavior: "interrupt",
++    textReplacement: { key: "initial", text: "" },
++    autoFocus: true,
++    submitButtonTestID: "send",
++  };
++  inputRef = React.createRef();
++  container = document.createElement("div");
++  document.body.appendChild(container);
++  root = createRoot(container);
++});
++
++afterEach(() => {
++  act(() => root.unmount());
++  container.remove();
++  delete globalThis.__vibesPaseoEnvironment;
++});
++
++function render(): void {
++  act(() => root.render(<MessageInput {...props} ref={inputRef} />));
++}
++function button(id: string): HTMLButtonElement | null {
++  return container.querySelector(`[data-testid="${id}"]`);
++}
++function setDictation(patch: Partial<UseDictationResult>): void {
++  Object.assign(mock.dictation!, patch);
++  render();
++}
++
++describe("embedded compact voice-first composer", () => {
++  it("defaults to dictation on a desktop compact panel without automatic focus", () => {
++    render();
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(button("send")).toBeNull();
++    expect(mock.autofocus).not.toHaveBeenCalled();
++    expect(container.querySelector("textarea")?.style.fontSize).toBe("16px");
++    act(() => button("paseo-compact-dictation-start")!.click());
++    expect(mock.dictation!.startDictation).toHaveBeenCalledOnce();
++    expect(document.activeElement).not.toBe(container.querySelector("textarea"));
++  });
++
++  it("keeps an empty focused or blurred input on microphone and follows text changes immediately", () => {
++    render();
++    act(() => inputRef.current!.focus());
++    expect(document.activeElement).toBe(container.querySelector("textarea"));
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(button("send")).toBeNull();
++    act(() => inputRef.current!.replaceText("existing draft"));
++    expect(button("paseo-compact-dictation-start")).toBeNull();
++    expect(button("send")?.disabled).toBe(false);
++    act(() => inputRef.current!.replaceText(""));
++    expect(document.activeElement).toBe(container.querySelector("textarea"));
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(button("send")).toBeNull();
++    act(() => inputRef.current!.blur());
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(button("send")).toBeNull();
++  });
++
++  it("returns to microphone when submission clears text and blurs on submit success", () => {
++    render();
++    act(() => {
++      inputRef.current!.focus();
++      inputRef.current!.replaceText("existing draft");
++    });
++    act(() => button("send")!.click());
++    expect(props.onSubmit).toHaveBeenCalledWith(
++      expect.objectContaining({ text: "existing draft" }),
++    );
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(document.activeElement).toBe(container.querySelector("textarea"));
++    act(() => {
++      inputRef.current!.replaceText("");
++      inputRef.current!.notifySubmitSuccess!();
++    });
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(document.activeElement).not.toBe(container.querySelector("textarea"));
++  });
++
++  it("keeps restored text sendable and an empty attachment-only draft on microphone even when focused", () => {
++    props.value = "restored text";
++    props.textReplacement = { key: "restored", text: props.value };
++    render();
++    expect(button("paseo-compact-dictation-start")).toBeNull();
++    expect(button("send")?.disabled).toBe(false);
++    act(() => inputRef.current!.replaceText(""));
++    props.hasExternalContent = true;
++    render();
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(button("send")).toBeNull();
++    act(() => inputRef.current!.focus());
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(button("send")).toBeNull();
++    act(() => inputRef.current!.blur());
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(props.onSubmit).not.toHaveBeenCalled();
++  });
++
++  it("keeps the default microphone for an automatic article reference and sends it with dictation", () => {
++    const article = {
++      kind: "vibes_public_work" as const,
++      reference: {
++        requestId: "article-request",
++        id: "article",
++        title: "Example article",
++        canonicalUrl: "https://vibes.college/zh/works/example/",
++      },
++    };
++    props.attachments = [article];
++    render();
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(button("send")).toBeNull();
++    act(() => button("paseo-compact-dictation-start")!.click());
++    expect(mock.dictation!.startDictation).toHaveBeenCalledOnce();
++    setDictation({ isRecording: true, status: "recording" });
++    act(() => button("paseo-compact-dictation-send")!.click());
++    act(() => mock.options!.onTranscript("Explain this article", { requestId: "transcript" }));
++    expect(props.onSubmit).toHaveBeenCalledExactlyOnceWith({
++      text: "Explain this article",
++      attachments: [article],
++      cwd: "/workspace",
++      forceSend: undefined,
++    });
++    expect(props.attachments).toEqual([article]);
++    expect(mock.autofocus).not.toHaveBeenCalled();
++  });
++
++  it("preserves send intent across a failed transcript retry and never focuses the input", () => {
++    props.value = "draft";
++    props.textReplacement = { key: "draft", text: "draft" };
++    render();
++    setDictation({ isRecording: true, status: "recording" });
++    act(() => button("paseo-compact-dictation-send")!.click());
++    expect(mock.dictation!.confirmDictation).toHaveBeenCalledOnce();
++    setDictation({ isRecording: false, status: "failed", error: "offline" });
++    act(() => button("paseo-compact-dictation-retry")!.click());
++    expect(mock.dictation!.retryFailedDictation).toHaveBeenCalledOnce();
++    act(() => mock.options!.onTranscript("hello", { requestId: "retry" }));
++    expect(props.onSubmit).toHaveBeenCalledWith(expect.objectContaining({ text: "draft hello" }));
++    expect(mock.autofocus).not.toHaveBeenCalled();
++  });
++
++  it("cancels recording without sending or destroying the pre-existing draft", () => {
++    props.value = "keep this";
++    props.textReplacement = { key: "keep", text: props.value };
++    render();
++    setDictation({ isRecording: true, status: "recording" });
++    act(() => button("paseo-compact-dictation-cancel")!.click());
++    expect(mock.dictation!.cancelDictation).toHaveBeenCalledOnce();
++    setDictation({ isRecording: false, status: "idle" });
++    expect(inputRef.current!.getText()).toBe("keep this");
++    expect(props.onSubmit).not.toHaveBeenCalled();
++    expect(button("send")).not.toBeNull();
++  });
++
++  it("reacts to presentation changes and keeps the official full-surface focus behavior", () => {
++    render();
++    act(() => {
++      surface = "full";
++      for (const listener of hostListeners) listener();
++    });
++    expect(button("paseo-compact-dictation-start")).toBeNull();
++    expect(mock.autofocus).toHaveBeenCalledOnce();
++  });
++
++  it("keeps the official stop action usable alongside the empty-draft microphone while loading", () => {
++    props.isSubmitLoading = true;
++    props.isAgentRunning = true;
++    props.onSubmitLoadingPress = vi.fn();
++    props.activeActionContent = (
++      <button type="button" data-testid="stop" onClick={props.onSubmitLoadingPress}>
++        Stop
++      </button>
++    );
++    render();
++    expect(button("paseo-compact-dictation-start")).not.toBeNull();
++    expect(button("send")).toBeNull();
++    expect(button("stop")?.disabled).toBe(false);
++    act(() => button("stop")!.click());
++    expect(props.onSubmitLoadingPress).toHaveBeenCalledOnce();
++    expect(props.onSubmit).not.toHaveBeenCalled();
++  });
++});
+diff --git a/packages/app/src/composer/input/compact-voice.ts b/packages/app/src/composer/input/compact-voice.ts
+new file mode 100644
+index 0000000..b21ce78
+--- /dev/null
++++ b/packages/app/src/composer/input/compact-voice.ts
+@@ -0,0 +1,64 @@
++import { useSyncExternalStore } from "react";
++import { getEmbeddedHost } from "@/embedded/environment";
++
++function subscribe(listener: () => void): () => void {
++  return getEmbeddedHost()?.subscribe(listener) ?? (() => undefined);
++}
++
++function getSnapshot(): boolean {
++  return getEmbeddedHost()?.surface === "compact";
++}
++
++/** A desktop compact panel has the same input behavior as a phone panel. */
++export function useEmbeddedCompactSurface(): boolean {
++  return useSyncExternalStore(subscribe, getSnapshot, () => false);
++}
++
++export function resolveCompactVoiceMode(input: {
++  embeddedCompact: boolean;
++  showVoice: boolean;
++  readOnly: boolean;
++  autoFocus: boolean;
++}) {
++  const enabled = input.embeddedCompact && input.showVoice && !input.readOnly;
++  return {
++    enabled,
++    autoFocus: input.autoFocus && !enabled,
++    showSeparateVoice: input.showVoice && !enabled,
++  };
++}
++
++export function resolveCompactDictationPresentation(input: {
++  enabled: boolean;
++  status: string;
++  isRecording: boolean;
++  isProcessing: boolean;
++}) {
++  const starting = input.enabled && input.status === "recording" && !input.isRecording;
++  return {
++    isRecording: input.isRecording || starting,
++    isProcessing: input.isProcessing || starting,
++  };
++}
++
++export function resolveCompactInputControls(input: {
++  enabled: boolean;
++  hasText: boolean;
++  hasSendableContent: boolean;
++  allowEmptySubmit: boolean;
++  isSubmitLoading: boolean;
++  isSendButtonDisabled: boolean;
++}) {
++  const compactSend = input.enabled && input.hasText;
++  return {
++    showVoice: input.enabled && !input.hasText,
++    showSend: input.enabled ? input.hasText : input.hasSendableContent,
++    allowEmptySubmit: !input.enabled && input.allowEmptySubmit,
++    sendDisabled:
++      input.isSendButtonDisabled ||
++      (compactSend &&
++        !input.hasSendableContent &&
++        !input.allowEmptySubmit &&
++        !input.isSubmitLoading),
++  };
++}
+diff --git a/packages/app/src/composer/input/input.tsx b/packages/app/src/composer/input/input.tsx
+index fc8a260..30d3b95 100644
+--- a/packages/app/src/composer/input/input.tsx
++++ b/packages/app/src/composer/input/input.tsx
+@@ -56,6 +56,12 @@ import { useIsCompactFormFactor } from "@/constants/layout";
+ import { useComposerKeyboardScope } from "@/composer/keyboard-scope";
+ import { RenderProfile } from "@/utils/render-profiler";
+ import { useComposerHeight } from "./height";
++import {
++  resolveCompactVoiceMode,
++  resolveCompactDictationPresentation,
++  resolveCompactInputControls,
++  useEmbeddedCompactSurface,
++} from "./compact-voice";
+ import { resolveComposerInputMode, type ComposerInputMode } from "@/composer/input-mode";
+ import type { NativePastedFile } from "@/composer/native-pasted-image";
+ import {
+@@ -178,6 +184,8 @@ export interface MessageInputProps {
+ export interface MessageInputRef {
+   focus: () => void;
+   blur: () => void;
++  /** Called after the transport accepts a message or the local queue accepts it. */
++  notifySubmitSuccess?: () => void;
+   getText: () => string;
+   getInputSnapshot: () => ComposerInputSnapshot;
+   replaceText: (text: string, selection?: { start: number; end: number }) => void;
+@@ -538,6 +546,7 @@ function MessageInputAutoFocus({
+ }
+ 
+ function MessageInputOverlay({
++  compactVoiceFirst,
+   showDictationOverlay,
+   showRealtimeOverlay,
+   voice,
+@@ -554,6 +563,7 @@ function MessageInputOverlay({
+   onDiscardFailedRecording,
+   onRealtimeVoiceStop,
+ }: {
++  compactVoiceFirst: boolean;
+   showDictationOverlay: boolean;
+   showRealtimeOverlay: boolean;
+   voice:
+@@ -580,6 +590,7 @@ function MessageInputOverlay({
+   if (showDictationOverlay) {
+     return (
+       <DictationOverlay
++        sendOnly={compactVoiceFirst}
+         volume={dictationVolume}
+         duration={dictationDuration}
+         isRecording={isDictating}
+@@ -694,6 +705,7 @@ function ComposerTextSurface(props: ComposerTextSurfaceProps): React.ReactElemen
+ }
+ 
+ function VoiceButtonTooltip({
++  testID,
+   visible,
+   onVoicePress,
+   isDictationStartEnabled,
+@@ -705,6 +717,7 @@ function VoiceButtonTooltip({
+   voiceMuteToggleKeys,
+   dictationToggleKeys,
+ }: {
++  testID?: string;
+   visible: boolean;
+   onVoicePress: () => void;
+   isDictationStartEnabled: boolean;
+@@ -722,6 +735,7 @@ function VoiceButtonTooltip({
+     <Tooltip delayDuration={0} enabledOnDesktop enabledOnMobile={false}>
+       <TooltipTrigger
+         onPress={onVoicePress}
++        testID={testID}
+         disabled={!isDictationStartEnabled}
+         accessibilityRole="button"
+         accessibilityLabel={voiceButtonAccessibilityLabel}
+@@ -1187,6 +1201,14 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+       submitLabel,
+     } = resolveMessageInputProps(props);
+     const mode = resolveComposerInputMode(inputMode);
++    const embeddedCompact = useEmbeddedCompactSurface();
++    const compactVoiceMode = resolveCompactVoiceMode({
++      embeddedCompact,
++      showVoice: mode.showVoice,
++      readOnly,
++      autoFocus,
++    });
++    const compactVoiceFirst = compactVoiceMode.enabled;
+     const { t } = useTranslation();
+     const isCompact = useIsCompactFormFactor();
+     const { height: windowHeight } = useWindowDimensions();
+@@ -1253,6 +1275,10 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+       blur: () => {
+         textInputRef.current?.blur();
+       },
++      notifySubmitSuccess: () => {
++        if (!compactVoiceFirst) return;
++        textInputRef.current?.blur();
++      },
+       getText: () => textInputRef.current?.getText() ?? valueRef.current,
+       getInputSnapshot: () =>
+         getComposerInputSnapshot(textInputRef.current, valueRef.current, selectionRef.current),
+@@ -1380,9 +1406,15 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+       voiceServerId,
+       voiceAgentId,
+     );
++    const dictationPresentation = resolveCompactDictationPresentation({
++      enabled: compactVoiceFirst,
++      status: dictationStatus,
++      isRecording: isDictating,
++      isProcessing: isDictationProcessing,
++    });
+     const showDictationOverlay = computeShouldShowDictationOverlay(
+-      isDictating,
+-      isDictationProcessing,
++      dictationPresentation.isRecording,
++      dictationPresentation.isProcessing,
+       dictationStatus,
+     );
+     const showRealtimeOverlay = isRealtimeVoiceForCurrentAgent;
+@@ -1390,22 +1422,23 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+     const surfacePresentation = resolveComposerSurfacePresentation(showOverlay);
+ 
+     useEffect(() => {
+-      if (isDictating || isDictationProcessing) {
++      if (isDictating || isDictationProcessing || dictationStatus === "failed") {
+         return;
+       }
+       sendAfterTranscriptRef.current = false;
+     }, [dictationStatus, isDictating, isDictationProcessing]);
+ 
+-    const startDictationIfAvailable = useCallback(
+-      () =>
+-        startDictationIfAvailableImpl({
+-          dictationUnavailableMessage,
+-          canStartDictation,
+-          toast,
+-          startDictation,
+-        }),
+-      [canStartDictation, dictationUnavailableMessage, startDictation, toast],
+-    );
++    const startDictationIfAvailable = useCallback(() => {
++      if (compactVoiceFirst) {
++        textInputRef.current?.blur();
++      }
++      return startDictationIfAvailableImpl({
++        dictationUnavailableMessage,
++        canStartDictation,
++        toast,
++        startDictation,
++      });
++    }, [canStartDictation, compactVoiceFirst, dictationUnavailableMessage, startDictation, toast]);
+ 
+     const handleVoicePress = useCallback(
+       () =>
+@@ -1426,6 +1459,7 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+     );
+ 
+     const handleCancelRecording = useCallback(async () => {
++      sendAfterTranscriptRef.current = false;
+       await cancelDictation();
+     }, [cancelDictation]);
+ 
+@@ -1444,6 +1478,7 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+     }, [retryFailedDictation]);
+ 
+     const handleDiscardFailedRecording = useCallback(() => {
++      sendAfterTranscriptRef.current = false;
+       discardFailedDictation();
+     }, [discardFailedDictation]);
+ 
+@@ -1607,15 +1642,10 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+       });
+     }
+ 
+-    const primaryActionKind = resolvePrimaryActionKind({
+-      hasSendableContent: hasSendableComposerContent({
+-        hasText: hasLiveText,
+-        attachments,
+-        hasExternalContent,
+-      }),
+-      allowEmptySubmit,
+-      isAgentRunning,
+-      isSubmitLoading,
++    const hasSendableContent = hasSendableComposerContent({
++      hasText: hasLiveText,
++      attachments,
++      hasExternalContent,
+     });
+     const { canPressLoadingButton, isSendButtonDisabled, defaultActionQueues } =
+       computeSendButtonState({
+@@ -1626,6 +1656,20 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+         defaultSendBehavior,
+         isAgentRunning,
+       });
++    const compactControls = resolveCompactInputControls({
++      enabled: compactVoiceFirst,
++      hasText: hasLiveText,
++      hasSendableContent,
++      allowEmptySubmit,
++      isSubmitLoading,
++      isSendButtonDisabled,
++    });
++    const primaryActionKind = resolvePrimaryActionKind({
++      hasSendableContent: compactControls.showSend,
++      allowEmptySubmit: compactControls.allowEmptySubmit,
++      isAgentRunning,
++      isSubmitLoading,
++    });
+     useIosHardwareKeyboardSubmit({
+       isEnabled: isInputFocused && !isSendButtonDisabled,
+       onSubmit: handleDefaultSendAction,
+@@ -1726,8 +1770,13 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+     // `fontFamily` here is silently dropped while every other property lands.
+     // An inline style outranks both classes. See docs/unistyles.md.
+     const textInputStyle = useMemo(
+-      () => [styles.textInput, mode.isMonospace && styles.textInputMonospace, composerHeightStyle],
+-      [composerHeightStyle, mode.isMonospace],
++      () => [
++        styles.textInput,
++        mode.isMonospace && styles.textInputMonospace,
++        composerHeightStyle,
++        (embeddedCompact || isCompact) && styles.touchTextInput,
++      ],
++      [composerHeightStyle, embeddedCompact, isCompact, mode.isMonospace],
+     );
+     // Static content has no textarea to mirror, so it grows with its own text
+     // instead of the measured input height.
+@@ -1743,6 +1792,10 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+       ],
+       [isSendButtonDisabled, submitLabel],
+     );
++    const compactVoiceButtonStyle = useMemo(
++      () => [styles.sendButton, !isDictationStartEnabled && styles.buttonDisabled],
++      [isDictationStartEnabled],
++    );
+     const overlayContainerStyle = useMemo(
+       () => [styles.overlayContainer, { opacity: surfacePresentation.overlay.opacity }],
+       [surfacePresentation.overlay.opacity],
+@@ -1771,6 +1824,11 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+       [isDictating, isRealtimeVoiceForCurrentAgent, voice?.isMuted, buttonIconSize],
+     );
+ 
++    const renderCompactVoiceButtonIcon = useCallback(
++      () => <ThemedMic size={buttonIconSize} uniProps={iconAccentForegroundMapping} />,
++      [buttonIconSize],
++    );
++
+     return (
+       <View
+         ref={rootRef}
+@@ -1779,7 +1837,7 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+         onLayout={handleComposerLayout}
+       >
+         <MessageInputAutoFocus
+-          enabled={autoFocus}
++          enabled={compactVoiceMode.autoFocus}
+           autoFocusKey={autoFocusKey}
+           textInputRef={textInputRef}
+         />
+@@ -1838,7 +1896,7 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+             <View style={styles.rightButtonGroup}>
+               {beforeVoiceContent}
+               <VoiceButtonTooltip
+-                visible={mode.showVoice}
++                visible={compactVoiceMode.showSeparateVoice}
+                 onVoicePress={handleVoicePress}
+                 isDictationStartEnabled={isDictationStartEnabled}
+                 voiceButtonAccessibilityLabel={voiceButtonAccessibilityLabel}
+@@ -1857,7 +1915,7 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+                 canPressLoadingButton={canPressLoadingButton}
+                 onSubmitLoadingPress={onSubmitLoadingPress}
+                 onDefaultSendAction={handleDefaultSendAction}
+-                isSendButtonDisabled={isSendButtonDisabled}
++                isSendButtonDisabled={compactControls.sendDisabled}
+                 submitAccessibilityLabel={submitAccessibilityLabel}
+                 sendButtonCombinedStyle={sendButtonCombinedStyle}
+                 isSubmitLoading={isSubmitLoading}
+@@ -1868,6 +1926,19 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+                 sendKeys={DEFAULT_SEND_KEYS}
+                 sendTooltipLabel={sendTooltipLabel}
+               />
++              <VoiceButtonTooltip
++                visible={compactControls.showVoice}
++                testID="paseo-compact-dictation-start"
++                onVoicePress={startDictationIfAvailable}
++                isDictationStartEnabled={isDictationStartEnabled}
++                voiceButtonAccessibilityLabel={t("message.dictation.start")}
++                voiceButtonStyle={compactVoiceButtonStyle}
++                renderVoiceButtonIcon={renderCompactVoiceButtonIcon}
++                voiceTooltipText={voiceTooltipText}
++                isRealtimeVoiceForCurrentAgent={false}
++                voiceMuteToggleKeys={null}
++                dictationToggleKeys={dictationToggleKeys}
++              />
+             </View>
+           </View>
+         </View>
+@@ -1877,13 +1948,14 @@ export const MessageInput = forwardRef<MessageInputRef, MessageInputProps>(
+           pointerEvents={surfacePresentation.overlay.pointerEvents}
+         >
+           <MessageInputOverlay
++            compactVoiceFirst={compactVoiceFirst}
+             showDictationOverlay={showDictationOverlay}
+             showRealtimeOverlay={showRealtimeOverlay}
+             voice={voice}
+             dictationVolume={dictationVolume}
+             dictationDuration={dictationDuration}
+-            isDictating={isDictating}
+-            isDictationProcessing={isDictationProcessing}
++            isDictating={dictationPresentation.isRecording}
++            isDictationProcessing={dictationPresentation.isProcessing}
+             dictationStatus={dictationStatus}
+             dictationError={dictationError}
+             onCancelRecording={handleCancelRecording}
+@@ -1964,6 +2036,11 @@ const styles = StyleSheet.create((theme: Theme) => ({
+   textInputMonospace: {
+     fontFamily: theme.fontFamily.mono,
+   },
++  touchTextInput: {
++    // iOS zooms a focused web textarea when its computed font size is below 16px.
++    fontSize: 16,
++    lineHeight: 22.4,
++  },
+   readOnlyText: {
+     minHeight: MIN_INPUT_HEIGHT,
+     color: theme.colors.foregroundMuted,
+diff --git a/packages/app/src/embedded/chat-form-defaults.test.tsx b/packages/app/src/embedded/chat-form-defaults.test.tsx
+new file mode 100644
+index 0000000..fe9752d
+--- /dev/null
++++ b/packages/app/src/embedded/chat-form-defaults.test.tsx
+@@ -0,0 +1,226 @@
++import React, { act } from "react";
++import { createRoot, type Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import type { ProviderSnapshotEntry } from "@getpaseo/protocol/agent-types";
++import type { FormPreferences } from "@/create-agent-preferences/preferences";
++import {
++  useAgentFormState,
++  type FormInitialValues,
++  type UseAgentFormStateResult,
++} from "@/hooks/use-agent-form-state";
++
++const mock = vi.hoisted(() => ({
++  preferences: {} as FormPreferences,
++  preferencesLoading: false,
++  entries: [] as ProviderSnapshotEntry[],
++  loading: false,
++  hosts: [{ serverId: "host" }],
++  updatePreferences: vi.fn(),
++  refresh: vi.fn(),
++  refetchIfStale: vi.fn(),
++}));
++vi.mock("@/runtime/host-runtime", () => ({ useHosts: () => mock.hosts }));
++vi.mock("@/hooks/use-providers-snapshot", () => ({
++  useProvidersSnapshot: () => ({
++    entries: mock.entries,
++    isLoading: mock.loading,
++    isRefreshing: false,
++    error: null,
++    refresh: mock.refresh,
++    refetchIfStale: mock.refetchIfStale,
++  }),
++}));
++vi.mock("@/hooks/use-form-preferences", async () => {
++  const { mergeProviderPreferences } = await import("@/create-agent-preferences/preferences");
++  return {
++    mergeProviderPreferences,
++    useFormPreferences: () => ({
++      preferences: mock.preferences,
++      isLoading: mock.preferencesLoading,
++      updatePreferences: mock.updatePreferences,
++    }),
++  };
++});
++
++const ready: ProviderSnapshotEntry[] = [
++  {
++    provider: "codex",
++    enabled: true,
++    status: "ready",
++    defaultModeId: "auto",
++    modes: [{ id: "auto", label: "Auto" }],
++    models: [
++      {
++        provider: "codex",
++        id: "current-luna-id",
++        aliases: ["gpt-5.6-luna"],
++        label: "Luna",
++        thinkingOptions: [
++          { id: "medium", label: "Medium" },
++          { id: "high", label: "High" },
++        ],
++        defaultThinkingOptionId: "medium",
++      },
++      { provider: "codex", id: "other-model", label: "Other" },
++    ],
++  },
++  {
++    provider: "claude",
++    enabled: true,
++    status: "ready",
++    models: [{ provider: "claude", id: "claude-choice", label: "Claude choice" }],
++  },
++];
++let dom: JSDOM;
++let root: Root;
++let latest: UseAgentFormStateResult;
++function Probe({ initialValues }: { initialValues?: FormInitialValues }) {
++  latest = useAgentFormState({
++    initialServerId: "host",
++    initialValues: { workingDir: "/home/test/Vibes", ...initialValues },
++    onlineServerIds: ["host"],
++  });
++  return null;
++}
++function render(initialValues?: FormInitialValues, key = "draft") {
++  act(() => root.render(<Probe key={key} initialValues={initialValues} />));
++}
++beforeEach(() => {
++  vi.clearAllMocks();
++  dom = new JSDOM("<div id='root'></div>");
++  vi.stubGlobal("window", dom.window);
++  vi.stubGlobal("document", dom.window.document);
++  vi.stubGlobal("React", React);
++  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
++  vi.stubGlobal("__vibesPaseoEnvironment", {});
++  mock.preferences = {};
++  mock.preferencesLoading = false;
++  mock.entries = ready;
++  mock.loading = false;
++  mock.updatePreferences.mockImplementation(async (update) => {
++    mock.preferences =
++      typeof update === "function" ? update(mock.preferences) : { ...mock.preferences, ...update };
++    return mock.preferences;
++  });
++  root = createRoot(document.getElementById("root")!);
++});
++afterEach(() => {
++  act(() => root.unmount());
++  dom.window.close();
++  vi.unstubAllGlobals();
++});
++
++it("defaults every fresh embedded native draft to the actual Luna model without writing preferences", () => {
++  render();
++  expect(latest).toMatchObject({
++    selectedProvider: "codex",
++    selectedModel: "current-luna-id",
++    selectedThinkingOptionId: "medium",
++    workingDir: "/home/test/Vibes",
++    isModelLoading: false,
++  });
++  render(undefined, "second-native-draft");
++  expect(latest.selectedModel).toBe("current-luna-id");
++  expect(mock.preferences).toEqual({});
++  expect(mock.updatePreferences).not.toHaveBeenCalled();
++});
++
++it("waits for native preference hydration and the Codex loading snapshot before resolving", () => {
++  mock.preferencesLoading = true;
++  render();
++  expect(latest.selectedProvider).toBeNull();
++  mock.preferencesLoading = false;
++  mock.entries = [{ ...ready[0], status: "loading", models: [] }, ready[1]];
++  mock.loading = true;
++  render();
++  expect(latest.isModelLoading).toBe(true);
++  expect(latest.selectedProvider).toBeNull();
++  mock.entries = ready;
++  mock.loading = false;
++  render();
++  expect(latest.selectedModel).toBe("current-luna-id");
++  expect(latest.isModelLoading).toBe(false);
++  expect(mock.updatePreferences).not.toHaveBeenCalled();
++});
++
++it("keeps a saved native model preference ahead of the embedded default", () => {
++  mock.preferences = {
++    provider: "codex",
++    providerPreferences: { codex: { model: "other-model" } },
++  };
++  render();
++  expect(latest.selectedModel).toBe("other-model");
++  expect(mock.updatePreferences).not.toHaveBeenCalled();
++});
++
++it("keeps an explicit initial selection and a different saved provider", () => {
++  mock.preferences = {
++    provider: "claude",
++    providerPreferences: { claude: { model: "claude-choice" } },
++  };
++  render();
++  expect(latest).toMatchObject({ selectedProvider: "claude", selectedModel: "claude-choice" });
++  render({ provider: "codex", model: "other-model" }, "explicit-draft");
++  expect(latest).toMatchObject({ selectedProvider: "codex", selectedModel: "other-model" });
++  expect(mock.updatePreferences).not.toHaveBeenCalled();
++});
++
++it("does not refill an explicit clear while the initial provider snapshot finishes loading", () => {
++  mock.entries = [{ ...ready[0], status: "loading", models: [] }, ready[1]];
++  mock.loading = true;
++  render();
++  act(() => latest.clearProviderSelectionFromUser());
++  mock.entries = ready;
++  mock.loading = false;
++  render();
++  expect(latest.selectedProvider).toBeNull();
++  expect(latest.selectedModel).toBe("");
++  expect(latest.isModelLoading).toBe(false);
++  expect(mock.updatePreferences).not.toHaveBeenCalled();
++});
++
++it("keeps an applied user profile when Codex later finishes loading", async () => {
++  mock.entries = [{ ...ready[0], status: "loading", models: [] }, ready[1]];
++  mock.loading = true;
++  render();
++  await act(async () => {
++    latest.applyProfileFromUser({
++      provider: "claude",
++      modelId: "claude-choice",
++      modeId: "",
++      thinkingOptionId: "",
++      featureValues: {},
++    });
++  });
++  mock.entries = ready;
++  mock.loading = false;
++  render();
++  expect(latest).toMatchObject({ selectedProvider: "claude", selectedModel: "claude-choice" });
++  expect(mock.updatePreferences).toHaveBeenCalledTimes(1);
++});
++
++it.each(["unavailable", "missing-luna"])(
++  "retains the original selection entry when Codex is %s",
++  (reason) => {
++    mock.entries = [
++      reason === "unavailable"
++        ? { ...ready[0], enabled: false, status: "unavailable" }
++        : { ...ready[0], models: [ready[0].models![1]] },
++      ready[1],
++    ];
++    render();
++    expect(latest.selectedProvider).toBeNull();
++    expect(latest.selectedModel).toBe("");
++    expect(latest.isModelLoading).toBe(false);
++    expect(mock.updatePreferences).not.toHaveBeenCalled();
++  },
++);
++
++it("leaves standalone native draft defaults unchanged", () => {
++  vi.stubGlobal("__vibesPaseoEnvironment", undefined);
++  render();
++  expect(latest.selectedProvider).toBeNull();
++  expect(latest.selectedModel).toBe("");
++  expect(mock.updatePreferences).not.toHaveBeenCalled();
++});
+diff --git a/packages/app/src/embedded/chat-form-defaults.ts b/packages/app/src/embedded/chat-form-defaults.ts
+new file mode 100644
+index 0000000..bc415c8
+--- /dev/null
++++ b/packages/app/src/embedded/chat-form-defaults.ts
+@@ -0,0 +1,53 @@
++import type { ProviderSnapshotEntry } from "@getpaseo/protocol/agent-types";
++import {
++  mergeProviderPreferences,
++  type FormPreferences,
++} from "@/create-agent-preferences/preferences";
++import type {
++  FormInitialValues,
++  UserModifiedFields,
++} from "@/provider-selection/resolve-agent-form";
++import { ChatPresetError, resolveChatSetup } from "./chat-preset";
++import { getEmbeddedHost } from "./environment";
++
++/** Supply a default to the native form resolver, without persisting a second preference. */
++export function resolveEmbeddedFormPreferences(input: {
++  preferences: FormPreferences;
++  initialValues: FormInitialValues | undefined;
++  userModified: UserModifiedFields;
++  entries: ProviderSnapshotEntry[];
++  loading: boolean;
++  cwd: string;
++}): FormPreferences | null {
++  const fields = ["provider", "model", "modeId", "thinkingOptionId"] as const;
++  if (
++    !getEmbeddedHost() ||
++    fields.some(
++      (field) => input.initialValues?.[field] !== undefined || input.userModified[field],
++    ) ||
++    input.preferences.provider !== undefined ||
++    Object.keys(input.preferences.providerPreferences ?? {}).length > 0
++  ) {
++    return input.preferences;
++  }
++  if (input.loading && !input.entries.some((entry) => entry.provider === "codex")) return null;
++  try {
++    const setup = resolveChatSetup(input.entries, input.cwd);
++    if (!setup) return null;
++    return mergeProviderPreferences({
++      preferences: input.preferences,
++      provider: setup.provider,
++      updates: {
++        model: setup.model ?? undefined,
++        mode: setup.modeId ?? undefined,
++        ...(setup.model && setup.thinkingOptionId
++          ? { thinkingByModel: { [setup.model]: setup.thinkingOptionId } }
++          : {}),
++      },
++    });
++  } catch (error) {
++    // Missing Codex/Luna keeps the official model picker available.
++    if (error instanceof ChatPresetError) return input.preferences;
++    throw error;
++  }
++}
+diff --git a/packages/app/src/embedded/product-mode.test.ts b/packages/app/src/embedded/chat-preparation.test.ts
+similarity index 53%
+rename from packages/app/src/embedded/product-mode.test.ts
+rename to packages/app/src/embedded/chat-preparation.test.ts
+index b6f3ae8..9097d6d 100644
+--- a/packages/app/src/embedded/product-mode.test.ts
++++ b/packages/app/src/embedded/chat-preparation.test.ts
+@@ -16,62 +16,12 @@ afterEach(() => {
+   vi.unstubAllGlobals();
+ });
+ 
+-it("restores each native workspace selection through the real AsyncStorage web adapter after module reload", async () => {
+-  let product = await import("./product-mode");
+-  await product.hydrateProductMode();
+-  product.rememberProductWorkspace("chat", { serverId: "home", workspaceId: "chat-workspace" });
+-  product.setProductMode("build");
+-  product.rememberProductWorkspace("build", {
+-    serverId: "office",
+-    workspaceId: "existing-project",
+-  });
+-  product.setProductMode("chat");
+-  expect(window.localStorage.getItem("vibes-product-mode-v1")).toContain("existing-project");
+-  vi.resetModules();
+-  product = await import("./product-mode");
+-  await product.hydrateProductMode();
+-  expect(product.getProductDestination("chat")).toEqual({
+-    kind: "workspace",
+-    selection: { serverId: "home", workspaceId: "chat-workspace" },
+-  });
+-  expect(product.getProductDestination("build")).toEqual({
+-    kind: "workspace",
+-    selection: { serverId: "office", workspaceId: "existing-project" },
+-  });
+-  expect(product.getProductMode().mode).toBe("chat");
+-});
+-it("restores a Build picker draft route instead of changing to the previous workspace", async () => {
+-  let product = await import("./product-mode");
+-  await product.hydrateProductMode();
+-  product.rememberProductWorkspace("build", { serverId: "office", workspaceId: "previous" });
+-  const entry = {
+-    pathname: "/new" as const,
+-    params: {
+-      serverId: "office",
+-      projectId: "p-2",
+-      dir: "/projects/second",
+-      draftId: "draft-original",
+-    },
+-  };
+-  product.rememberBuildEntry(entry);
+-  product.setProductMode("chat");
+-  vi.resetModules();
+-  product = await import("./product-mode");
+-  await product.hydrateProductMode();
+-  expect(product.getProductDestination("build")).toEqual({ kind: "picker", entry });
+-  product.rememberProductWorkspace("build", { serverId: "office", workspaceId: "created" });
+-  expect(product.getProductDestination("build")).toEqual({
+-    kind: "workspace",
+-    selection: { serverId: "office", workspaceId: "created" },
+-  });
+-});
+ it("persists uncertain preparation by host before a reload", async () => {
+-  let product = await import("./product-mode");
+-  await product.hydrateProductMode();
++  let product = await import("./chat-preparation");
+   const pending = { cwd: "/home/test/Vibes", projectId: "project", phase: "opening" as const };
+   await product.saveChatPreparation("host-a", pending);
+   vi.resetModules();
+-  product = await import("./product-mode");
++  product = await import("./chat-preparation");
+   await expect(product.readChatPreparation("host-a")).resolves.toEqual(pending);
+   await expect(product.readChatPreparation("host-b")).resolves.toBeNull();
+ });
+diff --git a/packages/app/src/embedded/chat-preparation.ts b/packages/app/src/embedded/chat-preparation.ts
+new file mode 100644
+index 0000000..3829d49
+--- /dev/null
++++ b/packages/app/src/embedded/chat-preparation.ts
+@@ -0,0 +1,24 @@
++import AsyncStorage from "@react-native-async-storage/async-storage";
++import { z } from "zod";
++import type { ChatPreparation } from "./chat-preset";
++
++const preparationSchema = z.object({
++  cwd: z.string().min(1),
++  projectId: z.string().min(1),
++  phase: z.enum(["directory", "opening", "ready"]),
++  workspaceId: z.string().min(1).optional(),
++});
++
++const preparationKey = (serverId: string) => `vibes-chat-preparation-v1:${serverId}`;
++export async function readChatPreparation(serverId: string): Promise<ChatPreparation | null> {
++  const raw = await AsyncStorage.getItem(preparationKey(serverId));
++  if (!raw) return null;
++  const parsed = preparationSchema.safeParse(JSON.parse(raw));
++  if (!parsed.success)
++    throw new Error("Saved Chat preparation is invalid. Open the native project picker.");
++  return parsed.data;
++}
++export async function saveChatPreparation(serverId: string, value: ChatPreparation): Promise<void> {
++  // This write must complete before openProject; a refresh must retain uncertain state.
++  await AsyncStorage.setItem(preparationKey(serverId), JSON.stringify(value));
++}
+diff --git a/packages/app/src/embedded/chat-preset.test.ts b/packages/app/src/embedded/chat-preset.test.ts
+index 09ddd1b..7ab0840 100644
+--- a/packages/app/src/embedded/chat-preset.test.ts
++++ b/packages/app/src/embedded/chat-preset.test.ts
+@@ -43,7 +43,6 @@ function fixture(initial: ChatPreparation | null = null) {
+       pageInfo: { hasMore: false, nextCursor: null },
+     })),
+     openProject: vi.fn(async () => ({ workspace, error: null })),
+-    getProvidersSnapshot: vi.fn(async () => ({ entries })),
+   };
+   const deps: ChatPresetDependencies = {
+     client: methods as unknown as ChatPresetDependencies["client"],
+@@ -63,7 +62,7 @@ describe("Chat native preset", () => {
+       thinkingOptionId: "medium",
+     });
+     expect(() => resolveChatSetup([{ ...entries[0], enabled: false }], cwd)).toThrow("Codex");
+-    expect(() => resolveChatSetup([{ ...entries[0], status: "loading" }], cwd)).toThrow("Codex");
++    expect(resolveChatSetup([{ ...entries[0], status: "loading" }], cwd)).toBeNull();
+     expect(() =>
+       resolveChatSetup(
+         [{ ...entries[0], models: [{ ...entries[0].models![0], isSelectable: false }] }],
+@@ -79,14 +78,13 @@ describe("Chat native preset", () => {
+     expect(initializer.run("host", f.deps)).toBe(first);
+     await expect(first).resolves.toMatchObject({
+       workspace,
+-      setup: { model: "model-from-daemon", cwd },
++      cwd,
+     });
+     expect(f.methods.createProjectDirectory).toHaveBeenCalledWith({
+       parentPath: "~",
+       name: "Vibes",
+     });
+     expect(f.methods.openProject).toHaveBeenCalledTimes(1);
+-    expect(f.methods.getProvidersSnapshot).toHaveBeenCalledWith({ cwd });
+     expect(f.getSaved()).toMatchObject({ phase: "ready", workspaceId: workspace.id });
+   });
+   it("validates an existing path and reuses its workspace", async () => {
+diff --git a/packages/app/src/embedded/chat-preset.ts b/packages/app/src/embedded/chat-preset.ts
+index 5493b44..b117707 100644
+--- a/packages/app/src/embedded/chat-preset.ts
++++ b/packages/app/src/embedded/chat-preset.ts
+@@ -27,11 +27,7 @@ export interface ChatPreparation {
+ 
+ type PresetClient = Pick<
+   DaemonClient,
+-  | "createProjectDirectory"
+-  | "addProject"
+-  | "openProject"
+-  | "fetchWorkspaces"
+-  | "getProvidersSnapshot"
++  "createProjectDirectory" | "addProject" | "openProject" | "fetchWorkspaces"
+ >;
+ export interface ChatPresetDependencies {
+   client: PresetClient;
+@@ -42,8 +38,9 @@ export interface ChatPresetDependencies {
+ export function resolveChatSetup(
+   entries: ProviderSnapshotEntry[],
+   cwd: string,
+-): WorkspaceDraftTabSetup {
++): WorkspaceDraftTabSetup | null {
+   const codex = entries.find((entry) => entry.provider === "codex");
++  if (codex?.status === "loading") return null;
+   if (!codex?.enabled || codex.status !== "ready") {
+     throw new ChatPresetError(
+       "codex-unavailable",
+@@ -151,7 +148,5 @@ async function prepare({ client, read, save }: ChatPresetDependencies) {
+     workspace = opened.workspace;
+   }
+   await save({ ...saved, phase: "ready", workspaceId: workspace.id });
+-  const snapshot = await client.getProvidersSnapshot({ cwd: saved.cwd });
+-  const setup = resolveChatSetup(snapshot.entries, saved.cwd);
+-  return { workspace, setup };
++  return { workspace, cwd: saved.cwd };
+ }
+diff --git a/packages/app/src/embedded/chat-start-screen.tsx b/packages/app/src/embedded/chat-start-screen.tsx
+index 994de31..7a74c94 100644
+--- a/packages/app/src/embedded/chat-start-screen.tsx
++++ b/packages/app/src/embedded/chat-start-screen.tsx
+@@ -15,16 +15,10 @@ import {
+ import { navigateToWorkspace } from "@/stores/navigation-active-workspace-store";
+ import { navigateToHostWorkspaceRoute } from "@/navigation/workspace-route-navigation";
+ import { buildHostWorkspaceRoute } from "@/utils/host-routes";
+-import { ProductHeader } from "./product-header";
+-import { ChatPresetError, ChatPresetInitializer } from "./chat-preset";
+-import {
+-  getProductMode,
+-  readChatPreparation,
+-  saveChatPreparation,
+-  rememberProductWorkspace,
+-  useProductMode,
+-  setProductMode,
+-} from "./product-mode";
++import { ChatPresetError, ChatPresetInitializer, resolveChatSetup } from "./chat-preset";
++import { useProvidersSnapshot } from "@/hooks/use-providers-snapshot";
++import { getEmbeddedHost } from "./environment";
++import { readChatPreparation, saveChatPreparation } from "./chat-preparation";
+ 
+ const initializer = new ChatPresetInitializer();
+ export default function ChatStartScreen() {
+@@ -32,29 +26,27 @@ export default function ChatStartScreen() {
+   const { i18n } = useTranslation();
+   const zh = i18n.language.startsWith("zh");
+   const router = useRouter();
+-  const product = useProductMode();
+   const isFocused = useIsFocused();
+   const params = useLocalSearchParams<{ serverId?: string }>();
+   const online = useEarliestOnlineHostServerId();
+   const hosts = useHosts();
+-  const serverId =
+-    params.serverId ?? product.chat?.serverId ?? online ?? hosts[0]?.serverId ?? null;
++  const serverId = params.serverId ?? online ?? hosts[0]?.serverId ?? null;
+   const client = useHostRuntimeClient(serverId ?? "");
+   const connected = useHostRuntimeIsConnected(serverId ?? "");
+   const layoutHydrated = useWorkspaceLayoutStoreHydrated();
+   const [error, setError] = useState<Error | null>(null);
+   const [attempt, setAttempt] = useState(0);
++  const [prepared, setPrepared] = useState<{
++    serverId: string;
++    workspaceId: string;
++    cwd: string;
++  } | null>(null);
++  const providers = useProvidersSnapshot(serverId, {
++    enabled: isFocused && prepared?.serverId === serverId,
++    cwd: prepared?.serverId === serverId ? prepared.cwd : null,
++  });
+   useEffect(() => {
+-    if (
+-      !isFocused ||
+-      product.mode !== "chat" ||
+-      !client ||
+-      !connected ||
+-      !serverId ||
+-      !layoutHydrated ||
+-      !product.hydrated
+-    )
+-      return;
++    if (!isFocused || !client || !connected || !serverId || !layoutHydrated) return;
+     let cancelled = false;
+     setError(null);
+     void initializer
+@@ -63,14 +55,13 @@ export default function ChatStartScreen() {
+         read: () => readChatPreparation(serverId),
+         save: (value) => saveChatPreparation(serverId, value),
+       })
+-      .then(({ workspace, setup }) => {
+-        if (cancelled || getProductMode().mode !== "chat") return;
++      .then(({ workspace, cwd }) => {
++        if (cancelled) return;
+         // Merge the authoritative reply through the official store, without a second replica.
+         useSessionStore
+           .getState()
+           .mergeWorkspaces(serverId, [normalizeWorkspaceDescriptor(workspace)]);
+         const selection = { serverId, workspaceId: workspace.id };
+-        rememberProductWorkspace("chat", selection);
+         const layout =
+           useWorkspaceLayoutStore.getState().layoutByWorkspace[`${serverId}:${workspace.id}`];
+         const hasConversationTab =
+@@ -80,12 +71,7 @@ export default function ChatStartScreen() {
+           );
+         if (hasConversationTab) {
+           navigateToHostWorkspaceRoute(buildHostWorkspaceRoute(serverId, workspace.id));
+-        } else
+-          navigateToWorkspace({
+-            ...selection,
+-            target: { kind: "draft", draftId: crypto.randomUUID(), setup },
+-            pin: true,
+-          });
++        } else setPrepared({ ...selection, cwd });
+       })
+       .catch((failure: unknown) => {
+         if (!cancelled)
+@@ -94,21 +80,40 @@ export default function ChatStartScreen() {
+     return () => {
+       cancelled = true;
+     };
+-  }, [
+-    isFocused,
+-    product.mode,
+-    client,
+-    connected,
+-    serverId,
+-    layoutHydrated,
+-    product.hydrated,
+-    attempt,
+-  ]);
++  }, [isFocused, client, connected, serverId, layoutHydrated, attempt]);
++  useEffect(() => {
++    if (
++      !isFocused ||
++      !connected ||
++      !prepared ||
++      prepared.serverId !== serverId ||
++      !providers.entries
++    )
++      return;
++    try {
++      const setup = resolveChatSetup(providers.entries, prepared.cwd);
++      if (!setup) {
++        setError(null);
++        return;
++      }
++      navigateToWorkspace({
++        serverId: prepared.serverId,
++        workspaceId: prepared.workspaceId,
++        target: { kind: "draft", draftId: crypto.randomUUID(), setup },
++        pin: true,
++      });
++    } catch (failure) {
++      setError(failure instanceof Error ? failure : new Error("Conversation preparation failed."));
++    }
++  }, [isFocused, connected, prepared, serverId, providers.entries]);
++  useEffect(() => {
++    if (prepared && providers.error) setError(new Error(providers.error));
++  }, [prepared, providers.error]);
+   const issue = error instanceof ChatPresetError ? error.issue : null;
+   const message = !serverId
+     ? zh
+-      ? "先连接你的电脑，再使用 Chat。"
+-      : "Connect your computer to start Chat."
++      ? "先连接你的电脑，再开始对话。"
++      : "Connect your computer to start a conversation."
+     : !connected
+       ? zh
+         ? "正在等待这台电脑连接。可在连接设置中查看状态。"
+@@ -127,8 +132,8 @@ export default function ChatStartScreen() {
+               : "The previous preparation is still unconfirmed. Retry the query after reconnecting, or inspect the native project list."
+             : error
+               ? zh
+-                ? `Chat 准备失败：${error.message}`
+-                : `Chat preparation failed: ${error.message}`
++                ? `对话准备失败：${error.message}`
++                : `Conversation preparation failed: ${error.message}`
+               : zh
+                 ? "正在准备默认文件夹和 Codex / Luna…"
+                 : "Preparing the default folder and Codex / Luna…";
+@@ -151,7 +156,6 @@ export default function ChatStartScreen() {
+   );
+   return (
+     <View style={{ flex: 1 }}>
+-      <ProductHeader />
+       <View
+         style={{
+           flex: 1,
+@@ -165,7 +169,7 @@ export default function ChatStartScreen() {
+           accessibilityRole="header"
+           style={{ fontSize: 20, fontWeight: "600", color: theme.colors.foreground }}
+         >
+-          Chat
++          {zh ? "开始对话" : "Start a conversation"}
+         </Text>
+         <Text style={{ color: theme.colors.foregroundMuted, lineHeight: 22 }}>{message}</Text>
+         {hosts.find((host) => host.serverId === serverId)?.label ? (
+@@ -175,22 +179,33 @@ export default function ChatStartScreen() {
+         ) : null}
+         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+           {error && connected
+-            ? button(zh ? "重试" : "Retry", () => setAttempt((value) => value + 1))
++            ? button(zh ? "重试" : "Retry", () => {
++                if (prepared)
++                  void providers
++                    .refresh(["codex"])
++                    .catch((failure: unknown) =>
++                      setError(
++                        failure instanceof Error ? failure : new Error("Model refresh failed."),
++                      ),
++                    );
++                else setAttempt((value) => value + 1);
++              })
+             : null}
+           {error
+             ? button(zh ? "选择 Agent / 项目" : "Choose agent / project", () => {
+-                setProductMode("build");
++                getEmbeddedHost()?.onEvent({ version: 1, type: "surface", value: "full" });
+                 router.push("/new");
+               })
+             : null}
+           {!connected || error
+-            ? button(zh ? "连接设置" : "Connection settings", () =>
++            ? button(zh ? "连接设置" : "Connection settings", () => {
++                getEmbeddedHost()?.onEvent({ version: 1, type: "surface", value: "full" });
+                 router.push(
+                   (serverId
+                     ? `/settings/hosts/${encodeURIComponent(serverId)}`
+                     : "/welcome") as Href,
+-                ),
+-              )
++                );
++              })
+             : null}
+         </View>
+       </View>
+diff --git a/packages/app/src/embedded/contract.ts b/packages/app/src/embedded/contract.ts
+index 327137f..82cf52e 100644
+--- a/packages/app/src/embedded/contract.ts
++++ b/packages/app/src/embedded/contract.ts
+@@ -39,6 +39,7 @@ export type AssistantEvent =
+     };
+ export interface PaseoMountOptions {
+   root: HTMLElement;
++  toolbarRoot?: HTMLElement;
+   locale: AssistantLocale;
+   presentation: Presentation;
+   onEvent(event: AssistantEvent): void;
+diff --git a/packages/app/src/embedded/conversation-selection.test.ts b/packages/app/src/embedded/conversation-selection.test.ts
+new file mode 100644
+index 0000000..23d844d
+--- /dev/null
++++ b/packages/app/src/embedded/conversation-selection.test.ts
+@@ -0,0 +1,56 @@
++import { describe, expect, it } from "vitest";
++import type { WorkspaceTab } from "@/workspace-tabs/model";
++import { selectCompactConversation } from "./conversation-selection";
++
++const tabs: WorkspaceTab[] = [
++  { tabId: "older-agent", createdAt: 1, target: { kind: "agent", agentId: "agent-a" } },
++  { tabId: "draft", createdAt: 2, target: { kind: "draft", draftId: "unsent" } },
++  { tabId: "new-agent", createdAt: 3, target: { kind: "agent", agentId: "agent-b" } },
++  {
++    tabId: "file",
++    createdAt: 4,
++    target: { kind: "file", path: "README.md" },
++    state: { editor: "unsaved" },
++  },
++  { tabId: "terminal", createdAt: 5, target: { kind: "terminal", terminalId: "running-shell" } },
++];
++
++describe("compact conversation selection", () => {
++  it("keeps the active native conversation even when another conversation was remembered", () => {
++    expect(
++      selectCompactConversation({
++        tabs,
++        activeTabId: "draft",
++        lastConversationTabId: "older-agent",
++      }),
++    ).toBe("draft");
++  });
++  it("returns to the last conversation without mutating file edits or terminal targets", () => {
++    const before = structuredClone(tabs);
++    expect(
++      selectCompactConversation({
++        tabs,
++        activeTabId: "file",
++        lastConversationTabId: "older-agent",
++      }),
++    ).toBe("older-agent");
++    expect(
++      selectCompactConversation({ tabs, activeTabId: "terminal", lastConversationTabId: "draft" }),
++    ).toBe("draft");
++    expect(tabs).toEqual(before);
++  });
++  it("ignores closed remembered tabs and selects the newest remaining conversation", () => {
++    expect(
++      selectCompactConversation({ tabs, activeTabId: "file", lastConversationTabId: "closed-tab" }),
++    ).toBe("new-agent");
++  });
++  it("requests a native draft only when this workspace has no agent or draft", () => {
++    expect(
++      selectCompactConversation({
++        tabs: tabs.slice(3),
++        activeTabId: "file",
++        lastConversationTabId: "foreign-workspace-agent",
++      }),
++    ).toBeNull();
++  });
++});
+diff --git a/packages/app/src/embedded/conversation-selection.ts b/packages/app/src/embedded/conversation-selection.ts
+new file mode 100644
+index 0000000..082287f
+--- /dev/null
++++ b/packages/app/src/embedded/conversation-selection.ts
+@@ -0,0 +1,22 @@
++import type { WorkspaceTab } from "@/workspace-tabs/model";
++
++export function isConversationTab(tab: WorkspaceTab | null | undefined): boolean {
++  return tab?.target.kind === "agent" || tab?.target.kind === "draft";
++}
++
++/** Select an existing native tab without moving, closing or recreating any pane. */
++export function selectCompactConversation(input: {
++  tabs: readonly WorkspaceTab[];
++  activeTabId: string | null;
++  lastConversationTabId: string | null;
++}): string | null {
++  const active = input.tabs.find((tab) => tab.tabId === input.activeTabId);
++  if (isConversationTab(active)) return active!.tabId;
++  const previous = input.tabs.find((tab) => tab.tabId === input.lastConversationTabId);
++  if (isConversationTab(previous)) return previous!.tabId;
++  let newest: WorkspaceTab | null = null;
++  for (const tab of input.tabs) {
++    if (isConversationTab(tab) && (!newest || tab.createdAt > newest.createdAt)) newest = tab;
++  }
++  return newest?.tabId ?? null;
++}
+diff --git a/packages/app/src/embedded/desktop-explorer-toggle.tsx b/packages/app/src/embedded/desktop-explorer-toggle.tsx
+new file mode 100644
+index 0000000..9d91ac1
+--- /dev/null
++++ b/packages/app/src/embedded/desktop-explorer-toggle.tsx
+@@ -0,0 +1,30 @@
++import { PanelRight } from "lucide-react-native";
++import { useTranslation } from "react-i18next";
++import { useUnistyles } from "react-native-unistyles";
++import { useIsCompactFormFactor } from "@/constants/layout";
++import { ToolbarButton } from "@/components/ui/pane-content-toolbar";
++import { useKeyboardActionDispatcher } from "@/keyboard/keyboard-action-dispatcher-context";
++import { useEmbeddedSurface } from "./use-embedded-surface";
++
++/** The existing tabs row owns this control, so full mode needs no second header. */
++export function EmbeddedDesktopExplorerToggle({ active }: { active: boolean }) {
++  const surface = useEmbeddedSurface();
++  const isMobile = useIsCompactFormFactor();
++  if (surface !== "full" || isMobile || !active) return null;
++  return <ExplorerToggle />;
++}
++
++function ExplorerToggle() {
++  const { t } = useTranslation();
++  const { theme } = useUnistyles();
++  const dispatcher = useKeyboardActionDispatcher();
++  return (
++    <ToolbarButton
++      label={t("workspace.tabs.explorerSidebar.toggle")}
++      testID="embedded-explorer-toggle"
++      onPress={() => dispatcher.dispatch({ id: "sidebar.toggle.right", scope: "sidebar" })}
++    >
++      <PanelRight size={14} color={theme.colors.foregroundMuted} />
++    </ToolbarButton>
++  );
++}
+diff --git a/packages/app/src/embedded/environment.ts b/packages/app/src/embedded/environment.ts
+index 7e59537..42899cf 100644
+--- a/packages/app/src/embedded/environment.ts
++++ b/packages/app/src/embedded/environment.ts
+@@ -1,6 +1,7 @@
+-import type { AssistantEvent, AssistantLocale, Presentation, PublicWorkDraft } from './contract';
++import type { AssistantEvent, AssistantLocale, Presentation, PublicWorkDraft } from "./contract";
+ export interface EmbeddedHost extends Presentation {
+   readonly root: HTMLElement;
++  toolbarRoot?: HTMLElement;
+   readonly width: number;
+   readonly height: number;
+   readonly publicWork: PublicWorkDraft | null;
+diff --git a/packages/app/src/embedded/mobile-files.tsx b/packages/app/src/embedded/mobile-files.tsx
+new file mode 100644
+index 0000000..1b8484c
+--- /dev/null
++++ b/packages/app/src/embedded/mobile-files.tsx
+@@ -0,0 +1,32 @@
++import { Files } from "lucide-react-native";
++import { useTranslation } from "react-i18next";
++import { SidebarHeaderRow } from "@/components/sidebar/sidebar-header-row";
++import { useActiveWorkspaceSelection } from "@/stores/navigation-active-workspace-store";
++import { useKeyboardActionDispatcher } from "@/keyboard/keyboard-action-dispatcher-context";
++import { useEmbeddedMobileFiles } from "./use-embedded-surface";
++
++/** Move only the entry point; the native workspace still owns the full explorer. */
++export function EmbeddedMobileFiles({ closeSidebar }: { closeSidebar(): void }) {
++  const enabled = useEmbeddedMobileFiles();
++  const selection = useActiveWorkspaceSelection();
++  const dispatcher = useKeyboardActionDispatcher();
++  const { t } = useTranslation();
++  if (!enabled || !selection) return null;
++  return (
++    <SidebarHeaderRow
++      icon={Files}
++      label={t("workspace.tabs.explorerSidebar.files")}
++      variant="compact"
++      onPress={() => {
++        closeSidebar();
++        dispatcher.dispatch({
++          id: "workspace.tab.open",
++          scope: "workspace",
++          target: "files",
++          placement: "supporting",
++        });
++      }}
++      testID="sidebar-files"
++    />
++  );
++}
+diff --git a/packages/app/src/embedded/product-header.tsx b/packages/app/src/embedded/product-header.tsx
+deleted file mode 100644
+index 3c04efa..0000000
+--- a/packages/app/src/embedded/product-header.tsx
++++ /dev/null
+@@ -1,139 +0,0 @@
+-import { type ReactNode, useEffect } from "react";
+-import { Pressable, Text, View } from "react-native";
+-import { usePathname, useRouter, type Href } from "expo-router";
+-import { useUnistyles } from "react-native-unistyles";
+-import { useTranslation } from "react-i18next";
+-import { SidebarMenuToggle } from "@/components/headers/menu-header";
+-import { ScreenHeader } from "@/components/headers/screen-header";
+-import { navigateToHostWorkspaceRoute } from "@/navigation/workspace-route-navigation";
+-import { buildHostWorkspaceRoute } from "@/utils/host-routes";
+-import { getEmbeddedHost } from "./environment";
+-import {
+-  getProductMode,
+-  getProductDestination,
+-  rememberProductWorkspace,
+-  setProductMode,
+-  useProductMode,
+-  type ProductMode,
+-} from "./product-mode";
+-
+-export function ProductHeader({
+-  serverId,
+-  workspaceId,
+-  right,
+-  onNewConversation,
+-  active = true,
+-  showMenu = true,
+-}: {
+-  serverId?: string;
+-  workspaceId?: string;
+-  right?: ReactNode;
+-  onNewConversation?: () => void;
+-  active?: boolean;
+-  showMenu?: boolean;
+-}) {
+-  const { theme } = useUnistyles();
+-  const router = useRouter();
+-  const pathname = usePathname();
+-  const { mode } = useProductMode();
+-  const { i18n } = useTranslation();
+-  const zh = i18n.language.startsWith("zh");
+-  useEffect(() => {
+-    if (!active || !serverId || !workspaceId) return;
+-    const current = getProductMode();
+-    if (
+-      current.mode === "chat" &&
+-      (current.chat?.serverId !== serverId || current.chat?.workspaceId !== workspaceId)
+-    ) {
+-      setProductMode("build");
+-    }
+-    rememberProductWorkspace(getProductMode().mode, { serverId, workspaceId });
+-    // A mode change alone must not label the departing workspace as the destination.
+-  }, [active, serverId, workspaceId]);
+-  if (!getEmbeddedHost()) return null;
+-  const select = (next: ProductMode) => {
+-    if (next === mode && (workspaceId || pathname === "/new" || pathname === "/vibes-chat")) return;
+-    setProductMode(next, serverId && workspaceId ? { serverId, workspaceId } : null);
+-    const destination = getProductDestination(next);
+-    if (destination.kind === "workspace") {
+-      const { serverId: hostId, workspaceId: workspace } = destination.selection;
+-      navigateToHostWorkspaceRoute(buildHostWorkspaceRoute(hostId, workspace));
+-    } else if (destination.kind === "picker") router.navigate(destination.entry as Href);
+-    else router.navigate("/vibes-chat" as Href);
+-  };
+-  return (
+-    <ScreenHeader
+-      left={
+-        <>
+-          {showMenu ? <SidebarMenuToggle /> : null}
+-          <View style={{ flexDirection: "row", gap: 4 }} accessibilityRole="tablist">
+-            {(["chat", "build"] as const).map((item) => (
+-              <Pressable
+-                key={item}
+-                accessibilityRole="tab"
+-                accessibilityState={{ selected: mode === item }}
+-                accessibilityLabel={item === "chat" ? "Chat" : "Build"}
+-                onPress={() => select(item)}
+-                style={{
+-                  minHeight: 44,
+-                  minWidth: 64,
+-                  paddingHorizontal: 12,
+-                  justifyContent: "center",
+-                  borderBottomWidth: 2,
+-                  borderBottomColor: mode === item ? theme.colors.foreground : "transparent",
+-                }}
+-              >
+-                <Text
+-                  style={{
+-                    color: mode === item ? theme.colors.foreground : theme.colors.foregroundMuted,
+-                    fontWeight: mode === item ? "600" : "400",
+-                    fontSize: 14,
+-                  }}
+-                >
+-                  {item === "chat" ? "Chat" : "Build"}
+-                </Text>
+-              </Pressable>
+-            ))}
+-          </View>
+-        </>
+-      }
+-      right={
+-        <>
+-          {onNewConversation ? (
+-            <Pressable
+-              accessibilityRole="button"
+-              accessibilityLabel={zh ? "新对话" : "New conversation"}
+-              onPress={onNewConversation}
+-              style={{
+-                minWidth: 44,
+-                minHeight: 44,
+-                alignItems: "center",
+-                justifyContent: "center",
+-              }}
+-            >
+-              <Text style={{ color: theme.colors.foreground, fontSize: 24 }}>+</Text>
+-            </Pressable>
+-          ) : null}
+-          {right}
+-          {mode === "build" ? (
+-            <Pressable
+-              accessibilityRole="button"
+-              accessibilityLabel={zh ? "选择项目" : "Choose project"}
+-              onPress={() => router.push("/new")}
+-              style={{
+-                minWidth: 44,
+-                minHeight: 44,
+-                justifyContent: "center",
+-                paddingHorizontal: 8,
+-              }}
+-            >
+-              <Text style={{ color: theme.colors.foregroundMuted }}>
+-                {zh ? "项目" : "Projects"}
+-              </Text>
+-            </Pressable>
+-          ) : null}
+-        </>
+-      }
+-    />
+-  );
+-}
+diff --git a/packages/app/src/embedded/product-mode.ts b/packages/app/src/embedded/product-mode.ts
+deleted file mode 100644
+index c68c383..0000000
+--- a/packages/app/src/embedded/product-mode.ts
++++ /dev/null
+@@ -1,123 +0,0 @@
+-import AsyncStorage from "@react-native-async-storage/async-storage";
+-import { useSyncExternalStore } from "react";
+-import { z } from "zod";
+-import type { ActiveWorkspaceSelection } from "@/stores/last-workspace-selection";
+-import type { ChatPreparation } from "./chat-preset";
+-
+-export type ProductMode = "chat" | "build";
+-const selectionSchema = z.object({ serverId: z.string().min(1), workspaceId: z.string().min(1) });
+-const buildEntrySchema = z.object({
+-  pathname: z.enum(["/new", "/open-project"]),
+-  params: z.object({
+-    serverId: z.string().optional(),
+-    dir: z.string().optional(),
+-    name: z.string().optional(),
+-    projectId: z.string().optional(),
+-    draftId: z.string().optional(),
+-  }),
+-});
+-export type BuildEntry = z.infer<typeof buildEntrySchema>;
+-const modeSchema = z.object({
+-  mode: z.enum(["chat", "build"]),
+-  chat: selectionSchema.nullable(),
+-  build: selectionSchema.nullable(),
+-  buildEntry: buildEntrySchema.nullable().default(null),
+-});
+-const preparationSchema = z.object({
+-  cwd: z.string().min(1),
+-  projectId: z.string().min(1),
+-  phase: z.enum(["directory", "opening", "ready"]),
+-  workspaceId: z.string().min(1).optional(),
+-});
+-const key = "vibes-product-mode-v1";
+-let state: z.infer<typeof modeSchema> & { hydrated: boolean } = {
+-  mode: "chat",
+-  chat: null,
+-  build: null,
+-  buildEntry: null,
+-  hydrated: false,
+-};
+-const listeners = new Set<() => void>();
+-function publish() {
+-  listeners.forEach((listener) => listener());
+-}
+-function persist() {
+-  const { hydrated: _, ...value } = state;
+-  void AsyncStorage.setItem(key, JSON.stringify(value)).catch(() => {});
+-}
+-let hydration: Promise<void> | null = null;
+-export function hydrateProductMode(): Promise<void> {
+-  if (hydration) return hydration;
+-  hydration = (async () => {
+-    try {
+-      const raw = await AsyncStorage.getItem(key);
+-      const parsed = raw ? modeSchema.safeParse(JSON.parse(raw)) : null;
+-      if (parsed?.success) state = { ...parsed.data, hydrated: true };
+-    } catch {
+-      /* Navigation preferences may be absent; native drafts are independent. */
+-    }
+-    state = { ...state, hydrated: true };
+-    publish();
+-  })();
+-  return hydration;
+-}
+-export function useProductMode() {
+-  return useSyncExternalStore(
+-    (listener) => {
+-      listeners.add(listener);
+-      return () => listeners.delete(listener);
+-    },
+-    () => state,
+-    () => state,
+-  );
+-}
+-export function getProductMode() {
+-  return state;
+-}
+-export function setProductMode(mode: ProductMode, current?: ActiveWorkspaceSelection | null) {
+-  state = { ...state, ...(current ? { [state.mode]: current } : {}), mode };
+-  publish();
+-  persist();
+-}
+-export function rememberProductWorkspace(mode: ProductMode, selection: ActiveWorkspaceSelection) {
+-  if (
+-    state[mode]?.serverId === selection.serverId &&
+-    state[mode]?.workspaceId === selection.workspaceId &&
+-    (mode !== "build" || state.buildEntry === null)
+-  )
+-    return;
+-  state = { ...state, [mode]: selection, ...(mode === "build" ? { buildEntry: null } : {}) };
+-  publish();
+-  persist();
+-}
+-/** Keep only the native picker location. Text, attachments and tab state stay in Paseo stores. */
+-export function rememberBuildEntry(entry: BuildEntry) {
+-  const parsed = buildEntrySchema.parse(entry);
+-  if (state.mode === "build" && JSON.stringify(state.buildEntry) === JSON.stringify(parsed)) return;
+-  state = { ...state, mode: "build", buildEntry: parsed };
+-  publish();
+-  persist();
+-}
+-export function getProductDestination(mode: ProductMode) {
+-  if (mode === "build" && state.buildEntry)
+-    return { kind: "picker" as const, entry: state.buildEntry };
+-  const selection = state[mode];
+-  if (selection) return { kind: "workspace" as const, selection };
+-  return mode === "chat"
+-    ? { kind: "chat-start" as const }
+-    : { kind: "picker" as const, entry: { pathname: "/new" as const, params: {} } };
+-}
+-const preparationKey = (serverId: string) => `vibes-chat-preparation-v1:${serverId}`;
+-export async function readChatPreparation(serverId: string): Promise<ChatPreparation | null> {
+-  const raw = await AsyncStorage.getItem(preparationKey(serverId));
+-  if (!raw) return null;
+-  const parsed = preparationSchema.safeParse(JSON.parse(raw));
+-  if (!parsed.success)
+-    throw new Error("Saved Chat preparation is invalid. Open the native project picker.");
+-  return parsed.data;
+-}
+-export async function saveChatPreparation(serverId: string, value: ChatPreparation): Promise<void> {
+-  // This write must complete before openProject; a refresh must retain uncertain state.
+-  await AsyncStorage.setItem(preparationKey(serverId), JSON.stringify(value));
+-}
+-void hydrateProductMode();
+diff --git a/packages/app/src/embedded/startup.test.tsx b/packages/app/src/embedded/startup.test.tsx
+new file mode 100644
+index 0000000..2719576
+--- /dev/null
++++ b/packages/app/src/embedded/startup.test.tsx
+@@ -0,0 +1,72 @@
++import React, { act } from "react";
++import { createRoot, type Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import HostIndexRoute from "@/app/h/[serverId]/index";
++
++const state = vi.hoisted(() => ({
++  selection: null as { serverId: string; workspaceId: string } | null,
++  hydrated: true,
++  exists: true,
++  href: null as unknown,
++}));
++vi.mock("expo-router", () => ({
++  Redirect: ({ href }: { href: unknown }) => {
++    state.href = href;
++    return null;
++  },
++}));
++vi.mock("@/navigation/host-route-context", () => ({ useHostRouteServerId: () => "host" }));
++vi.mock("@/screens/startup-splash-screen", () => ({ StartupSplashScreen: () => null }));
++vi.mock("@/stores/session-store-hooks", () => ({
++  useHasHydratedWorkspaces: () => true,
++  useWorkspaceExists: () => state.exists,
++}));
++vi.mock("@/stores/navigation-active-workspace-store", () => ({
++  useIsLastWorkspaceSelectionHydrated: () => state.hydrated,
++  useLastWorkspaceSelection: () => state.selection,
++}));
++let root: Root;
++let dom: JSDOM;
++beforeEach(() => {
++  dom = new JSDOM("<div id='root'></div>");
++  vi.stubGlobal("window", dom.window);
++  vi.stubGlobal("document", dom.window.document);
++  vi.stubGlobal("React", React);
++  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
++  vi.stubGlobal("__vibesPaseoEnvironment", {});
++  state.selection = null;
++  state.hydrated = true;
++  state.exists = true;
++  state.href = null;
++  root = createRoot(document.getElementById("root")!);
++});
++afterEach(() => {
++  act(() => root.unmount());
++  dom.window.close();
++  vi.unstubAllGlobals();
++});
++it("waits for native selection hydration before deciding whether this is the first launch", () => {
++  state.hydrated = false;
++  act(() => root.render(<HostIndexRoute />));
++  expect(state.href).toBeNull();
++  state.hydrated = true;
++  act(() => root.render(<HostIndexRoute />));
++  expect(state.href).toEqual({ pathname: "/vibes-chat", params: { serverId: "host" } });
++});
++it("restores the current native workspace and ignores the removed Chat/Build preference", () => {
++  state.selection = { serverId: "host", workspaceId: "chosen-project" };
++  act(() => root.render(<HostIndexRoute />));
++  expect(state.href).toEqual("/h/host/workspace/chosen-project");
++});
++it("lets the native resolver handle missing previous workspaces without preparing a different default", () => {
++  state.selection = { serverId: "host", workspaceId: "removed-project" };
++  state.exists = false;
++  act(() => root.render(<HostIndexRoute />));
++  expect(state.href).toEqual("/open-project");
++});
++it("keeps standalone Paseo on its original first-launch project picker", () => {
++  vi.stubGlobal("__vibesPaseoEnvironment", undefined);
++  act(() => root.render(<HostIndexRoute />));
++  expect(state.href).toEqual("/open-project");
++});
+diff --git a/packages/app/src/embedded/toolbar.test.tsx b/packages/app/src/embedded/toolbar.test.tsx
+new file mode 100644
+index 0000000..e0132da
+--- /dev/null
++++ b/packages/app/src/embedded/toolbar.test.tsx
+@@ -0,0 +1,168 @@
++import React, { act } from "react";
++import { createRoot, type Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import { EmbeddedToolbar } from "./toolbar";
++import { useEmbeddedMobileFiles } from "./use-embedded-surface";
++
++const state = vi.hoisted(() => ({
++  pathname: "/h/host/workspace/work",
++  breakpoint: "xs",
++  menuOpen: false,
++  selection: { serverId: "host", workspaceId: "work" } as {
++    serverId: string;
++    workspaceId: string;
++  } | null,
++  dispatch: vi.fn(() => true),
++  toggleMenu: vi.fn(),
++  showMobileAgent: vi.fn(),
++  navigate: vi.fn(),
++}));
++vi.mock("expo-router", () => ({ usePathname: () => state.pathname }));
++vi.mock("react-i18next", () => ({
++  useTranslation: () => ({ t: (key: string) => key, i18n: { language: "zh" } }),
++}));
++vi.mock("react-native-unistyles", () => ({
++  useUnistyles: () => ({ rt: { breakpoint: state.breakpoint } }),
++}));
++vi.mock("@/keyboard/keyboard-action-dispatcher-context", () => ({
++  useKeyboardActionDispatcher: () => ({ dispatch: state.dispatch }),
++}));
++vi.mock("@/stores/navigation-active-workspace-store", () => ({
++  useLastWorkspaceSelection: () => state.selection,
++}));
++vi.mock("@/navigation/workspace-route-navigation", () => ({
++  navigateToHostWorkspaceRoute: state.navigate,
++}));
++vi.mock("@/stores/panel-store", () => ({
++  selectIsAgentListOpen: () => state.menuOpen,
++  usePanelStore: (select: (store: unknown) => unknown) =>
++    select({ toggleAgentListForLayout: state.toggleMenu, showMobileAgent: state.showMobileAgent }),
++}));
++
++let dom: JSDOM;
++let root: Root;
++let host: {
++  surface: "compact" | "full";
++  root: HTMLElement;
++  toolbarRoot: HTMLElement;
++  subscribe(listener: () => void): () => void;
++  onEvent: ReturnType<typeof vi.fn>;
++};
++let listeners: Set<() => void>;
++function setSurface(surface: "compact" | "full") {
++  act(() => {
++    host.surface = surface;
++    listeners.forEach((listener) => listener());
++  });
++}
++beforeEach(() => {
++  dom = new JSDOM("<!doctype html><div id='toolbar'></div><div id='root'></div>", {
++    url: "https://vibes.college",
++  });
++  for (const [key, value] of Object.entries({
++    React,
++    IS_REACT_ACT_ENVIRONMENT: true,
++    window: dom.window,
++    document: dom.window.document,
++  }))
++    vi.stubGlobal(key, value);
++  listeners = new Set();
++  host = {
++    surface: "compact",
++    root: document.getElementById("root")!,
++    toolbarRoot: document.getElementById("toolbar")!,
++    subscribe(listener) {
++      listeners.add(listener);
++      return () => {
++        listeners.delete(listener);
++      };
++    },
++    onEvent: vi.fn(),
++  };
++  vi.stubGlobal("__vibesPaseoEnvironment", host);
++  state.pathname = "/h/host/workspace/work";
++  state.selection = { serverId: "host", workspaceId: "work" };
++  state.breakpoint = "xs";
++  state.menuOpen = false;
++  vi.clearAllMocks();
++  root = createRoot(host.root);
++});
++afterEach(() => {
++  act(() => root.unmount());
++  dom.window.close();
++  vi.unstubAllGlobals();
++});
++it("portals only the compact new-conversation action into the explicit host slot", () => {
++  act(() => root.render(<EmbeddedToolbar />));
++  expect(host.root.querySelector("button")).toBeNull();
++  expect(host.toolbarRoot.querySelectorAll("button")).toHaveLength(1);
++  const button = host.toolbarRoot.querySelector<HTMLButtonElement>("button")!;
++  expect(button.dataset.testid).toBe("embedded-new-conversation");
++  expect(button.style.height).toBe("44px");
++  act(() => button.click());
++  expect(state.dispatch).toHaveBeenCalledWith({ id: "workspace.agent.new", scope: "workspace" });
++  expect(state.toggleMenu).not.toHaveBeenCalled();
++});
++it("replaces the action with only the native menu toggle in full mode", () => {
++  act(() => root.render(<EmbeddedToolbar />));
++  setSurface("full");
++  const buttons = host.toolbarRoot.querySelectorAll<HTMLButtonElement>("button");
++  expect(buttons).toHaveLength(1);
++  expect(buttons[0].dataset.testid).toBe("menu-button");
++  act(() => buttons[0].click());
++  expect(state.toggleMenu).toHaveBeenCalledWith({ isCompact: true });
++  expect(state.dispatch).not.toHaveBeenCalled();
++});
++it("returns from full settings to the native last workspace when compact is selected", () => {
++  host.surface = "full";
++  state.pathname = "/settings";
++  act(() => root.render(<EmbeddedToolbar />));
++  expect(state.navigate).not.toHaveBeenCalled();
++  setSurface("compact");
++  expect(state.navigate).toHaveBeenCalledTimes(1);
++  expect(state.navigate.mock.calls[0][0]).toContain("work");
++});
++it("does not expose an actionable new-conversation button before the workspace exists", () => {
++  state.pathname = "/vibes-chat";
++  state.selection = null;
++  act(() => root.render(<EmbeddedToolbar />));
++  const button = host.toolbarRoot.querySelector<HTMLButtonElement>("button")!;
++  expect(button.disabled).toBe(true);
++  act(() => button.click());
++  expect(state.dispatch).not.toHaveBeenCalled();
++});
++it("moves Files left with the full native mobile layout and retains the desktop explorer", () => {
++  function Probe() {
++    return <span>{String(useEmbeddedMobileFiles())}</span>;
++  }
++  Object.defineProperty(window, "innerWidth", { configurable: true, value: 1200 });
++  act(() => root.render(<Probe />));
++  expect(host.root.textContent).toBe("false");
++  state.breakpoint = "lg";
++  setSurface("full");
++  expect(host.root.textContent).toBe("false");
++  act(() => {
++    Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 });
++    state.breakpoint = "xs";
++    root.render(<Probe />);
++  });
++  expect(host.root.textContent).toBe("true");
++  setSurface("compact");
++  expect(host.root.textContent).toBe("false");
++});
++it.each([
++  [531, "xs"],
++  [719, "sm"],
++] as const)("keeps Files with the native drawer at %dpx (%s)", (width, breakpoint) => {
++  function Probe() {
++    return <span>{String(useEmbeddedMobileFiles())}</span>;
++  }
++  host.surface = "full";
++  state.breakpoint = breakpoint;
++  Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
++  act(() => root.render(<Probe />));
++  expect(host.root.textContent).toBe("true");
++  setSurface("compact");
++  expect(host.root.textContent).toBe("false");
++});
+diff --git a/packages/app/src/embedded/toolbar.tsx b/packages/app/src/embedded/toolbar.tsx
+new file mode 100644
+index 0000000..d3e9a86
+--- /dev/null
++++ b/packages/app/src/embedded/toolbar.tsx
+@@ -0,0 +1,100 @@
++import { useLayoutEffect, type CSSProperties } from "react";
++import { createPortal } from "react-dom";
++import { usePathname } from "expo-router";
++import { useTranslation } from "react-i18next";
++import { useIsCompactFormFactor } from "@/constants/layout";
++import { useKeyboardActionDispatcher } from "@/keyboard/keyboard-action-dispatcher-context";
++import { useLastWorkspaceSelection } from "@/stores/navigation-active-workspace-store";
++import { selectIsAgentListOpen, usePanelStore } from "@/stores/panel-store";
++import { navigateToHostWorkspaceRoute } from "@/navigation/workspace-route-navigation";
++import { buildHostWorkspaceRoute } from "@/utils/host-routes";
++import { parseHostWorkspaceRouteFromPathname } from "@/utils/host-routes";
++import { getEmbeddedHost } from "./environment";
++import { useEmbeddedSurface } from "./use-embedded-surface";
++
++const buttonStyle: CSSProperties = {
++  height: 44,
++  width: 44,
++  padding: 0,
++  display: "inline-flex",
++  alignItems: "center",
++  justifyContent: "center",
++  border: 0,
++  borderRadius: 0,
++  background: "transparent",
++  color: "#111827",
++  cursor: "pointer",
++  flexShrink: 0,
++  touchAction: "manipulation",
++};
++
++/** React owns the action; the host supplies only an explicit presentation slot. */
++export function EmbeddedToolbar() {
++  const host = getEmbeddedHost();
++  const surface = useEmbeddedSurface();
++  const compactLayout = useIsCompactFormFactor();
++  const pathname = usePathname();
++  const { t, i18n } = useTranslation();
++  const dispatcher = useKeyboardActionDispatcher();
++  const selection = useLastWorkspaceSelection();
++  const isWorkspace = parseHostWorkspaceRouteFromPathname(pathname) !== null;
++  const menuOpen = usePanelStore((state) =>
++    selectIsAgentListOpen(state, { isCompact: compactLayout }),
++  );
++  const toggleMenu = usePanelStore((state) => state.toggleAgentListForLayout);
++  const showMobileAgent = usePanelStore((state) => state.showMobileAgent);
++
++  useLayoutEffect(() => {
++    if (surface !== "compact") return;
++    showMobileAgent();
++    // Setup can be needed before a first conversation exists. Existing workspaces
++    // return through their native route; no conversation or file state is copied.
++    if (
++      isWorkspace ||
++      pathname === "/" ||
++      pathname === "/vibes-chat" ||
++      pathname === "/welcome" ||
++      pathname.startsWith("/pair-scan") ||
++      /^\/h\/[^/]+\/?$/.test(pathname)
++    )
++      return;
++    if (selection)
++      navigateToHostWorkspaceRoute(
++        buildHostWorkspaceRoute(selection.serverId, selection.workspaceId),
++      );
++    else host?.onEvent({ version: 1, type: "surface", value: "full" });
++  }, [surface, pathname, isWorkspace, selection, showMobileAgent, host]);
++
++  if (!host?.toolbarRoot || !surface) return null;
++  const isCompact = surface === "compact";
++  const label = isCompact
++    ? i18n.language.startsWith("zh")
++      ? "新对话"
++      : "New conversation"
++    : t(menuOpen ? "shell.menu.close" : "shell.menu.open");
++  return createPortal(
++    <button
++      type="button"
++      data-testid={isCompact ? "embedded-new-conversation" : "menu-button"}
++      aria-label={label}
++      title={label}
++      aria-expanded={isCompact ? undefined : menuOpen}
++      style={buttonStyle}
++      disabled={isCompact && !isWorkspace}
++      onClick={() => {
++        if (isCompact) dispatcher.dispatch({ id: "workspace.agent.new", scope: "workspace" });
++        else toggleMenu({ isCompact: compactLayout });
++      }}
++    >
++      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
++        <path
++          d={isCompact ? "M12 5v14M5 12h14" : "M5 6h14M5 12h14M5 18h9"}
++          stroke="currentColor"
++          strokeWidth="1.5"
++          strokeLinecap="round"
++        />
++      </svg>
++    </button>,
++    host.toolbarRoot,
++  );
++}
+diff --git a/packages/app/src/embedded/use-compact-conversation.test.tsx b/packages/app/src/embedded/use-compact-conversation.test.tsx
+new file mode 100644
+index 0000000..2dbe5af
+--- /dev/null
++++ b/packages/app/src/embedded/use-compact-conversation.test.tsx
+@@ -0,0 +1,188 @@
++import React, { act, useCallback, useState } from "react";
++import { createRoot, type Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import type { WorkspaceTab } from "@/workspace-tabs/model";
++import { useCompactConversation } from "./use-compact-conversation";
++
++let dom: JSDOM;
++let root: Root;
++let surface: "compact" | "full";
++let listeners: Set<() => void>;
++let latest: { tabs: WorkspaceTab[]; activeTabId: string | null };
++let activate: (tabId: string) => void;
++let setNativeTabs: (tabs: WorkspaceTab[], activeTabId: string) => void;
++let onEvent: ReturnType<typeof vi.fn>;
++let created: number;
++const original: WorkspaceTab[] = [
++  { tabId: "agent", target: { kind: "agent", agentId: "a" }, createdAt: 1 },
++  { tabId: "draft", target: { kind: "draft", draftId: "d" }, createdAt: 2 },
++  {
++    tabId: "file",
++    target: { kind: "file", path: "x.ts" },
++    createdAt: 3,
++    state: { edit: "keep unsaved" },
++  },
++  { tabId: "terminal", target: { kind: "terminal", terminalId: "running" }, createdAt: 4 },
++];
++function Harness({
++  hydrated = true,
++  active = true,
++  initial = original,
++  focused = "agent",
++  workspaceKey = "host:workspace",
++}: {
++  hydrated?: boolean;
++  active?: boolean;
++  initial?: WorkspaceTab[];
++  focused?: string;
++  workspaceKey?: string;
++}) {
++  const [state, setState] = useState({ tabs: initial, activeTabId: focused as string | null });
++  const focusTab = useCallback(
++    (tabId: string) => setState((value) => ({ ...value, activeTabId: tabId })),
++    [],
++  );
++  const createDraft = useCallback(() => {
++    const tab: WorkspaceTab = {
++      tabId: `created-${++created}`,
++      createdAt: 10,
++      target: { kind: "draft", draftId: "native-new" },
++    };
++    setState((value) => ({ tabs: [...value.tabs, tab], activeTabId: tab.tabId }));
++  }, []);
++  activate = focusTab;
++  setNativeTabs = (tabs, activeTabId) => setState({ tabs, activeTabId });
++  latest = state;
++  useCompactConversation({
++    workspaceKey,
++    active,
++    hydrated,
++    ...state,
++    focusTab,
++    createDraft,
++  });
++  return null;
++}
++function changeSurface(value: "compact" | "full") {
++  act(() => {
++    surface = value;
++    listeners.forEach((listener) => listener());
++  });
++}
++beforeEach(() => {
++  dom = new JSDOM("<div id='root'></div>");
++  vi.stubGlobal("React", React);
++  vi.stubGlobal("window", dom.window);
++  vi.stubGlobal("document", dom.window.document);
++  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
++  surface = "full";
++  listeners = new Set();
++  created = 0;
++  onEvent = vi.fn();
++  vi.stubGlobal("__vibesPaseoEnvironment", {
++    get surface() {
++      return surface;
++    },
++    subscribe(listener: () => void) {
++      listeners.add(listener);
++      return () => listeners.delete(listener);
++    },
++    onEvent,
++  });
++  root = createRoot(document.getElementById("root")!);
++});
++afterEach(() => {
++  act(() => root.unmount());
++  dom.window.close();
++  vi.unstubAllGlobals();
++});
++it("full to compact focuses the actual last conversation and retains every file and terminal", () => {
++  act(() => root.render(<Harness />));
++  act(() => activate("draft"));
++  act(() => activate("file"));
++  expect(latest.activeTabId).toBe("file");
++  changeSurface("compact");
++  expect(latest.activeTabId).toBe("draft");
++  expect(latest.tabs).toBe(original);
++  expect(latest.tabs[2].state).toEqual({ edit: "keep unsaved" });
++  expect(created).toBe(0);
++  expect(onEvent).not.toHaveBeenCalled();
++  changeSurface("full");
++  act(() => activate("terminal"));
++  expect(latest.activeTabId).toBe("terminal");
++});
++it.each(["file", "terminal"])(
++  "expands for a native %s action in compact and preserves its tab until the host responds",
++  (tabId) => {
++    surface = "compact";
++    act(() => root.render(<Harness />));
++    act(() => activate("draft"));
++    act(() => activate(tabId));
++    expect(onEvent).toHaveBeenCalledExactlyOnceWith({
++      version: 1,
++      type: "surface",
++      value: "full",
++    });
++    expect(latest.activeTabId).toBe(tabId);
++    expect(latest.tabs).toBe(original);
++    expect(latest.tabs[2].state).toEqual({ edit: "keep unsaved" });
++    expect(created).toBe(0);
++
++    // Native state can publish again before the host applies the requested surface.
++    act(() => setNativeTabs([...original], tabId));
++    expect(onEvent).toHaveBeenCalledTimes(1);
++    expect(latest.activeTabId).toBe(tabId);
++    changeSurface("full");
++    expect(latest.activeTabId).toBe(tabId);
++    changeSurface("compact");
++    expect(latest.activeTabId).toBe("draft");
++    expect(onEvent).toHaveBeenCalledTimes(1);
++  },
++);
++it("waits for native hydration and creates exactly one native draft if there is no conversation", () => {
++  surface = "compact";
++  act(() => root.render(<Harness hydrated={false} initial={original.slice(2)} focused="file" />));
++  expect(created).toBe(0);
++  act(() => root.render(<Harness hydrated initial={original.slice(2)} focused="file" />));
++  expect(created).toBe(1);
++  expect(latest.activeTabId).toBe("created-1");
++  expect(latest.tabs.slice(0, 2)).toEqual(original.slice(2));
++  changeSurface("full");
++  changeSurface("compact");
++  expect(created).toBe(1);
++  expect(onEvent).not.toHaveBeenCalled();
++});
++it("does not redirect or create in an inactive retained workspace", () => {
++  surface = "compact";
++  act(() => root.render(<Harness active={false} initial={original.slice(2)} focused="file" />));
++  expect(created).toBe(0);
++  expect(latest.activeTabId).toBe("file");
++  expect(onEvent).not.toHaveBeenCalled();
++});
++it("restores the last conversation when a retained workspace becomes active in compact", () => {
++  surface = "compact";
++  act(() => root.render(<Harness />));
++  act(() => activate("draft"));
++  act(() => root.render(<Harness active={false} />));
++  act(() => activate("file"));
++  expect(latest.activeTabId).toBe("file");
++  expect(onEvent).not.toHaveBeenCalled();
++  act(() => root.render(<Harness active />));
++  expect(latest.activeTabId).toBe("draft");
++  expect(latest.tabs).toBe(original);
++  expect(onEvent).not.toHaveBeenCalled();
++});
++it("restores a different workspace without reusing the prior workspace's conversation", () => {
++  surface = "compact";
++  act(() => root.render(<Harness focused="agent" />));
++  const otherTabs = original.map((tab) => ({ ...tab, tabId: `other-${tab.tabId}` }));
++  act(() => {
++    setNativeTabs(otherTabs, "other-file");
++    root.render(<Harness workspaceKey="host:other" />);
++  });
++  expect(latest.activeTabId).toBe("other-draft");
++  expect(latest.tabs).toBe(otherTabs);
++  expect(created).toBe(0);
++  expect(onEvent).not.toHaveBeenCalled();
++});
+diff --git a/packages/app/src/embedded/use-compact-conversation.ts b/packages/app/src/embedded/use-compact-conversation.ts
+new file mode 100644
+index 0000000..9f2881d
+--- /dev/null
++++ b/packages/app/src/embedded/use-compact-conversation.ts
+@@ -0,0 +1,68 @@
++import { useLayoutEffect, useRef } from "react";
++import type { WorkspaceTab } from "@/workspace-tabs/model";
++import { isConversationTab, selectCompactConversation } from "./conversation-selection";
++import { getEmbeddedHost } from "./environment";
++import { useEmbeddedSurface } from "./use-embedded-surface";
++
++export function useCompactConversation(input: {
++  workspaceKey: string | null;
++  active: boolean;
++  hydrated: boolean;
++  tabs: readonly WorkspaceTab[];
++  activeTabId: string | null;
++  focusTab(tabId: string): void;
++  createDraft(): void;
++}) {
++  const surface = useEmbeddedSurface();
++  const previous = useRef<{
++    workspaceKey: string | null;
++    active: boolean;
++    hydrated: boolean;
++    surface: typeof surface;
++    activeTabId: string | null;
++    lastConversationTabId: string | null;
++  } | null>(null);
++  useLayoutEffect(() => {
++    const last = previous.current;
++    const sameWorkspace = last?.workspaceKey === input.workspaceKey;
++    const lastConversationTabId = sameWorkspace ? last.lastConversationTabId : null;
++    const ready = input.active && Boolean(input.workspaceKey) && input.hydrated;
++    const activeTab = input.tabs.find((tab) => tab.tabId === input.activeTabId);
++    const activeConversation = isConversationTab(activeTab);
++    const enteringCompact =
++      !sameWorkspace || last?.surface !== "compact" || !last.active || !last.hydrated;
++    previous.current = {
++      workspaceKey: input.workspaceKey,
++      active: input.active,
++      hydrated: input.hydrated,
++      surface,
++      activeTabId: input.activeTabId,
++      lastConversationTabId: ready && activeConversation ? activeTab!.tabId : lastConversationTabId,
++    };
++    if (!ready || activeConversation || surface !== "compact") return;
++    if (enteringCompact) {
++      const next = selectCompactConversation({
++        tabs: input.tabs,
++        activeTabId: input.activeTabId,
++        lastConversationTabId,
++      });
++      if (next) input.focusTab(next);
++      else input.createDraft();
++      return;
++    }
++    // Native file links and tab actions must keep their destination. Only entering
++    // compact restores a conversation; opening another pane expands the host.
++    if (activeTab && activeTab.tabId !== last?.activeTabId) {
++      getEmbeddedHost()?.onEvent({ version: 1, type: "surface", value: "full" });
++    }
++  }, [
++    surface,
++    input.active,
++    input.workspaceKey,
++    input.hydrated,
++    input.tabs,
++    input.activeTabId,
++    input.focusTab,
++    input.createDraft,
++  ]);
++}
+diff --git a/packages/app/src/embedded/use-embedded-surface.ts b/packages/app/src/embedded/use-embedded-surface.ts
+new file mode 100644
+index 0000000..1f99333
+--- /dev/null
++++ b/packages/app/src/embedded/use-embedded-surface.ts
+@@ -0,0 +1,18 @@
++import { useSyncExternalStore } from "react";
++import { useIsCompactFormFactor } from "@/constants/layout";
++import { getEmbeddedHost } from "./environment";
++
++const subscribe = (listener: () => void) => getEmbeddedHost()?.subscribe(listener) ?? (() => {});
++const getSurface = () => getEmbeddedHost()?.surface ?? null;
++
++/** Host presentation is independent from Paseo's width-based responsive layout. */
++export function useEmbeddedSurface() {
++  return useSyncExternalStore(subscribe, getSurface, () => null);
++}
++
++/** Match the native drawer's responsive layout, only while the host is full. */
++export function useEmbeddedMobileFiles() {
++  const surface = useEmbeddedSurface();
++  const compactLayout = useIsCompactFormFactor();
++  return surface === "full" && compactLayout;
++}
+diff --git a/packages/app/src/hooks/use-agent-form-state.ts b/packages/app/src/hooks/use-agent-form-state.ts
+index 456ce24..b1d8fd2 100644
+--- a/packages/app/src/hooks/use-agent-form-state.ts
++++ b/packages/app/src/hooks/use-agent-form-state.ts
+@@ -39,6 +39,7 @@ import {
+   type ProviderModelsByProvider,
+ } from "@/provider-selection/resolve-agent-form";
+ import type { MaterializedAgentProfile } from "@/agent-profiles";
++import { resolveEmbeddedFormPreferences } from "@/embedded/chat-form-defaults";
+ 
+ export type { FormInitialValues } from "@/provider-selection/resolve-agent-form";
+ 
+@@ -368,10 +369,19 @@ export function useAgentFormState(options: UseAgentFormStateOptions = {}): UseAg
+       return;
+     }
+ 
++    const resolvedPreferences = resolveEmbeddedFormPreferences({
++      preferences,
++      initialValues: combinedInitialValues,
++      userModified,
++      entries: snapshotEntries ?? [],
++      loading: snapshotIsLoading,
++      cwd: formState.workingDir,
++    });
++    if (!resolvedPreferences) return;
+     dispatch({
+       type: "COMPLETE_RESOLUTION",
+       initialValues: combinedInitialValues,
+-      preferences,
++      preferences: resolvedPreferences,
+       providerModelsByProvider: snapshotProviderModelsByProvider,
+       allowedProviderMap: snapshotResolvableProviderDefinitionMap,
+     });
+@@ -384,8 +394,11 @@ export function useAgentFormState(options: UseAgentFormStateOptions = {}): UseAg
+     preferences,
+     resolution.status,
+     snapshotEntries,
++    snapshotIsLoading,
+     snapshotProviderModelsByProvider,
+     snapshotResolvableProviderDefinitionMap,
++    formState.workingDir,
++    userModified,
+   ]);
+ 
+   const onlineServerIdsKey = onlineServerIds.join("|");
+diff --git a/packages/app/src/hooks/use-dictation.test.tsx b/packages/app/src/hooks/use-dictation.test.tsx
+new file mode 100644
+index 0000000..59b21e4
+--- /dev/null
++++ b/packages/app/src/hooks/use-dictation.test.tsx
+@@ -0,0 +1,292 @@
++import React, { act } from "react";
++import { createRoot, type Root } from "react-dom/client";
++import { JSDOM } from "jsdom";
++import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
++import type { UseDictationOptions, UseDictationResult } from "./use-dictation.shared";
++import type { DictationAudioSourceConfig } from "./use-dictation-audio-source.types";
++
++const mock = vi.hoisted(() => ({
++  finish: vi.fn(),
++  resetStreamForReplay: vi.fn(),
++  audioStart: vi.fn(),
++  audioStop: vi.fn(),
++  restartStream: vi.fn(),
++  cancelStream: vi.fn(),
++  enqueueSegment: vi.fn(),
++  audioConfig: null as DictationAudioSourceConfig | null,
++  nextId: 0,
++}));
++vi.mock("react-i18next", () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
++vi.mock("@/i18n/i18next", () => ({ i18n: { t: (key: string) => key } }));
++vi.mock("@/types/stream", () => ({ generateMessageId: () => String(++mock.nextId) }));
++vi.mock("@/hooks/use-dictation-audio-source", () => ({
++  useDictationAudioSource: (config: DictationAudioSourceConfig) => {
++    mock.audioConfig = config;
++    return { start: mock.audioStart, stop: mock.audioStop, volume: 0 };
++  },
++}));
++vi.mock("@/dictation/dictation-stream-sender", () => ({
++  DictationStreamSender: class {
++    setClient() {}
++    clearAll() {}
++    restartStream = mock.restartStream;
++    getDictationId() {
++      return "dictation";
++    }
++    cancel = mock.cancelStream;
++    enqueueSegment = mock.enqueueSegment;
++    dispose() {}
++    hasSegments() {
++      return true;
++    }
++    getFinalSeq() {
++      return 0;
++    }
++    finish = mock.finish;
++    resetStreamForReplay = mock.resetStreamForReplay;
++  },
++}));
++
++let useDictation: typeof import("./use-dictation").useDictation;
++let root: Root;
++let container: HTMLDivElement;
++let latest: UseDictationResult;
++let options: UseDictationOptions;
++
++beforeAll(async () => {
++  const dom = new JSDOM("<!doctype html><html><body></body></html>");
++  for (const key of ["window", "document", "navigator"] as const) {
++    Object.defineProperty(globalThis, key, { configurable: true, value: dom.window[key] });
++  }
++  Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", {
++    configurable: true,
++    value: true,
++  });
++  ({ useDictation } = await import("./use-dictation"));
++});
++
++beforeEach(() => {
++  mock.finish.mockReset().mockResolvedValue({ text: "hello" });
++  mock.resetStreamForReplay.mockReset();
++  mock.audioStart.mockReset().mockResolvedValue(undefined);
++  mock.audioStop.mockReset().mockResolvedValue(undefined);
++  mock.restartStream.mockReset().mockResolvedValue(undefined);
++  mock.cancelStream.mockReset();
++  mock.enqueueSegment.mockReset();
++  options = {
++    client: {
++      isConnected: true,
++      subscribeConnectionStatus: () => () => undefined,
++      on: () => () => undefined,
++    } as unknown as UseDictationOptions["client"],
++    onTranscript: vi.fn(),
++    onError: vi.fn(),
++  };
++  container = document.createElement("div");
++  document.body.appendChild(container);
++  root = createRoot(container);
++  function Harness() {
++    latest = useDictation(options);
++    return null;
++  }
++  act(() => root.render(<Harness />));
++});
++afterEach(async () => {
++  await act(async () => root.unmount());
++  container.remove();
++  vi.restoreAllMocks();
++});
++
++function deferred<T>() {
++  let resolve!: (value: T) => void;
++  let reject!: (error: Error) => void;
++  const promise = new Promise<T>((accept, decline) => {
++    resolve = accept;
++    reject = decline;
++  });
++  return { promise, resolve, reject };
++}
++async function record(): Promise<void> {
++  await act(async () => {
++    await latest.startDictation();
++  });
++  expect(latest.isRecording).toBe(true);
++}
++async function failTranscription(): Promise<void> {
++  vi.spyOn(console, "error").mockImplementation(() => undefined);
++  await record();
++  mock.finish.mockRejectedValueOnce(new Error("disconnected"));
++  await act(async () => {
++    await latest.confirmDictation();
++  });
++  expect(latest.status).toBe("failed");
++  expect(options.onTranscript).not.toHaveBeenCalled();
++}
++
++describe("dictation confirmation and replay", () => {
++  it.each(["resolve", "reject"] as const)(
++    "restarts immediately after cancel without letting an old start ACK %s affect new recording",
++    async (settlement) => {
++      const oldAck = deferred<void>();
++      const newAck = deferred<void>();
++      mock.restartStream.mockReturnValueOnce(oldAck.promise).mockReturnValueOnce(newAck.promise);
++      let first!: Promise<void>;
++      await act(async () => {
++        first = latest.startDictation();
++      });
++      expect(latest.isRecording).toBe(true);
++      await act(async () => {
++        await latest.cancelDictation();
++      });
++      expect(latest.status).toBe("idle");
++      let second!: Promise<void>;
++      await act(async () => {
++        second = latest.startDictation();
++      });
++      expect(mock.audioStart).toHaveBeenCalledTimes(2);
++      expect(mock.restartStream).toHaveBeenCalledTimes(2);
++      expect(latest.isRecording).toBe(true);
++      const stopCount = mock.audioStop.mock.calls.length;
++      await act(async () => {
++        if (settlement === "resolve") oldAck.resolve();
++        else oldAck.reject(new Error("old stream timed out"));
++        await first;
++        await latest.startDictation();
++      });
++      expect(mock.audioStart).toHaveBeenCalledTimes(2);
++      expect(mock.audioStop).toHaveBeenCalledTimes(stopCount);
++      expect(latest.isRecording).toBe(true);
++      expect(options.onError).not.toHaveBeenCalled();
++      await act(async () => {
++        newAck.resolve();
++        await second;
++        await latest.confirmDictation();
++      });
++      expect(options.onTranscript).toHaveBeenCalledExactlyOnceWith("hello", expect.any(Object));
++    },
++  );
++
++  it("cancels pending audio startup before releasing the microphone for a new recording", async () => {
++    const audioReady = deferred<void>();
++    mock.audioStart.mockReturnValueOnce(audioReady.promise);
++    let first!: Promise<void>;
++    await act(async () => {
++      first = latest.startDictation();
++    });
++    expect(latest.status).toBe("recording");
++    expect(latest.isRecording).toBe(false);
++    let cancelled = false;
++    const markCancelled = () => {
++      cancelled = true;
++      return undefined;
++    };
++    let cancellation!: Promise<void>;
++    await act(async () => {
++      cancellation = latest.cancelDictation().then(markCancelled);
++    });
++    expect(cancelled).toBe(false);
++    await act(async () => {
++      audioReady.resolve();
++      await Promise.all([first, cancellation]);
++    });
++    expect(mock.audioStop).toHaveBeenCalledOnce();
++    expect(mock.restartStream).not.toHaveBeenCalled();
++    expect(latest.status).toBe("idle");
++    expect(latest.isRecording).toBe(false);
++    await record();
++    expect(mock.audioStart).toHaveBeenCalledTimes(2);
++    expect(mock.restartStream).toHaveBeenCalledOnce();
++    expect(options.onError).not.toHaveBeenCalled();
++  });
++
++  it("discards the cancelled audio graph's final buffered segment before a new recording", async () => {
++    await record();
++    mock.audioStop.mockImplementationOnce(async () => {
++      mock.audioConfig!.onPcmSegment("cancelled-tail");
++    });
++    await act(async () => {
++      await latest.cancelDictation();
++    });
++    expect(mock.enqueueSegment).not.toHaveBeenCalled();
++    await record();
++    act(() => mock.audioConfig!.onPcmSegment("new-recording"));
++    expect(mock.enqueueSegment).toHaveBeenCalledExactlyOnceWith("new-recording");
++  });
++
++  it("confirms one transcript when send is pressed twice before the first await", async () => {
++    await record();
++    const result = deferred<{ text: string }>();
++    mock.finish.mockReturnValue(result.promise);
++    let first!: Promise<void>;
++    await act(async () => {
++      first = latest.confirmDictation();
++      await latest.confirmDictation();
++    });
++    expect(mock.finish).toHaveBeenCalledOnce();
++    expect(latest.isProcessing).toBe(true);
++    await act(async () => {
++      result.resolve({ text: "hello" });
++      await first;
++    });
++    expect(options.onTranscript).toHaveBeenCalledOnce();
++    expect(latest.status).toBe("idle");
++  });
++
++  it("replays a failed recording once on a double retry", async () => {
++    await failTranscription();
++    const result = deferred<{ text: string }>();
++    mock.finish.mockReturnValue(result.promise);
++    let retry!: Promise<void>;
++    await act(async () => {
++      retry = latest.retryFailedDictation();
++      await latest.retryFailedDictation();
++    });
++    expect(mock.resetStreamForReplay).toHaveBeenCalledOnce();
++    await act(async () => {
++      result.resolve({ text: "retried" });
++      await retry;
++    });
++    expect(options.onTranscript).toHaveBeenCalledExactlyOnceWith("retried", expect.any(Object));
++  });
++
++  it("discards a pending replay without delivering its late transcript", async () => {
++    await failTranscription();
++    const result = deferred<{ text: string }>();
++    mock.finish.mockReturnValue(result.promise);
++    let retry!: Promise<void>;
++    await act(async () => {
++      retry = latest.retryFailedDictation();
++    });
++    act(() => latest.discardFailedDictation());
++    await act(async () => {
++      result.resolve({ text: "must not send" });
++      await retry;
++    });
++    expect(options.onTranscript).not.toHaveBeenCalled();
++    expect(latest.status).toBe("idle");
++    expect(latest.isProcessing).toBe(false);
++  });
++
++  it("returns to idle when microphone permission is denied", async () => {
++    vi.spyOn(console, "error").mockImplementation(() => undefined);
++    const denied = new Error("Microphone permission denied");
++    mock.audioStart.mockRejectedValueOnce(denied);
++    await act(async () => {
++      await latest.startDictation();
++    });
++    expect(latest.status).toBe("idle");
++    expect(latest.isRecording).toBe(false);
++    expect(options.onError).toHaveBeenCalledWith(denied);
++    expect(options.onTranscript).not.toHaveBeenCalled();
++  });
++
++  it("does not submit an empty final transcript", async () => {
++    await record();
++    mock.finish.mockResolvedValueOnce({ text: "   " });
++    await act(async () => {
++      await latest.confirmDictation();
++    });
++    expect(options.onTranscript).not.toHaveBeenCalled();
++    expect(latest.status).toBe("idle");
++  });
++});
+diff --git a/packages/app/src/hooks/use-dictation.ts b/packages/app/src/hooks/use-dictation.ts
+index dde7296..0a7a2a7 100644
+--- a/packages/app/src/hooks/use-dictation.ts
++++ b/packages/app/src/hooks/use-dictation.ts
+@@ -70,6 +70,8 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+ 
+   const durationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+   const attemptGuardRef = useRef(new AttemptGuard());
++  const startAttemptGuardRef = useRef(new AttemptGuard());
++  const audioStartPromiseRef = useRef<Promise<void> | null>(null);
+   const actionGateRef = useRef<{ starting: boolean; confirming: boolean; cancelling: boolean }>({
+     starting: false,
+     confirming: false,
+@@ -228,6 +230,7 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+ 
+   const audio = useDictationAudioSource({
+     onPcmSegment: (audioData) => {
++      if (actionGateRef.current.cancelling) return;
+       senderRef.current?.enqueueSegment(audioData);
+     },
+     onError: (err) => {
+@@ -264,6 +267,8 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+     }
+ 
+     actionGateRef.current.starting = true;
++    const startAttemptId = startAttemptGuardRef.current.next();
++    let audioStartPromise: Promise<void> | null = null;
+     setError(null);
+     setPartialTranscript("");
+     setDuration(0);
+@@ -272,7 +277,10 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+     clearStreamingState();
+ 
+     try {
+-      await audio.start();
++      audioStartPromise = audio.start();
++      audioStartPromiseRef.current = audioStartPromise;
++      await audioStartPromise;
++      if (!startAttemptGuardRef.current.isCurrent(startAttemptId)) return;
+       isRecordingRef.current = true;
+       setIsRecording(true);
+       if (enableDuration) {
+@@ -282,14 +290,20 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+         await startNewStream("start");
+       }
+     } catch (err) {
++      if (!startAttemptGuardRef.current.isCurrent(startAttemptId)) return;
+       await audio.stop().catch(() => undefined);
++      if (!startAttemptGuardRef.current.isCurrent(startAttemptId)) return;
+       stopDurationTracking();
+       isRecordingRef.current = false;
+       setIsRecording(false);
+       setStatus("idle");
+       reportError(err, "Failed to start dictation");
+     } finally {
+-      actionGateRef.current.starting = false;
++      if (audioStartPromiseRef.current === audioStartPromise) audioStartPromiseRef.current = null;
++      // A cancelled stream's late ACK or failure belongs to its old recording.
++      if (startAttemptGuardRef.current.isCurrent(startAttemptId)) {
++        actionGateRef.current.starting = false;
++      }
+     }
+   }, [
+     audio,
+@@ -308,10 +322,11 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+     if (actionGateRef.current.cancelling) {
+       return;
+     }
+-    if (!isRecordingRef.current && !isProcessingRef.current) {
++    if (!isRecordingRef.current && !isProcessingRef.current && !actionGateRef.current.starting) {
+       return;
+     }
+     actionGateRef.current.cancelling = true;
++    startAttemptGuardRef.current.cancel();
+     stopDurationTracking();
+     setDuration(0);
+     setError(null);
+@@ -322,6 +337,9 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+       } catch {
+         // no-op
+       }
++      // getUserMedia can finish after Cancel. Close that audio startup before
++      // returning to idle, so its late completion cannot replace a new graph.
++      await audioStartPromiseRef.current?.catch(() => undefined);
+       await audio.stop();
+     } catch (err) {
+       reportError(err, "Failed to cancel dictation");
+@@ -332,6 +350,7 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+       isProcessingRef.current = false;
+       setStatus("idle");
+       clearStreamingState();
++      actionGateRef.current.starting = false;
+       actionGateRef.current.cancelling = false;
+     }
+   }, [audio, clearStreamingState, reportError, stopDurationTracking]);
+@@ -391,9 +410,14 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+   ]);
+ 
+   const retryFailedDictation = useCallback(async () => {
++    if (actionGateRef.current.confirming || isProcessingRef.current) {
++      return;
++    }
+     if (!senderRef.current?.hasSegments()) {
+       return;
+     }
++    actionGateRef.current.confirming = true;
++    const attemptId = attemptGuardRef.current.next();
+     setError(null);
+     setStatus("uploading");
+     setIsProcessing(true);
+@@ -406,12 +430,15 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+       senderRef.current.resetStreamForReplay();
+       const finalSeq = senderRef.current.getFinalSeq();
+       const text = await ensureFinalTranscript(finalSeq);
++      attemptGuardRef.current.assertCurrent(attemptId);
+       handleStreamingTranscriptionSuccess(text, generateMessageId());
+     } catch (err) {
+       if (err instanceof Error && err.name === "AttemptCancelledError") {
+         return;
+       }
+       handleDictationFailure(err);
++    } finally {
++      actionGateRef.current.confirming = false;
+     }
+   }, [
+     client,
+@@ -422,6 +449,7 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+   ]);
+ 
+   const discardFailedDictation = useCallback(() => {
++    attemptGuardRef.current.cancel();
+     setIsProcessing(false);
+     isProcessingRef.current = false;
+     setDuration(0);
+@@ -444,11 +472,16 @@ export function useDictation(options: UseDictationOptions): UseDictationResult {
+ 
+   useEffect(() => {
+     const attemptGuard = attemptGuardRef.current;
++    const startAttemptGuard = startAttemptGuardRef.current;
+     const audioStop = audioStopRef;
+     return () => {
+       attemptGuard.cancel();
++      startAttemptGuard.cancel();
+       stopDurationTracking();
+-      void audioStop.current().catch(() => undefined);
++      void Promise.resolve(audioStartPromiseRef.current)
++        .catch(() => undefined)
++        .then(() => audioStop.current())
++        .catch(() => undefined);
+       senderRef.current?.dispose();
+     };
+   }, [stopDurationTracking]);
+diff --git a/packages/app/src/screens/new-workspace-screen.tsx b/packages/app/src/screens/new-workspace-screen.tsx
+index 96792d4..83f25ae 100644
+--- a/packages/app/src/screens/new-workspace-screen.tsx
++++ b/packages/app/src/screens/new-workspace-screen.tsx
+@@ -1,4 +1,3 @@
+-import { ProductHeader } from "@/embedded/product-header";
+ import { getEmbeddedHost } from "@/embedded/environment";
+ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+ import type { ReactElement, RefObject } from "react";
+@@ -2272,13 +2271,7 @@ export function NewWorkspaceScreen({
+ 
+   return (
+     <FileDropZone style={styles.container}>
+-      <>
+-        {getEmbeddedHost() ? (
+-          <ProductHeader />
+-        ) : (
+-          <ScreenHeader left={screenHeaderLeft} borderless />
+-        )}
+-      </>
++      <>{getEmbeddedHost() ? null : <ScreenHeader left={screenHeaderLeft} borderless />}</>
+       <View style={contentStyle}>
+         <TitlebarDragRegion />
+         <ReanimatedAnimated.View style={centeredStyle}>
+diff --git a/packages/app/src/screens/open-project-screen.tsx b/packages/app/src/screens/open-project-screen.tsx
+index 09469b7..e0b50e3 100644
+--- a/packages/app/src/screens/open-project-screen.tsx
++++ b/packages/app/src/screens/open-project-screen.tsx
+@@ -1,6 +1,3 @@
+-import { useIsFocused } from "@react-navigation/native";
+-import { rememberBuildEntry } from "@/embedded/product-mode";
+-import { ProductHeader } from "@/embedded/product-header";
+ import { getEmbeddedHost } from "@/embedded/environment";
+ import { useCallback, useEffect, useState, type ComponentType } from "react";
+ import { useTranslation } from "react-i18next";
+@@ -32,11 +29,6 @@ import type { Href } from "expo-router";
+ export function OpenProjectScreen() {
+   const { t } = useTranslation();
+   const router = useRouter();
+-  const isFocused = useIsFocused();
+-  useEffect(() => {
+-    if (getEmbeddedHost() && isFocused)
+-      rememberBuildEntry({ pathname: "/open-project", params: {} });
+-  }, [isFocused]);
+   const openDesktopAgentList = usePanelStore((s) => s.openDesktopAgentList);
+   const openProjectPicker = useOpenAddProject();
+   const chooseHost = useHostChooser();
+@@ -97,7 +89,7 @@ export function OpenProjectScreen() {
+ 
+   return (
+     <View style={styles.container}>
+-      {getEmbeddedHost() ? <ProductHeader /> : <MenuHeader borderless />}
++      {getEmbeddedHost() ? null : <MenuHeader borderless />}
+       <View style={styles.content}>
+         <TitlebarDragRegion />
+         <View style={styles.logo}>
+diff --git a/packages/app/src/screens/sessions-screen.tsx b/packages/app/src/screens/sessions-screen.tsx
+index d23af32..787bf6d 100644
+--- a/packages/app/src/screens/sessions-screen.tsx
++++ b/packages/app/src/screens/sessions-screen.tsx
+@@ -1,4 +1,3 @@
+-import { ProductHeader } from "@/embedded/product-header";
+ import { getEmbeddedHost } from "@/embedded/environment";
+ import { useMemo, useState, useCallback, useEffect, type ReactElement } from "react";
+ import { View, Text } from "react-native";
+@@ -153,7 +152,7 @@ function SessionsScreenContent() {
+ 
+   return (
+     <View style={styles.container}>
+-      {getEmbeddedHost() ? <ProductHeader /> : <MenuHeader title={t("sessions.title")} />}
++      {getEmbeddedHost() ? null : <MenuHeader title={t("sessions.title")} />}
+       {showFilterRow ? (
+         <View style={styles.filterContainer}>
+           {isSearchSupported ? (
+diff --git a/packages/app/src/screens/workspace/workspace-desktop-tabs-row.tsx b/packages/app/src/screens/workspace/workspace-desktop-tabs-row.tsx
+index d7284a2..687dff6 100644
+--- a/packages/app/src/screens/workspace/workspace-desktop-tabs-row.tsx
++++ b/packages/app/src/screens/workspace/workspace-desktop-tabs-row.tsx
+@@ -1,3 +1,4 @@
++import { EmbeddedDesktopExplorerToggle } from "@/embedded/desktop-explorer-toggle";
+ import { LoadingSpinner } from "@/components/ui/loading-spinner";
+ import React, {
+   useCallback,
+@@ -168,7 +169,7 @@ interface WorkspaceNewTabButtonProps {
+   placement: "inline" | "toolbar";
+ }
+ 
+-function WorkspaceNewTabButton({
++export function WorkspaceNewTabButton({
+   serverId,
+   paneId,
+   shortcutKeys,
+@@ -1330,6 +1331,7 @@ function ResolvedWorkspaceDesktopTabsRow({
+         onSplitDown={onSplitDown}
+         onTogglePaneMaximized={onTogglePaneMaximized}
+       />
++      <EmbeddedDesktopExplorerToggle active={isFocused} />
+     </View>
+   );
+ 
+diff --git a/packages/app/src/screens/workspace/workspace-screen.tsx b/packages/app/src/screens/workspace/workspace-screen.tsx
+index 8130bb8..7920a15 100644
+--- a/packages/app/src/screens/workspace/workspace-screen.tsx
++++ b/packages/app/src/screens/workspace/workspace-screen.tsx
+@@ -1,4 +1,5 @@
+-import { ProductHeader } from "@/embedded/product-header";
++import { useEmbeddedSurface } from "@/embedded/use-embedded-surface";
++import { useCompactConversation } from "@/embedded/use-compact-conversation";
+ import { getEmbeddedHost } from "@/embedded/environment";
+ import { LoadingSpinner } from "@/components/ui/loading-spinner";
+ import type { JsonValue } from "@getpaseo/protocol/agent-types";
+@@ -1531,7 +1532,8 @@ function WorkspaceScreenContent({
+   const { t } = useTranslation();
+   const _insets = useSafeAreaInsets();
+   const toast = useToast();
+-  const isMobile = useIsCompactFormFactor();
++  const embeddedCompact = useEmbeddedSurface() === "compact";
++  const isMobile = useIsCompactFormFactor() || embeddedCompact;
+   const hasMacTrafficLights = useHasWindowChromeObstruction("top-left");
+   const explorerToggleOwner = resolveWorkspaceExplorerToggleOwner({
+     isMobile,
+@@ -3457,6 +3459,15 @@ function WorkspaceScreenContent({
+   });
+ 
+   const activeTabDescriptor = useMemo(() => activeTab?.descriptor ?? null, [activeTab]);
++  useCompactConversation({
++    workspaceKey: persistenceKey,
++    active: isRouteFocused,
++    hydrated: hasHydratedWorkspaceLayoutStore && hasHydratedAgents,
++    tabs: uiTabs,
++    activeTabId,
++    focusTab: navigateToTabId,
++    createDraft: handleCreateDraftTab,
++  });
+   const activeFileFields = getWorkspaceFileLocationFields(activeTabDescriptor);
+   const activeFilePath = activeFileFields.path;
+   const activeFileLineStart = activeFileFields.lineStart;
+@@ -3866,24 +3877,7 @@ function WorkspaceScreenContent({
+   );
+   const renderWorkspaceScreenHeader = useCallback(
+     () =>
+-      getEmbeddedHost() ? (
+-        <ProductHeader
+-          serverId={normalizedServerId}
+-          workspaceId={normalizedWorkspaceId}
+-          active={isRouteFocused}
+-          onNewConversation={handleCreateDraftTab}
+-          right={
+-            <WorkspaceExplorerToggle
+-              onPress={handleToggleExplorerSidebar}
+-              label={explorerSidebarToggleLabel}
+-              tooltipLabel={t("workspace.tabs.explorerSidebar.toggle")}
+-              tooltipKeys={EXPLORER_TOGGLE_KEYS}
+-              accessibilityState={explorerSidebarToggleAccessibilityState}
+-              mobile={isMobile}
+-            />
+-          }
+-        />
+-      ) : showScreenHeader ? (
++      getEmbeddedHost() ? null : showScreenHeader ? (
+         <ScreenHeader
+           left={
+             <>
+@@ -4047,7 +4041,7 @@ function WorkspaceScreenContent({
+     <View style={styles.centerColumn}>
+       {rendersDesktopSplitContent ? null : renderWorkspaceScreenHeader()}
+ 
+-      {isMobile ? (
++      {isMobile && !embeddedCompact ? (
+         <MobileWorkspaceTabSwitcher
+           tabs={tabs}
+           activeTabKey={activeTabKey}
+@@ -4070,7 +4064,7 @@ function WorkspaceScreenContent({
+         />
+       ) : null}
+ 
+-      {shouldRenderDesktopPaneFallback ? (
++      {shouldRenderDesktopPaneFallback && !embeddedCompact ? (
+         <NewTabLauncherProvider value={newTabLauncher}>
+           <WorkspaceDesktopTabsRow
+             paneId={focusedPaneIdOrUndefined}
+diff --git a/packages/app/src/styles/unistyles.test.ts b/packages/app/src/styles/unistyles.test.ts
+new file mode 100644
+index 0000000..de1db93
+--- /dev/null
++++ b/packages/app/src/styles/unistyles.test.ts
+@@ -0,0 +1,30 @@
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++
++const { configure } = vi.hoisted(() => ({ configure: vi.fn() }));
++vi.mock("react-native-unistyles", () => ({ StyleSheet: { configure } }));
++
++beforeEach(() => {
++  vi.resetModules();
++  configure.mockClear();
++});
++afterEach(() => vi.unstubAllGlobals());
++
++it("initializes the embedded runtime with the complete light palette before settings hydrate", async () => {
++  vi.stubGlobal("__vibesPaseoEnvironment", {});
++  await import("./unistyles");
++  const config = configure.mock.calls[0][0];
++  expect(config.settings).toEqual({ initialTheme: "light" });
++  expect(config.themes.light.colorScheme).toBe("light");
++  expect(config.themes.light.colors).toMatchObject({
++    surface0: "#ffffff",
++    background: "#ffffff",
++    popover: "#ffffff",
++    foreground: "#1a1a1e",
++  });
++});
++
++it("keeps system-adaptive initialization for standalone Paseo", async () => {
++  vi.stubGlobal("__vibesPaseoEnvironment", undefined);
++  await import("./unistyles");
++  expect(configure.mock.calls[0][0].settings).toEqual({ adaptiveThemes: true });
++});
+diff --git a/packages/app/src/styles/unistyles.ts b/packages/app/src/styles/unistyles.ts
+index b679d5e..f7a1ac4 100644
+--- a/packages/app/src/styles/unistyles.ts
++++ b/packages/app/src/styles/unistyles.ts
+@@ -1,4 +1,5 @@
+ import { StyleSheet } from "react-native-unistyles";
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { REGISTERED_THEMES } from "./theme";
+ 
+ StyleSheet.configure({
+@@ -10,9 +11,8 @@ StyleSheet.configure({
+     lg: 992,
+     xl: 1200,
+   },
+-  settings: {
+-    adaptiveThemes: true,
+-  },
++  // Select the complete light palette before any embedded screen or sheet renders.
++  settings: getEmbeddedHost() ? { initialTheme: "light" } : { adaptiveThemes: true },
+ });
+ 
+ // Type augmentation for TypeScript

@@ -1,0 +1,221 @@
+diff --git a/packages/app/index.ts b/packages/app/index.ts
+--- a/packages/app/index.ts
++++ b/packages/app/index.ts
+@@ -8,4 +8,32 @@
+ 
+ // Configure Unistyles before Expo Router pulls in any components using StyleSheet.
+ import "./src/styles/unistyles";
+-import "expo-router/entry";
++import "@expo/metro-runtime";
++import React from "react";
++import { AppRegistry } from "react-native";
++import { ExpoRoot } from "expo-router";
++import { ctx } from "expo-router/_ctx";
++
++let mounted: HTMLElement | null = null;
++let instance: unknown;
++let mountCount = 0;
++const api = {
++  mount(element: HTMLElement) {
++    if (mounted && mounted !== element) throw new Error("Paseo already mounted");
++    if (mounted) return instance;
++    mounted = element;
++    mountCount += 1;
++    AppRegistry.registerComponent("VibesPaseo", () => () =>
++      React.createElement(ExpoRoot, { context: ctx, location: "/", linking: { enabled: false } }));
++    instance = AppRegistry.runApplication("VibesPaseo", { rootTag: element });
++    return instance;
++  },
++  presentation(visible: boolean) {
++    if (!mounted) throw new Error("Paseo is not mounted");
++    mounted.hidden = !visible;
++  },
++  get mounted() { return Boolean(mounted); },
++  get mountCount() { return mountCount; },
++};
++Object.defineProperty(globalThis, "__vibesPaseo", { value: api });
++window.dispatchEvent(new Event("vibes:paseo-module-ready"));
+diff --git a/packages/app/src/utils/host-route-browser.ts b/packages/app/src/utils/host-route-browser.ts
+--- a/packages/app/src/utils/host-route-browser.ts
++++ b/packages/app/src/utils/host-route-browser.ts
+@@ -2,14 +2,14 @@
+ import { stripHostWorkspaceRouteEchoSearch } from "@/utils/host-routes";
+ 
+ function getCurrentBrowserRoute(): string | null {
+-  if (!isWeb || typeof window === "undefined") {
++  if ("__vibesPaseo" in globalThis || !isWeb || typeof window === "undefined") {
+     return null;
+   }
+   return `${window.location.pathname}${window.location.search}${window.location.hash}`;
+ }
+ 
+ export function replaceBrowserRouteWithCanonicalHostWorkspaceRoute(route: string): void {
+-  if (!isWeb || typeof window === "undefined") {
++  if ("__vibesPaseo" in globalThis || !isWeb || typeof window === "undefined") {
+     return;
+   }
+   window.history.replaceState(null, "", stripHostWorkspaceRouteEchoSearch(route));
+@@ -28,7 +28,7 @@
+ }
+ 
+ export function stripHostWorkspaceRouteEchoSearchFromBrowserUrlAfterCommit(): void {
+-  if (!isWeb || typeof window === "undefined") {
++  if ("__vibesPaseo" in globalThis || !isWeb || typeof window === "undefined") {
+     return;
+   }
+   window.setTimeout(stripHostWorkspaceRouteEchoSearchFromBrowserUrl, 0);
+diff --git a/packages/app/src/screens/workspace/workspace-screen.tsx b/packages/app/src/screens/workspace/workspace-screen.tsx
+--- a/packages/app/src/screens/workspace/workspace-screen.tsx
++++ b/packages/app/src/screens/workspace/workspace-screen.tsx
+@@ -491,7 +491,7 @@
+ }) {
+   const { t } = useTranslation();
+   useEffect(() => {
+-    if (isNative || typeof document === "undefined") {
++    if (isNative || typeof document === "undefined" || "__vibesPaseo" in globalThis) {
+       return;
+     }
+     const resolvedLabel = label.trim();
+@@ -3472,7 +3472,7 @@
+     [isMobile, canRenderDesktopPaneSplits],
+   );
+   useEffect(() => {
+-    if (!isRouteFocused || isNative || typeof document === "undefined" || activeTabDescriptor) {
++    if (!isRouteFocused || isNative || typeof document === "undefined" || "__vibesPaseo" in globalThis || activeTabDescriptor) {
+       return;
+     }
+     document.title = "Workspace";
+diff --git a/packages/app/src/hooks/use-compact-web-viewport-zoom-lock.ts b/packages/app/src/hooks/use-compact-web-viewport-zoom-lock.ts
+--- a/packages/app/src/hooks/use-compact-web-viewport-zoom-lock.ts
++++ b/packages/app/src/hooks/use-compact-web-viewport-zoom-lock.ts
+@@ -7,7 +7,7 @@
+ 
+ export function useCompactWebViewportZoomLock(isCompactLayout: boolean) {
+   useEffect(() => {
+-    if (!isWeb) {
++    if ("__vibesPaseo" in globalThis || !isWeb) {
+       return;
+     }
+ 
+diff --git a/packages/app/src/lib/overlay-root.ts b/packages/app/src/lib/overlay-root.ts
+--- a/packages/app/src/lib/overlay-root.ts
++++ b/packages/app/src/lib/overlay-root.ts
+@@ -1,3 +1,4 @@
++import { getEmbeddedHost } from "@/embedded/environment";
+ import {
+   createContext,
+   createElement,
+@@ -28,7 +29,7 @@
+   if (!el) {
+     el = document.createElement("div");
+     el.id = "overlay-root";
+-    document.body.appendChild(el);
++    (getEmbeddedHost()?.root ?? document.body).appendChild(el);
+   }
+   el.style.position = "fixed";
+   el.style.inset = "0";
+@@ -100,6 +101,8 @@
+ }
+ 
+ function getTopWebOverlay(): WebOverlayEntry | undefined {
++  const host = getEmbeddedHost();
++  if (host && !host.visible) return undefined;
+   return webOverlayEntries.reduce<WebOverlayEntry | undefined>((top, entry) => {
+     if (!top) return entry;
+     const layerDifference = entry.getLayer() - top.getLayer();
+diff --git a/packages/app/src/appearance/apply-root-font.web.ts b/packages/app/src/appearance/apply-root-font.web.ts
+--- a/packages/app/src/appearance/apply-root-font.web.ts
++++ b/packages/app/src/appearance/apply-root-font.web.ts
+@@ -1,3 +1,4 @@
++import { getEmbeddedHost } from "@/embedded/environment";
+ // Apply the interface (UI) font app-wide on web.
+ //
+ // react-native-web stamps a hardcoded default font onto every text element, so a
+@@ -21,7 +22,7 @@
+     .trim();
+   if (value.length === 0) return;
+ 
+-  document.documentElement.style.setProperty("--paseo-ui-font", value);
++  (getEmbeddedHost()?.root ?? document.documentElement).style.setProperty("--paseo-ui-font", value);
+ 
+   // The rule itself is static (references the variable); inject it once.
+   let style = document.getElementById(STYLE_ID);
+diff --git a/packages/app/src/styles/install-web-scrollbar-styles.web.ts b/packages/app/src/styles/install-web-scrollbar-styles.web.ts
+--- a/packages/app/src/styles/install-web-scrollbar-styles.web.ts
++++ b/packages/app/src/styles/install-web-scrollbar-styles.web.ts
+@@ -50,6 +50,9 @@
+   display: none;
+ }
+ `;
++  if ("__vibesPaseoEnvironment" in globalThis) {
++    style.textContent = style.textContent.replace(/(^|\n)(\*|\[data-)/g, "$1#root $2");
++  }
+   document.head.append(style);
+ 
+   return () => style.remove();
+diff --git a/packages/app/src/hooks/use-keyboard-shortcuts.ts b/packages/app/src/hooks/use-keyboard-shortcuts.ts
+--- a/packages/app/src/hooks/use-keyboard-shortcuts.ts
++++ b/packages/app/src/hooks/use-keyboard-shortcuts.ts
+@@ -1,3 +1,4 @@
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { useCallback, useEffect, useMemo, useRef } from "react";
+ import { usePathname, useRouter } from "expo-router";
+ import { getIsElectronRuntime } from "@/constants/layout";
+@@ -144,6 +145,8 @@
+     const shouldHandle = () => {
+       if (typeof document === "undefined") return false;
+       if (document.visibilityState !== "visible") return false;
++      const host = getEmbeddedHost();
++      if (host && (!host.visible || !host.root.contains(document.activeElement))) return false;
+       return true;
+     };
+ 
+diff --git a/packages/app/src/hooks/use-favicon-status.ts b/packages/app/src/hooks/use-favicon-status.ts
+--- a/packages/app/src/hooks/use-favicon-status.ts
++++ b/packages/app/src/hooks/use-favicon-status.ts
+@@ -1,3 +1,4 @@
++import { getEmbeddedHost } from "@/embedded/environment";
+ import { useEffect, useRef, useState } from "react";
+ import { getIsElectronRuntimeMac } from "@/constants/layout";
+ import { useAggregatedAgents } from "./use-aggregated-agents";
+@@ -49,7 +50,7 @@
+ }
+ 
+ function getOrCreateFaviconLink(): HTMLLinkElement | null {
+-  if (typeof document === "undefined") return null;
++  if (typeof document === "undefined" || getEmbeddedHost()) return null;
+ 
+   let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+   if (!link) {
+diff --git a/packages/app/src/embedded/environment.ts b/packages/app/src/embedded/environment.ts
+new file mode 100644
+--- /dev/null
++++ b/packages/app/src/embedded/environment.ts
+@@ -0,0 +1,16 @@
++export interface EmbeddedHost {
++  readonly root: HTMLElement;
++  readonly width: number;
++  readonly height: number;
++  readonly visible: boolean;
++  subscribe(listener: () => void): () => void;
++}
++
++declare global {
++  var __vibesPaseoEnvironment: EmbeddedHost | undefined;
++}
++
++// Only the separately built embedding profile installs this host boundary.
++export function getEmbeddedHost(): EmbeddedHost | undefined {
++  return globalThis.__vibesPaseoEnvironment;
++}
+diff --git a/packages/app/app.config.js b/packages/app/app.config.js
+--- a/packages/app/app.config.js
++++ b/packages/app/app.config.js
+@@ -179,6 +179,7 @@
+       ...(isProfileBuild ? [withAndroidProfileable] : []),
+     ],
+     experiments: {
++      baseUrl: "/vendor/paseo/g1-direct",
+       typedRoutes: true,
+       reactCompiler: true,
+       autolinkingModuleResolution: true,

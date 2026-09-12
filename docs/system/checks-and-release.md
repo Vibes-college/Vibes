@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003', '004', '005', '009', '010']
+shaped-by: ['002', '003', '004', '005', '009', '010', '013']
 code-sources:
   [
     'package.json',
@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '8046ad89664330d3bddf420d70cc6e6a7d90d423e63e45714591e41ed5218909'
+code-revision: 'b473cff91383ce6045e57c61da96527190eacf443188ffbff3da2e60ab61f0e5'
 ---
 
 # 检查与发布
@@ -33,7 +33,7 @@ Draft仅运行独立的Draft progress（npm run check，不启动浏览器或预
 
 PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA累计比较到当前源码，无法读取/非法/非当前历史时完整检查，防止旧网页提交被后续文档提交挤掉而漏发；checkout获取完整历史。冻结检查仍以事件比较提交和main共同祖先为准。DOCS_BASE_REF提供比较提交；冻结检查取它与origin/main的共同祖先，仅冻结已进入main的历史，不把未合并分支的complete稿提前冻结。无远端main的本地测试仓库可使用本地main，找不到有效基线仍失败。CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
 
-每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。整套浏览器用例串行执行，降低单个本地Worker的并发连接压力；全部设备与用例仍执行，不自动重试。浏览器测试关闭普通页面及独立缓存profile前等待有限资源请求结束，超时仍失败，避免本地代理在截断响应时退出；断言不重试。
+每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。整套浏览器用例串行执行，降低单个本地Worker的并发连接压力；全部设备与用例仍执行，不自动重试。浏览器测试关闭普通页面及独立缓存profile前，使用Playwright原生networkidle等待当前文档进入网络空闲，10秒超时仍失败，以降低本地代理在响应中断时退出的风险。筛选/刷新用例将YouTube缩略图替换为本地测试图片，避免外站可用性阻塞该用例；不代表原站可达，不改导航断言、原生音频或HTTP缓存专项。
 
 功能文档可按操作路径归并；旧编号通过legacy-feature-ids追溯，缺失对应、重复编号或来源缺失仍失败。历史规格正文与现有冻结检查不变。
 
@@ -131,11 +131,19 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 
 `npm run media:prepare -- <image|video|audio> <本地输入> <新id> [--start 秒] [--seconds 秒]`输出到public/media/<id>，已有目录拒绝覆盖。视频产生静态海报、短静音预览及完整转码；音频产生短试听、完整转码及真实波形；图片产生受限WebP尺寸。需要本机FFmpeg/ffprobe，使用现有Sharp，不自动安装依赖。清单记录输入摘要、处理参数与输出大小，原始输入保持不变；AI仍须填写作品来源/许可、文案和展示选择。验证命令及维护路径见[内容维护](../features/content-maintenance.md)。
 
-content:validate核对媒体结构、引用、字节及真实数值；budget另报告mediaJavascriptGzip，保留公共脚本门槛。tests/media.spec.ts覆盖三个浏览器项目的延迟加载、章节、跳转暂停、原生播放/暂停与页面按钮同步、慢章节补充下载取消、失败重试、图库、数据、搜索替换与无JS；外站响应在自动化中隔离，实际第三方播放须用内置浏览器另验，不能将测试桩当作原站证据。
+content:validate核对媒体结构、引用、字节及真实数值；budget另报告mediaJavascriptGzip，保留公共脚本门槛。tests/media.spec.ts覆盖三个浏览器项目的延迟加载、章节、跳转暂停、连续迟到播放与保护解除后的恢复、原生播放/暂停与页面按钮同步、慢章节补充下载取消、失败重试、图库、数据、搜索替换与无JS；外站响应在自动化中隔离，实际第三方播放须用内置浏览器另验，不能将测试桩当作原站证据。
 
 ## 浏览器测试
 
+连续注入原生play的模拟压力用例仍要求真正触发播放、正确暂停及重新播放的进度；该合成场景的按钮pressed/loading状态只保存诊断，不阻断CI，普通原生控件与页面按钮同步仍保留断言。文章引用fixture等待Astro启用入口后验证草稿和引用，键盘遍历只由paseo-loading的独立用例覆盖，不在引用业务里重复。
+
 本地与CI使用同一配置和测试文件。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
+
+原生助手默认进入同一套三浏览器测试。首次运行先按[Paseo构建路径](local-assistant.md#重建与交付)准备固定Web产物与测试server；CI按锁执行相同准备。测试独占4396/6796，并使用本轮临时HOME、PASEO_HOME和mock provider；不读取真实账号执行任务。配对fixture只初始化一次，刷新、忘记设备和清除存储不得偷偷重种状态。mock通过与真实Agent、真机通过分别记录。
+
+助手用例覆盖单工具栏、当前会话与文件标签保留、新建工作区点击、窄屏原生全屏文件面板、全屏背景锁定、真实浏览器前进后退及受控visualViewport变化；原生构建另执行新草稿默认模型与偏好保护、窄屏文件入口、按文字切换按钮、听写取消/失败重试及主题边界测试。受控视口不是实际软件键盘，模型测试音频的真实dictation协议也不是浏览器麦克风或Agent提交证据；真实iPhone Safari与完整听写操作路径需要分别验收。
+
+WebKit图片附件用例单独使用本任务创建的空持久profile，按普通窗口验证Blob附件；同版WebKit临时/私密上下文的IndexedDB无法保存Blob/File。该profile只初始化一次配对状态，成功或失败后均关闭并删除；其他原生mock用例继续使用临时上下文。真实Safari私密模式仍需真机验证。
 
 媒体测试完成播放、暂停和历史断言后，先通过正常页面导航退出播放器，释放可能仍保持连接的原生下载。测试页面关闭前等待静态资源传输结束，10秒内仍未空闲即失败；这是对Wrangler本地代理中断响应会退出问题的防护，不重试测试或吞掉错误。公共fixture见tests/browser-test.ts。
 
@@ -155,7 +163,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 - `npm run content:validate`检查整个目录并报告各语言发布数量，不写文件。
 - `npm run content:revision -- <id>`报告当前原文摘要、语言状态与待复核标记，不批准或发布翻译。
-- `npm run build`先校验内容，再Astro完整重编译内容缓存并构建，扫描public/images中超过200KB的栅格图片并在dist生成WebP响应式变体、manifest和srcset，再为dist/_headers补齐精确内联脚本哈希，最后生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容、图片预算或校验失败停止。
+- `npm run build`先校验固定Paseo产物与内容，再Astro完整重编译内容缓存并构建，扫描public/images中超过200KB的栅格图片并在dist生成WebP响应式变体、manifest和srcset，复制已核验原生资源与HTML预览载体，再为dist/_headers补齐精确内联脚本哈希和必要助手响应策略，最后生成Pagefind语言索引；零发布内容不生成索引并移除旧索引；缺内容、原生产物、图片预算或校验失败停止。
 - `node --experimental-strip-types scripts/measure-explore.ts`在.scratch生成隔离5000×2样例、构建、验证分页/正文搜索并测冷/热延迟；会使用系统分配的独立空闲端口，结束清理。真实内容和dist不覆盖，不部署样例；报告位于resources/evidence/001-multilingual-explore/。
 
 普通.md与互动.mdx使用同一内容校验和发布命令；MDX语法、import与组件构建错误必须修复，不能把内容校验通过当作交互验收。

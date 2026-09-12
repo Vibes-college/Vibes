@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '浏览与搜索作品'
 status: 'current'
-shaped-by: ['001', '003', '005', '010']
+shaped-by: ['001', '003', '005', '010', '013']
 legacy-feature-ids: ['explore-filter', 'not-found', 'responsive-access']
 code-sources:
   [
@@ -11,6 +11,9 @@ code-sources:
     'src/components/Preview.astro',
     'src/components/LegacyRedirect.astro',
     'src/layouts/Layout.astro',
+    'src/components/LocalAssistant.astro',
+    'src/scripts/paseo-boot.ts',
+    'tests/paseo-loading.spec.ts',
     'src/pages/',
     'src/scripts/explore.ts',
     'src/scripts/search.ts',
@@ -32,7 +35,7 @@ code-sources:
     'public/icons/',
     'tests/explore.spec.ts',
   ]
-code-revision: '92b5171b20ca3eff6c271d965ab5555fd45dfd4382c876ab9ef600465cb0f630'
+code-revision: 'fa656159b84905eadb49b7a6989bab4f9da841981a88392d52286480cba379d2'
 ---
 
 # 功能名：浏览与搜索作品
@@ -50,6 +53,7 @@ code-revision: '92b5171b20ca3eff6c271d965ab5555fd45dfd4382c876ab9ef600465cb0f630
 5. 点English切换英文目录，只显示已发布英文内容；没有该语言内容时显示提示和原文入口。
 6. 无结果时点“清空搜索与筛选”重新浏览；搜索框×只清关键词。加载失败时显示“重试”，不会把失败显示成零结果。
 7. 打开不存在的地址时显示404，可返回中文目录；手机使用相同路径。
+8. 需要自己的Agent帮忙时点右下角透明背景的吉祥物图案按钮，打开[本地助手](local-assistant.md)；按钮的可访问名称为“本地助手”。按安装与配对说明连接电脑，在小窗交流，或展开后从原生菜单选择项目和历史会话；未点击前不下载Paseo或建立助手连接。浏览、筛选和搜索仍可独立完成。
 
 ### 操作之后发生什么
 
@@ -95,6 +99,7 @@ flowchart TD
 - [x] 多页目录可翻页，搜索结果可加载更多；无JavaScript仍能浏览与翻页。
 - [x] 320px宽度无整页横向溢出；不存在地址返回404并有回首页入口。
 - [x] 普通浏览不下载搜索索引，开始搜索后才加载。
+- [ ] 普通浏览不加载Paseo；助手收起或小窗打开时，浏览、搜索和阅读入口仍可操作。
 
 最近有效验收：2026-09-06 Playwright桌面Chromium、手机Chromium/WebKit检查浏览、搜索、语言切换、失败重试与历史；ego-browser检查真实页面连续阅读。证据在`resources/evidence/005-continuous-navigation/`。2026-09-05的5000×2容量数据只保留为历史基线，搜索生命周期改动后未重跑该专项，不代表此次规模性能已验收。
 
@@ -114,6 +119,8 @@ flowchart TD
 - `static output stays small and content routes exist`
 
 `tests/navigation.spec.ts`覆盖连续导航、异步结果滚动恢复、语言往返、预取上限、触摸与失败回退。
+
+`tests/paseo-loading.spec.ts`覆盖助手首次点击前的加载隔离与站内切页；助手专项验收见[使用本地助手](local-assistant.md)，不沿用上面的历史浏览证据。
 
 大目录分页和结果分批由`scripts/measure-explore.ts`单独验证，不属于每次普通E2E；单位规则见`tests/unit/i18n.test.ts`。
 
