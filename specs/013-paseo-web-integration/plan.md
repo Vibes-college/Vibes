@@ -137,10 +137,10 @@ HTML采用独立响应策略和不含allow-same-origin的sandbox载体，主页�
 
 快速收尾按上方当前阶段提供预览并核对同SHA响应头与资源，完成现有自动回归、默认目录/原生模型选择和真实基本使用，再执行独立审查。下方完整中断/性能/iPhone矩阵作为后续验收协议；未执行时如实记录，不影响用户已收窄的本轮范围，也不能标为这些矩阵已通过。
 
-代码同步docs/features/local-assistant.md、浏览/阅读入口、docs/system/local-assistant.md及configuration/interfaces/rules/checks-and-release对应段落与code-sources，再复核文字后更新摘要；索引和PROJECT_ANALYSIS随最终行为变更。全部任务实做后spec/plan/tasks与索引改complete。
+代码同步docs/features/local-assistant.md、浏览/阅读入口、docs/system/local-assistant.md及configuration/interfaces/rules/checks-and-release对应段落与code-sources，再复核文字后更新摘要；索引和PROJECT_ANALYSIS随最终行为变更。当前快速收尾清单全部完成后spec/plan/tasks与索引改complete；延期清单不打完成勾，后续修订再实施。
 
 ## PR工作台与经验复核
 
-按[tasks.md](tasks.md)在同一Draft PR推进：已确认规格→最小完整接入→真实正确性→六阶段测量→有证据的修正→交付。先体验再决定优化点；未发现退化可不做性能补丁。
+按[tasks.md](tasks.md)在同一Draft PR推进：已确认范围→目录与原生选择调整→当前范围回归/真实基本使用→独立审查→Ready。完整六阶段测量与真机矩阵保留后续，不插入本轮快速收尾。
 
 现有LESSONS中的异步导航、真机证据和WebKit媒体回归继续适用；PR #11曾记录原有音频测试间歇失败，新最终验证若复现要定位或报告，不能删测试掩盖。Ready前由独立工作区的另一Agent审查整个PR和最终SHA，涵盖正确性、秘密/权限、后台资源、上游补丁维护、测试与生产交付。用户决定合并，之后逐commit及最终差异复核docs，同步main、验收部署并只清理本任务资源。

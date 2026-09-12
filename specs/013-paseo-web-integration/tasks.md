@@ -9,7 +9,7 @@ amended-by: []
 
 目的与直接挂载已确认，用户授权有明确收益的改进。上游路径均相对本任务隔离源码的`packages/app/`，最终以`third_party/paseo-webui/patches/`中可重放补丁交付；不提交临时源码或依赖。复用旧测试时以当前行为修订，不继承旧通过结论。
 
-用户确认的布局与本地英语听写已完成本轮实现及阶段预览验收，范围见T033—T040：取消可见Chat/Build模式、保留首次预设与原生当前项目，compact纯聊天、full原生工作台，并处理iOS26输入/键盘/背景交互。T019其余页头快捷入口、T022完整插件/功能验收及后续性能/真机任务继续保留未完成；不把本轮完成称为完整第一阶段完成。
+用户确认的布局与本地英语听写已完成本轮实现及阶段预览验收，范围见T033—T040：取消可见Chat/Build模式、保留首次预设与原生当前项目，compact纯聊天、full原生工作台，并处理iOS26输入/键盘/背景交互。当前快速收尾范围以本页末尾的延期清单为准：宿主漏接与插件、完整性能/中断/真机专项不纳入本PR完成条件；保留真实未完成状态，不将既有局部结果扩大为全能力验收。
 
 ## 1. 来源与范围
 
@@ -36,14 +36,14 @@ amended-by: []
 - [x] T013 [P] 在tests/paseo-loading.spec.ts与tests/fixtures/paseo-webui/覆盖无首次点击请求、即时外壳、慢网/失败/重试、加载中收起、单根和回访，测试纳入正常test:e2e。
 - [x] T014 在src/components/LocalAssistant*.astro、src/scripts/paseo-boot.ts、src/features/paseo-webui/host.ts、src/layouts/Layout.astro实现轻量引导、原生预载/挂载和明确重试；核验官方安装/Agent/配对入口与无JS说明。
 - [x] T015 [P] 在原生src/embedded/、packages/app/index.ts及根布局补丁保留完整H挂载与原生协调层，扩展约定surface/requestId合同，限定dispose，复测生产状态hook修正。
-- [ ] T016 核对官方安装与配对说明，用现有真实兼容Paseo和浏览器完成连接/已配对恢复及基本对话；资源加载与失败重试沿现有三浏览器自动化验收。新电脑安装、任意直连/自建中继与完整真机矩阵不冒充已测。
+- [ ] T016 核对官方安装与配对说明，用现有真实兼容Paseo和浏览器完成官方relay连接/已配对恢复及基本对话；资源加载与失败重试沿现有三浏览器自动化验收。新电脑安装、任意直连/自建中继与完整真机矩阵不冒充已测。
 
 ## 4. US2：默认预设与已有项目做事并查看产出（P1）
 
 独立验收：首次预设后可直接输入；原生入口处理已有目录；执行、审批与产出可用；文章引用可删除且只随提交发送；compact/full不串会话。覆盖FR005—009、FR014、FR016—018、SC009—013。
 
 - [x] T017 [P] 在原生src/embedded/*.test.ts覆盖默认目录已有/非目录/权限、无预设的新草稿、已有非Codex偏好保护、重复准备/未知结果查询、草稿配置、一次性引用保留/删除/空文本。
-- [ ] T018 在原生chat-preset与启动草稿路径准备`~/Vibes/Chat`，移除Codex/Luna选择与provider依赖；无偏好由用户原生选择，有偏好/旧目录/已有工作区继续恢复；验证已有/非目录/权限、重复准备和不确定结果恢复，不自动创建Agent。
+- [x] T018 在原生chat-preset与启动草稿路径准备`~/Vibes/Chat`，移除Codex/Luna选择与provider依赖；无偏好由用户原生选择，有偏好/旧目录/已有工作区继续恢复；验证已有/非目录/权限、重复准备和不确定结果恢复，不自动创建Agent。
 
 - [x] T020 [P] 在原生src/attachments/types.ts、src/composer/、src/embedded/中实现可删文章AttachmentPill及普通text附件提交；按requestId一次性投递，保留既有草稿与原生失败行为。
 - [x] T021 在src/components/LocalAssistant.astro、src/scripts/paseo-boot.ts及src/pages/[locale]/works/[id].astro实现显式文章引用入口和compact/full，保留文章阅读、原生根/草稿/焦点/滚动，手机不挤出不可用双栏。
@@ -76,7 +76,7 @@ amended-by: []
 - [x] T037 [P] 在原生src/composer/input/、src/composer/index.tsx、src/components/dictation-controls.tsx与必要use-dictation窄补丁中复用官方local英语听写。compact只有当前有文字才显示文字发送，空输入始终麦克风，焦点与曾点击不改变规则，清空立即恢复，仅有文章或其他附件也保留麦克风；删除粘性文字输入模式，录音发送确认及携带附件不变。compact和full均隐藏Realtime入口，仅保留听写，不改daemon语音配置。保留cancel、转写、retry/discard、失败草稿与晚回调保护；提交、停止Agent、模型选择关闭和拖入附件不隐式聚焦，显式文字快捷键保留。覆盖空输入聚焦、输入后清空、仅附件、确认结束不等于发送成功、重复点击/重试、取消后的晚结果；不新增中文/云STT或实时voice/TTS。
 - [x] T038 在tests/paseo-chat.spec.ts、paseo-recovery.spec.ts及既有同配置fixture补本轮三浏览器专项：无可见模式、单头部、当前工作区最近聊天、file/terminal保留、窄屏无新增加号、新建工作区真实点击、Files原生全屏面板与打开文件后关闭、键盘尺寸与full背景隔离、听写主按钮和失败恢复。核对真实local英语能力与操作证据；iPhone Safari iOS26软键盘、缩放与真录音若未实测则明确待测，并继续保留T029未完成。
 - [x] T039 源码与补丁稳定后，对照实际行为同步docs/features/local-assistant.md、浏览/阅读路径及docs/system/local-assistant.md和相关接口/配置/检查说明；解释操作与已知边界，保留有效旧证据及未测项，再更新code-revision，不提前宣称新布局或听写已实现。
-- [x] T040 将本轮产品补丁按既有series/maintenance登记并重建唯一产物，运行原生必要测试/类型、整站verify与budget及同SHA阶段预览验收；在现有PR #12保存推送进度、更新操作说明和实际限制。不得删改断言或照抄旧SHA结果宣称全通过；若最终检查仅复现已获许可的同一WebKit音频限制，可按既有授权发布同PR阶段预览，并记录新SHA实际结果。不新建PR、不自动Ready/合并，完整工作继续按T019、T022—T032推进。
+- [x] T040 将本轮产品补丁按既有series/maintenance登记并重建唯一产物，运行原生必要测试/类型、整站verify与budget及同SHA阶段预览验收；在现有PR #12保存推送进度、更新操作说明和实际限制。不得删改断言或照抄旧SHA结果宣称全通过；若最终检查仅复现已获许可的同一WebKit音频限制，可按既有授权发布同PR阶段预览，并记录新SHA实际结果。不新建PR、不自动合并；当前范围按T018/T022/T030—T032收尾，延期项见文末。
 - [ ] T041 使用用户提供的透明PNG作为右下角吉祥物，文章按钮改成约5秒后隐藏的说话气泡；保留键盘/鼠标重显与触屏关闭助手后的再次提示，普通入口与文章引用语义不变。验证定时隐藏、焦点保持、触屏不常驻、站内导航重置及真实浏览器外观；翻页测试从非交互区域起手，不以新的按钮命中区域代替文章手势。同步功能/系统说明并按最终SHA运行verify、budget与同PR阶段预览。
 
 T038局部证据：2026-09-09在本任务隔离Paseo home与6797端口，复用电脑已存在的官方local模型，用模型自带7.435秒PCM16/16k英语样例经真实DaemonClient的start/chunk/finish取得转写，耗时2.618秒；原始结果见resources/evidence/013-paseo-web-integration/dictation/local-model-protocol.json。该证据只覆盖本地模型与官方协议，没有下载模型、配置云Key、录真实麦克风、验证手机或向Agent发消息；本项不单独证明T038界面路径，也不替代T029真机验收；本轮组合结果见下方。
@@ -111,4 +111,4 @@ US1先建立最小可体验接入，US2补齐完整做事路径；US3在同一�
 - T026 [P] 在tests/paseo-performance.spec.ts与tests/fixtures/paseo-webui/建立同Playwright计时/固定负载、同版本官方对照及未启动Explore对照；记录环境、SHA与原始证据路径，采样前冻结协议。
 - T027 执行S0—S4桌面和手机模拟各20次交互及冷/暖组、输入/滚动/工具和收起后空闲/输出/审批对照，结果写resources/evidence/013-paseo-web-integration/并在PR解释限制。
 - T028 执行S5固定负载60分钟/30轮开合，重复S2/S3并核对连接/监听器/DOM与CPU/内存趋势；有实测退化才修正及复测受影响路径。
-- T029 在真实浏览器完成全主路径；iPhone软键盘、锁屏/后台/触摸与网络切换单列resources/evidence/013-paseo-web-integration/真机证据，无设备时明确待测并保留Draft，不把模拟勾作真机。
+- T029 在真实浏览器完成全主路径；iPhone软键盘、锁屏/后台/触摸与网络切换单列resources/evidence/013-paseo-web-integration/真机证据；本轮快速收尾明确延期，未来专项仍须真实设备，不把模拟勾作真机。

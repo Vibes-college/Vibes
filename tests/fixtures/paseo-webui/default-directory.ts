@@ -39,7 +39,13 @@ export function registerDefaultDirectoryTests() {
       expect(creates).toBe(0);
       await input.fill('UNSENT_WITHOUT_AUTOMATIC_PROVIDER');
       await selector.click();
+      await page.getByTestId('agent-controls-model').click();
+      await page.getByTestId('model-provider-mock').click();
       await page.getByTestId('model-row-mock-ten-second-stream').click();
+      await page
+        .getByTestId('agent-controls-model-sheet')
+        .getByRole('button', { name: '关闭', exact: true })
+        .click();
       await expect(selector).toContainText('Ten second stream');
       await page.locator('[data-paseo-close]').click();
       await page.locator('[data-paseo-open]:not([data-paseo-article-open])').click();
