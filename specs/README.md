@@ -34,4 +34,4 @@ shaped-by: ['002']
 
 011、012分别保留在[PR #10](https://github.com/Vibes-college/Vibes/pull/10)与[PR #11](https://github.com/Vibes-college/Vibes/pull/11)的未合并分支；编号不复用，其源码和证据通过013的research引用。
 
-| [014 复用验收与快速生产发布](014-ci-release-reuse/spec.md) | draft | local-assistant, project-commands |
+| [014 复用验收与快速生产发布](014-ci-release-reuse/spec.md) | in-progress | local-assistant, project-commands |
