@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '规划开发与维护文档'
 status: 'current'
-shaped-by: ['002', '003', '004', '013', '014']
+shaped-by: ['002', '003', '004', '013', '014', '015']
 legacy-feature-ids: ['spec-kit-workflow']
 code-sources:
   [
@@ -13,7 +13,7 @@ code-sources:
     'scripts/docs-sources.ts',
     'scripts/docs-lessons.ts',
   ]
-code-revision: '1ec44cbfaeec95b8094704c4ae5978dabfcc46cae177c2c856815d6479758418'
+code-revision: '818fdcbf979d43653d70747df5a4716692dc13566f4ab5624e0611dc5dada6c0'
 ---
 
 # 功能名：规划开发与维护文档
@@ -24,8 +24,8 @@ code-revision: '1ec44cbfaeec95b8094704c4ae5978dabfcc46cae177c2c856815d6479758418
 
 ## 用户操作路径
 
-1. 用户描述要完成的事情；AI从[功能索引](README.md)找到相关操作路径，先读现状，再查对应代码。
-2. 新功能或跨模块改造先明确用户、成功路径与不做范围，使用Spec Kit形成spec、plan、tasks；计划经用户确认后执行；首版spec形成就建Draft PR并提供可打开链接与任务摘要。小修复、文档和小型规则补充直接在当前工作分支修改、验证与提交，不开spec或独立PR；仅需要Spec Kit的需求走PR。
+1. 用户描述要完成的事情；AI按任务从[功能索引](README.md)找到相关操作路径；已知路径的小修正直接读相关文件，已读且未变化的资料不重复读取。
+2. 新功能或跨模块改造先明确用户、成功路径与不做范围，使用Spec Kit形成spec、plan、tasks；范围明确且用户已授权时连续执行；只有缺少关键决定或用户要求阶段审阅才暂停；首版spec形成就建Draft PR并提供可打开链接与任务摘要。小修复、文档和小型规则补充直接在当前工作分支修改、验证与提交，不开spec或独立PR；仅需要Spec Kit的需求走PR。
 3. 采用Spec Kit的需求在开发时通过PR描述更新当前进度、阻塞、下一步、阶段预览，重要证据写评论；详细清单以tasks.md为准，阶段/交接/暂停前提交推送，不强制逐commit push；功能说明按[模板](./_TEMPLATE.md)描述一条完整操作路径，包括成功、失败和必要的系统响应图，不按组件或样式拆篇。
 4. 更新功能现状与索引；技术配置和完整命令链接到docs/system，历史原因从shaped-by找到specs。
 5. 运行`npm run docs:check`与`npm run format:check`。遇到缺标签、索引不一致或冻结改写时，按错误定位修正，不通过就不称文档检查完成。
@@ -41,7 +41,7 @@ code-revision: '1ec44cbfaeec95b8094704c4ae5978dabfcc46cae177c2c856815d6479758418
 flowchart TD
   A[用户描述要完成的事情] --> B[读取相关现状和代码]
   B --> C{是否需要新规格与计划}
-  C -->|新功能或重要变更| D[明确边界，确认计划]
+  C -->|新功能或重要变更| D[明确边界，沿用已有授权]
   C -->|小修复| E[直接修改受影响内容]
   D --> E
   E --> F[按操作路径更新功能说明及索引]
@@ -62,7 +62,7 @@ flowchart TD
 - 协作入口与规则：`AGENTS.md`、`.specify/memory/constitution.md`。
 - 当前功能：`docs/features/README.md`、`docs/features/_TEMPLATE.md`；历史变更入口：`specs/README.md`。
 - 项目模板：`.specify/templates/overrides/spec-template.md`、`.specify/templates/overrides/plan-template.md`、`.specify/templates/overrides/tasks-template.md`。
-- 工具：`.specify/feature.json`、`.specify/scripts/bash/check-prerequisites.sh`；上游技能在`.agents/skills/`，不按产品文档格式改写。
+- 工具：`.specify/feature.json`、`.specify/scripts/bash/check-prerequisites.sh`；项目命令源在`.specify/presets/vibes/`，生成Skills在`.agents/skills/`，workflow适配在`.specify/workflows/overlays/`。按[Agent规则维护](../system/agent-guidance.md)使用、重建和恢复，不直接手改生成文件。
 - 检查器：`scripts/docs-check.ts`、`scripts/docs-frontmatter.ts`、`scripts/docs-policy.ts`、`scripts/docs-index.ts`、`scripts/docs-sources.ts`。
 
 ## 验收标准

@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { assertFrozen, parseDocument, type Document } from '../../scripts/docs-frontmatter.ts';
-import { expectedTense, reviewDocumentSize, validateDocument } from '../../scripts/docs-policy.ts';
+import {
+  expectedTense,
+  isExempt,
+  reviewDocumentSize,
+  validateDocument,
+} from '../../scripts/docs-policy.ts';
 import { validateIndexes } from '../../scripts/docs-index.ts';
 
 // 创建与真实治理元数据同格式的测试文档。
@@ -11,6 +16,13 @@ function document(path: string, meta: Record<string, unknown>, body = '# Behavio
     .join('\n')}\n---\n\n${body}`;
   return parseDocument(path, source);
 }
+
+test('native project prompts keep their format without exempting arbitrary governance files', () => {
+  assert.equal(isExempt('.specify/presets/vibes/commands/speckit.plan.md'), true);
+  assert.equal(isExempt('.specify/presets/vibes/references/hooks.md'), true);
+  assert.equal(isExempt('.specify/presets/vibes/notes.md'), false);
+  assert.equal(isExempt('.specify/presets/vibes/references/governance.md'), false);
+});
 
 // 生成有完整索引与最后同步任务的最小规格，供多种失败场景独立修改。
 function catalog(): Map<string, Document> {

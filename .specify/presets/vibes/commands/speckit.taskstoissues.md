@@ -1,13 +1,6 @@
 ---
-name: speckit-taskstoissues
-description: 用户明确要求时，将当前tasks转为本仓库GitHub issues，并避免重复创建。
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:vibes
+description: '用户明确要求时，将当前tasks转为本仓库GitHub issues，并避免重复创建。'
 ---
-
-# Speckit Taskstoissues Skill
 
 # taskstoissues
 

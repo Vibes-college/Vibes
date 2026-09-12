@@ -183,7 +183,12 @@ jobs:
           node-version: 22.20.0
           cache: npm
       - run: npm ci
-      - run: npm run check
+      - if: needs.scope.outputs.scope == 'docs'
+        run: npm run docs:check && npm run format:check
+        env:
+          DOCS_BASE_REF: ${{ github.event.pull_request.base.sha }}
+      - if: needs.scope.outputs.scope != 'docs'
+        run: npm run check
         env:
           DOCS_BASE_REF: ${{ github.event.pull_request.base.sha }}
   deploy:

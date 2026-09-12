@@ -1,13 +1,6 @@
 ---
-name: speckit-specify
-description: 为新功能或重要变更创建、更新尚未冻结的需求规格；小修复不自动启动。
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:vibes
+description: '为新功能或重要变更创建、更新尚未冻结的需求规格；小修复不自动启动。'
 ---
-
-# Speckit Specify Skill
 
 # specify
 

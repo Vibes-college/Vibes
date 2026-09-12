@@ -1,13 +1,6 @@
 ---
-name: speckit-converge
-description: 核对已实施功能与spec、plan、tasks的实际缺口，仅追加尚未记录的剩余工作。
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:vibes
+description: '核对已实施功能与spec、plan、tasks的实际缺口，仅追加尚未记录的剩余工作。'
 ---
-
-# Speckit Converge Skill
 
 # converge
 

@@ -1,13 +1,6 @@
 ---
-name: speckit-analyze
-description: 只读检查已有spec、plan与tasks的矛盾、遗漏和任务覆盖，输出具体修正建议。
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:vibes
+description: '只读检查已有spec、plan与tasks的矛盾、遗漏和任务覆盖，输出具体修正建议。'
 ---
-
-# Speckit Analyze Skill
 
 # analyze
 

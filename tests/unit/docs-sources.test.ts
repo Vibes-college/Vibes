@@ -72,6 +72,10 @@ test('implementation scope separates content entries from behavior and configura
     'public/_headers',
     'third_party/paseo-webui/upstream.json',
     'third_party/paseo-webui/patches/native-product.patch',
+    '.specify/presets/vibes/preset.yml',
+    '.specify/presets/vibes/commands/speckit.plan.md',
+    '.specify/presets/vibes/references/hooks.md',
+    '.specify/workflows/overlays/speckit/scoped-execution.yml',
   ])
     assert.equal(isImplementation(path), true, path);
   for (const path of [
@@ -79,6 +83,7 @@ test('implementation scope separates content entries from behavior and configura
     'src/content/works/a/work.json',
     'docs/PROJECT_ANALYSIS.md',
     '.claude/settings.local.json',
+    '.specify/presets/vibes/notes.md',
   ])
     assert.equal(isImplementation(path), false, path);
 });

@@ -3,7 +3,7 @@ tense: 'frozen'
 describes: '按任务范围执行的Agent指导规则'
 status: 'in-progress'
 feature-ids: ['document-governance', 'project-commands']
-amends: ['002', '004']
+amends: ['002', '004', '014']
 amended-by: []
 approved-artifacts: []
 research-trigger: '确认Spec Kit原生预设与workflow覆盖方式，避免直接修改上游安装资产'

@@ -9,6 +9,10 @@ export function isImplementation(path: string): boolean {
     /^(src|scripts|tests)\/.*\.(ts|tsx|js|mjs|astro|css)$/.test(path) ||
     path === 'src/data/taxonomy.json' ||
     /^third_party\/paseo-webui\/.*\.(json|patch)$/.test(path) ||
+    /^\.specify\/presets\/vibes\/(?:preset\.yml|commands\/speckit\.[a-z]+\.md|references\/hooks\.md)$/.test(
+      path,
+    ) ||
+    path === '.specify/workflows/overlays/speckit/scoped-execution.yml' ||
     /^db\/.*\.sql$/.test(path) ||
     /^public\/(?:.*\.svg|_headers|_redirects)$/.test(path) ||
     /^[^/]+\.(json|jsonc|mjs|ts)$/.test(path) ||

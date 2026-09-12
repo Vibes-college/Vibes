@@ -1,13 +1,6 @@
 ---
-name: speckit-checklist
-description: 审查当前spec的需求完整性、清晰度与一致性；不用于功能测试或发布验收清单。
-compatibility: Requires spec-kit project structure with .specify/ directory
-metadata:
-  author: github-spec-kit
-  source: preset:vibes
+description: '审查当前spec的需求完整性、清晰度与一致性；不用于功能测试或发布验收清单。'
 ---
-
-# Speckit Checklist Skill
 
 # checklist
 

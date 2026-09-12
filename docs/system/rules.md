@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '009', '010', '013', '014']
+shaped-by: ['001', '003', '005', '006', '007', '009', '010', '013', '014', '015']
 code-sources:
   [
     '.github/workflows/check.yml',
@@ -23,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '2304ab491d15dc9890c801ee941ac1fdb67a3ccc454ca2f62f24af52e4a0409f'
+code-revision: 'fb1a127f8f3e59f38a3656cbf38113c884284f33c48fdb4e4f9c409ca64acf62'
 ---
 
 # 常量、规则表与正则
@@ -108,9 +108,9 @@ scripts/docs-policy.ts定义白名单与篇幅指南：功能说明120行、宪�
 
 裁剪依据是重复、过期、时态混杂和导航不清，不按代码量删必要说明。文档计数包含空行和元数据；代码计数覆盖src/scripts/tests下的TS/JS/Astro/CSS/Shell，排除产品文章与上游资产；网站资源体积预算独立且仍严格执行。
 
-治理Markdown必须在白名单，附加产物须spec声明并说明用途；front matter支持简单YAML字符串与flow字符串数组。缺标签、错误索引/关系、冻结篡改等正确性错误阻断CI。
+治理Markdown必须在白名单，附加产物须spec声明并说明用途；项目preset命令与hook参考使用工具原生格式，纳入源码摘要并由docs/system/agent-guidance.md解释，不用于存放无关治理材料；front matter支持简单YAML字符串与flow字符串数组。缺标签、错误索引/关系、冻结篡改等正确性错误阻断CI。
 
-CI范围路径白名单在scripts/check-scope.ts，默认未知路径full；tests/unit/check-scope.test.ts覆盖删除/改名/新增。元数据只检查确定性规则，自然语言不设禁词，任务不要求固定位置和措辞；research-trigger接受非空的技术未知或重要取舍理由。frozen-at可省略，提供时校验有效日期，冻结后仅允许首次补记。
+CI范围路径白名单在scripts/check-scope.ts，默认未知路径full；纯Skills文案、preset及Spec Kit workflow配置属于docs，混入脚本、网页、依赖或GitHub CI配置仍完整检查。Draft的docs范围也只检查文档与格式。tests/unit/check-scope.test.ts覆盖规则路径、混合差异及删除/改名/新增。元数据只检查确定性规则，自然语言不设禁词，任务不要求固定位置和措辞；research-trigger接受非空的技术未知或重要取舍理由。frozen-at可省略，提供时校验有效日期，冻结后仅允许首次补记。
 
 开发阶段允许暂缺plan/tasks与未来功能文档；合并状态才要求文件完整及功能来源同步。
 
