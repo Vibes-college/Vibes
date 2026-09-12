@@ -20,6 +20,7 @@ jobs:
     outputs:
       scope: ${{ steps.scope.outputs.scope }}
       mode: ${{ steps.scope.outputs.mode }}
+      base: ${{ steps.scope.outputs.base }}
       acceptance: ${{ steps.acceptance.outputs.acceptance }}
     permissions:
       contents: read
@@ -32,10 +33,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22.20.0
+      - id: paths
+        name: Resolve cumulative base and path candidate
+        run: npm run ci:scope -- --paths-only
+        env:
+          CHECK_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
+      - name: Install locked parser only for content candidates
+        if: steps.paths.outputs.scope == 'content'
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - id: scope
         run: npm run ci:scope
         env:
-          CHECK_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
+          CHECK_RESOLVED_BASE: ${{ steps.paths.outputs.base }}
       - id: acceptance
         if: steps.scope.outputs.mode == 'required' && steps.scope.outputs.scope == 'full' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: node --experimental-strip-types scripts/ci-acceptance.ts resolve
@@ -54,7 +63,7 @@ jobs:
         run: |
           test "$SCOPE_RESULT" = success
           test "$CHECK_MODE" = required
-          case "$CHECK_SCOPE" in docs|tools|full) ;; *) exit 1 ;; esac
+          case "$CHECK_SCOPE" in docs|tools|content|full) ;; *) exit 1 ;; esac
         env:
           SCOPE_RESULT: ${{ needs.scope.result }}
           CHECK_MODE: ${{ needs.scope.outputs.mode }}
@@ -67,8 +76,30 @@ jobs:
           node-version: 22.20.0
           cache: npm
       - run: npm ci
-      - if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance != 'reuse'
+      - name: Restore native static output for content
+        id: native_cache
+        if: needs.scope.outputs.scope == 'content'
+        uses: actions/cache/restore@v4
+        with:
+          path: .scratch/paseo-webui/artifacts/product
+          key: native-product-v1-${{ runner.os }}-${{ hashFiles('third_party/paseo-webui/**', 'scripts/paseo-webui-*.ts', 'src/features/paseo-webui/build-config.ts', 'src/features/paseo-webui/asset-contract.ts', 'package-lock.json') }}
+      - name: Resolve verification lane
+        id: lane
+        run: |
+          LANE="$SCOPE"
+          if [ "$LANE" = content ] && [ "$CACHE_HIT" != true ]; then
+            echo "Native output unavailable; falling back to full verification."
+            LANE=full
+          fi
+          echo "scope=$LANE" >> "$GITHUB_OUTPUT"
+          echo "Verification lane: $LANE" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          SCOPE: ${{ needs.scope.outputs.scope }}
+          CACHE_HIT: ${{ steps.native_cache.outputs.cache-hit }}
+      - if: steps.lane.outputs.scope == 'full' && needs.scope.outputs.acceptance != 'reuse'
         run: npx playwright install --with-deps chromium webkit
+      - if: steps.lane.outputs.scope == 'content'
+        run: npx playwright install --with-deps chromium
       - if: needs.scope.outputs.scope == 'docs'
         run: npm run docs:check && npm run format:check
         env:
@@ -79,11 +110,11 @@ jobs:
           DOCS_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
       - name: Prepare Paseo for full verification
         id: native_full
-        if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance != 'reuse'
+        if: steps.lane.outputs.scope == 'full' && needs.scope.outputs.acceptance != 'reuse'
         run: npm run paseo:ci
       - name: Run full regression
         id: regression_full
-        if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance != 'reuse'
+        if: steps.lane.outputs.scope == 'full' && needs.scope.outputs.acceptance != 'reuse'
         run: npm run verify
         env:
           SITE_URL: https://vibes.college
@@ -95,9 +126,14 @@ jobs:
         env:
           CI_ACCEPTANCE_REUSED: 'true'
           DOCS_BASE_REF: ${{ github.event.before || 'origin/main' }}
+      - name: Validate content and project source
+        if: steps.lane.outputs.scope == 'content'
+        run: npm run check
+        env:
+          DOCS_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
       - name: Build and check resource budget
         id: resource_budget
-        if: needs.scope.outputs.scope == 'full'
+        if: needs.scope.outputs.scope == 'full' || needs.scope.outputs.scope == 'content'
         run: |
           npm run budget
           echo "budget=passed" >> "$GITHUB_OUTPUT"
@@ -105,13 +141,24 @@ jobs:
           SITE_URL: https://vibes.college
           VIBES_DEPLOY: '1'
       - id: no_budget
-        if: needs.scope.outputs.scope != 'full'
+        if: needs.scope.outputs.scope == 'docs' || needs.scope.outputs.scope == 'tools'
         run: |
           echo "No website output changed; resource budget is not applicable."
           echo "budget=not-applicable" >> "$GITHUB_OUTPUT"
       - name: Validate production files and policies
-        if: needs.scope.outputs.scope == 'full'
+        if: needs.scope.outputs.scope == 'full' || needs.scope.outputs.scope == 'content'
         run: node --experimental-strip-types scripts/release-preflight.ts
+      - name: Smoke test content output
+        if: steps.lane.outputs.scope == 'content'
+        run: npx playwright test --config playwright.content.config.ts
+        env:
+          CONTENT_BASE_REF: ${{ needs.scope.outputs.base }}
+      - name: Save native output only after main verification
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.lane.outputs.scope == 'full'
+        uses: actions/cache/save@v4
+        with:
+          path: .scratch/paseo-webui/artifacts/product
+          key: native-product-v1-${{ runner.os }}-${{ hashFiles('third_party/paseo-webui/**', 'scripts/paseo-webui-*.ts', 'src/features/paseo-webui/build-config.ts', 'src/features/paseo-webui/asset-contract.ts', 'package-lock.json') }}
       - name: Record full PR acceptance
         if: github.event_name == 'pull_request' && needs.scope.outputs.scope == 'full'
         run: node --experimental-strip-types scripts/ci-acceptance.ts record
@@ -128,10 +175,10 @@ jobs:
           include-hidden-files: true
           retention-days: 7
           if-no-files-found: error
-      - if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.scope.outputs.scope == 'full'
+      - if: github.event_name == 'push' && github.ref == 'refs/heads/main' && (needs.scope.outputs.scope == 'full' || needs.scope.outputs.scope == 'content')
         run: node --experimental-strip-types scripts/release-artifact.ts
       - uses: actions/upload-artifact@v4
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.scope.outputs.scope == 'full'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && (needs.scope.outputs.scope == 'full' || needs.scope.outputs.scope == 'content')
         with:
           name: production-${{ github.sha }}
           path: dist/
@@ -139,7 +186,7 @@ jobs:
           retention-days: 7
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
-        if: failure() && needs.scope.outputs.scope == 'full'
+        if: failure() && (needs.scope.outputs.scope == 'full' || needs.scope.outputs.scope == 'content')
         with:
           name: playwright-failures
           path: test-results/
@@ -158,7 +205,7 @@ jobs:
           test "$CHECK_MODE" = required
           test "$VERIFY_RESULT" = success
           case "$CHECK_SCOPE" in
-            full) test "$BUDGET_RESULT" = passed ;;
+            full|content) test "$BUDGET_RESULT" = passed ;;
             docs|tools) test "$BUDGET_RESULT" = not-applicable ;;
             *) exit 1 ;;
           esac
@@ -194,7 +241,7 @@ jobs:
   deploy:
     name: Deploy and verify production
     needs: [scope, verify, budget]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.scope.outputs.scope == 'full'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && (needs.scope.outputs.scope == 'full' || needs.scope.outputs.scope == 'content')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:

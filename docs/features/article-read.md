@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '阅读作品详情'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '008', '009', '010', '013']
+shaped-by: ['001', '003', '005', '006', '007', '008', '009', '010', '013', '016']
 code-sources:
   [
     'src/components/WorkDetail.astro',
@@ -53,7 +53,7 @@ code-sources:
     'tests/fixtures/paseo-webui/article-reference.ts',
     'tests/explore.spec.ts',
   ]
-code-revision: 'efb975ba4d5d87f9a2325ea87399af3730599a26b7284f1df205ce45563a1b52'
+code-revision: '709386523efcd6a7d5340c14b979f0fd63642da2225ad221958c4f718e5343c0'
 ---
 
 # 功能名：阅读作品详情
@@ -63,6 +63,8 @@ code-revision: 'efb975ba4d5d87f9a2325ea87399af3730599a26b7284f1df205ce45563a1b52
 访客在作品概览与正文之间整屏翻阅，连续阅读正文并用进度目录跳转，并继续阅读相邻作品。
 
 ## 用户操作路径
+
+正文上方可进入该语言源文件的GitHub编辑页；登录、fork、PR审阅和发布步骤见[GitHub内容贡献](../system/content-contributions.md)。站内不保存编辑。
 
 1. 从目录点击卡片，进入`/{locale}/works/{id}/`，先看来源、预览、标题、介绍和已有的作者/类型等信息。
 2. 点击原站链接，在新标签页打开原始作品；有媒体的封面按下面的路径播放或操作，未配置媒体的作品保留静态预览。

@@ -2,10 +2,11 @@
 tense: 'frozen'
 describes: '通过GitHub贡献并独立发布文章'
 status: 'in-progress'
-feature-ids: ['content-maintenance', 'article-read', 'project-commands']
+feature-ids: ['article-read', 'content-maintenance', 'project-commands']
 amends: ['004', '009', '014', '015']
 amended-by: []
 approved-artifacts: ['research.md']
+research-trigger: 'MDX可执行边界、静态产物复用和fork预览凭据隔离'
 ---
 
 # 内容发布通道
@@ -40,3 +41,5 @@ research-trigger：受限MDX的可执行边界、可信静态产物复用和fork
 ## 交付引用
 
 遵循docs/system/checks-and-release.md；基础设施经独立Agent审查后Ready。以本次用户明确要求的成功发布作为验收；动态阶段和计时记录在PR及本地证据。
+
+实现清单完成不等于生产验收完成；SC-005需在基础设施合并后以独立内容发布执行，线上结果和耗时记录在PR收尾，未完成前本次用户任务不结束。

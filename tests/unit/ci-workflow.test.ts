@@ -77,3 +77,41 @@ test('full acceptance keeps one native preparation and an exact-attempt proof af
   const beforeDeploy = workflow.split('\n  deploy:\n')[0];
   assert.ok(!beforeDeploy.includes('CLOUDFLARE_API_TOKEN'));
 });
+
+test('content cache miss falls back to full and content remains a real budget gate', () => {
+  const block = workflow.match(
+    /name: Resolve verification lane[\s\S]+?run: \|\n([\s\S]+?) {8}env:\n/,
+  )?.[1];
+  assert.ok(block);
+  const script = block
+    .split('\n')
+    .map((line) => line.replace(/^ {10}/, ''))
+    .join('\n');
+  for (const [scope, hit, expected] of [
+    ['content', 'true', 'content'],
+    ['content', '', 'full'],
+    ['content', 'false', 'full'],
+    ['full', 'true', 'full'],
+    ['docs', '', 'docs'],
+  ]) {
+    const run = spawnSync('bash', ['-e', '-c', script], {
+      env: {
+        ...process.env,
+        SCOPE: scope,
+        CACHE_HIT: hit,
+        GITHUB_OUTPUT: '/dev/stdout',
+        GITHUB_STEP_SUMMARY: '/dev/null',
+      },
+      encoding: 'utf8',
+    });
+    assert.equal(run.status, 0);
+    assert.ok(run.stdout.includes(`scope=${expected}\n`));
+  }
+  assert.ok(workflow.includes('full|content) test "$BUDGET_RESULT" = passed'));
+  assert.ok(
+    workflow.includes(
+      "if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.lane.outputs.scope == 'full'",
+    ),
+  );
+  assert.ok(workflow.includes('CONTENT_BASE_REF: ${{ needs.scope.outputs.base }}'));
+});

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '维护作品内容'
 status: 'current'
-shaped-by: ['001', '003', '008', '009', '010', '013']
+shaped-by: ['001', '003', '008', '009', '010', '013', '016']
 code-sources:
   [
     'src/lib/content/',
@@ -23,6 +23,8 @@ code-revision: 'c7d7547a8e14e9ce8d659ed04b4ca42b49f132e3308f9c6e4af5267e30445634
 维护者通过AI编辑作品文件，校验原文与译文后，把要发布的内容交给网站发布流程。
 
 ## 用户操作路径
+
+可直接从文章的GitHub编辑入口提出改进PR，完整操作、检查分类、预览和失败处理见[GitHub内容贡献](../system/content-contributions.md)。正文及批准MDX组件组合走内容通道；新增可执行代码仍完整验收。
 
 1. 明确要新增或修改的作品、可靠来源和原文语言，让AI编辑`src/content/works/{id}/work.json`与`zh.md`或`en.md`（需要交互时用同名`.mdx`）；网站没有编辑后台。
 2. 图表数据先核对来源并保存到public/media下的JSON或CSV文件，dataset填写对应/media路径，不填写远程URL。填写稳定ID、顺序、来源、预览和实际可提供的信息；标签使用`src/data/taxonomy.json`，不要把同一作品改名成另一个身份。

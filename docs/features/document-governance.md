@@ -13,7 +13,7 @@ code-sources:
     'scripts/docs-sources.ts',
     'scripts/docs-lessons.ts',
   ]
-code-revision: '818fdcbf979d43653d70747df5a4716692dc13566f4ab5624e0611dc5dada6c0'
+code-revision: 'd0a7f463cc04b2c6641b6d46ac5c155075b03529b203f65376a809ac5d22f90c'
 ---
 
 # 功能名：规划开发与维护文档
@@ -96,3 +96,5 @@ flowchart TD
 自动检查无法判断自然语言是否准确，也无法判断翻译或来源质量。只有生成技能文件不代表每条Spec Kit命令都已验证；合并仍由用户决定；main网站变更通过本次生产检查后自动部署；只有可信完整文件树证明才可复用PR回归，证据不足完整回退，实际启用和上线证据见检查与发布路径。
 
 004新增治理检查于2026-09-06在专用worktree运行npm run check通过（52项单元测试），覆盖三行经验/数量、决策迁移、累计main差异与清理保护；PR流程和真实部署另按交付路径验收。
+
+GitHub贡献路径说明位于docs/system/content-contributions.md，纳入系统文档白名单与源码对应校验；文章贡献规则见[内容维护](content-maintenance.md)。

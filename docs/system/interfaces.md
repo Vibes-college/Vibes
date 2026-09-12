@@ -24,7 +24,7 @@ code-sources:
     'scripts/paseo-webui-preview.ts',
     'public/_headers',
   ]
-code-revision: '0f62c4b36d309df4b4cb7c2e03fc84d0279b6464780f7948e4c6820276fb2e00'
+code-revision: 'f4a7ad6c61a6861c298fdb85972f7a6f17cc269648a8ca03afcd28b32845d6ea'
 ---
 
 # 接口与外部服务
@@ -126,3 +126,5 @@ MDX组件在文章内部按client指令启动，同页共享React模块，从本
 原生文件预览包含文本、图片、Markdown及受限HTML。HTML用`/paseo-preview/`静态载体的独立响应策略，HTTP和iframe均使用不含allow-same-origin的sandbox allow-scripts；只在这个隔离文档允许文件内联脚本和eval。策略禁止fetch/WebSocket连接、子框架、表单、对象和base地址，图片/媒体仅允许data或blob。原生HTML仍可导航自己的窗口，因此不能把connect-src none解释为全面禁止网络。父页面验证来自该窗口的握手和随机标识后传入文件，载体写入HTML前删除消息桥；文件脚本不能访问父页面、配对存储或继续接收其他文件。
 
 预览响应不缓存、不发送Referer并要求不索引；全站frame-src允许同源载体，其他页面仍由frame-ancestors none与X-Frame-Options DENY拒绝被嵌入。主页面不因预览而启用unsafe-inline/unsafe-eval。该路径不是文件上传或服务器读取接口，直接打开也没有本地文件内容。PDF/Office没有新增预览或转换服务；下载能力不超出原生连接支持范围。实际Cloudflare响应与完整预览交互仍以当前验收记录为准。
+
+文章正文提供该语言.md或.mdx源文件的GitHub编辑链接，浏览器直接进入GitHub登录/fork/PR流程；网站不接收提交或持有GitHub凭据。见[贡献流程](content-contributions.md)。
