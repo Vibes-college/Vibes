@@ -151,7 +151,9 @@ test('reduced motion keeps the original controls usable at 320px and stops marqu
   await marquee.scrollIntoViewIfNeeded();
   await expect(marquee.locator('.animate-marquee').first()).toHaveCSS('animation-name', 'none');
   const range = page.locator('[data-beui="RangeDemo"]');
-  await range.locator('xpath=ancestor::details[1]').locator('summary').click();
+  const disclosure = range.locator('xpath=ancestor::details[1]');
+  if ((await disclosure.count()) && (await disclosure.getAttribute('open')) === null)
+    await disclosure.locator('summary').click();
   await range.scrollIntoViewIfNeeded();
   await expect(range.locator('xpath=..')).not.toHaveAttribute('ssr');
   await range.getByRole('slider').focus();

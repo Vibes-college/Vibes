@@ -34,6 +34,7 @@ const attributes = new Set(
 interface Ast {
   type: string;
   name?: string;
+  url?: string;
   value?: unknown;
   source?: Ast;
   local?: { name: string };
@@ -42,6 +43,13 @@ interface Ast {
   expression?: Ast;
   children?: Ast[];
   data?: { estree?: { body: Ast[] } };
+}
+
+function safeUrl(value: string): boolean {
+  const url = [...value]
+    .filter((character) => character.charCodeAt(0) > 32 && character.charCodeAt(0) !== 127)
+    .join('');
+  return !/^[a-z][a-z\d+.-]*:/i.test(url) || /^(https?:|mailto:)/i.test(url);
 }
 
 // Parse syntax only: never import or evaluate contributor JavaScript during classification.
@@ -77,6 +85,8 @@ export function isContentOnly(source: string, format: 'md' | 'mdx'): boolean {
     return nodes.every((node) => {
       // Raw Markdown HTML is outside this restricted lane, including scripts and event handlers.
       if (node.type === 'html' || /Expression$/.test(node.type)) return false;
+      if (['link', 'image', 'definition'].includes(node.type) && !safeUrl(node.url ?? ''))
+        return false;
       if (!node.type.startsWith('mdxJsx')) return true;
       const component = imported.has(node.name ?? '');
       if (!component && !html.has(node.name ?? '')) return false;
@@ -108,10 +118,7 @@ export function isContentOnly(source: string, format: 'md' | 'mdx'): boolean {
         if (!attributes.has(attribute.name) && !/^aria-[a-z-]+$/.test(attribute.name)) return false;
         if (attribute.value !== null && typeof attribute.value !== 'string') return false;
         if (['href', 'src'].includes(attribute.name) && typeof attribute.value === 'string') {
-          const url = [...attribute.value]
-            .filter((character) => character.charCodeAt(0) > 32 && character.charCodeAt(0) !== 127)
-            .join('');
-          if (/^[a-z][a-z\d+.-]*:/i.test(url) && !/^(https?:|mailto:)/i.test(url)) return false;
+          return safeUrl(attribute.value);
         }
         return true;
       });

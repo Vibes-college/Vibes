@@ -45,3 +45,23 @@ test('registered MixDemo accepts only its bounded literal props', () => {
   ])
     assert.equal(isContentOnly(prefix + `<MixDemo ${props} client:visible />`, 'mdx'), false);
 });
+
+test('Markdown direct, image and reference URLs share the JSX protocol boundary', () => {
+  for (const format of ['md', 'mdx'] as const) {
+    for (const source of [
+      '[x](javascript:alert%281%29)',
+      '[x](data:text/html,test)',
+      '[x](java&#x73;cript:alert%281%29)',
+      '[x](java&#x09;script:alert%281%29)',
+      '![x](data:image/svg+xml,test)',
+      '[x][ref]\n\n[ref]: javascript:alert%281%29',
+    ])
+      assert.equal(isContentOnly(source, format), false, `${format}: ${source}`);
+    assert.ok(
+      isContentOnly(
+        '[x](https://example.com/)\n\n![a](./image.png)\n\n[y][ref]\n\n[ref]: /licenses/beui.txt',
+        format,
+      ),
+    );
+  }
+});

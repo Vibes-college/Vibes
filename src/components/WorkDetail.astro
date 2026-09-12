@@ -176,11 +176,13 @@ const meta = {
   <img src="/icons/chevron-down.svg" width="22" height="22" alt="" />
 </div>
 <section id="reading" class="reading-page" aria-label={t.body} tabindex="-1">
-  <p data-pagefind-ignore>
-    <a href={editUrl} target="_blank" rel="noopener noreferrer"
-      >{work.locale === 'zh' ? '在 GitHub 上改进这篇文章' : 'Improve this article on GitHub'}</a
-    >
-  </p>
-  <div class="prose prose-ui light" lang={htmlLanguages[work.locale]}><slot /></div>
+  <div class="prose prose-ui light" lang={htmlLanguages[work.locale]}>
+    <p data-pagefind-ignore>
+      <a href={editUrl} target="_blank" rel="noopener noreferrer"
+        >{work.locale === 'zh' ? '在 GitHub 上改进这篇文章' : 'Improve this article on GitHub'}</a
+      >
+    </p>
+    <slot />
+  </div>
 </section>
 <script src="../scripts/detail.ts"></script>

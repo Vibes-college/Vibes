@@ -5,7 +5,7 @@ status: 'current'
 shaped-by: ['016']
 code-sources:
   ['scripts/content-policy.ts', 'playwright.content.config.ts', 'tests/content-publish.spec.ts']
-code-revision: 'd30f87c653b315cb59fb4df7b0638f3fd75ba1190743f7c379158c30dc641e13'
+code-revision: '8d342074d8c16ddac31e5c09ba4bb41791bcba09fb8fd4673b08ff439ab59b1f'
 ---
 
 # 从文章修改到正式发布
@@ -32,7 +32,7 @@ fork的CI没有发布密钥，不自动部署预览；维护者先审阅，再�
 
 批准组件为MixDemo和既有十个beUI Demo；MixDemo保留zh/en的locale和0至100的initial数字字面值，其余组件只允许client:visible。准确列表在scripts/content-policy.ts。新增组件或扩展属性会改变可执行边界，需要代码验收，不能只改文件名绕过。删除、重命名及混合改动也参与分类；无法证明安全时完整回退。
 
-内容通道执行类型/lint/格式/文档/单元检查、内容schema、Astro编译与整站构建、Pagefind索引、资源预算和发布预检，再用Chromium检查受影响文章的各语言正文、站内静态资源，及既有MDX交互和320px阅读。图片或共享页面变化会扩大页面冒烟范围。它不启动Paseo测试服务、不重复其测试、不跑全站三浏览器回归。普通`npm run verify`仍是完整回归；本地内容验收使用`npm run verify:content`，需要已核验的原生静态产物和Chromium。
+内容通道执行类型/lint/格式/文档/单元检查、内容schema、Astro编译与整站构建、Pagefind索引、资源预算和发布预检，再用Chromium实际打开受影响文章的各语言，检查正文、相对及绝对站内资源、正文图片解码与1280/320px布局，并检查既有MDX交互。图片或共享页面变化会扩大页面冒烟范围。它不启动Paseo测试服务、不重复其测试、不跑全站三浏览器回归。普通`npm run verify`仍是完整回归；本地内容验收使用`npm run verify:content`，需要已核验的原生静态产物和Chromium。
 
 CI从main完整验收保存的精确键缓存恢复Paseo静态输出，校验来源、补丁、文件与摘要。缓存缺失回退完整准备和回归；缓存损坏直接失败，不能发布缺少助手的站点。缓存不保证常驻，实际走哪条路见Actions摘要。生产永远消费本次main通过检查的产物，保留同SHA、预算和线上核验门槛。
 

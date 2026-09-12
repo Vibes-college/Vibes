@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '接口与外部服务'
 status: 'current'
-shaped-by: ['001', '003', '004', '005', '009', '010', '013', '014']
+shaped-by: ['001', '003', '004', '005', '009', '010', '013', '014', '016']
 code-sources:
   [
     'src/scripts/search.ts',
@@ -24,7 +24,7 @@ code-sources:
     'scripts/paseo-webui-preview.ts',
     'public/_headers',
   ]
-code-revision: 'f4a7ad6c61a6861c298fdb85972f7a6f17cc269648a8ca03afcd28b32845d6ea'
+code-revision: '9c6dd3398f763a7295af10a3f882cdc662f03027ec1e87ac06936c62ea946a4d'
 ---
 
 # 接口与外部服务
