@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003', '004', '005', '009', '010', '013']
+shaped-by: ['002', '003', '004', '005', '009', '010', '013', '014']
 code-sources:
   [
     'package.json',
@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'b473cff91383ce6045e57c61da96527190eacf443188ffbff3da2e60ab61f0e5'
+code-revision: '812e373bf97a115bcb0334e710d9cf047317dad6aba57b24c17a7bc97328ffb1'
 ---
 
 # 检查与发布
@@ -21,13 +21,21 @@ code-revision: 'b473cff91383ce6045e57c61da96527190eacf443188ffbff3da2e60ab61f0e5
 
 工作流.github/workflows/check.yml只监听PR活动与main push，保留手动检查和每周文档体检。PR活动为opened/synchronize/reopened/ready_for_review/converted_to_draft；描述/评论编辑不触发。分支push不再重复运行。scope通过scripts/check-scope.ts与ci-policy.ts输出范围与模式，失败或非法输出使正式检查失败。
 
-Draft仅运行独立的Draft progress（npm run check，不启动浏览器或预算构建）；verify/budget跳过，不能视为已验收。Ready及后续修改按整个PR差异执行下表。PR较新运行取消旧检查；main运行不在上传途中取消，正式发布单独串行并拒绝旧SHA。Node22.20，普通检查contents:read，只有发布job持有Cloudflare secret；阶段预览在本机按需运行，不产生额外GitHub CI。
+Draft仅运行独立的Draft progress（npm run check，不启动浏览器或预算构建）；verify/budget跳过，不能视为已验收。Ready及后续修改按整个PR差异执行下表。PR较新运行取消旧检查；main运行不在上传途中取消，正式发布单独串行并拒绝旧SHA。Node22.20；scope只额外读取Actions和PR证据，权限为actions:read、pull-requests:read及contents:read，其他普通检查contents:read，只有发布job持有Cloudflare secret；阶段预览在本机按需运行，不产生额外GitHub CI。
 
-| 差异范围                                                      | verify任务                                | budget任务         |
-| ------------------------------------------------------------- | ----------------------------------------- | ------------------ |
-| docs：治理Markdown、宪章、项目模板                            | docs:check和format:check，不安装浏览器    | 明示不适用，不构建 |
-| tools：文档检查器及其单元测试，可混合文档                     | npm run check，不安装浏览器               | 明示不适用，不构建 |
-| full：网站内容、源码、数据库、依赖、CI/测试配置、其他未知路径 | npm run verify（check→本地D1→Playwright） | npm run budget     |
+| 差异范围                                                      | verify实际执行                                           | budget结果检查                 |
+| ------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------ |
+| docs：治理Markdown、宪章、项目模板                            | docs:check和format:check，不安装浏览器                   | 要求verify成功且预算明确不适用 |
+| tools：文档检查器及其单元测试，可混合文档                     | npm run check，不安装浏览器                              | 要求verify成功且预算明确不适用 |
+| full：网站内容、源码、数据库、依赖、CI/测试配置、其他未知路径 | 一次paseo:ci→npm run verify→npm run budget→产物preflight | 要求verify成功且预算明确通过   |
+
+verify与预算构建共享一个runner，budget仍是同名必需检查，以always执行实际结果校验；失败、取消、跳过或缺失输出均不能成为成功预算。完整PR保留全部原生测试、类型检查和三浏览器用例，不因共享准备削减覆盖。
+
+### main的可信验收复用
+
+仅main push且网站范围full时，scope尝试复用本仓库已合并PR的完整验收：合并SHA对应唯一PR；最新对应head运行与当前attempt的verify/budget及重型步骤成功；同run/attempt的唯一小JSON artifact未过期且摘要正确；仓库/PR/head身份、schema与Node版本一致；记录的实际模拟合并提交由GitHub复核，完整tree与最终main完全相同。合并后run的PR列表可能为空，因此用不可变记录绑定PR身份；出现相反关联仍拒绝。完整tree包含工作流、测试、锁和补丁，提交号不同但tree相同可复用。
+
+满足全部条件时，main运行paseo:production、基础check、生产budget构建及preflight，不重复完整E2E或原生回归；仍生成当前main的production artifact。Draft/docs/tools不产生完整证明；旧CI、直接push、最新失败/取消/未完成、不同tree、Fork、过期/歧义或API错误均自动完整回退，不向旧绿灯回溯。读取有数量、大小与超时上限；记录只作为JSON解析，不执行PR产物或搬运依赖。Actions摘要说明复用来源或回退原因。
 
 手动触发、空差异或范围基线不可读均选择full。分类包含删除、改名前后路径和本地未跟踪文件；src中的文章也属于网站变化。路径白名单由脚本与tests/unit/check-scope.test.ts维护。分类不取代测试：需要缩减新的工具范围时先证明它不影响网站。
 
@@ -87,11 +95,11 @@ main不要求通过PR；目标提交仍须取得verify/budget成功并包含最�
 
 ## 合并后上线与收尾
 
-网站影响的main push在同一工作流中通过verify与budget后，deploy下载budget产物（含隐藏文件），核对SHA和内容摘要，再使用Wrangler发布至用户已授权的https://vibes.college。纯治理文档或文档工具无网站影响时不重建/发布，保留之前线上版本。生产job串行不强制取消，上传前确认仍是当前main，拒绝旧运行覆盖新版本。发布不再重复构建或跑verify。
+网站影响的main push在同一工作流中通过verify与budget后，deploy下载verify中完成预算与产物检查的本次production产物（含隐藏文件），核对SHA和内容摘要，再使用Wrangler发布至用户已授权的https://vibes.college。纯治理文档或文档工具无网站影响时不重建/发布，保留之前线上版本。生产job串行不强制取消，上传前确认仍是当前main，拒绝旧运行覆盖新版本。发布不再重复构建或跑verify。
 
 vibes.college现由Worker vibes-explore提供服务。2026-09-06的[首次正式部署](https://github.com/Vibes-college/Vibes/actions/runs/34029233677)通过，线上SHA与合并提交一致，[页面验收与清理记录](https://github.com/Vibes-college/Vibes/pull/3#issuecomment-5558821204)已保存。此次Custom Domain从旧Worker vibecoding-college转接。旧Worker保留，不删除业务资源。回退首次切换可将该域名绑定恢复到vibecoding-college；后续恢复使用已验证的生产版本记录。正式域名授权不等于已上线，实际结果以main部署job、版本记录与页面验收为准。
 
-scripts/release-ci.ts保存发布前版本和结果于resources/evidence/releases/；CI artifact保留90天。只有线上/__release.json匹配SHA且zh/en页有效才记录verified:true；失败不清理，上传结果不确定先核对远端再重试。实际交互另由AI用内置浏览器核对搜索、详情、语言与404，结果写PR评论。完整上线前不宣称发布成功。
+scripts/release-ci.ts保存发布前版本和结果于resources/evidence/releases/；CI artifact保留90天。只有线上/__release.json匹配SHA及摘要，中英文页字节和CSP、Paseo脚本/样式SRI与MIME/缓存、HTML预览载体和隔离策略均符合本次dist才记录verified:true；preflight也在上传前拒绝损坏资源、非法路径和不安全策略。旧版恢复与阶段预览没有本次dist预期时保留原有SHA和双语页检查；不冒称新版强核验。失败不清理，上传结果不确定先核对远端再重试。实际交互另由AI用内置浏览器核对搜索、详情、语言与404，结果写PR评论。完整上线前不宣称发布成功。
 
 AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并、线上版本包含该合并、对应main工作流部署成功，纯文档维护若不影响已上线网站，要求对应main检查成功才可收尾，不虚构重新部署。再检查本地脏文件/额外提交/其他任务占用，将空闲的本地主目录同步到origin/main：无本地独有提交时快进，有本地提交时保留并合并远端main，解决冲突后按影响验证；不能以有本地提交为由停止同步，也不重置或丢弃它们；被忽略的.dev.vars、证据和未知文件仍受保护，仅node_modules/dist/.astro/test-results等明确缓存可随worktree清理。运行cleanup:task查看候选，在待删除worktree之外的项目checkout核对状态后再传--execute-idle；不为清理切换其他任务的分支。命令以PR head与GitHub合并证明兼容squash，删除采用预期SHA比对，竞态或未知状态保留。仍被其他open PR作为base使用的分支保留；仅删除本目标分支与空闲干净worktree；用户未跟踪文件原样保留，main和其他任务不清理。
 
@@ -125,7 +133,7 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 | `npm run release:preview -- <PR号>` | 本地完整验收后上传PR预览版本，不提升生产                                         |
 | `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                        |
 
-按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`verify`始终表示完整验收，不会按路径悄悄缩减。日常工具修改运行check；页面和测试基础设施修改运行verify与budget。
+按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；页面和测试基础设施修改运行verify与budget。
 
 ## 媒体处理
 

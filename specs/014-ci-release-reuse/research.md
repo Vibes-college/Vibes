@@ -21,7 +21,7 @@ amended-by: []
 
 决定：用当前main SHA查关联PR并核对merge_commit_sha；指定workflow和head查询最新PR运行，随后检查完成成功状态。读取当前run_attempt的jobs，要求唯一verify/budget成功；精确匹配唯一未过期artifact及其run/attempt/repository/head身份。缺失、歧义、分页上限、过期、错误或不支持状态均回退，不从旧绿灯拼接证明。
 
-理由：同一run重跑会保留旧artifact，仅名称不能证明当前attempt；fork运行于主仓库也不代表head可信。记录为小型JSON，仅解析数据并通过Git提交接口复核tree，不执行记录路径/命令。
+理由：同一run重跑会保留旧artifact，仅名称不能证明当前attempt；fork运行于主仓库也不代表head可信。实际读取PR12合并后的run 34684292725，pull_requests数组为空但head_sha及run_attempt仍保留；因此先按head选择最新运行，再通过小记录绑定PR身份，不能要求合并后API仍返回非空关联。记录为小型JSON，仅解析数据并通过Git提交接口复核tree，不执行记录路径/命令。
 
 来源：[workflow runs](https://docs.github.com/en/rest/actions/workflow-runs)、[attempt jobs](https://docs.github.com/en/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run-attempt)、[artifacts](https://docs.github.com/en/rest/actions/artifacts)、[提交关联PR](https://docs.github.com/en/rest/commits/commits#list-pull-requests-associated-with-a-commit)。研究Agent只读复核了上述边界。
 

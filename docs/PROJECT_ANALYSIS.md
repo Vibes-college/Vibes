@@ -15,7 +15,7 @@ code-sources:
     'scripts/build.ts',
     'src/features/paseo-webui/host.ts',
   ]
-code-revision: '1f3a4ccc110e4cda9de5bc03ede33128ead03a576f7856eb1138654ae67389d3'
+code-revision: '5f1042406514aac80978f45bf3423728ffadb8a3e02005f98dcf6cc586296916'
 ---
 
 # VIBES项目总览
@@ -46,7 +46,7 @@ Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物
 | 怎样阅读与继续探索       | [阅读详情](features/article-read.md)        | src/components/WorkDetail.astro、src/scripts/detail.ts |
 | 怎样和自己的Agent做事    | [使用本地助手](features/local-assistant.md) | src/features/paseo-webui/、third_party/paseo-webui/    |
 | 怎样日常更新原文与译文   | [维护内容](features/content-maintenance.md) | src/lib/content/、scripts/validate-content.ts          |
-| 怎样检查并发布到测试站   | [检查与发布](features/project-commands.md)  | scripts/release.ts、.github/workflows/check.yml        |
+| 怎样检查并发布网站       | [检查与发布](features/project-commands.md)  | scripts/release.ts、.github/workflows/check.yml        |
 | 怎样让文档跟代码一起变化 | [维护文档](features/document-governance.md) | scripts/docs-check.ts、scripts/docs-sources.ts         |
 
 中英文路由、原文先发布、译文复核状态和全文搜索均已实现；英文内容量取决于实际发布文件，不代表全部译文完成。当前数量以`npm run content:validate`输出为准，不在多篇文档手抄同一组易过期数字。几千条内容与日更是规模目标，日常编辑发布仍由维护者执行。

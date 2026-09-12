@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '配置和环境变量'
 status: 'current'
-shaped-by: ['001', '004', '005', '009', '010', '013']
+shaped-by: ['001', '004', '005', '009', '010', '013', '014']
 code-sources:
   [
     'package.json',
@@ -26,7 +26,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: '55750fb70fd1a9301a20bfccfc99a1769c8f316e23d6c19655813d62d630e48e'
+code-revision: '432221a25cd47e77ab3aaad971f897a046f0eaf00d49f894df4c7d41ae8ff0fe'
 ---
 
 # 配置和环境变量
@@ -86,7 +86,7 @@ Paseo按固定上游及补丁独立构建，默认产品构建必须包含有效
 
 外部快照在 `resources/references/`，本地证据在 `resources/evidence/`；`.gitignore`、`.prettierignore`、`eslint.config.mjs` 同步排除这两项，`tsconfig.json` 排除resources。它们不属于网站构建输入。node_modules目录及隔离worktree复用依赖的同名符号链接均不提交，.gitignore以node_modules匹配。完整文件职责见 [仓库地图](../README.md)。
 
-CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GITHUB_OUTPUT用于传递范围。冻结检查独立使用DOCS_BASE_REF，缺失基线失败。详见[CI](../system/checks-and-release.md)。
+CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GITHUB_OUTPUT用于传递范围和main验收复用决定。GitHub自动提供仓库ID、PR事件、运行ID/attempt和SHA；scope的GH_TOKEN仅用于只读证据查询，不需要新增用户secret。CI_ACCEPTANCE_REUSED仅由可信判定后的main生产准备步骤设置，不能作为本地跳过回归的配置。冻结检查独立使用DOCS_BASE_REF，缺失基线失败。详见[CI](../system/checks-and-release.md)。
 
 ## 内容构建与隔离测试
 

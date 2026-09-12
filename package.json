@@ -35,6 +35,7 @@
     "paseo:fetch": "node --experimental-strip-types scripts/paseo-webui-build.ts fetch",
     "paseo:build": "node --experimental-strip-types scripts/paseo-webui-build.ts build",
     "paseo:ci": "node --experimental-strip-types scripts/paseo-webui-build.ts ci",
+    "paseo:production": "node --experimental-strip-types scripts/paseo-webui-build.ts production",
     "paseo:test-prepare": "node --experimental-strip-types scripts/paseo-webui-build.ts test-prepare"
   },
   "dependencies": {

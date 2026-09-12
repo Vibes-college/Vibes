@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '连接电脑上的Agent，在阅读时交流或进入项目动手'
 status: 'current'
-shaped-by: ['013']
+shaped-by: ['013', '014']
 code-sources:
   [
     'src/components/LocalAssistant.astro',
@@ -108,6 +108,8 @@ code-revision: '279dd43785177730cbd2689d6034341a9ec56533a7c6aa64cf7f8156605bb795
 2026-09-12在内置浏览器使用用户已配对的兼容v0.7.2主机，确认Online/Relay、实际对话与`~/Vibes/Chat`目录；小窗/全屏、收起重开、中英切换及刷新恢复通过，证据为`resources/evidence/013-paseo-web-integration/converge/real-relay-result.json`。新电脑安装、其他Daemon版本和直接连接未纳入本轮验收。
 
 2026-09-12产品提交`010f66f`的完整verify（244项浏览器通过、5项设备条件跳过）、budget与同版本云端预览核对通过；既有布局与听写证据仍按原范围保留。具体范围与证据见[013任务验收记录](../../specs/013-paseo-web-integration/tasks.md#8-本轮反馈统一布局与本地英语听写)。完整能力矩阵、长时与真机仍待验收，范围见[013规格](../../specs/013-paseo-web-integration/spec.md)。
+
+维护者重建助手时，本地完整构建及Ready PR仍执行原生测试和类型检查；只有最终代码完全一致且有可信完整验收记录的main发布省去重复回归，重新构建和核验产物。具体步骤见[Paseo构建路径](../system/local-assistant.md#重建与交付)。
 
 ## 对应的自动化测试
 
