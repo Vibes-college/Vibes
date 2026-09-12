@@ -35,3 +35,5 @@ shaped-by: ['002']
 011、012为已关闭且未合并的历史方案，记录见[PR #10](https://github.com/Vibes-college/Vibes/pull/10)与[PR #11](https://github.com/Vibes-college/Vibes/pull/11)；编号不复用，其源码和证据通过013的research引用。
 
 | [014 复用验收与快速生产发布](014-ci-release-reuse/spec.md) | complete | document-governance, local-assistant, project-commands |
+
+| [015 按任务范围执行Agent指导规则](015-agent-guidance/spec.md) | in-progress | document-governance, project-commands |
