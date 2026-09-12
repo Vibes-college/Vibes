@@ -224,6 +224,12 @@ test('pause during a pending chapter seek stays paused when native seeking settl
     await expect(video).toHaveJSProperty('paused', true);
     await expectSettledPause(video);
     await expect(page.locator('[data-media-toggle]')).toHaveAttribute('aria-pressed', 'false');
+    // Exercise the native play event path after cancellation has settled.
+    // Actual native button input is separately covered by the audio control test.
+    await video.evaluate((el) => (el as HTMLVideoElement).play());
+    await expect
+      .poll(() => video.evaluate((el) => (el as HTMLVideoElement).currentTime))
+      .toBeGreaterThan(30.5);
   } finally {
     await test.info().attach('native-media-seek-events', {
       body: (await video.getAttribute('data-seek-trace')) || '[]',
@@ -231,6 +237,73 @@ test('pause during a pending chapter seek stays paused when native seeking settl
     });
   }
   // Leaving the player releases a paused native download before the test context closes.
+  await page.goto('/zh/works/lora/');
+});
+
+test('late native playback after a cancelled seek cannot override pause or a new explicit play', async ({
+  page,
+}) => {
+  await page.goto(detail('video'));
+  const video = page.locator('[data-context=detail] video');
+  await page.locator('[data-media-toggle]').click();
+  await expect
+    .poll(() => video.evaluate((el) => (el as HTMLVideoElement).currentTime))
+    .toBeGreaterThan(0);
+  await video.evaluate((node) => {
+    const element = node as HTMLVideoElement;
+    element.addEventListener(
+      'seeking',
+      () => {
+        element
+          .closest('[data-media-panel]')!
+          .querySelector<HTMLButtonElement>('[data-media-toggle]')!
+          .click();
+        element.addEventListener(
+          'seeked',
+          () => {
+            // Reproduce the observed post-seek WebKit play, including a second
+            // late event. Keep real decoding and the browser's play/pause events.
+            element.dataset.lateSeekPlays = '0';
+            element.addEventListener('play', () => {
+              element.dataset.lateSeekPlays = String(Number(element.dataset.lateSeekPlays) + 1);
+            });
+            // The second attempt is outside the original 250ms guard but inside
+            // the interval restarted by the first attempt.
+            for (const delay of [150, 330])
+              setTimeout(() => {
+                void element.play().catch(() => {});
+                const started = !element.paused;
+                setTimeout(() => {
+                  element.dataset.lateSeekResults = JSON.stringify([
+                    ...JSON.parse(element.dataset.lateSeekResults || '[]'),
+                    { started, paused: element.paused },
+                  ]);
+                }, 20);
+              }, delay);
+          },
+          { once: true },
+        );
+      },
+      { once: true },
+    );
+  });
+  await page.locator('.media-tools > summary').click();
+  await page.locator('[data-media-seek="30"]').first().click();
+  await expect(video).toHaveAttribute(
+    'data-late-seek-results',
+    '[{"started":true,"paused":true},{"started":true,"paused":true}]',
+  );
+  await expect
+    .poll(async () => Number(await video.getAttribute('data-late-seek-plays')))
+    .toBeGreaterThanOrEqual(2);
+  await expect(video).toHaveJSProperty('paused', true);
+  // Explicit play must invalidate a still-pending cancellation timer.
+  await page.locator('[data-media-toggle]').click();
+  await expect
+    .poll(() => video.evaluate((el) => (el as HTMLVideoElement).currentTime))
+    .toBeGreaterThan(30.5);
+  await expect(video).toHaveJSProperty('paused', false);
+  await expect(page.locator('[data-media-toggle]')).toHaveAttribute('aria-pressed', 'true');
   await page.goto('/zh/works/lora/');
 });
 

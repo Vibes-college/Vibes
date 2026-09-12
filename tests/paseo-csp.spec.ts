@@ -53,7 +53,12 @@ test('native image attachment thumbnail and lightbox decode blob images under pr
       if (info.project.use.isMobile) {
         // Native touch controls appear after touching the image canvas.
         await page.getByTestId('attachment-lightbox-canvas').tap();
-      } else await page.getByTestId('attachment-lightbox-canvas').hover();
+      } else {
+        // The decoded placeholder can be replaced by the canvas under the
+        // stationary pointer. Cross its boundary to exercise a real mouse enter.
+        await page.mouse.move(0, 0);
+        await page.getByTestId('attachment-lightbox-canvas').hover();
+      }
       await expect(page.getByTestId('attachment-lightbox-close')).toHaveCSS('opacity', '1');
       await page.getByTestId('attachment-lightbox-close').click();
       await expect(page.getByTestId('attachment-lightbox')).toHaveCount(0);

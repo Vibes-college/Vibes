@@ -21,7 +21,7 @@ code-sources:
     'tests/unit/paseo-page-context.test.ts',
     'tests/unit/paseo-fixture-headers.test.ts',
   ]
-code-revision: '6257b8984d6b8b965443d8aeefc9c7540c6780f0d11ed4f013ebb67c25f6a8d7'
+code-revision: '2b688d865f3f2eaecd2abbfff57dced85e5f210ddd3b9e50b9e4bfb179779abf'
 ---
 
 # 功能名：使用本地助手
@@ -107,14 +107,14 @@ code-revision: '6257b8984d6b8b965443d8aeefc9c7540c6780f0d11ed4f013ebb67c25f6a8d7
 
 2026-09-12在内置浏览器使用用户已配对的兼容v0.7.2主机，确认Online/Relay、实际对话与`~/Vibes/Chat`目录；小窗/全屏、收起重开、中英切换及刷新恢复通过，证据为`resources/evidence/013-paseo-web-integration/converge/real-relay-result.json`。新电脑安装、其他Daemon版本和直接连接未纳入本轮验收。
 
-2026-09-12当前产品的完整verify（244项浏览器通过、5项设备条件跳过）、budget与同版本云端预览核对通过；既有布局与听写证据仍按原范围保留。具体范围与证据见[013任务验收记录](../../specs/013-paseo-web-integration/tasks.md#8-本轮反馈统一布局与本地英语听写)。完整能力矩阵、长时与真机仍待验收，范围见[013规格](../../specs/013-paseo-web-integration/spec.md)。
+2026-09-12产品提交`010f66f`的完整verify（244项浏览器通过、5项设备条件跳过）、budget与同版本云端预览核对通过；既有布局与听写证据仍按原范围保留。具体范围与证据见[013任务验收记录](../../specs/013-paseo-web-integration/tasks.md#8-本轮反馈统一布局与本地英语听写)。完整能力矩阵、长时与真机仍待验收，范围见[013规格](../../specs/013-paseo-web-integration/spec.md)。
 
 ## 对应的自动化测试
 
 - `tests/paseo-loading.spec.ts`：普通浏览/无JS零加载、气泡5秒隐藏与鼠标/键盘重显、触屏关闭后再次提示及换篇重置、即时引导、资源失败重试、单一根与动态样式保留、全屏背景锁定及浏览器前进后退的阅读位置、受控可见视口布局。
 - `tests/paseo-chat.spec.ts`注册`mock-operations.ts`、`mock-chat-selection.ts`、`article-reference.ts`与`default-directory.ts`：真实固定版mock协议下的流式输出、工具、审批、停止、会话选择和文章引用；无Codex的新环境还核对实际Chat目录、没有自动模型选择或创建Agent、原生选择及草稿保留；设备、家目录和工作目录由`tests/fixtures/paseo-webui/`隔离。
 - `tests/paseo-recovery.spec.ts`注册`tests/fixtures/paseo-webui/mock-presentation.ts`：单工具栏、听写主按钮、新建工作区点击与草稿保留、Files全屏面板尺寸和打开文件后的关闭，以及隐藏与恢复时的连接、订阅和活动状态；模拟信号不代替真机挂起。
-- `tests/paseo-csp.spec.ts`：真实图片选择、blob缩略图与灯箱解码、触屏点按图片后关闭、带行号文件链接及HTML交互与隔离；WebKit图片用例使用独立临时持久profile并在结束时删除，其余用例保持临时上下文。fixture按构建后的响应头路径规则运行，实际Cloudflare响应仍需部署验收。
+- `tests/paseo-csp.spec.ts`：真实图片选择、blob缩略图与灯箱解码、触屏点按及桌面鼠标重新进入图片后显示控件并关闭、带行号文件链接及HTML交互与隔离；WebKit图片用例使用独立临时持久profile并在结束时删除，其余用例保持临时上下文。fixture按构建后的响应头路径规则运行，实际Cloudflare响应仍需部署验收。
 - `tests/unit/paseo-webui-contract.test.ts`、`tests/unit/paseo-page-context.test.ts`和`tests/unit/paseo-fixture-headers.test.ts`：宿主事件、公开文章字段、非法输入和预览响应头边界。
 - `npm run paseo:build`纳入原生新草稿默认模型与偏好保护、窄屏文件入口、compact按文字切换按钮、听写取消与失败重试，以及浅色初始化、保存设置恢复和独立主题边界测试；这些状态测试不代替真实麦克风与电脑模型联调。
 
