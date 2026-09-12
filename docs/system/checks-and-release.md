@@ -12,7 +12,7 @@ code-sources:
     'playwright.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '2c19c65519f3f9af7fb0c8862de21a11d5b6e11816e1796fcf767481113794d9'
+code-revision: 'b473cff91383ce6045e57c61da96527190eacf443188ffbff3da2e60ab61f0e5'
 ---
 
 # 检查与发布
@@ -134,6 +134,8 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 content:validate核对媒体结构、引用、字节及真实数值；budget另报告mediaJavascriptGzip，保留公共脚本门槛。tests/media.spec.ts覆盖三个浏览器项目的延迟加载、章节、跳转暂停、连续迟到播放与保护解除后的恢复、原生播放/暂停与页面按钮同步、慢章节补充下载取消、失败重试、图库、数据、搜索替换与无JS；外站响应在自动化中隔离，实际第三方播放须用内置浏览器另验，不能将测试桩当作原站证据。
 
 ## 浏览器测试
+
+连续注入原生play的模拟压力用例仍要求真正触发播放、正确暂停及重新播放的进度；该合成场景的按钮pressed/loading状态只保存诊断，不阻断CI，普通原生控件与页面按钮同步仍保留断言。文章引用fixture等待Astro启用入口后验证草稿和引用，键盘遍历只由paseo-loading的独立用例覆盖，不在引用业务里重复。
 
 本地与CI使用同一配置和测试文件。4322必须空闲，测试禁止复用现成服务，避免误测另一个任务。浏览器未安装、端口占用、启动超时和断言失败都返回失败。Playwright负责启动与清理服务，失败追踪保存在被忽略的test-results/；CI失败时保存7天。
 

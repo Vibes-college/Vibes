@@ -35,7 +35,7 @@ code-sources:
     'public/icons/',
     'tests/explore.spec.ts',
   ]
-code-revision: '7df254bd187598714ecd6dbd4f4628ae42d890d0912165c7ddf02a44dbfd3a47'
+code-revision: 'fa656159b84905eadb49b7a6989bab4f9da841981a88392d52286480cba379d2'
 ---
 
 # 功能名：浏览与搜索作品
