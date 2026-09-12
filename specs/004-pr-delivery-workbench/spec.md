@@ -4,7 +4,7 @@ describes: 'PR工作台、节约CI与正式站交付'
 status: 'complete'
 feature-ids: ['document-governance', 'project-commands']
 amends: ['001', '002']
-amended-by: []
+amended-by: ['014']
 approved-artifacts: []
 research-trigger: '预览、检查与正式部署触发分离，以及历史决策迁移的完整性'
 ---

@@ -33,3 +33,5 @@ shaped-by: ['002']
 | [013 Paseo原生助手接入与分阶段体验](013-paseo-web-integration/spec.md) | complete | article-read, explore-browse, local-assistant, project-commands |
 
 011、012分别保留在[PR #10](https://github.com/Vibes-college/Vibes/pull/10)与[PR #11](https://github.com/Vibes-college/Vibes/pull/11)的未合并分支；编号不复用，其源码和证据通过013的research引用。
+
+| [014 复用验收与快速生产发布](014-ci-release-reuse/spec.md) | draft | local-assistant, project-commands |
