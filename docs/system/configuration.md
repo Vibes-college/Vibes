@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '配置和环境变量'
 status: 'current'
-shaped-by: ['001', '004', '005', '009', '010', '013', '014', '015']
+shaped-by: ['001', '004', '005', '009', '010', '013', '014', '015', '016']
 code-sources:
   [
     'package.json',
@@ -26,7 +26,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: '92e959ddf1ab5bf2ec4533d24e1aafe8485fc370a955e3704ad1fc298597e606'
+code-revision: 'a0ddf5695ce895b0d0ae7f0f266dd59be51b234698a6d79522aec673117a321f'
 ---
 
 # 配置和环境变量
@@ -113,3 +113,5 @@ Astro在公共布局启用ClientRouter，`prefetchAll:false`关闭全站自动�
 媒体和平台登记见src/config/media.ts及[媒体规则](rules.md#媒体加载与体积)。浏览器只在点击后创建YouTube、Spotify、B站或已核对原站的iframe；媒体下载、账号和地区限制由平台决定，无平台API密钥。音视频文件只从同源或指定来源加载，图表数据经有界GET读取；完整来源不提前挂到元素。2048仅在点击后读取本站MIT源码模板，以不允许同源访问的sandbox运行。构建时scripts/sandbox-game.ts将固定游戏的CSS/JS内嵌到64KiB以内的game-bundled.txt，保留旧game.txt，脚本按精确SHA256加入所有页面共用的CSP；沙盒不再发起样式或脚本子请求，避免部分浏览器网络环境阻止不透明来源的资源访问。开发服务器仍读取原始素材。游戏脚本继续计入媒体预算一次，不访问父页面DOM或持久存储；仅向父页面报告初始化，父页面核对消息确实来自当前沙盒。5秒没有初始化信号会停止并提供完整刷新入口，恢复旧页面继承CSP不含新摘要的情况。
 
 ESLint仅对public/media/2048/game.js这一份带MIT署名的上游压缩分发文件豁免本项目风格规则；自有媒体代码仍完整检查，原始来源版本见同目录SOURCE.txt，实际游戏操作与总脚本预算仍有测试。
+
+内容验收使用playwright.content.config.ts，仅安装Chromium、不启动Paseo测试服务；完整配置不变。内容分类使用@astrojs/mdx锁定依赖中的MDX解析器，首次环境仍运行npm ci。

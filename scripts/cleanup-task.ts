@@ -59,7 +59,7 @@ async function main(): Promise<void> {
       .split('\0')
       .filter(Boolean);
     // 文档维护无需重发网站，但必须有该main提交的成功检查，不能把失败的合并当作收尾。
-    if (classifyChanges(paths) !== 'full') {
+    if (['docs', 'tools'].includes(classifyChanges(paths))) {
       const checks = github(
         `actions/workflows/check.yml/runs?event=push&head_sha=${pr.merge_commit_sha}&per_page=20`,
       ) as { workflow_runs: { conclusion: string; head_branch: string }[] };

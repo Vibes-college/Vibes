@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '009', '010', '013', '014', '015']
+shaped-by: ['001', '003', '005', '006', '007', '009', '010', '013', '014', '015', '016']
 code-sources:
   [
     '.github/workflows/check.yml',
@@ -23,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'fb1a127f8f3e59f38a3656cbf38113c884284f33c48fdb4e4f9c409ca64acf62'
+code-revision: '5e15d0fe4d29b6ce14d3fe5e5eabd051df889678a04569108ed99d3a53d5b0c7'
 ---
 
 # 常量、规则表与正则
@@ -153,3 +153,5 @@ docs/DECISIONS.md只能追加，原LESSONS历史迁移时保留旧正文；新�
 MDX仅为需要交互的文章启用React islands；普通Markdown正文不需要React，多实例共享模块，主动打开助手另行加载其原生运行时。章节和事实锚点限制见[MDX规则](markdown.md#mdx互动文章)。detail.ts、detail-gestures.ts与detail-paging.ts共用组件区域排除，避免键盘、横滑和纵向翻页抢走组件输入。scripts/content-security.ts仅为本次构建产物的确切内联脚本向主页面追加SHA256许可，主页面不启用脚本unsafe-inline。
 
 MDX格式整篇关闭左右拖动及长按拖动换篇，作品概览页顶部的相邻文章链接保留；普通Markdown维持原有手势。组件区域仍排除阅读键盘和纵向封面翻页手势。
+
+内容发布范围新增content：正文与受限MDX通过AST分类后执行内容构建、预算和页面冒烟；新增执行逻辑回退full。Paseo静态缓存及凭据隔离规则集中于[内容贡献](content-contributions.md)，不免除生产SHA与资源门槛。

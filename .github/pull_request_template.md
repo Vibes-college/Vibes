@@ -2,10 +2,12 @@
 tense: 'living'
 describes: '功能PR工作台模板'
 status: 'current'
-shaped-by: ['004']
+shaped-by: ['004', '016']
 ---
 
 提交PR描述时移除本文件的front matter和本提示，填写具体内容；首版spec即可创建Draft，未完成项据实保留。
+
+普通内容改进只需填写目标/涉及文章、来源依据、检查结果和预览状态；规格及独立代码审查可写不适用。完整步骤见docs/system/content-contributions.md。功能与基础设施PR继续填写全部适用项。
 
 目标与范围：
 规格与详细tasks链接：

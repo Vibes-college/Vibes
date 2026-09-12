@@ -4,7 +4,7 @@ describes: '复用可信PR验收以缩短合并后发布等待'
 status: 'complete'
 feature-ids: ['project-commands', 'local-assistant', 'document-governance']
 amends: ['004', '013']
-amended-by: ['015']
+amended-by: ['016', '015']
 approved-artifacts: []
 research-trigger: '模拟合并验收与最终代码一致性的证明、生产产物边界及重型准备去重'
 ---

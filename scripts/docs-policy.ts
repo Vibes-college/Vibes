@@ -20,6 +20,7 @@ const livingFiles = new Set([
   'docs/system/configuration.md',
   'docs/system/markdown.md',
   'docs/system/content-model.md',
+  'docs/system/content-contributions.md',
   'docs/system/rules.md',
   'docs/system/interfaces.md',
   'docs/system/local-assistant.md',

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '维护作品内容'
 status: 'current'
-shaped-by: ['001', '003', '008', '009', '010', '013']
+shaped-by: ['001', '003', '008', '009', '010', '013', '016']
 code-sources:
   [
     'src/lib/content/',
@@ -23,6 +23,8 @@ code-revision: 'c7d7547a8e14e9ce8d659ed04b4ca42b49f132e3308f9c6e4af5267e30445634
 维护者通过AI编辑作品文件，校验原文与译文后，把要发布的内容交给网站发布流程。
 
 ## 用户操作路径
+
+可直接从文章的GitHub编辑入口提出改进PR，完整操作、检查分类、预览和失败处理见[GitHub内容贡献](../system/content-contributions.md)。正文及批准MDX组件组合走内容通道；新增可执行代码仍完整验收。
 
 1. 明确要新增或修改的作品、可靠来源和原文语言，让AI编辑`src/content/works/{id}/work.json`与`zh.md`或`en.md`（需要交互时用同名`.mdx`）；网站没有编辑后台。
 2. 图表数据先核对来源并保存到public/media下的JSON或CSV文件，dataset填写对应/media路径，不填写远程URL。填写稳定ID、顺序、来源、预览和实际可提供的信息；标签使用`src/data/taxonomy.json`，不要把同一作品改名成另一个身份。
@@ -97,6 +99,8 @@ MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器14
 
 媒体维护验收：2026-09-07，tests/unit/media.test.ts及media-tools.test.ts覆盖素材引用、地址/体积/字幕/数据拒绝和处理行为；实际图片、视频、音频处理产生独立清单及可用文件。完整verify/budget通过，处理清单与验收记录保存在resources/evidence/010-media-previews及.scratch/media-previews；不把外部原作加载状态当作素材校验结果。
 
+内容通道有效验收：2026-09-12，分类及协议边界包含在143项单元测试中；完整回归247项通过、5项按设备跳过，budget通过。已上传PR #15阶段预览，并用内置浏览器核对正文排版与对应语言的GitHub编辑入口；这是基础设施预览证据，文章独立发布与生产耗时仍以PR收尾实际记录为准。原始记录在resources/evidence/ai-native-ui-publication。
+
 ## 对应的自动化测试
 
 - `tests/unit/content.test.ts`：真实作品身份、正文、HTTPS来源、MDX文件及重复语言拒绝；`tests/mdx.spec.ts`验证互动文章真实构建后的阅读路径。
@@ -114,4 +118,4 @@ MDX专项验收按`tests/mdx.spec.ts`及`resources/evidence/009-mdx-articles/`�
 
 ## 已知问题 / 待办
 
-来源真实性、使用授权和翻译质量必须由编辑核对，自动校验无法证明。英文是否发布取决于各作品文件，AI审核不等于人工审核；当前数量运行content:validate查看。没有公众投稿、在线编辑或自动发布译文功能。
+来源真实性、使用授权和翻译质量必须由编辑核对，自动校验无法证明。英文是否发布取决于各作品文件，AI审核不等于人工审核；当前数量运行content:validate查看。没有站内投稿、在线编辑或自动发布译文功能；GitHub贡献按上述PR路径处理。

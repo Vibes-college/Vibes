@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '自动检查与发布规则'
 status: 'current'
-shaped-by: ['002', '003', '004', '005', '009', '010', '013', '014', '015']
+shaped-by: ['016', '002', '003', '004', '005', '009', '010', '013', '014', '015']
 code-sources:
   [
     'package.json',
@@ -10,9 +10,10 @@ code-sources:
     'tests/',
     '.github/workflows/',
     'playwright.config.ts',
+    'playwright.content.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '819bfe25e895aa2d9d0c79a545ae647c9f0f560302fc74e7ff114fef9d52c8d3'
+code-revision: '4535b90af05487aa5d019a378b243c6c241f773a8eafab6f170e5efdc1726e6d'
 ---
 
 # 检查与发布
@@ -23,11 +24,12 @@ code-revision: '819bfe25e895aa2d9d0c79a545ae647c9f0f560302fc74e7ff114fef9d52c8d3
 
 Draft仅运行独立的Draft progress：docs范围运行docs:check与format:check，其他范围运行npm run check，不启动浏览器或预算构建；verify/budget跳过，不能视为已验收。Ready及后续修改按整个PR差异执行下表。PR较新运行取消旧检查；main运行不在上传途中取消，正式发布单独串行并拒绝旧SHA。Node22.20；scope只额外读取Actions和PR证据，权限为actions:read、pull-requests:read及contents:read，其他普通检查contents:read，只有发布job持有Cloudflare secret；阶段预览在本机按需运行，不产生额外GitHub CI。
 
-| 差异范围                                                      | verify实际执行                                           | budget结果检查                 |
-| ------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------ |
-| docs：治理Markdown、宪章、项目模板及已知Agent指导文件         | docs:check和format:check，不安装浏览器                   | 要求verify成功且预算明确不适用 |
-| tools：文档检查器及其单元测试，可混合文档                     | npm run check，不安装浏览器                              | 要求verify成功且预算明确不适用 |
-| full：网站内容、源码、数据库、依赖、CI/测试配置、其他未知路径 | 一次paseo:ci→npm run verify→npm run budget→产物preflight | 要求verify成功且预算明确通过   |
+| 差异范围                                                       | verify实际执行                                                                  | budget结果检查                 |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------ |
+| docs：治理Markdown、宪章、项目模板及已知Agent指导文件          | docs:check和format:check，不安装浏览器                                          | 要求verify成功且预算明确不适用 |
+| tools：文档检查器及其单元测试，可混合文档                      | npm run check，不安装浏览器                                                     | 要求verify成功且预算明确不适用 |
+| content：正文、work.json、栅格图片及受限MDX组合                | 精确Paseo静态缓存→check→budget构建→preflight→文章Chromium冒烟；缓存缺失回退full | 要求verify成功且预算明确通过   |
+| full：可执行MDX、源码、数据库、依赖、CI/测试配置、其他未知路径 | 一次paseo:ci→npm run verify→npm run budget→产物preflight                        | 要求verify成功且预算明确通过   |
 
 verify与预算构建共享一个runner，budget仍是同名必需检查，以always执行实际结果校验；失败、取消、跳过或缺失输出均不能成为成功预算。完整PR保留全部原生测试、类型检查和三浏览器用例，不因共享准备削减覆盖。
 
@@ -37,7 +39,7 @@ verify与预算构建共享一个runner，budget仍是同名必需检查，以al
 
 满足全部条件时，main运行paseo:production、基础check、生产budget构建及preflight，不重复完整E2E或原生回归；仍生成当前main的production artifact。Draft/docs/tools不产生完整证明；旧CI、直接push、最新失败/取消/未完成、不同tree、Fork、过期/歧义或API错误均自动完整回退，不向旧绿灯回溯。读取有数量、大小与超时上限；记录只作为JSON解析，不执行PR产物或搬运依赖。Actions摘要说明复用来源或回退原因。
 
-手动触发、空差异或范围基线不可读均选择full。分类包含删除、改名前后路径和本地未跟踪文件；src中的文章也属于网站变化。路径白名单由脚本与tests/unit/check-scope.test.ts维护。分类不取代测试：需要缩减新的工具范围时先证明它不影响网站。纯Agent指导包括Skills入口及参考Markdown、preset命令/参考/声明与登记、Spec Kit workflow及overlay声明、安装manifest和PR描述模板；这些文件不参与网站构建。相同目录里的脚本、未知文件及任何GitHub workflow仍归full，混合差异取较重范围。纯规则PR仍产生轻量成功状态，以满足分支保护；不使用paths-ignore或跳过CI标记造成必需状态缺失。
+手动触发、空差异或范围基线不可读均选择full。分类包含删除、改名前后路径和本地未跟踪文件；src中的文章属于网站变化，受限语法的纯内容差异走content并发布；MDX AST解析拒绝未知执行语法，边界见[GitHub内容贡献](content-contributions.md)。路径白名单由脚本与tests/unit/check-scope.test.ts维护。分类不取代测试：需要缩减新的工具范围时先证明它不影响网站。纯Agent指导包括Skills入口及参考Markdown、preset命令/参考/声明与登记、Spec Kit workflow及overlay声明、安装manifest和PR描述模板；这些文件不参与网站构建。相同目录里的脚本、未知文件及任何GitHub workflow仍归full，混合差异取较重范围。纯规则PR仍产生轻量成功状态，以满足分支保护；不使用paths-ignore或跳过CI标记造成必需状态缺失。
 
 PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA累计比较到当前源码，无法读取/非法/非当前历史时完整检查，防止旧网页提交被后续文档提交挤掉而漏发；checkout获取完整历史。冻结检查仍以事件比较提交和main共同祖先为准。DOCS_BASE_REF提供比较提交；冻结检查取它与origin/main的共同祖先，仅冻结已进入main的历史，不把未合并分支的complete稿提前冻结。无远端main的本地测试仓库可使用本地main，找不到有效基线仍失败。CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
 
@@ -107,7 +109,7 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 
 ## 阶段预览与恢复
 
-`npm run release:preview -- <PR号>`要求干净、已推送且对应本仓库open PR head的源码；完整本地verify/budget后复核源码和远端PR未变，以生产canonical构建并添加noindex响应头，使用versions upload --preview-alias pr-N。它不会提升生产版本或修改域名，返回实际URL后核对SHA与页面，AI更新PR的链接、对应SHA及可体验范围。源码dirty时保留用户文件，使用干净隔离worktree；不忽略脏状态强行发布。
+`npm run release:preview -- <PR号>`要求干净、已推送且对应本仓库open PR head的源码；本地按整个PR范围验收后（content执行verify:content，其余verify/budget）复核源码和远端PR未变，以生产canonical构建并添加noindex响应头，使用versions upload --preview-alias pr-N。它不会提升生产版本或修改域名，返回实际URL后核对SHA与页面，AI更新PR的链接、对应SHA及可体验范围。源码dirty时保留用户文件，使用干净隔离worktree；不忽略脏状态强行发布。
 
 `npm run deploy`拒绝本地直接生产发布并指向main自动流程。`npm run release:restore -- <version-id>`仅接受resources/evidence/releases中已验证、账户/域名/版本匹配的生产记录，恢复后重新检查线上SHA与页面；先从CI artifact取回所需记录。旧测试站记录仅为历史证据，不直接作为新生产恢复记录。
 
@@ -126,14 +128,14 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 | `npm run verify`                    | check→db:reset→test:e2e，完整验收，失败停止；不部署                              |
 | `npm run budget`                    | 构建并检查脚本、首页和优化图片体积；限值见[常量](../system/rules.md)             |
 | `npm run optimize:images`           | 对已有dist单独生成图片变体和manifest；通常由build自动调用                        |
-| `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/full，不执行检查                   |
+| `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/content/full，不执行检查           |
 | `npm run db:reset`                  | 删除本项目本机测试D1数据，迁移并填入固定样例                                     |
 | `npm run db:migrate`                | 只应用本地未执行迁移；不接受线上参数                                             |
 | `npm run deploy`                    | 拒绝本地直接生产部署，main检查成功后自动发布                                     |
-| `npm run release:preview -- <PR号>` | 本地完整验收后上传PR预览版本，不提升生产                                         |
+| `npm run release:preview -- <PR号>` | 本地按范围验收后上传PR预览版本，不提升生产                                       |
 | `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                        |
 
-按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；页面和测试基础设施修改运行verify与budget。
+按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；受限内容修改运行verify:content；页面组件和测试基础设施修改运行verify与budget。
 
 ## 媒体处理
 

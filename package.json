@@ -27,6 +27,7 @@
     "optimize:images": "node --experimental-strip-types scripts/optimize-images.ts",
     "docs:check": "node --experimental-strip-types scripts/docs-check.ts",
     "ci:scope": "node --experimental-strip-types scripts/check-scope.ts",
+    "verify:content": "npm run check && npm run budget && node --experimental-strip-types scripts/release-preflight.ts && npx playwright test --config playwright.content.config.ts",
     "content:validate": "node --experimental-strip-types scripts/validate-content.ts",
     "content:revision": "node --experimental-strip-types scripts/validate-content.ts revision",
     "release:restore": "node --experimental-strip-types scripts/release.ts restore",
