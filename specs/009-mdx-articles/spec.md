@@ -4,7 +4,7 @@ describes: '按需交互的MDX文章'
 status: 'complete'
 feature-ids: ['article-read', 'content-maintenance']
 amends: ['001', '006', '007', '008']
-amended-by: ['010']
+amended-by: ['016', '010']
 research-trigger: '保留章节结构与交互组件加载的正文编译方式'
 approved-artifacts: []
 ---

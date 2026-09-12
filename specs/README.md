@@ -37,3 +37,5 @@ shaped-by: ['002']
 | [014 复用验收与快速生产发布](014-ci-release-reuse/spec.md) | complete | document-governance, local-assistant, project-commands |
 
 | [015 按任务范围执行Agent指导规则](015-agent-guidance/spec.md) | complete | document-governance, project-commands |
+
+| [016 内容发布通道](016-content-publishing-lane/spec.md) | in-progress | content-maintenance, article-read, project-commands |
