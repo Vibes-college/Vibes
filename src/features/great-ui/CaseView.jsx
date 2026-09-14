@@ -89,34 +89,35 @@ export function CaseView({ entry, entries, state, onChange, onSelect, onStartJou
               {entry.related && (
                 <div className="related-learning">
                   {entry.related.alternatives.length > 0 && (
-                    <>
-                      <h3>可以比较的同类作品</h3>
-                      <p>承担相近角色，按内容和操作方式选择。</p>
+                    <section className="related-group" aria-label="相似作品">
+                      <h3>相似作品</h3>
                       {entry.related.alternatives.map((item) => (
                         <button
                           key={item.slug}
-                          className="related-case"
+                          className="related-work"
                           onClick={() => onSelect(item)}
                         >
-                          {item.title} →
+                          <span className="related-work-name">{item.title}</span>
+                          <ArrowRight size={14} aria-hidden="true" />
                         </button>
                       ))}
-                    </>
+                    </section>
                   )}
                   {entry.related.principles.length > 0 && (
-                    <>
-                      <h3>同一个原理，还能怎样用</h3>
+                    <section className="related-group" aria-label="相同原理">
+                      <h3>相同原理</h3>
                       {entry.related.principles.map((item) => (
                         <button
                           key={item.slug}
-                          className="related-case"
+                          className="related-work"
                           onClick={() => onSelect(item)}
                         >
-                          {item.title}
-                          <small>{item.shared.join(' · ')}</small>
+                          <span className="related-work-name">{item.title}</span>
+                          <span className="related-work-note">{item.shared.join(' · ')}</span>
+                          <ArrowRight size={14} aria-hidden="true" />
                         </button>
                       ))}
-                    </>
+                    </section>
                   )}
                 </div>
               )}

@@ -27,6 +27,7 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
   const focusAfter = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const motionPreference = useRef(reduced);
+  const directNavigation = useRef(reduced);
   motionPreference.current = reduced;
 
   const open = useCallback(async (id: string | null, push = true) => {
@@ -40,6 +41,7 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
     setError('');
     setReady(null);
     setContact(false);
+    directNavigation.current = motionPreference.current;
     setPhase(motionPreference.current ? 'covered' : 'covering');
     try {
       let data: ProjectData | null = null;
@@ -65,6 +67,7 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
   // Changing the preference completes the visual handoff without aborting the data request.
   useEffect(() => {
     if (!reduced) return;
+    directNavigation.current = true;
     if (phase === 'covering') setPhase('covered');
     if (phase === 'revealing') {
       setPhase('idle');
@@ -85,8 +88,8 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
     setReady(null);
     focusAfter.current = true;
     window.scrollTo(0, 0);
-    setPhase(reduced ? 'idle' : 'revealing');
-    if (reduced) {
+    setPhase(directNavigation.current || reduced ? 'idle' : 'revealing');
+    if (directNavigation.current || reduced) {
       setPending(false);
       busy.current = false;
     }
@@ -204,7 +207,7 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
           </>
         )}
       </div>
-      {!reduced && (
+      {!reduced && !directNavigation.current && (
         <Transition
           key={epoch}
           phase={phase}
@@ -213,7 +216,12 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
               setPhase((current) => (current === 'covering' ? 'covered' : current));
           }}
           onRevealed={() => {
-            if (epoch !== generation.current || motionPreference.current) return;
+            if (
+              epoch !== generation.current ||
+              motionPreference.current ||
+              directNavigation.current
+            )
+              return;
             setPhase('idle');
             setPending(false);
             busy.current = false;

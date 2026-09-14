@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { entries, index, capabilities } from '../../src/features/great-ui/content-build.mjs';
 import { validateCatalog, validateDetail } from '../../src/features/great-ui/catalog.ts';
 import { validateCapabilities } from '../../src/features/great-ui/composition/validate.ts';
@@ -7,6 +9,30 @@ import { createTask, taskText } from '../../src/features/great-ui/task.mjs';
 import { demoPlan } from '../../src/features/great-ui/composition/demos.ts';
 import reviews from '../../src/features/great-ui/data/source-review.json' with { type: 'json' };
 import upstream from '../../src/features/great-ui/data/upstream-catalog.json' with { type: 'json' };
+import recordings from '../../src/features/great-ui/data/local-recordings.json' with { type: 'json' };
+
+test('local replacement recordings match their provenance and never request the unavailable author host', async () => {
+  assert.equal(Object.keys(recordings).length, 11);
+  for (const [slug, recording] of Object.entries(recordings)) {
+    const entry = entries.find((item: { slug: string }) => item.slug === slug)!;
+    assert.equal(entry.reference, recording.source);
+    assert.equal(entry.previewRecording, `/media/${slug}-demo.mp4`);
+    assert.equal(entry.poster, `/media/${slug}-demo-poster.jpg`);
+    assert.match(entry.recordingCredit, /本地录制/);
+    assert.ok(recording.sourceFrames > 10);
+    for (const asset of [recording.video, recording.poster]) {
+      const bytes = await readFile(new URL('../../' + asset.path, import.meta.url));
+      assert.equal(bytes.length, asset.bytes, asset.path);
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), asset.sha256, asset.path);
+    }
+  }
+  assert.ok(
+    entries.every(
+      (entry: { previewRecording: string | null }) =>
+        !entry.previewRecording?.startsWith('https://ik.imagekit.io/zoffdbb7mk/'),
+    ),
+  );
+});
 
 test('all 48 published works have distinct Chinese learning material, fixed source review and resolvable relations', () => {
   assert.equal(validateCatalog(index).length, 48);

@@ -1,5 +1,32 @@
 import { expect, test } from '@playwright/test';
 
+test('a direct navigation stays direct when reduced motion is turned off during a slow request', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  let release: () => void = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route('**/journeys/field-notes.json', async (route) => {
+    await gate;
+    await route.continue();
+  });
+  await page.goto('/?journey=portfolio');
+  await page.getByRole('link', { name: '编辑设计 山野手记' }).click();
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-phase', 'covered');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect(page.locator('.journey-transition')).toHaveCount(0);
+  release();
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-project', 'field-notes');
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-phase', 'idle');
+  await expect(page.locator('.journey-transition, [inert]')).toHaveCount(0);
+  await page.getByRole('button', { name: '← 全部项目' }).click();
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-phase', 'covering');
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-phase', 'idle');
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-project', 'list');
+});
+
 for (const phase of ['idle', 'covering', 'covered', 'revealing']) {
   test(`live motion preference during ${phase} preserves navigation and updates the exported context`, async ({
     page,

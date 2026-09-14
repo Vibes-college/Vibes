@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '把Great UI全量作品整理为可理解、可改造、可验证串联的本地工作台'
-status: 'in-progress'
+status: 'complete'
 feature-ids: ['great-ui-learning', 'project-commands']
 amends: []
 amended-by: []

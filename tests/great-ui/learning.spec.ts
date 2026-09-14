@@ -1,10 +1,34 @@
 import { test, expect } from '@playwright/test';
 import { entries, index } from '../../src/features/great-ui/content-build.mjs';
 import { fileURLToPath } from 'node:url';
+import recordings from '../../src/features/great-ui/data/local-recordings.json' with { type: 'json' };
 
 const recordedFixture = fileURLToPath(
   new URL('../../src/features/great-ui/media/staggered-source-capture.mp4', import.meta.url),
 );
+
+test('all local replacement recordings decode and start without an external media request', async ({
+  page,
+}) => {
+  const external: string[] = [];
+  page.on('request', (request) => {
+    if (request.url().includes('imagekit.io')) external.push(request.url());
+  });
+  for (const slug of Object.keys(recordings)) {
+    await page.goto('/?case=' + slug);
+    const video = page.locator('.recording-stage video');
+    await expect
+      .poll(() =>
+        video.evaluate((node: HTMLVideoElement) => ({
+          decoded: node.videoWidth > 0 && node.readyState >= 2,
+          advanced: node.currentTime > 0.2 && !node.paused,
+          error: node.error?.code || null,
+        })),
+      )
+      .toEqual({ decoded: true, advanced: true, error: null });
+  }
+  expect(external).toEqual([]);
+});
 
 test('opening an external MP4 starts muted playback with no launch card or credit row', async ({
   page,

@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Great UI全量学习与组合的执行任务'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -28,11 +28,11 @@ amended-by: []
 ## 验证与现状同步
 
 - [x] T013 完成20个目标评估样本及12/8划分，报告召回、约束、条件披露；测量1,000/10,000条合成负载并注明只代表性能。
-- [ ] T014 通过独立great-ui:verify运行专用Playwright检查，覆盖48件详情和实际组合；完成内置浏览器的桌面、手机、三条路径与异常检查。
-- [ ] T015 更新docs/features/great-ui-learning.md、project-commands.md与受影响system说明和索引，复核源码摘要、运行方法、来源边界和有效证据。
-- [ ] T016 运行great-ui:verify、本地入口预算、产物和受影响检查器专项，不启动整站回归；修复本任务引入的问题并完成受影响复测。
-- [ ] T017 保存并推送有效进度，更新PR的实施清单与可体验入口；由独立Agent审查整个PR并复核最终SHA，处理审查发现后按规则转Ready。
-- [ ] T018 核对spec、plan、tasks及索引的真实完成状态，保留有用预览并清理任务测试资源；发布保持暂停。
+- [x] T014 通过独立great-ui:verify运行专用Playwright检查，覆盖48件详情和实际组合；完成内置浏览器的桌面、手机、三条路径与异常检查。
+- [x] T015 更新docs/features/great-ui-learning.md、project-commands.md与受影响system说明和索引，复核源码摘要、运行方法、来源边界和有效证据。
+- [x] T016 运行great-ui:verify、本地入口预算、产物和受影响检查器专项，不启动整站回归；修复本任务引入的问题并完成受影响复测。
+- [x] T017 保存并推送有效进度，更新PR的实施清单与可体验入口；由独立Agent审查整个PR并复核最终SHA，处理审查发现。按SC-008交付Draft PR；现有CI仍会把累计差异归为full，不能为转Ready启动用户已排除的整站回归。
+- [x] T018 核对spec、plan、tasks及索引的真实完成状态，保留有用预览并清理任务测试资源；发布保持暂停。
 
 ## 交付引用
 

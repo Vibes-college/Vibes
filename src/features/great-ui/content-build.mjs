@@ -4,6 +4,7 @@ import { entries as samples, structuredEntry, revision } from './content.mjs';
 import catalog from './data/upstream-catalog.json' with { type: 'json' };
 import curation from './data/curation.json' with { type: 'json' };
 import observations from './data/observations.json' with { type: 'json' };
+import localRecordings from './data/local-recordings.json' with { type: 'json' };
 
 const digest = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const repo = `https://github.com/Saurabh-2607/GreatUI/blob/${revision}`;
@@ -34,6 +35,7 @@ function curatedEntry(item) {
   const original = sourceIndex.get(item.slug);
   if (!original) throw new Error(`Unknown curated work: ${item.slug}`);
   const observation = observations[item.slug];
+  const localRecording = localRecordings[item.slug];
   const sourcePath = `components/ui/${item.sourceFile}.tsx`;
   const mediaUrl = new URL(original.previewUrlCandidate, original.canonicalUrl).href;
   const isImage = /\.(png|jpg|jpeg|webp)$/i.test(mediaUrl);
@@ -60,14 +62,15 @@ function curatedEntry(item) {
     license: `${repo}/LICENSE`,
     licenseNote: commonLicense,
     licenseLabel: '可商用 · 自定义许可',
-    recording: mediaUrl,
-    previewRecording: isImage ? null : mediaUrl,
+    recording: localRecording ? `/media/${item.slug}-demo.mp4` : mediaUrl,
+    previewRecording: localRecording ? `/media/${item.slug}-demo.mp4` : isImage ? null : mediaUrl,
     previewImage: isImage ? mediaUrl : null,
-    poster: observation?.poster || null,
-    recordingCredit: 'Great UI 原作演示',
-    recordingNote:
-      '演示媒体来自作者目录，按需从原地址播放；无法加载时可打开原作实际操作。当前页面观察与媒体可用性分别记录。',
-    localRecordingPath: null,
+    poster: localRecording ? `/media/${item.slug}-demo-poster.jpg` : observation?.poster || null,
+    recordingCredit: localRecording ? '本地录制 Great UI 原作交互' : 'Great UI 原作演示',
+    recordingNote: localRecording
+      ? '在原作线上页面实际操作并录制，使用本地 MP4 播放。录制时的页面无法确认部署 SHA；不是作者原有视频的副本。'
+      : '演示媒体来自作者目录，选中作品后从原地址播放；无法加载时可打开原作实际操作。当前页面观察与媒体可用性分别记录。',
+    localRecordingPath: localRecording?.video.path || null,
     sections: [
       { title: '它在做什么', text: item.sequence },
       { title: '效果是怎么形成的', text: `[[${termId}|${item.term[0]}]]：${item.mechanism}` },
@@ -126,6 +129,7 @@ function curatedEntry(item) {
         reviewed: true,
       },
       browser: observation || { status: 'pending', limitation: '尚未完成原作页面的本轮实际操作。' },
+      recording: localRecording || null,
       scope: `已阅读固定版本实现和示例。${observation?.summary || '原作页面观察待完成。'}`,
       limitation:
         '原作页面是访问时的线上版本，无法仅凭页面确认部署 SHA。源码结论固定于上述版本；未代表所有变体、真实手机或用户项目组合均已验证。',

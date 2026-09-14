@@ -1000,25 +1000,48 @@ dialog::backdrop {
 }
 
 .related-learning {
-  margin-block: 28px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
+  margin-block: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
 }
-.related-learning h3 {
-  margin: 16px 0 8px;
-  font-size: 14px;
+.related-group + .related-group {
+  margin-top: 24px;
 }
-.related-learning p,
-.related-learning small {
-  color: var(--muted);
-  font-size: 12px;
+.related-group h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
 }
-.related-learning .related-case {
-  display: block;
-  margin-block: 8px;
+.related-work {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: #48523e;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.related-work:last-child {
+  border-bottom: 0;
+}
+.related-work:hover {
+  background: #f7f8f3;
+}
+.related-work-name {
+  flex: 1;
+  min-width: 0;
   text-align: left;
 }
-.related-learning small {
-  display: block;
-  margin-top: 3px;
+.related-work-note {
+  flex: 0 1 38%;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: right;
+}
+.related-work svg {
+  flex-shrink: 0;
+  color: #858d7b;
 }

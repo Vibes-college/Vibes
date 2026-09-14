@@ -40,4 +40,4 @@ shaped-by: ['002']
 
 | [016 内容发布通道](016-content-publishing-lane/spec.md) | complete | article-read, content-maintenance, project-commands |
 
-| [018 Great UI全量学习与组合](018-great-ui-scale/spec.md) | in-progress | great-ui-learning, project-commands |
+| [018 Great UI全量学习与组合](018-great-ui-scale/spec.md) | complete | great-ui-learning, project-commands |

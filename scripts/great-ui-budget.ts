@@ -19,6 +19,7 @@ const actual = {
   capabilities: gzipSync(await readFile(path.join(root, 'content/capabilities.json'))).length,
   largestDetail: 0,
   localMedia: 0,
+  largestLocalMedia: 0,
 };
 for (const name of await readdir(path.join(root, 'content')))
   if (name.endsWith('.json') && !['catalog.json', 'capabilities.json'].includes(name))
@@ -26,9 +27,14 @@ for (const name of await readdir(path.join(root, 'content')))
       actual.largestDetail,
       gzipSync(await readFile(path.join(root, 'content', name))).length,
     );
-for (const name of await readdir(path.join(root, 'media')))
-  actual.localMedia += (await stat(path.join(root, 'media', name))).size;
+for (const name of await readdir(path.join(root, 'media'))) {
+  const size = (await stat(path.join(root, 'media', name))).size;
+  actual.localMedia += size;
+  actual.largestLocalMedia = Math.max(actual.largestLocalMedia, size);
+}
 // Measured baseline is ~80/5/51 KiB JS/CSS/lazy JS. Leave bounded room without changing production budgets.
+// Fourteen local clips include eleven recordings made after author URLs returned 429.
+// Only the selected clip loads; cap both individual files and the complete local media set.
 const limits = {
   initialJs: 100 * 1024,
   initialCss: 8 * 1024,
@@ -36,7 +42,8 @@ const limits = {
   catalog: 20 * 1024,
   capabilities: 24 * 1024,
   largestDetail: 16 * 1024,
-  localMedia: 512 * 1024,
+  localMedia: 2 * 1024 * 1024,
+  largestLocalMedia: 400 * 1024,
 };
 for (const key of Object.keys(limits) as (keyof typeof limits)[]) {
   assert.ok(actual[key] > 0, key + ' is missing');
@@ -44,11 +51,11 @@ for (const key of Object.keys(limits) as (keyof typeof limits)[]) {
 }
 const report = {
   generatedAt: new Date().toISOString(),
-  units: 'gzip bytes except localMedia (original file bytes)',
+  units: 'gzip bytes except localMedia and largestLocalMedia (original file bytes)',
   actual,
   limits,
   scope:
-    'Independent local workbench. Remote author media excluded; not fetched before play. Production budget remains unchanged.',
+    'Independent local workbench. Remote author media excluded; only the selected preview is loaded automatically. Production budget remains unchanged.',
 };
 await mkdir('resources/evidence/018-great-ui-scale', { recursive: true });
 await writeFile(

@@ -1,0 +1,211 @@
+{
+  "pixel-to-ascii-image": {
+    "source": "https://www.great-ui.com/components/pixel-to-ascii-image",
+    "recordedAt": "2026-09-14T13:33:32.846Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "将指针移入图像、移出，再移入，观察图像与字符画转换。",
+    "durationSeconds": 7,
+    "sourceFrames": 131,
+    "video": {
+      "path": "src/features/great-ui/media/pixel-to-ascii-image-demo.mp4",
+      "bytes": 144978,
+      "sha256": "abcb447fe7540103bb13a346e593b0241fd8805891e475676dd8abeb5508394e"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/pixel-to-ascii-image-demo-poster.jpg",
+      "bytes": 30584,
+      "sha256": "1841c88d07826aa56e4031395183c4d89e0b4b71df7daa4cb7f703f98c4da168"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "split-theme-provider": {
+    "source": "https://www.great-ui.com/components/split-theme-provider",
+    "recordedAt": "2026-09-14T13:38:07.078Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "依次点击 Horizontal Split Wipe 和 Vertical Split Wipe，观察浅色与深色的分裂切换。",
+    "durationSeconds": 7,
+    "sourceFrames": 121,
+    "video": {
+      "path": "src/features/great-ui/media/split-theme-provider-demo.mp4",
+      "bytes": 34139,
+      "sha256": "f2b0acf19615060be235246b80f19aa7e23e103c9e9d9a017404a857cf211afe"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/split-theme-provider-demo-poster.jpg",
+      "bytes": 15046,
+      "sha256": "13cbd6b8c9fa2e1c589f241ad9c2e4ad017cdad6e5c63c99847b9d0f175e6678"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "color-wipe-page-transition": {
+    "source": "https://www.great-ui.com/components/color-wipe-page-transition",
+    "recordedAt": "2026-09-14T13:38:35.431Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "依次点击 Left Wipe 和 Top Curtain，观察彩色边缘、内容替换与幕布退出。",
+    "durationSeconds": 7,
+    "sourceFrames": 126,
+    "video": {
+      "path": "src/features/great-ui/media/color-wipe-page-transition-demo.mp4",
+      "bytes": 36006,
+      "sha256": "dba4a751fbc06fa21acbadb958813e13e754fb66e828014839d38f29ac08f5df"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/color-wipe-page-transition-demo-poster.jpg",
+      "bytes": 16881,
+      "sha256": "47684616c5e04f352abc8b8b204afbcb11407baf37aad4400dca6e3418d075d5"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "split-line-fly-in": {
+    "source": "https://www.great-ui.com/components/split-line-fly-in",
+    "recordedAt": "2026-09-14T13:39:09.685Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "从原作初始位置连续向下滚动，观察各行文字交替飞入。",
+    "durationSeconds": 7,
+    "sourceFrames": 129,
+    "video": {
+      "path": "src/features/great-ui/media/split-line-fly-in-demo.mp4",
+      "bytes": 278134,
+      "sha256": "da088733bc4db7eb6c86542158f7e95f1d3689a77330292515ecd56a5a2780c7"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/split-line-fly-in-demo-poster.jpg",
+      "bytes": 52645,
+      "sha256": "2ce8330affc3ecf27dde428af392910a72145ec35d3db36113bb99ccf6578008"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "blur-scroll-reveal": {
+    "source": "https://www.great-ui.com/components/blur-scroll-reveal",
+    "recordedAt": "2026-09-14T13:39:29.564Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "从原作初始位置连续向下滚动，观察文字从模糊到清晰。",
+    "durationSeconds": 7,
+    "sourceFrames": 139,
+    "video": {
+      "path": "src/features/great-ui/media/blur-scroll-reveal-demo.mp4",
+      "bytes": 333147,
+      "sha256": "205e6d2a0b15b648dfae7ebd7cb52e591fcfd29c1ad9eb5b4c3eb2097c48ee6b"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/blur-scroll-reveal-demo-poster.jpg",
+      "bytes": 60706,
+      "sha256": "0d56b7ce367bd48c3a017e7a09525351ed7eb4a1928936a76b68d3a864694f28"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "word-focus-scroll": {
+    "source": "https://www.great-ui.com/components/word-focus-scroll",
+    "recordedAt": "2026-09-14T13:39:45.483Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "从原作初始位置连续向下滚动，观察逐词聚焦。",
+    "durationSeconds": 7,
+    "sourceFrames": 133,
+    "video": {
+      "path": "src/features/great-ui/media/word-focus-scroll-demo.mp4",
+      "bytes": 275239,
+      "sha256": "234ad1f314b49d0471dd7fd58b3b901829484054fe62b84e9558b3c78ffdf5aa"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/word-focus-scroll-demo-poster.jpg",
+      "bytes": 68644,
+      "sha256": "e689b7571320176d575fa7a9386190410a31716c2eef8ec49ea525a92cbf330d"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "text-on-path-scroll": {
+    "source": "https://www.great-ui.com/components/text-on-path-scroll",
+    "recordedAt": "2026-09-14T13:43:47.961Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "先将曲线文字滚入视口，再连续滚动，观察文字沿曲线移动。",
+    "durationSeconds": 7,
+    "sourceFrames": 133,
+    "video": {
+      "path": "src/features/great-ui/media/text-on-path-scroll-demo.mp4",
+      "bytes": 77117,
+      "sha256": "49db5314a374fbd1f8d882d240a99bc57b6c0bb9752e9e02f72773a68f707011"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/text-on-path-scroll-demo-poster.jpg",
+      "bytes": 7920,
+      "sha256": "e9c0176090d87206936ae9d07aa11e91d196673ad9954a879e4fd5c28d2eadb1"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "scrambled-install-command": {
+    "source": "https://www.great-ui.com/components/scrambled-install-command",
+    "recordedAt": "2026-09-14T13:40:59.901Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "依次切换 pnpm、yarn、bun，观察安装命令的乱码过渡。",
+    "durationSeconds": 7,
+    "sourceFrames": 129,
+    "video": {
+      "path": "src/features/great-ui/media/scrambled-install-command-demo.mp4",
+      "bytes": 56170,
+      "sha256": "b3c6bd7aed7b4bdd937dbfba8372e77368832173b4f200a5cb11f69f7a55d311"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/scrambled-install-command-demo-poster.jpg",
+      "bytes": 8658,
+      "sha256": "d8e6e995e250c8220f4619cb1e2007bd154e94311efbfd509401e285956a3bfa"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "multilingual-quote": {
+    "source": "https://www.great-ui.com/components/multilingual-quote",
+    "recordedAt": "2026-09-14T13:41:19.667Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "依次切换 JA、ES、EN，观察引言内容与语言状态。",
+    "durationSeconds": 7,
+    "sourceFrames": 111,
+    "video": {
+      "path": "src/features/great-ui/media/multilingual-quote-demo.mp4",
+      "bytes": 17494,
+      "sha256": "b857c7f5813c3b524034612e11d6184c8f3765c9e80c65166d4da3151ad9b74e"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/multilingual-quote-demo-poster.jpg",
+      "bytes": 5464,
+      "sha256": "d2acdb60cbbc961e142e78902c3d1d773959134a8f139abebf1c7b8331086e64"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "swipe-theme-change": {
+    "source": "https://www.great-ui.com/components/swipe-theme-change",
+    "recordedAt": "2026-09-14T13:41:41.094Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "点击 Left Swipe 与 Top Right Wipe，观察水平与斜向主题切换。",
+    "durationSeconds": 7,
+    "sourceFrames": 111,
+    "video": {
+      "path": "src/features/great-ui/media/swipe-theme-change-demo.mp4",
+      "bytes": 33483,
+      "sha256": "1611889008fb9efef4de671ecfc02d638da5939fe3191d992f29e6066183eba3"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/swipe-theme-change-demo-poster.jpg",
+      "bytes": 15534,
+      "sha256": "517679f1eee574db43d775ae5f26c81d2a46b458c788ddfbafa95d3fc576c378"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "circular-theme-provider": {
+    "source": "https://www.great-ui.com/components/circular-theme-provider",
+    "recordedAt": "2026-09-14T13:42:01.882Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "点击 Wipe from Button Center 与 Top Left Corner Wipe，观察圆形主题切换。",
+    "durationSeconds": 7,
+    "sourceFrames": 122,
+    "video": {
+      "path": "src/features/great-ui/media/circular-theme-provider-demo.mp4",
+      "bytes": 45189,
+      "sha256": "a3d0d7a103a77a852b97b0f316c65ee5d576fe9891d86eebee32f146b1b35ac7"
+    },
+    "poster": {
+      "path": "src/features/great-ui/media/circular-theme-provider-demo-poster.jpg",
+      "bytes": 19623,
+      "sha256": "8d6df285e647683cc7b54eb547fbff584fd0178d6ac852378962ad5bf2633304"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  }
+}
