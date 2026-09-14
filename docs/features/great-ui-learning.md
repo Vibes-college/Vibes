@@ -19,8 +19,9 @@ code-sources:
     'src/components/GreatUiDetail.astro',
     'tests/unit/great-ui-composition.test.ts',
     'tests/unit/great-ui-content.test.ts',
+    'tests/unit/great-ui-browsing.test.ts',
   ]
-code-revision: '1df0e0b329d56b1a9150e7c18aa6336327ffa43da6c218c581dec9f0ecb1d584'
+code-revision: 'df9b1d19ad6145f211e1c88a8cd7aa4d6940f5d4da4457287aad208e839b16ff'
 ---
 
 # 功能名：学习交互作品并带入自己的项目
@@ -42,6 +43,16 @@ code-revision: '1df0e0b329d56b1a9150e7c18aa6336327ffa43da6c218c581dec9f0ecb1d584
 9. 点击右上角编辑图标，编辑当前语言的Markdown并提出PR，完整贡献流程见[GitHub内容贡献](../system/content-contributions.md)。本站不保存编辑；正式构建指向main，PR阶段预览指向相应分支。学习详情不显示网站header或语言栏；左上角返回图标回到合集，语言入口保留在Explore，未发布的英文地址不生成。
 10. 无JavaScript仍可读初始说明、原作链接，并展开“文字版说明”阅读全部正文、目标、检查与术语；生成任务、筛选和组合需要JavaScript。正文下方没有另一份手工维护的说明。
 11. 点“和Agent聊这篇”时，[本地助手](local-assistant.md)附上当前作品的公开标题和本站网址，保留现有草稿；用户发送前不会提交消息。
+
+### 选择浏览范围与顺序
+
+1. 点视频下方的四宫格入口“全部分类 · 48”，打开“浏览作品”弹窗。可以搜索名称、用途或行为，也可以选择“页面转场”等分类。选中一件作品后，入口更新为该分类及数量，下一件也只在这个范围内；直接关闭弹窗不改变范围，搜索词只筛选列表。
+2. 随机按钮高亮表示随机浏览，首次默认为全部分类加随机。关闭后按目录顺序继续；切换开关保持当前作品和已看记录。选定分类后不会自动跳出，想跨分类探索时再次打开弹窗，选择全部分类并进入一件作品。
+3. 随机每轮不会自动重复已看作品，全部分类时优先避免连续同类；只有同类剩余时照常继续。上一件返回实际看过的作品，退回后再点下一件沿用原顺序；手动选择作品可以重访。随机计数表示该作品在本轮首次浏览的位置，顺序计数表示它在范围内的目录位置。
+4. 随机看完或顺序到末尾时显示结束提示，点回转箭头主动开始新一轮；仅一件的分类停留当前作品。随机新一轮首件避开刚看的作品。开启随机会重排尚未浏览的作品；关闭后从当前作品在目录中的下一件继续，可能再次遇到已看作品。切换开关不清空已看集合，换范围或重开一轮才开始新的记录。
+5. 范围和模式会在同一浏览器的下次访问保留；同一页刷新保留本轮记录，浏览器前进后退恢复各页当时的范围与顺序。当前作品的“分类”标签独立显示其实际类别。主动从关联入口或直接链接进入范围外作品时，范围回到全部分类；存储损坏会重新开始，浏览器禁止存储时仅在当前访问中保留。
+
+导航历史最多保留最近1,000次操作。浏览记录与作品填写草稿分开：刷新保留前者，但不保留草稿；详细存储位置见[配置说明](../system/configuration.md#great-ui浏览偏好与记录)。
 
 ### 示例中的页面切换
 
@@ -70,7 +81,7 @@ flowchart TD
 ## 涉及的文件
 
 - 页面与内容：src/components/GreatUiDetail.astro、src/features/great-ui/LearningPage.jsx、markdown-content.ts、compile-prose.ts和site-content.ts。
-- 浏览与播放器：CaseView.jsx、CaseNavigation.jsx、Recording.jsx、Terms.jsx；样式限制在great-ui区域。
+- 浏览与播放器：CaseView.jsx、CaseNavigation.jsx、Recording.jsx、Terms.jsx；browsing.ts维护范围/顺序，browse-storage.ts与useCaseBrowser.jsx负责本地记录与导航，Taxonomy.jsx展示实际分类；样式限制在great-ui区域。
 - 来源依据：data/upstream-catalog.json、observations.json、source-review.json和local-recordings.json；relations.mjs维护经源码核对的原理关系。
 - 任务与组合：task.mjs、PromptDialog.jsx、composition/；同一结构生成文本和JSON。
 - 示例：JourneyLoader.jsx处理脚本加载与失败，journey/实现三条路径，sources.json和LICENSE.txt说明来源及改造；本站/great-ui/content与/great-ui/journeys生成对应JSON。
@@ -80,6 +91,7 @@ flowchart TD
 
 - [x] 48件固定源码均有实际原作操作记录；2026-09-14原三例与其余45件的内置浏览器证据仍有效，未覆盖变体明确保留。
 - [x] 48份Markdown材料、来源映射、任务一致性、拒绝坏结构与素材摘要通过2026-09-14单元检查。
+- [x] 2026-09-14浏览范围增量的8项规则/存储测试、全体178项单元、check、正式站与独立入口构建/预算、静态48页和产物预检通过。覆盖30轮真实目录去重、跨类、返回、范围、模式、重开与存储边界；当前本机入口HTTP检查通过。按用户要求未重复浏览器或独立审查，新浏览条的实际布局/交互未复测，原始结果在resources/evidence/018-great-ui-scale/browsing。
 - [x] 2026-09-14共享词库3项契约测试及全体170项单元通过；静态产物逐件核对48页与任务JSON一致，60处案例说明/参数/判断保留，原文章节完整且字节一致，网站与独立入口预算通过。该增量按用户要求未重复浏览器或独立审查。
 - [x] 2026-09-14站内桌面Chromium逐件验证48段本站MP4解码、自动播放、无外部媒体请求和横向溢出；同轮通过搜索、无JS正文和跨作品草稿恢复。
 - [x] 2026-09-14站内三浏览器的48段播放、三条示例、任务与原生助手作品引用通过；脚本失败恢复与当前站点素材链接另通过6项专项，预算及产物预检通过。header与图标按用户要求只做静态/类型检查，没有重跑浏览器。
@@ -93,6 +105,7 @@ flowchart TD
 - tests/unit/learning-content.test.ts：Markdown到页面与任务的单一来源、结构/术语/素材拒绝、合集与语言边界。
 - tests/unit/glossary.test.ts：共享词条编辑同步两件作品与两种任务、相关修订失效、重复与别名冲突、缺失引用和禁止本地重复定义。
 - tests/unit/great-ui-content.test.ts：48件来源、说明、关系、视频摘要与目标任务。
+- tests/unit/great-ui-browsing.test.ts：真实48件随机去重与跨类、范围联动、顺序切换、前后重放、单件/结束重开、刷新及历史快照、偏好保存和损坏/受限存储。
 - tests/unit/great-ui-composition.test.ts：能力、条件、全局资源冲突、缺口、有界搜索及版本失效。
 - tests/fixtures/great-ui/journey.ts：同一组正常、慢请求、失败、取消、历史及动态偏好测试；由站内great-ui-site.spec.ts和独立journey.spec.ts复用。
 - tests/great-ui-site.spec.ts另覆盖搜索、48段本站播放、无JS、草稿、放大焦点与Paseo作品引用，包含在verify中。

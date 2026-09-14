@@ -1,11 +1,25 @@
 import { useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, LayoutGrid, X, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, LayoutGrid, X, Check, Shuffle, RotateCcw } from 'lucide-react';
+import {
+  browseMembers,
+  moveBrowse,
+  nextBrowseId,
+  restartBrowse,
+  selectBrowse,
+  toggleBrowse,
+} from './browsing';
+import { useCaseBrowser } from './useCaseBrowser.jsx';
 
 export function CaseNavigation({ entries, current, onSelect }) {
   const dialog = useRef(null);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
   const [limit, setLimit] = useState(60);
+  const { state, busy, error, apply } = useCaseBrowser(entries, current, onSelect);
+  const scope = state?.scope || 'all';
+  const shuffle = state?.shuffle ?? true;
+  const members = browseMembers(entries, scope);
+  const scopeLabel = scope === 'all' ? '全部分类' : scope;
   const categories = [...new Set(entries.map((item) => item.category))];
   const filtered = entries.filter(
     (item) =>
@@ -14,52 +28,87 @@ export function CaseNavigation({ entries, current, onSelect }) {
         .toLocaleLowerCase()
         .includes(query.trim().toLocaleLowerCase()),
   );
-  const index = entries.findIndex((item) => item.id === current.id);
+  const index = shuffle
+    ? (state?.seen.indexOf(current.id) ?? 0)
+    : members.findIndex((item) => item.id === current.id);
+  const nextId = state && nextBrowseId(state, entries);
+  const next = entries.find((item) => item.id === nextId);
+  const previous = state && entries.find((item) => item.id === state.trail[state.cursor - 1]);
+  const ended = state && !next;
+  const disabled = !state || busy;
   const close = () => dialog.current.close();
   const select = (entry) => {
     close();
-    onSelect(entry);
+    if (state) void apply(selectBrowse(state, entries, entry.id, category));
   };
   return (
     <>
       <nav className="case-navigation" aria-label="作品切换">
         <button
           className="case-picker"
+          disabled={disabled}
+          aria-label={`浏览作品：${scopeLabel}，${members.length}件`}
           onClick={() => {
+            setCategory(scope);
+            setQuery('');
+            setLimit(60);
             dialog.current.showModal();
             document.body.style.overflow = 'hidden';
           }}
           aria-haspopup="dialog"
         >
           <LayoutGrid size={15} />
-          <span>全部作品</span>
-          <small>{entries.length}</small>
+          <span>{scopeLabel}</span>
+          <small>{members.length}</small>
+        </button>
+        <button
+          className="icon-button case-shuffle"
+          disabled={disabled}
+          aria-label="随机浏览"
+          aria-pressed={shuffle}
+          title={shuffle ? '随机浏览已开启，切换为顺序浏览' : '顺序浏览，切换为随机浏览'}
+          onClick={() => void apply(toggleBrowse(state, entries))}
+        >
+          <Shuffle size={16} />
         </button>
         <span className="case-position" aria-live="polite">
           {String(index + 1).padStart(2, '0')}{' '}
-          <span>/ {String(entries.length).padStart(2, '0')}</span>
+          <span>/ {String(members.length).padStart(2, '0')}</span>
         </span>
         <div className="case-arrows">
           <button
             className="icon-button"
-            disabled={index === 0}
-            onClick={() => onSelect(entries[index - 1])}
+            disabled={disabled || !previous}
+            onClick={() => void apply(moveBrowse(state, entries, -1))}
             aria-label="上一个作品"
-            title={entries[index - 1]?.title || '已是第一个作品'}
+            title={previous?.title || '还没有上一件浏览记录'}
           >
             <ArrowLeft size={17} />
           </button>
           <button
             className="icon-button"
-            disabled={index === entries.length - 1}
-            onClick={() => onSelect(entries[index + 1])}
-            aria-label="下一个作品"
-            title={entries[index + 1]?.title || '已是最后一个作品'}
+            disabled={disabled || members.length < 2}
+            onClick={() =>
+              void apply(ended ? restartBrowse(state, entries) : moveBrowse(state, entries, 1))
+            }
+            aria-label={ended ? '开始新一轮浏览' : '下一个作品'}
+            title={
+              members.length < 2
+                ? '当前范围只有一件作品'
+                : next?.title || (shuffle ? '本轮已看完，开始新一轮浏览' : '已到末尾，从头顺序浏览')
+            }
           >
-            <ArrowRight size={17} />
+            {ended ? <RotateCcw size={17} /> : <ArrowRight size={17} />}
           </button>
         </div>
       </nav>
+      {ended && members.length > 1 && (
+        <p className="case-round-status" role="status">
+          {shuffle ? '本轮已看完' : '已到顺序末尾'} · 点击{' '}
+          <RotateCcw size={11} aria-hidden="true" /> 开始新一轮
+        </p>
+      )}
+      {error && <p role="alert">{error}</p>}
       <dialog
         className="case-dialog"
         ref={dialog}
@@ -81,7 +130,7 @@ export function CaseNavigation({ entries, current, onSelect }) {
       >
         <div className="dialog-heading">
           <div>
-            <h2 id="case-list-title">全部作品</h2>
+            <h2 id="case-list-title">浏览作品</h2>
           </div>
           <button className="icon-button" aria-label="关闭作品列表" onClick={close}>
             <X size={19} />

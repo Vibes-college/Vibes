@@ -16,7 +16,7 @@ shaped-by: ['002', '003', '013', '014', '015']
 | [浏览与搜索作品](explore-browse.md)            | /zh/ 或 /en/：浏览、分类、搜索，再点卡片   | current | 001, 003, 005, 010, 013, 018                          |
 | [阅读作品详情](article-read.md)                | 作品卡片或 /{locale}/works/{id}/           | current | 001, 003, 005, 006, 007, 008, 009, 010, 013, 016, 018 |
 | [使用本地助手](local-assistant.md)             | 右下角助手或文章入口：连接电脑、交流与动手 | current | 013, 014                                              |
-| [学习交互作品并生成任务](great-ui-learning.md) | Explore合集、48件学习详情与任务            | current | 018                                                   |
+| [学习交互作品并生成任务](great-ui-learning.md) | 分类/随机浏览、48件学习详情与任务          | current | 018                                                   |
 
 ## 维护者维护网站
 

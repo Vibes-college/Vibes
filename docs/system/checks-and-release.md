@@ -14,7 +14,7 @@ code-sources:
     'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '659698e88a19424ce06f9b719a44b4b7d9f99fee83ad4c6273e276f25e1a4728'
+code-revision: '43ec8e230ffc68242aa5432e52f03038f6e551f4a19bb14c80deb1884023a971'
 ---
 
 # 检查与发布

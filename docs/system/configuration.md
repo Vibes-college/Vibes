@@ -25,8 +25,10 @@ code-sources:
     'src/config/site.ts',
     'public/_headers',
     'public/_redirects',
+    'src/features/great-ui/browse-storage.ts',
+    'src/features/great-ui/useCaseBrowser.jsx',
   ]
-code-revision: '77c96ccd2a0b9998f72a34ae559dcc691d4e7462327189c755119b353364dc3e'
+code-revision: 'd4315c20cf1fffa325648bea5bce09fc20a82649fc05f14377b00649b6b5f1b2'
 ---
 
 # 配置和环境变量
@@ -123,3 +125,9 @@ ESLint仅对public/media/2048/game.js这一份带MIT署名的上游压缩分发�
 Great UI工作台复用已锁定的React、Motion和Lucide依赖，站内Astro学习页与scripts/great-ui.ts辅助Vite入口读取同一份Markdown。默认预览4325，专用Playwright测试服务4336，均绑定127.0.0.1且端口冲突直接失败。JSX在ESLint专用范围检查，工具TypeScript允许读取构建期MJS。命令、媒体与验收范围见[学习操作路径](../features/great-ui-learning.md)。
 
 Great UI学习页的GitHub编辑链接和完整词条链接读取VIBES_CONTENT_EDIT_REF或GITHUB_HEAD_REF以指向PR分支；发布预览命令从已核对的PR设置前者，正式main构建默认main。开发回退当前Git分支。astro.config.mjs仅允许当前根目录与实际node_modules目录被开发服务读取，支持隔离检出复用已安装依赖，不扩大到父仓库。
+
+## Great UI浏览偏好与记录
+
+作品页的范围和随机开关保存在localStorage的`vibes:great-ui:browse-preferences:v1`，用于同源下次访问；同一标签页的轮次、已看作品及前后记录保存在sessionStorage的`vibes:great-ui:browse-session:v1`。每个页面的history.state另存`vibesGreatUiBrowse`快照，浏览器返回优先恢复对应页，写入时保留Astro的字段。记录只含作品ID、分类与模式，不包含改造草稿或账号数据，不提交服务器。
+
+导航前先暂存目标会话，成功进入目标页后保存其快照；导航失败恢复原记录。读取时校验版本、作品范围、唯一性和索引，随机目录增删导致旧轮次不完整时重新开始；范围外直达回到全部分类。历史最多保留最近1,000次操作；存储被禁用或写满时以内存维持当前访问，无法保证关闭后或刷新继续保留。清除这两个存储键及当前history快照会恢复首次默认。源码为browse-storage.ts、useCaseBrowser.jsx，纯规则在browsing.ts；用户操作见[选择浏览范围与顺序](../features/great-ui-learning.md#选择浏览范围与顺序)。

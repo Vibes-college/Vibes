@@ -108,7 +108,7 @@ test('all 48 details, glossary and modification goals render without loading oth
     await expect(
       page.getByRole('heading', { name: entry.title, exact: true, level: 1 }),
     ).toBeVisible();
-    await expect(page.getByRole('button', { name: /全部作品/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /浏览作品/ })).toBeVisible();
     await page.getByRole('button', { name: '改造设计', exact: true }).click();
     await expect(page.getByRole('heading', { name: '让 Agent 这样改', exact: true })).toBeVisible();
     await expect(page.locator('.goal-options button')).toHaveCount(3);
@@ -130,7 +130,7 @@ test('search, category, empty results, draft state and history stay usable', asy
   await page.getByRole('button', { name: /用这个效果/ }).click();
   await page.getByLabel('用在哪里', { exact: true }).fill('产品详情页');
   await page.getByRole('button', { name: '关闭复制材料' }).click();
-  await page.getByRole('button', { name: /全部作品/ }).click();
+  await page.getByRole('button', { name: /浏览作品/ }).click();
   await page.getByLabel('搜索作品').fill('zzzz-no-match');
   await expect(page.getByText('找到 0 件作品')).toBeVisible();
   await page.getByLabel('搜索作品').fill('');
@@ -183,6 +183,11 @@ test('bad details are retryable, and leaving a delayed response cannot replace t
     await gate;
     await route.continue().catch(() => {});
   });
+  await page.getByRole('button', { name: '随机浏览', exact: true }).click();
+  await expect(page.getByRole('button', { name: '随机浏览', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
   await page.getByRole('button', { name: '下一个作品' }).click();
   await expect(page.getByText('正在加载作品材料…')).toBeVisible();
   await page.goBack();

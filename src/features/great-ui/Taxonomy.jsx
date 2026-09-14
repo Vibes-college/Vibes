@@ -21,6 +21,7 @@ export function Taxonomy({ entry }) {
     };
   }, []);
   const fields = [
+    { label: '分类', value: entry.category },
     { label: '类型', value: entry.classification.type },
     { label: '用途', value: entry.classification.purpose.join(' / ') },
     { label: '行为', value: entry.classification.behavior.join(' / ') },

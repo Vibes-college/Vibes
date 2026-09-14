@@ -61,7 +61,7 @@ export default function LearningPage({ entry, entries }) {
               entries={entries}
               state={state}
               onChange={change}
-              onSelect={(item) => void navigate(`/zh/works/great-ui-${item.slug}/`)}
+              onSelect={(item) => navigate(`/zh/works/great-ui-${item.slug}/`)}
               onStartJourney={showJourney}
             />
           )}

@@ -467,7 +467,7 @@
   .case-navigation {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 8px;
     min-height: 49px;
     border-bottom: 1px solid var(--border);
   }
@@ -485,6 +485,18 @@
     padding: 2px 4px;
     background: #f2f4ed;
     font-size: 9px;
+  }
+  .case-shuffle[aria-pressed='true'] {
+    color: #405235;
+    background: #edf1e7;
+  }
+  .case-round-status {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 7px 0 0;
+    color: #66715b;
+    font-size: 11px;
   }
   .case-position {
     margin-left: auto;
