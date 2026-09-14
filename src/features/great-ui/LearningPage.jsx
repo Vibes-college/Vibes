@@ -1,10 +1,10 @@
-import { useEffect, useState, lazy, Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { navigate } from 'astro:transitions/client';
 import { CaseView } from './CaseView.jsx';
 import { AssetContext } from './AssetContext';
+import { JourneyLoader } from './JourneyLoader.jsx';
 import './styles.css';
 
-const Journey = lazy(() => import('./journey/Journey'));
 // Module state survives Astro navigation, but contains no account or server data.
 const drafts = new Map();
 const initial = () => ({
@@ -54,9 +54,7 @@ export default function LearningPage({ entry, entries }) {
       <div className="great-ui">
         <div className="app-shell">
           {journey ? (
-            <Suspense fallback={<p role="status">正在打开组合体验…</p>}>
-              <Journey kind={journey} onExit={() => showJourney(null)} />
-            </Suspense>
+            <JourneyLoader kind={journey} onExit={() => showJourney(null)} />
           ) : (
             <CaseView
               entry={entry}

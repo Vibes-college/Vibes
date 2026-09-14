@@ -22,6 +22,8 @@ jobs:
       mode: ${{ steps.scope.outputs.mode }}
       base: ${{ steps.scope.outputs.base }}
       acceptance: ${{ steps.acceptance.outputs.acceptance }}
+      acceptance_run: ${{ steps.acceptance.outputs.acceptance_run }}
+      acceptance_attempt: ${{ steps.acceptance.outputs.acceptance_attempt }}
     permissions:
       contents: read
       actions: read
@@ -126,6 +128,13 @@ jobs:
         env:
           CI_ACCEPTANCE_REUSED: 'true'
           DOCS_BASE_REF: ${{ github.event.before || 'origin/main' }}
+      - name: Restore learning demo coverage from verified PR acceptance
+        if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance == 'reuse'
+        run: node --experimental-strip-types scripts/great-ui-reuse.ts
+        env:
+          CI_ACCEPTANCE_REUSED: 'true'
+          CI_ACCEPTANCE_RUN: ${{ needs.scope.outputs.acceptance_run }}
+          CI_ACCEPTANCE_ATTEMPT: ${{ needs.scope.outputs.acceptance_attempt }}
       - name: Validate content and project source
         if: steps.lane.outputs.scope == 'content'
         run: npm run check

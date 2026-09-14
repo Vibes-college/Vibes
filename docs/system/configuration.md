@@ -86,7 +86,7 @@ Paseo按固定上游及补丁独立构建，默认产品构建必须包含有效
 
 外部快照在 `resources/references/`，本地证据在 `resources/evidence/`；`.gitignore`、`.prettierignore`、`eslint.config.mjs` 同步排除这两项，`tsconfig.json` 排除resources。它们不属于网站构建输入。node_modules目录及隔离worktree复用依赖的同名符号链接均不提交，.gitignore以node_modules匹配。完整文件职责见 [仓库地图](../README.md)。
 
-CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GITHUB_OUTPUT用于传递范围和main验收复用决定。GitHub自动提供仓库ID、PR事件、运行ID/attempt和SHA；scope的GH_TOKEN仅用于只读证据查询，不需要新增用户secret。CI_ACCEPTANCE_REUSED仅由可信判定后的main生产准备步骤设置，不能作为本地跳过回归的配置。冻结检查独立使用DOCS_BASE_REF，缺失基线失败。详见[CI](../system/checks-and-release.md)。
+CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GITHUB_OUTPUT用于传递范围和main验收复用决定。GitHub自动提供仓库ID、PR事件、运行ID/attempt和SHA；scope的GH_TOKEN仅用于只读证据查询，不需要新增用户secret。CI_ACCEPTANCE_REUSED仅由可信判定后的main生产准备和示例回执恢复步骤设置，不能作为本地跳过回归的配置。后者的CI_ACCEPTANCE_RUN与CI_ACCEPTANCE_ATTEMPT来自同一判定，记录被复用的完整PR验收来源。冻结检查独立使用DOCS_BASE_REF，缺失基线失败。详见[CI](../system/checks-and-release.md)。
 
 ## 内容构建与隔离测试
 

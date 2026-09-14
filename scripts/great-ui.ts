@@ -59,7 +59,20 @@ const config: InlineConfig = {
   root: path.join(root, 'src/features/great-ui'),
   publicDir,
   plugins: [react()],
-  build: { outDir, emptyOutDir: true },
+  build: {
+    outDir,
+    emptyOutDir: true,
+    modulePreload: {
+      polyfill: false,
+      // Match the site's recoverable imports: WebKit can cache a failed modulepreload
+      // across reloads. The normal import loads its own target; preload dependencies only.
+      resolveDependencies(filename, dependencies, { hostType }) {
+        return hostType === 'js'
+          ? dependencies.filter((dependency) => dependency !== filename)
+          : dependencies;
+      },
+    },
+  },
   server: { host: '127.0.0.1', port, strictPort: true, fs: { allow: [root] } },
   preview: { host: '127.0.0.1', port, strictPort: true },
 };

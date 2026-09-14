@@ -1,7 +1,7 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CaseView } from './CaseView.jsx';
 import { validateCatalog, validateDetail } from './catalog';
-const Journey = lazy(() => import('./journey/Journey'));
+import { JourneyLoader } from './JourneyLoader.jsx';
 const readLocation = () => {
   const params = new URLSearchParams(location.search);
   const kind = params.get('journey');
@@ -94,9 +94,7 @@ export function App() {
   return (
     <main className="app-shell">
       {route.journey ? (
-        <Suspense fallback={<p role="status">正在打开组合体验…</p>}>
-          <Journey kind={route.journey} onExit={() => navigate({ journey: null })} />
-        </Suspense>
+        <JourneyLoader kind={route.journey} onExit={() => navigate({ journey: null })} />
       ) : error ? (
         <div className="load-state" role="alert">
           <p>{error}</p>

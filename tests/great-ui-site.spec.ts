@@ -21,13 +21,13 @@ test('one collection leads to searchable learning pages with honest language and
     'href',
     'https://vibes.college' + accordion,
   );
-  await expect(page.locator('.translation-unavailable')).toContainText('English');
+  await expect(page.locator('.site-header')).toHaveCount(0);
   await expect(page.locator('.language-switch a[hreflang="en"]')).toHaveCount(0);
-  await expect(page.getByRole('link', { name: '在 GitHub 上改进这件作品' })).toHaveAttribute(
+  await expect(page.getByRole('link', { name: '编辑作品' })).toHaveAttribute(
     'href',
     /\/edit\/[^/]+(?:\/[^/]+)*\/src\/content\/works\/great-ui-accordion\/zh\.md$/,
   );
-  await page.getByRole('link', { name: '← Great UI 交互学习' }).click();
+  await page.getByRole('link', { name: '返回合集' }).click();
   await expect(page).toHaveURL(new RegExp(collection));
   await expect(page.locator('.section-content a[href*="/works/great-ui-"]')).toHaveCount(48);
   await page.goto('/zh/');
@@ -82,8 +82,11 @@ test('Astro navigation preserves the task draft, media modal focus and site retu
   await page.getByText('查看同一任务的 JSON', { exact: true }).click();
   const task = JSON.parse(await page.getByLabel('结构化任务', { exact: true }).inputValue());
   expect(task.goal.id).toBe('compare');
-  expect(task.media.url).toBe('https://vibes.college/great-ui/media/accordion-source-capture.mp4');
-  expect(task.selected.learningUrl).toBe('https://vibes.college' + accordion);
+  expect(task.media.url).toBe(
+    new URL('/great-ui/media/accordion-source-capture.mp4', page.url()).href,
+  );
+  expect(task.selected.learningUrl).toBe(new URL(accordion, page.url()).href);
+  expect((await page.request.get(task.media.url)).ok()).toBe(true);
   expect(task.media.localPath).toBeNull();
   await page.getByRole('button', { name: '关闭复制材料' }).click();
   await page.getByRole('button', { name: '下一个作品', exact: true }).click();
@@ -97,10 +100,10 @@ test('Astro navigation preserves the task draft, media modal focus and site retu
   await expect(page.getByLabel('用在哪里', { exact: true })).toHaveValue('产品详情页');
   await page.getByRole('button', { name: '关闭复制材料' }).click();
   await page.getByRole('button', { name: '放大录屏', exact: true }).click();
-  await expect(page.locator('.site-header')).toHaveAttribute('inert', '');
+  await expect(page.locator('.learning-navigation')).toHaveAttribute('inert', '');
   await page.keyboard.press('Escape');
-  await expect(page.locator('.site-header')).not.toHaveAttribute('inert', '');
-  await page.getByRole('link', { name: '← Great UI 交互学习' }).click();
+  await expect(page.locator('.learning-navigation')).not.toHaveAttribute('inert', '');
+  await page.getByRole('link', { name: '返回合集' }).click();
   await expect(page).toHaveURL(new RegExp(collection));
   expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
 });

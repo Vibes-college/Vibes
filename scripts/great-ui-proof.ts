@@ -11,6 +11,13 @@ import {
 import { verificationCurrent } from '../src/features/great-ui/composition/planner.ts';
 import type { VerificationRecord } from '../src/features/great-ui/composition/model.ts';
 type ProofScope = 'site' | 'standalone';
+export type ReusedProofSource = {
+  kind: 'reused-full-pr';
+  runId: number;
+  attempt: number;
+  mainSha: string;
+  reference: string;
+};
 const proofPath = (scope: ProofScope) =>
   `resources/evidence/018-great-ui-scale/${scope}-verification.json`;
 async function files(directory: string): Promise<string[]> {
@@ -43,9 +50,11 @@ export async function currentDemoProof(scope: ProofScope = 'site') {
       'src/pages/great-ui/content/[file].json.ts',
       'src/pages/great-ui/journeys/[id].json.ts',
       'scripts/test-e2e.ts',
+      'astro.config.mjs',
       'playwright.config.ts',
       'scripts/great-ui.ts',
       'scripts/great-ui-proof.ts',
+      'scripts/great-ui-reuse.ts',
       'scripts/great-ui-test.ts',
       'playwright.great-ui.config.ts',
       'package.json',
@@ -78,11 +87,13 @@ export async function currentDemoProof(scope: ProofScope = 'site') {
   return { adapterRevision, plans, records };
 }
 
-// Called only after the complete corresponding Playwright suite succeeds.
+// Called after the complete suite, or the guarded reuse of a fully tested identical tree.
 export async function saveDemoProof(
   before: Awaited<ReturnType<typeof currentDemoProof>>,
   scope: ProofScope,
+  reused?: ReusedProofSource,
 ) {
+  if (reused && scope !== 'site') throw new Error('PR acceptance cannot sign standalone proof.');
   const after = await currentDemoProof(scope);
   if (
     before.adapterRevision !== after.adapterRevision ||
@@ -104,18 +115,24 @@ export async function saveDemoProof(
       capabilityRevision,
     })),
     adapterRevision: after.adapterRevision,
-    references: [
-      scope === 'site'
-        ? 'tests/great-ui-site.spec.ts: all projects passed'
-        : 'tests/great-ui: all projects passed',
-      'tests/fixtures/great-ui/journey.ts: complete shared scenarios',
-    ],
+    references: reused
+      ? [
+          `Full PR regression reused for the identical tree: ${reused.reference}`,
+          'tests/great-ui-site.spec.ts and shared journey scenarios: covered by that PR run',
+        ]
+      : [
+          scope === 'site'
+            ? 'tests/great-ui-site.spec.ts: all projects passed'
+            : 'tests/great-ui: all projects passed',
+          'tests/fixtures/great-ui/journey.ts: complete shared scenarios',
+        ],
     result: 'passed',
   }));
   const proof = {
     scope,
     adapterRevision: after.adapterRevision,
     generatedAt: new Date().toISOString(),
+    verificationSource: reused || { kind: 'current-run' },
     records,
   };
   await mkdir(path.dirname(proofPath(scope)), { recursive: true });
@@ -129,6 +146,8 @@ export async function saveDemoProof(
     await writeFile(directory + '/demo-proof.json', JSON.stringify(proof) + '\n');
   }
   console.log(
-    `${scope}: three fixed paths verified across all configured projects; six motion-context records saved.`,
+    reused
+      ? `site: six demo records restored from verified PR run ${reused.runId}/${reused.attempt}; no local regression claimed.`
+      : `${scope}: three fixed paths verified across all configured projects; six motion-context records saved.`,
   );
 }

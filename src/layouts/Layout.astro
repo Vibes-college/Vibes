@@ -14,6 +14,7 @@ interface Props {
   noindex?: boolean;
   search?: boolean;
   detail?: boolean;
+  hideHeader?: boolean;
   locale?: Locale;
   alternates?: { locale: string; path: string }[];
   defaultPath?: string;
@@ -27,6 +28,7 @@ const {
   noindex = false,
   search = false,
   detail = false,
+  hideHeader = false,
   alternates = [],
   defaultPath,
   publicWork,
@@ -71,37 +73,39 @@ const paseo = getPaseoBuild();
   </head>
   <body class:list={{ 'is-detail': detail }}>
     <a class="skip-link" href="#main">{t.skip}</a>
-    <header class="site-header" data-pagefind-ignore>
-      <a class="wordmark" href={browsePath(locale)} aria-label={t.home}
-        >vibes<span aria-hidden="true">.</span></a
-      >
-      {
-        search ? (
-          <form class="search" role="search" action={browsePath(locale)}>
-            <label class="sr-only" for="search">
-              {t.search}
-            </label>
-            <input
-              id="search"
-              type="search"
-              name="q"
-              placeholder={t.search}
-              autocomplete="off"
-              maxlength="160"
-            />
-            <button class="search-clear" type="reset" aria-label={t.clear} hidden>
-              ×
-            </button>
-          </form>
-        ) : (
-          <a class="header-explore" href={browsePath(locale)}>
-            {t.explore}
+    {
+      !hideHeader && (
+        <header class="site-header" data-pagefind-ignore>
+          <a class="wordmark" href={browsePath(locale)} aria-label={t.home}>
+            vibes<span aria-hidden="true">.</span>
           </a>
-        )
-      }
-      {!detail && <LanguageSwitch locale={locale} id={workId} />}
-      <span class="header-note">{t.campus}</span>
-    </header>
+          {search ? (
+            <form class="search" role="search" action={browsePath(locale)}>
+              <label class="sr-only" for="search">
+                {t.search}
+              </label>
+              <input
+                id="search"
+                type="search"
+                name="q"
+                placeholder={t.search}
+                autocomplete="off"
+                maxlength="160"
+              />
+              <button class="search-clear" type="reset" aria-label={t.clear} hidden>
+                ×
+              </button>
+            </form>
+          ) : (
+            <a class="header-explore" href={browsePath(locale)}>
+              {t.explore}
+            </a>
+          )}
+          {!detail && <LanguageSwitch locale={locale} id={workId} />}
+          <span class="header-note">{t.campus}</span>
+        </header>
+      )
+    }
     <slot />
     {paseo && <LocalAssistant config={paseo.config} locale={locale} publicWork={publicWork} />}
     <script>

@@ -14,7 +14,7 @@ code-sources:
     'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'b3733572c5bce6e31f4142c9d2b9a68e0ef73e2d29318f0173440aae26075d5b'
+code-revision: '54fd9e833c76baec637566ff63279e3d53e33f718f3cd432cb5b241b9a597e0f'
 ---
 
 # 检查与发布
@@ -203,6 +203,6 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 ## Great UI学习工作台检查
 
-本地入口用`great-ui:build`校验目录、详情及能力结构，并输出.scratch/great-ui-dist；`great-ui:test`通过scripts/great-ui-test.ts运行独立Playwright配置，启动4336测试服务，结束由测试框架释放。不带筛选参数且全部用例通过时，核对测试前后源码摘要一致，再保存固定示例的路径记录；筛选重跑不能生成整体验证记录。great-ui-proof.ts在重建时核对记录与当前来源、Markdown、规则、适配器和测试，过期记录不显示为已验证。独立记录只用于standalone构建；正式学习页读取site记录，只有test:e2e完整通过且测试前后源码一致才生成，两份回执不能相互替代。great-ui:verify执行该入口的单元、浏览器、great-ui:evaluate与预算检查，独立于整站verify；单独运行great-ui:budget会先构建再检查压缩JS、CSS、目录、详情与本地媒体，不改变正式站预算。不会调用发布命令。当前回归范围和待补覆盖见[功能说明](../features/great-ui-learning.md)，原始材料与浏览器证据不作为自动通过依据。
+本地入口用`great-ui:build`校验目录、详情及能力结构，并输出.scratch/great-ui-dist；`great-ui:test`通过scripts/great-ui-test.ts运行独立Playwright配置，启动4336测试服务，结束由测试框架释放。不带筛选参数且全部用例通过时，核对测试前后源码摘要一致，再保存固定示例的路径记录；筛选重跑不能生成整体验证记录。great-ui-proof.ts在重建时核对记录与当前来源、Markdown、规则、适配器和测试，过期记录不显示为已验证。独立记录只用于standalone构建；正式学习页读取site记录，由test:e2e完整通过且测试前后源码一致时生成，两份回执不能相互替代。main的可信整树复用路径由great-ui-reuse.ts重建site回执，必须通过GitHub Actions、仓库、main push、当前SHA、干净文件树与原PR run/attempt守卫；记录明确标注复用来源，不当作本次重跑。great-ui:verify执行该入口的单元、浏览器、great-ui:evaluate与预算检查，独立于整站verify；单独运行great-ui:budget会先构建再检查压缩JS、CSS、目录、详情与本地媒体，不改变正式站预算。独立构建沿用站内规则，动态模块的预加载只准备依赖，目标模块由普通import加载，避免WebKit保留失败预加载；失败时提供返回说明和整页重载。不会调用发布命令。当前回归范围和待补覆盖见[功能说明](../features/great-ui-learning.md)，原始材料与浏览器证据不作为自动通过依据。
 
 48件自有录屏与海报按原始文件大小另计总量5MiB、单视频550KiB，站内学习校验单图200KiB；只有选中作品加载对应录屏。本地素材的来源、录制操作及文件摘要由data/local-recordings.json记录，单元检查拒绝缺失或摘要不符。稳定交互回归中的远端视频替身不证明外部可用性；实际媒体另检查解码与播放时间推进，并注明检查日期、原始地址及未重试的失败结果。

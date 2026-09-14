@@ -1,6 +1,24 @@
 import { expect, test } from '../../browser-test.ts';
 
 export function registerJourneyTests(basePath: string) {
+  test('a failed example module keeps a return path and can recover after reload', async ({
+    page,
+  }) => {
+    let blocked = true;
+    await page.route(/\/Journey[.-][^/]+\.js(?:\?.*)?$/, (route) =>
+      blocked ? route.fulfill({ status: 503, body: 'temporarily unavailable' }) : route.continue(),
+    );
+    await page.goto(basePath + '?case=accordion&journey=portfolio');
+    await expect(page.getByRole('alert')).toContainText('组合示例暂时无法打开');
+    await page.getByRole('button', { name: '返回设计说明', exact: true }).click();
+    await expect(page.getByRole('heading', { name: '折叠问答', exact: true })).toBeVisible();
+    await page.goBack();
+    await expect(page.getByRole('alert')).toContainText('组合示例暂时无法打开');
+    blocked = false;
+    await page.getByRole('button', { name: '重新加载页面', exact: true }).click();
+    await expect(page.getByRole('heading', { name: '让每一步都有理由。' })).toBeVisible();
+  });
+
   test('a direct navigation stays direct when reduced motion is turned off during a slow request', async ({
     page,
   }) => {

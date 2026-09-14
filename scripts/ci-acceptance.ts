@@ -157,7 +157,10 @@ async function decide(): Promise<void> {
   const report = `Acceptance: ${result.mode}; ${result.reason}${result.runId ? ` (run ${result.runId}/${result.attempt})` : ''}`;
   console.log(report);
   if (process.env.GITHUB_OUTPUT)
-    appendFileSync(process.env.GITHUB_OUTPUT, `acceptance=${result.mode}\n`);
+    appendFileSync(
+      process.env.GITHUB_OUTPUT,
+      `acceptance=${result.mode}\nacceptance_run=${result.runId || ''}\nacceptance_attempt=${result.attempt || ''}\n`,
+    );
   if (process.env.GITHUB_STEP_SUMMARY)
     appendFileSync(process.env.GITHUB_STEP_SUMMARY, report + '\n');
 }

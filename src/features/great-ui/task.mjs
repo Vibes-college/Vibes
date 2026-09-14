@@ -2,6 +2,13 @@ export const plain = (text) => text.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '$2');
 
 /** @param {(import('./composition/model.ts').CompositionPlan & {handoffs?: string[], verification?: import('./composition/model.ts').VerificationRecord | null}) | null} plan */
 export function createTask(entry, form, plan = null) {
+  // A PR preview must export links to its own available files, before production has them.
+  const learningUrl = entry.publicUrl
+    ? new URL(
+        new URL(entry.publicUrl).pathname,
+        typeof window === 'undefined' ? entry.publicUrl : window.location.origin,
+      ).href
+    : null;
   const selectedGoal =
     entry.learning.goals.find((item) => item.id === form.goalId) || entry.learning.goals[0];
   const goal = plan
@@ -47,7 +54,7 @@ export function createTask(entry, form, plan = null) {
       revision: entry.revision,
       reference: entry.reference,
       previewSource: entry.previewSource,
-      learningUrl: entry.publicUrl || null,
+      learningUrl,
     },
     goal,
     referenceDesign: {
@@ -62,8 +69,8 @@ export function createTask(entry, form, plan = null) {
     glossary: Object.fromEntries(entry.terms.map((id) => [id, entry.glossary[id]])),
     verification: entry.verification,
     media: {
-      url: entry.publicUrl
-        ? new URL(entry.previewRecording || entry.recording, entry.publicUrl).href
+      url: learningUrl
+        ? new URL(entry.previewRecording || entry.recording, learningUrl).href
         : entry.previewRecording || entry.recording,
       note: entry.recordingNote,
       localPath: entry.publicUrl ? null : entry.localRecordingPath || null,

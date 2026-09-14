@@ -54,6 +54,7 @@ const alternates = locales.flatMap((locale) => {
 
 <Layout
   detail={!work.meta.learning}
+  hideHeader={Boolean(work.meta.learning)}
   workId={work.slug}
   locale={work.locale}
   title={`${work.title} — Vibes`}
