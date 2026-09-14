@@ -65,6 +65,9 @@ test('implementation scope separates content entries from behavior and configura
   for (const path of [
     'src/pages/index.astro',
     'src/lib/a.ts',
+    'src/features/example/Screen.jsx',
+    'src/features/great-ui/data/curation.json',
+    'tests/great-ui/evaluation.json',
     'tests/unit/a.test.ts',
     'db/migrations/a.sql',
     'package-lock.json',

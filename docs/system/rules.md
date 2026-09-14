@@ -23,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '5e15d0fe4d29b6ce14d3fe5e5eabd051df889678a04569108ed99d3a53d5b0c7'
+code-revision: '1b5e3680804f8c8231ae18ac423b650308d08b718647a1915711fdf6ece5dea4'
 ---
 
 # 常量、规则表与正则
@@ -138,7 +138,7 @@ public/_headers提供已登记播放器/原站frame来源、指定视频源和�
 
 ## 可读代码说明的对应规则
 
-scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序与样式、taxonomy、SQL、静态代码资产、根配置与工作流），Paseo固定来源的JSON声明和补丁也纳入说明覆盖；作品正文和work.json不重复当作架构说明。code-sources是实际文件或以斜杠结束的目录，禁止越界路径、空列表和无匹配条目；code-revision是路径与字节的SHA256。全体结构代码必须有说明覆盖，当前文档本地链接必须存在。
+scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序与样式，含JSX、Great UI学习及评估JSON、taxonomy、SQL、静态代码资产、根配置与工作流），Paseo固定来源的JSON声明和补丁也纳入说明覆盖；作品正文和work.json不重复当作架构说明。code-sources是实际文件或以斜杠结束的目录，禁止越界路径、空列表和无匹配条目；code-revision是路径与字节的SHA256。全体结构代码必须有说明覆盖，当前文档本地链接必须存在。
 
 新规格实现完成状态为complete，保留旧merged兼容；complete进入main后同样冻结，已完成任务不允许继续in-progress。实现/合并/发布是不同事实；测试与完整命令见checks-and-release.md。
 

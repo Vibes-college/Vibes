@@ -11,9 +11,10 @@ code-sources:
     '.github/workflows/',
     'playwright.config.ts',
     'playwright.content.config.ts',
+    'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '4535b90af05487aa5d019a378b243c6c241f773a8eafab6f170e5efdc1726e6d'
+code-revision: '70599a2dd09cb9ceea3ccd84be424970e8ac075a427113207771e643c6526d54'
 ---
 
 # 检查与发布
@@ -117,23 +118,23 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 
 需要Node22.20或兼容更新版本。首次或依赖变化后运行`npm ci`；首次运行E2E时执行`npx playwright install chromium webkit`，Linux CI使用`--with-deps`。Playwright已在锁文件中，不新增npm依赖。
 
-| 命令                                | 行为与使用场景                                                                   |
-| ----------------------------------- | -------------------------------------------------------------------------------- |
-| `npm run dev`                       | Astro开发服务，地址以终端为准，通常为127.0.0.1:4321                              |
-| `npm run preview`                   | 构建后以wrangler.local.jsonc启动本地4322预览，Ctrl+C停止                         |
-| `npm run docs:check`                | 治理文档标签、目录/索引、关系、冻结保护；篇幅仅提示                              |
-| `npm run format:check`              | 检查格式，不修改文件                                                             |
-| `npm run check`                     | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                                 |
-| `npm run test:e2e`                  | 构建→Playwright启动专用本地Worker→桌面Chromium及手机Chromium/WebKit测试→清理服务 |
-| `npm run verify`                    | check→db:reset→test:e2e，完整验收，失败停止；不部署                              |
-| `npm run budget`                    | 构建并检查脚本、首页和优化图片体积；限值见[常量](../system/rules.md)             |
-| `npm run optimize:images`           | 对已有dist单独生成图片变体和manifest；通常由build自动调用                        |
-| `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/content/full，不执行检查           |
-| `npm run db:reset`                  | 删除本项目本机测试D1数据，迁移并填入固定样例                                     |
-| `npm run db:migrate`                | 只应用本地未执行迁移；不接受线上参数                                             |
-| `npm run deploy`                    | 拒绝本地直接生产部署，main检查成功后自动发布                                     |
-| `npm run release:preview -- <PR号>` | 本地按范围验收后上传PR预览版本，不提升生产                                       |
-| `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                        |
+| 命令                                | 行为与使用场景                                                                                   |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `npm run dev`                       | Astro开发服务，地址以终端为准，通常为127.0.0.1:4321                                              |
+| `npm run preview`                   | 构建后以wrangler.local.jsonc启动本地4322预览，Ctrl+C停止                                         |
+| `npm run docs:check`                | 治理文档标签、目录/索引、关系、冻结保护；篇幅仅提示                                              |
+| `npm run format:check`              | 检查格式，不修改文件                                                                             |
+| `npm run check`                     | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                                                 |
+| `npm run test:e2e`                  | 构建→Playwright启动专用本地Worker→桌面Chromium及手机Chromium/WebKit测试→清理服务                 |
+| `npm run verify`                    | check→db:reset→test:e2e→great-ui:test→great-ui:evaluate→本地入口预算，完整验收，失败停止；不部署 |
+| `npm run budget`                    | 构建并检查脚本、首页和优化图片体积；限值见[常量](../system/rules.md)                             |
+| `npm run optimize:images`           | 对已有dist单独生成图片变体和manifest；通常由build自动调用                                        |
+| `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/content/full，不执行检查                           |
+| `npm run db:reset`                  | 删除本项目本机测试D1数据，迁移并填入固定样例                                                     |
+| `npm run db:migrate`                | 只应用本地未执行迁移；不接受线上参数                                                             |
+| `npm run deploy`                    | 拒绝本地直接生产部署，main检查成功后自动发布                                                     |
+| `npm run release:preview -- <PR号>` | 本地按范围验收后上传PR预览版本，不提升生产                                                       |
+| `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                                        |
 
 按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；受限内容修改运行verify:content；页面组件和测试基础设施修改运行verify与budget。
 
@@ -188,8 +189,12 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 ## 源码与说明同步检查
 
-功能、系统说明和项目总览的code-sources绑定真实实现文件或目录，code-revision保存复核过的SHA256摘要。docs:check读取Git管理范围及未跟踪新源码，检查路径、全体实现覆盖、当前说明本地链接和摘要一致性。源码新增、改名、删除、字节变化会要求复核对应说明；历史规格链接保留当时路径。
+功能、系统说明和项目总览的code-sources绑定真实实现文件或目录，code-revision保存复核过的SHA256摘要。docs:check读取Git管理范围及未跟踪新源码，检查路径、全体实现覆盖、当前说明本地链接和摘要一致性。源码含JSX及Great UI学习/评估JSON；新增、改名、删除、字节变化会要求复核对应说明；历史规格链接保留当时路径。
 
 `npm run docs:check -- --revisions`只打印当前源码的候选摘要，不写文件，不表示说明正确，也不替代正常docs:check。先对照改动核对文案、流程和验收，再记录摘要并运行正常检查。测试见tests/unit/docs-sources.test.ts；内容正文及work.json不在结构代码摘要里，数量从content:validate读取。
 
 新规格complete表示实现及验收完成，不等于已合并或已部署。全部任务已勾选而状态仍in-progress会失败；main中的complete与历史merged同样保护正文。合并后核对无需再创建状态补丁PR。
+
+## Great UI学习工作台检查
+
+本地入口用`great-ui:build`校验目录、详情及能力结构，并输出.scratch/great-ui-dist；`great-ui:test`通过独立Playwright配置启动4336测试服务，结束由测试框架释放。verify会执行该专项、great-ui:evaluate和本地入口预算；单独运行great-ui:budget会先构建再检查压缩JS、CSS、目录、详情与本地媒体，不改变正式站预算。不会调用发布命令。当前回归范围和待补覆盖见[功能说明](../features/great-ui-learning.md)，原始材料与浏览器证据不作为自动通过依据。

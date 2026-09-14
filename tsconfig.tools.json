@@ -3,6 +3,7 @@
     "target": "ES2023",
     "module": "NodeNext",
     "strict": true,
+    "allowJs": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "types": ["node"],
@@ -12,6 +13,7 @@
     "scripts/**/*.ts",
     "tests/**/*.ts",
     "playwright.config.ts",
-    "playwright.content.config.ts"
+    "playwright.content.config.ts",
+    "playwright.great-ui.config.ts"
   ]
 }

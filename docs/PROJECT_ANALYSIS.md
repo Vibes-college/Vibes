@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '给维护者阅读的项目总览与代码导航'
 status: 'current'
-shaped-by: ['001', '002', '003', '005', '009', '013', '016']
+shaped-by: ['001', '002', '003', '005', '009', '013', '016', '018']
 code-sources:
   [
     'package.json',
@@ -15,7 +15,7 @@ code-sources:
     'scripts/build.ts',
     'src/features/paseo-webui/host.ts',
   ]
-code-revision: '5d9cad76d11a5d16c3ef26c41fd6ae5cdad94f2c012e20c242893a9c2e8c7158'
+code-revision: 'd07ed7f34777aef3dbbc4e576b48a424a5cf2f38b17a7f4caa4fb9cc7c2130b3'
 ---
 
 # VIBES项目总览
@@ -50,6 +50,8 @@ Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物
 | 怎样让文档跟代码一起变化 | [维护文档](features/document-governance.md) | scripts/docs-check.ts、scripts/docs-sources.ts         |
 
 中英文路由、原文先发布、译文复核状态和全文搜索均已实现；英文内容量取决于实际发布文件，不代表全部译文完成。当前数量以`npm run content:validate`输出为准，不在多篇文档手抄同一组易过期数字。几千条内容与日更是规模目标，文章可通过GitHub PR贡献，维护者审阅合并后发布；[内容贡献流程](system/content-contributions.md)说明独立检查与预览。
+
+本地另有[Great UI学习工作台](features/great-ui-learning.md)，可浏览固定48件作品、生成任务并体验三条组合。它通过独立命令运行，尚未加入线上Explore入口，发布保持暂停。
 
 ## 从内容到页面的链路
 

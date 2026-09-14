@@ -1,0 +1,1994 @@
+[
+  {
+    "slug": "animated-path",
+    "title": "路径描画标志",
+    "sourceFile": "AnimatedPath",
+    "summary": "让标志的线条依次出现，再逐渐填色，把静态图形变成一段可读的形成过程。",
+    "sequence": "页面挂载后，各条 SVG 路径从未画出到完整描边，再按独立时序填色。原作眼睛示例有很多条路径，越靠后的线开始得越晚。",
+    "mechanism": "每条路径用 pathLength 表示已经描画的比例，用 fillOpacity 表示填色程度；两组动画各有时长和延迟，因此线条与填色可以重叠进行。",
+    "pitfall": "rawSvg 只解析 g、path、rect 和 circle 的部分属性，不是完整 SVG 渲染器；带渐变、蒙版、单引号属性或其他形状的素材要先核对转换结果。",
+    "trigger": "刷新原作，观察线条从局部到完整，再核对填色后的形状没有缺失。",
+    "preserve": "路径顺序决定描画顺序，填色与描边的时间关系需要一起检查。",
+    "behavior": ["路径描画", "错峰填色"],
+    "family": "path-drawing",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "term": [
+      "路径描画",
+      "Path drawing",
+      "通过改变可见的描边长度，让一条已有路径看起来正在被画出。"
+    ],
+    "parameters": [
+      [
+        "换成自己的标志",
+        "rawSvg / paths / viewBox",
+        "提供可支持的路径与正确画布范围；rawSvg 优先于 paths。"
+      ],
+      [
+        "线条节奏",
+        "pathLengthDuration / pathDelay",
+        "默认描边1.5秒，路径之间隔0.1秒；线条多时需缩短间隔。"
+      ],
+      [
+        "填色时机",
+        "fillDuration / fillDelay",
+        "默认填色0.8秒，基础延迟1.2秒，另加每条路径一半的错峰间隔。"
+      ]
+    ],
+    "improve": [
+      "复杂标志更快读懂",
+      "保留少量主要轮廓先描画，次要细节直接显示或缩短 pathDelay，不要让最后几条线等待很久。",
+      "换入实际标志，记录首条与末条完成的时间，并确认小尺寸时仍可辨认。"
+    ],
+    "suitable": "品牌标志、项目封面中的简短视觉介绍。",
+    "avoid": "必须立即读取的图标、复杂插画的无损导入、每次滚动都反复播放的标志。",
+    "practice": "刷新原作，注意轮廓描画和白色填充是否同时结束；再把 pathDelay 设为0比较节奏。",
+    "combination": "承担作品展示中的短暂视觉引导；它不负责页面导航，也不提供真实加载进度。"
+  },
+  {
+    "slug": "deployment-checklist",
+    "title": "分步状态清单",
+    "sourceFile": "DeploymentChecklist",
+    "summary": "把一项长任务拆成清楚的步骤，让用户看到哪一步正在运行、已经完成或需要处理。",
+    "sequence": "点击 Deploy Pipeline 后，清单逐项进入运行状态；演示每项等待2秒，步骤之间再等0.8秒，第4项跳过，第5项失败，最后可以重置再运行。",
+    "mechanism": "每个任务有 pending、running、success、skipped、failed 五种状态；图标与补充说明根据状态替换，说明区通过网格行高度展开。",
+    "pitfall": "runPipeline 是固定延时演示，没有克隆、构建或部署能力；initialTasks 只改变初始任务，运行时仍按数字ID预设结果。接入必须用真实任务结果驱动状态。",
+    "trigger": "启动演示，确认状态逐项变化，结束后重置并再次启动；不能把演示失败当成真实部署失败。",
+    "preserve": "任务标题、当前状态和需要处理的原因放在同一行附近，失败后提供明确的下一步。",
+    "behavior": ["分步反馈", "状态切换"],
+    "family": "step-feedback",
+    "roles": ["feedback"],
+    "provides": ["status-display"],
+    "term": [
+      "任务状态",
+      "Task state",
+      "以明确状态记录一个步骤处于等待、运行、完成或异常中的哪一阶段。"
+    ],
+    "parameters": [
+      ["任务内容", "initialTasks / Task", "定义ID、标题和说明；不要把示例中的数字ID视为业务规则。"],
+      [
+        "真实执行",
+        "runPipeline / setTasks",
+        "替换固定延时和预设第4、第5项分支，绑定真实异步结果与取消。"
+      ],
+      [
+        "重试与关闭",
+        "resetChecklist / isOpen",
+        "重试需处理旧请求，关闭面板与取消任务应有明确区别。"
+      ]
+    ],
+    "improve": [
+      "让状态对应真实执行",
+      "把 runPipeline 改成接收真实步骤执行器，每项返回成功、跳过或错误原因；关闭或离开时处理取消，重试不得残留上一轮结果。",
+      "分别让一个步骤成功、跳过和失败，核对提示与实际结果一致；重试后旧请求不能覆盖新状态。"
+    ],
+    "suitable": "导入、资料检查、构建等有明确步骤和真实执行结果的任务。",
+    "avoid": "只有单次瞬时动作的按钮、没有后端却宣称已经部署的演示。",
+    "practice": "点击启动，留意第4项和第5项总是出现相同结果；然后查看源码如何决定它们。",
+    "combination": "可以接在表单或任务入口之后展示真实结果；本地工具路径已把该模式用于资料检查，没有执行外部部署。"
+  },
+  {
+    "slug": "button",
+    "title": "有层级的基础按钮",
+    "sourceFile": "Button",
+    "summary": "用同一套尺寸、形状和状态表达主操作、次操作与不可操作，让用户容易判断下一步。",
+    "sequence": "同一个原生 button 根据 variant 和 size 切换外观。isLoading 为真时出现旋转图标、隐藏左右装饰图标，并同时禁用点击。",
+    "mechanism": "视觉层级由颜色、边框和背景区分，交互能力仍来自原生按钮；loading 只是由外部传入的状态，不会自动执行异步任务。",
+    "pitfall": "示例中的六个按钮没有业务处理；默认也没有固定 type，放进表单时应明确 submit 或 button。纯图标按钮需补可读名称，加载状态需有文字提示。",
+    "trigger": "对照五种普通样式与 Loading 状态；Loading 必须不可点击，普通按钮要接到明确的操作。",
+    "preserve": "主要与次要操作有稳定层级，禁用状态与实际可操作性一致。",
+    "behavior": ["操作层级", "加载反馈"],
+    "family": "action-button",
+    "roles": ["act"],
+    "provides": ["action-intent"],
+    "term": ["操作层级", "Action hierarchy", "通过视觉强弱区分一个界面中最重要的动作与辅助动作。"],
+    "parameters": [
+      [
+        "操作重要性",
+        "variant",
+        "支持 primary、secondary、outline、ghost、destructive；不能只因好看就把多个操作都设为主按钮。"
+      ],
+      [
+        "触发范围",
+        "size / className",
+        "默认 md 高40px；icon 是40px正方形，实际触摸目标需结合周围间距检查。"
+      ],
+      [
+        "执行状态",
+        "isLoading / disabled / onClick",
+        "运行状态由业务提供，isLoading 与 disabled 任一为真都会禁用。"
+      ]
+    ],
+    "improve": [
+      "把等待与失败讲清楚",
+      "接入真实异步操作，运行时设置 isLoading；完成或失败后恢复，附近显示结果。明确 type，图标按钮加 aria-label。",
+      "按 Enter 执行一次，运行时连点不会重复提交；失败后能看到原因并重新执行。"
+    ],
+    "suitable": "表单提交、确认选择、工具栏等需要清楚操作层级的位置。",
+    "avoid": "把按钮样式当成业务能力；在一个区块中同时强调多个主操作。",
+    "practice": "用键盘遍历原作，留意 Loading 是否进入焦点顺序；比较 Primary 与 Ghost 对注意力的影响。",
+    "combination": "承担操作入口，业务执行、校验和结果由其他环节负责，不能因为有按钮就认为任务完整。",
+    "reducedMotion": "adaptation",
+    "adaptations": ["绑定实际动作、加载结束与失败结果；明确按钮type与可读名称。"]
+  },
+  {
+    "slug": "github-card",
+    "title": "GitHub 贡献悬浮卡",
+    "sourceFile": "GithubCard",
+    "summary": "鼠标停在 GitHub 链接上时展开资料卡，用小格子呈现近期贡献，让个人链接带上更多背景。",
+    "sequence": "页面挂载时读取用户资料与贡献数据；悬停链接展开卡片，移动鼠标可产生轻微倾斜，停在某一天的小格上显示日期和次数。",
+    "mechanism": "鼠标相对链接或卡片中心的位置被映射为弹簧跟随的旋转角度。119个日期按7行排列，颜色深浅来自数据中的 level。",
+    "pitfall": "year 只改变底部年份文案，不会筛选那一年的数据；默认截取最近119天。即使传入 contributionsData，资料请求仍会发生；请求失败被静默处理，零格不等于确认没有贡献。",
+    "trigger": "悬停 GitHub 链接后能看到卡片，再悬停某个格子看到该日日期与次数；离开后卡片收起。",
+    "preserve": "链接仍可直接访问，贡献时间范围、总数与数据源必须彼此一致。",
+    "behavior": ["悬浮展开", "位置跟随", "数据日历"],
+    "family": "social-hover",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": true,
+    "external": "默认读取 GitHub 用户资料和 github-contributions-api.jogruber.de 的贡献数据。",
+    "externalAdaptation": "改用已提供的本地资料与贡献数据，并移除组件内部的两处网络请求；显示数据日期和失败状态。",
+    "term": ["位置映射", "Position mapping", "把指针在某个区域里的位置转换为角度、位移等反馈值。"],
+    "parameters": [
+      [
+        "数据与时间范围",
+        "username / contributionsData / year",
+        "year 是显示文本；需要年度数据时应实际筛选并同步总数。"
+      ],
+      [
+        "跟随倾斜",
+        "enableLinkTilt / enableCardTilt / linkTiltMaxRotate / cardTiltMaxRotate",
+        "链接与卡片分别控制，默认最大5度；作者示例关闭了卡片倾斜。"
+      ],
+      [
+        "颜色与计数",
+        "themeScheme / calendarTheme / totalContributions",
+        "颜色数组对应 level；自定义总数要说明与格子的统计范围。"
+      ]
+    ],
+    "improve": [
+      "手机和失败状态也能读",
+      "给卡片增加键盘和触摸入口；让外部数据读取显式区分加载、失败与真实零值，并写清统计时间范围。",
+      "键盘或触摸能打开关闭；阻断请求后出现失败说明而不是把全零显示为真实贡献。"
+    ],
+    "suitable": "开发者简介、作品集个人链接、可补充阅读的作者资料。",
+    "avoid": "把贡献数量当作能力评分；需要精确年度统计却只改年份文本；把关键信息仅放在悬停层。",
+    "practice": "先悬停链接再移到小格子，比较两处反馈；对照源码确认 year 有没有参与网络请求或日期筛选。",
+    "combination": "属于展示背景的辅助内容，可接在作者介绍附近；涉及外部数据与悬停，不能直接假设适合离线或触摸场景。"
+  },
+  {
+    "slug": "split-theme-provider",
+    "title": "分割展开主题",
+    "sourceFile": "SplitThemeProvider",
+    "summary": "让新主题从中央展开，或让旧主题向中央收拢，把明暗切换表现为一次有方向的揭示。",
+    "sequence": "选择向外或向内模式，再触发横向或纵向切换。组件更新页面根元素的主题属性，同时让浏览器生成的新旧画面按裁切范围交替出现。",
+    "mechanism": "View Transition 保存新旧根视图，clip-path 的 inset 从中央窄条扩展为整屏，或反向收拢旧视图；主题状态与视觉过渡由同一次触发协调。",
+    "pitfall": "它写入整个 documentElement 的 dark 类和 data-theme，并共用根视图样式；多个主题管理器并存会争抢状态。onTransition 在主题更新时调用，不代表动画已经结束。",
+    "trigger": "切换模式和方向后点击对应按钮，核对根主题确实改变，动画结束后按钮重新可用。",
+    "preserve": "新旧主题使用一致的布局，切换结果与应用实际主题状态保持同步。",
+    "behavior": ["主题切换", "裁切揭示"],
+    "family": "theme-transition",
+    "roles": ["theme"],
+    "provides": ["theme-change"],
+    "reducedMotion": "native",
+    "resources": [
+      {
+        "name": "theme",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "*"
+      },
+      {
+        "name": "root-view-transition",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "*"
+      }
+    ],
+    "term": [
+      "视图过渡",
+      "View Transition",
+      "浏览器保存状态改变前后的画面，通过独立的过渡层连接这两个状态。"
+    ],
+    "parameters": [
+      [
+        "展开方式",
+        "direction / mode",
+        "horizontal 或 vertical；in-to-out 展开新画面，out-to-in 收拢旧画面。"
+      ],
+      ["速度与节奏", "duration / easing", "默认600毫秒与 ease-in-out，持续时间单位是毫秒。"],
+      [
+        "主题归属",
+        "theme / onThemeChange / useSplitTheme",
+        "受控模式由应用提供主题并接收变更；根属性仍由组件写入。"
+      ]
+    ],
+    "improve": [
+      "接入已有主题系统",
+      "让项目现有主题状态成为唯一来源，明确谁写入根属性；与其他根视图过渡统一调度，把结束交接挂到 transition.finished。",
+      "从主题按钮和系统偏好改变主题都保持一致；连续触发不重叠，减少动态效果与不支持API时仍立即完成切换。"
+    ],
+    "suitable": "已有明确主题切换入口的内容站、作品集或设置页。",
+    "avoid": "与另一个独立全局主题提供者同时接管根元素；把它作为表单结果或页面导航的替代。",
+    "practice": "依次尝试 In to Out 和 Out to In，并比较横向、纵向；注意内容布局不需要跟着移动。",
+    "combination": "它是全局主题能力，与其他主题转场属于替代关系；只有统一主题与根过渡负责人后，才考虑与导航效果协作。"
+  },
+  {
+    "slug": "mobile-mockup",
+    "title": "手机里的对话演示",
+    "sourceFile": "MobileMockup",
+    "summary": "把一段预设对话放进手机外壳，按节奏显示消息和正在输入的提示，帮助访客理解产品场景。",
+    "sequence": "默认对话自动循环：先出现前两条消息，再出现回复、图片和最后一条消息，10.8秒后重新开始。传入 children 时，屏幕内容改为自定义区域。",
+    "mechanism": "多个计时器更新可见消息数组和 typing 状态，消息气泡用弹簧动效进入；手机外壳另有进入与悬停反馈。",
+    "pitfall": "它是展示模型，没有聊天、通话、输入或发送能力。自动序列直接读取 messages 的前4个位置，过短数组会出现无效消息；长消息还需核对滚动与可读时间。",
+    "trigger": "观察消息依次出现并重新开始；autoPlay 关闭时应直接展示完整消息，自定义 children 应替换对话区。",
+    "preserve": "消息顺序与发送方明确，说明文字不能因动画结束而无法阅读。",
+    "behavior": ["分步演示", "循环播放"],
+    "family": "device-demo",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "term": [
+      "演示状态",
+      "Demonstration state",
+      "由预设内容和时间驱动的展示状态，用于解释流程，不等于真实服务正在运行。"
+    ],
+    "parameters": [
+      [
+        "屏幕内容",
+        "messages / children",
+        "children 可替换对话内容；自动播放假设至少存在前4条消息。"
+      ],
+      [
+        "播放策略",
+        "autoPlay / runSequence",
+        "默认每10.8秒循环；需要根据消息长度生成序列，或改为用户控制播放。"
+      ],
+      [
+        "身份与尺寸",
+        "headerTitle / avatarUrl / className",
+        "使用自己的演示人物与素材；外壳不同断点有固定高度，需要核对实际文字。"
+      ]
+    ],
+    "improve": [
+      "让演示可读也可暂停",
+      "增加暂停和重播，按实际消息长度生成安全序列；屏幕离开视口或用户减少动态效果时停止循环并显示完整内容。",
+      "用0条、1条、长文本和图片失败场景检查；暂停后不再新增消息，恢复后不重复启动多轮计时器。"
+    ],
+    "suitable": "产品介绍中的场景演示、移动界面作品展示。",
+    "avoid": "作为真实聊天应用直接使用，或让用户误以为按钮能通话与发送。",
+    "practice": "等待整段对话结束，看看读完最后一条前是否已经重置；再核对底部 Message 是否真的是输入框。",
+    "combination": "负责展示使用场景，可放在价值说明之后；实际体验入口应另外提供，不能把手机外壳当成业务工具。"
+  },
+  {
+    "slug": "scroll-flying-cards",
+    "title": "随滚动飞入的卡片",
+    "sourceFile": "ScrollFlyingCards",
+    "summary": "每张卡片随滚动进入、停留和离开，背景文字保持在视野中，让几个重点形成连续的阅读段落。",
+    "sequence": "向下滚动时，卡片从模糊、缩小和偏移的位置进入，中段恢复清晰并停留，随后向另一侧淡出；反向滚动可倒放这一过程。",
+    "mechanism": "每张卡片的滚动进度分别控制位移、角度、透明度、缩放和模糊。0.4到0.6附近是稳定阅读区，奇偶卡片使用相反倾斜方向。",
+    "pitfall": "每张卡占用约一屏以上的滚动距离，数量一多会明显拖长页面；scrollContainerRef 必须指向真实滚动容器，减少动态效果时需保留静态内容。",
+    "trigger": "在实际滚动容器中来回滚动，每张卡片都经过完整可读状态，不因容器选错而一直模糊或透明。",
+    "preserve": "每张卡片有足够稳定的阅读区，进入与退出不能遮住正在理解的关键信息。",
+    "behavior": ["滚动映射", "飞入淡出"],
+    "family": "scroll-card",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "term": [
+      "滚动进度映射",
+      "Scroll progress mapping",
+      "用元素经过视口的位置控制视觉变化，滚动速度与方向由读者决定。"
+    ],
+    "parameters": [
+      [
+        "进入方向与幅度",
+        "animationConfig.direction / offset",
+        "默认向上，偏移300px；窄屏应按实际可见区域缩小。"
+      ],
+      [
+        "阅读时的清晰度",
+        "animationConfig.rotation / scale / blur",
+        "默认10度、0.85与20px模糊，中段归零旋转和模糊并恢复正常大小。"
+      ],
+      [
+        "实际滚动容器",
+        "scrollContainerRef / useScroll offset",
+        "每卡依据 start end 到 end start 的进度变化，内嵌区域要传入它自己的滚动元素。"
+      ]
+    ],
+    "improve": [
+      "缩短页面又保留节奏",
+      "减少卡片数量与每卡占据的高度，扩大静止阅读区；减少动态效果时去掉位移模糊，将卡片排列为普通列表。",
+      "手机上快速和慢速滚动均能读清全部标题；静态模式能直接看到所有内容，底部没有多余空白。"
+    ],
+    "suitable": "少量产品亮点、分步理念说明、编辑式作品展示。",
+    "avoid": "几十条结果列表、快速查找工具、必须并排比较的方案。",
+    "practice": "缓慢滚动到一张卡片最清晰的位置，再继续向下，观察哪些属性先开始变化。",
+    "combination": "在浏览或示例环节选择它时，应减少其他大范围运动；需要快速比较则改用静态卡片。"
+  },
+  {
+    "slug": "color-wipe-page-transition",
+    "title": "彩色边缘页面转场",
+    "sourceFile": "ColorWipePageTransition",
+    "summary": "用带彩色边缘的分块遮挡完成页面切换，让移动方向和节奏更鲜明。",
+    "sequence": "多条面板错峰覆盖旧画面，在计算出的遮挡时刻调用 onViewSwap，停留50毫秒后退场。作者示例使用8块面板、只显示前缘，并向另一侧退出。",
+    "mechanism": "面板本体负责遮挡，窄色条贴在它的前后边缘。上下进入时是竖向分块，左右进入时改为横向分条；颜色按数组循环分配。",
+    "pitfall": "onViewSwap 来自固定计时，并不会等待路由数据或实际退场。附带的 RouteTransitionProvider 拦截文档链接，需要与项目路由、下载链接及并发导航规则核对。",
+    "trigger": "选择方向触发转场，旧画面完整遮住后再换内容，面板全部退出后可继续操作。",
+    "preserve": "色条跟随对应面板，目标内容与遮挡时机一致，失败时能恢复可操作页面。",
+    "behavior": ["错峰遮挡", "彩色边缘"],
+    "family": "page-transition",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "resources": [
+      {
+        "name": "route-overlay",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "navigation"
+      }
+    ],
+    "term": [
+      "运动前缘",
+      "Leading edge",
+      "运动元素面向前进方向的一侧，可以通过颜色或线条强调进入方向。"
+    ],
+    "parameters": [
+      [
+        "分块与节奏",
+        "columns / duration / staggerDelay",
+        "组件默认10块、每次0.45秒、错开0.03秒；示例覆盖为8块。"
+      ],
+      [
+        "边缘样式",
+        "showLeadingStroke / showTrailingStroke / strokeWidth",
+        "默认前后缘都显示、宽10px；示例关闭后缘。"
+      ],
+      [
+        "路线与退场",
+        "direction / exitOpposite / onViewSwap",
+        "默认从左进入并原路退出；要等待实际数据和动画完成，必须增加明确交接。"
+      ]
+    ],
+    "improve": [
+      "颜色更克制、切换更可靠",
+      "减少色条颜色和分块数量，保留项目品牌色；用真实加载状态和动画完成事件协调内容切换，失败和重复导航可中断恢复。",
+      "慢速加载时不提前揭开空页，失败后无残留遮挡，前进后退和连续点击目标一致。"
+    ],
+    "suitable": "少量关键页面间的品牌化导航或作品展示。",
+    "avoid": "高频工具切换、筛选刷新，或与另一个全屏转场同时使用。",
+    "practice": "在原作尝试左右两种方向，留意色条跟随哪一侧边缘，以及内容在哪个时刻改变。",
+    "combination": "与错峰页面转场属于同一导航位置的替代方案，不能仅因视觉不同就叠加使用。"
+  },
+  {
+    "slug": "team-section",
+    "title": "悬停人物名单",
+    "sourceFile": "TeamSection",
+    "summary": "把人物姓名排成清晰名单，鼠标经过时显示职位和照片；窄屏直接展示人物卡片。",
+    "sequence": "桌面悬停姓名会显示对应职位与右侧照片；移到上一位或下一位时，照片从不同方向进入。小屏改为每个人都带图片和资料的纵向布局。",
+    "mechanism": "activeIndex 与 prevIndex 决定选中人物和图片进入方向，AnimatePresence 让旧照片缩小淡出、新照片从上方或下方进入。",
+    "pitfall": "桌面行只监听鼠标进入，没有等价键盘选择；social 链接只在窄屏卡片出现。桌面上需要同时补齐可聚焦入口和每位人物的实际链接。",
+    "trigger": "依次悬停不同姓名，核对照片、职位与人物一致；窄屏不依赖悬停也能读到全部信息。",
+    "preserve": "人物文字和照片一一对应，任何输入方式都能读取重要资料。",
+    "behavior": ["悬停选择", "方向感知换图", "响应式展示"],
+    "family": "people-list",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": true,
+    "term": [
+      "方向感知切换",
+      "Direction-aware transition",
+      "根据用户选择顺序决定新内容从哪一侧进入，让变化与浏览方向一致。"
+    ],
+    "parameters": [
+      [
+        "人物资料",
+        "speakers / Speaker",
+        "提供姓名、职位、公司、图片和可选社交地址；空数组不渲染。"
+      ],
+      [
+        "名单反馈",
+        "slideDistance / align / rowClassName",
+        "职位默认移动20px进入，行可按中心、基线或底端对齐。"
+      ],
+      [
+        "照片表现",
+        "grayscale / activeImageClassName / imageVariants",
+        "默认黑白；换图用0.4秒的位移，新旧照片在相同位置交接。"
+      ]
+    ],
+    "improve": [
+      "键盘与桌面链接补齐",
+      "用可聚焦的选择入口同步 onFocus 与悬停状态，并为桌面名单提供真实社交链接；减少动态效果时直接换图。",
+      "只用键盘访问每个人的信息和链接；上下选择时照片不错配，窄屏没有重复或隐藏资料。"
+    ],
+    "suitable": "团队、嘉宾、作者等人数较少的人物介绍。",
+    "avoid": "大量联系人管理、要求快速逐列比较资料的表格、只放姓名不提供可访问详情。",
+    "practice": "从第一个姓名移到最后一个，再向上返回，观察照片从哪一侧进入；缩窄窗口比较资料是否仍完整。",
+    "combination": "它是人物展示方式，与头像堆叠和社交卡片可以比较取舍；核心资料应完整，不依赖额外悬停效果叠加。"
+  },
+  {
+    "slug": "split-line-fly-in",
+    "title": "文字分行飞入",
+    "sourceFile": "SplitLineFlyIn",
+    "summary": "一段文字按行从两侧进入，逐渐收拢字距并变清晰，把阅读展开成有方向的节奏。",
+    "sequence": "组件测量单词换行位置，按行分别映射滚动进度；默认奇偶行从相反方向进入，也可以直接传入指定的行。",
+    "mechanism": "同一行共享横向位移、透明度、模糊和 wordSpacing。每行的起点由行号与 staggerFactor 决定，因此行与行依次到位。",
+    "pitfall": "animationDuration 表示滚动进度区间，不是秒数。自动分行以空格拆词，中文、字体迟加载及同词数换文案需要重新分词和测量；每行禁止换行，过长行可能被裁掉。",
+    "trigger": "在滚动容器中来回滚动，所有行能完整进入；换到窄屏后行长与页面宽度匹配。",
+    "preserve": "文字最终回到正确顺序与正常字距，不依赖横向溢出才能读完。",
+    "behavior": ["分行飞入", "滚动揭示"],
+    "family": "scroll-text",
+    "roles": ["introduce"],
+    "provides": ["content-visible"],
+    "term": [
+      "分行测量",
+      "Line measurement",
+      "读取文字实际排版后各词的纵向位置，把落在同一行的内容作为一组处理。"
+    ],
+    "parameters": [
+      [
+        "文字如何分组",
+        "text / lines / calculateLines",
+        "自动分组按空格拆词并读取 offsetTop，或用 lines 明确每行。"
+      ],
+      [
+        "进入幅度",
+        "direction / flyInDistance / blurStart",
+        "默认交替方向、70vw距离、12px模糊，移动端应缩小。"
+      ],
+      [
+        "阅读节奏",
+        "staggerFactor / animationDuration / wordSpacingEnd",
+        "默认0.6错峰因子、0.4进度跨度，结束字距0.25em。"
+      ]
+    ],
+    "improve": [
+      "中文与窄屏更自然",
+      "使用适合实际语言的分词和测量，等待字体就绪并监听容器尺寸；在窄屏缩短位移，减少动态效果时直接展示完整段落。",
+      "中文、长单词、字体载入和容器变宽后都不缺字、不裁行，静态模式保留正常阅读顺序。"
+    ],
+    "suitable": "短篇宣言、少量品牌文字、章节引言。",
+    "avoid": "正文长文、表格、需要复制或快速检索的关键说明。",
+    "practice": "缓慢滚动，观察每一行的位移和字距是否同时完成；再改为全部从同侧进入比较。",
+    "combination": "与其他滚动文字属于替代关系，同一段落只选择一种主要揭示规则。"
+  },
+  {
+    "slug": "blur-scroll-reveal",
+    "title": "滚动文字由模糊到清晰",
+    "sourceFile": "BlurScrollReveal",
+    "summary": "把段落拆成词或行，随滚动依次提高可见度、减少模糊，让文字逐段进入阅读状态。",
+    "sequence": "默认按词处理，滚动经过指定范围后，词从透明、模糊和轻微偏移变为清晰。line 模式会先测量排版，再整行处理。",
+    "mechanism": "每个词或行有自己的起止进度，分别映射透明度、模糊、纵向位移和缩放；这些属性可以独立调节。",
+    "pitfall": "默认初始透明度为0，重要内容可能暂时不可见；分词依赖空格，减少动态效果、中文分词和字体变化需要额外处理。animationDuration 是进度跨度。",
+    "trigger": "滚动到结束范围后全文清晰可读，反向滚动时变化按原路径回退。",
+    "preserve": "阅读顺序稳定，任何静态或异常状态都能取得完整文字。",
+    "behavior": ["滚动映射", "模糊揭示"],
+    "family": "scroll-text",
+    "roles": ["introduce"],
+    "provides": ["content-visible"],
+    "term": ["清晰度揭示", "Blur reveal", "通过逐渐降低模糊，让内容从轮廓走向可阅读状态。"],
+    "parameters": [
+      [
+        "按词还是按行",
+        "variant / text",
+        "word 逐词处理，line 依实际 offsetTop 分行；中文需要适配分段。"
+      ],
+      [
+        "变化起止值",
+        "opacity / blur / y / scale",
+        "默认0到1透明度、12px到0模糊、10px到0位移，缩放保持1。"
+      ],
+      [
+        "滚动触发范围",
+        "offset / staggerFactor / animationDuration",
+        "默认 start end 到 end 60%，错峰0.85，单项进度跨度0.12。"
+      ]
+    ],
+    "improve": [
+      "先可读，再强调",
+      "提高初始可见度，减小或移除模糊；核心内容直接显示，只对短介绍添加渐进强调，系统减少动态效果时使用静态正文。",
+      "滚动前仍能理解基本内容，滚动后每一词清晰；快速滚动和减少动态效果不丢失正文。"
+    ],
+    "suitable": "短介绍、章节标题、少量可慢读的文案。",
+    "avoid": "使用说明、价格、错误提示等必须立即读清的信息。",
+    "practice": "比较只改透明度与同时改模糊的版本，判断模糊是否真的帮助理解。",
+    "combination": "可替代文字渐显或词语聚焦；不要在同一段文字上同时叠加两套滚动进度。"
+  },
+  {
+    "slug": "word-focus-scroll",
+    "title": "词语逐个聚焦",
+    "sourceFile": "WordFocusScroll",
+    "summary": "词语随滚动从较小、模糊和透明变为正常大小，用连续的聚焦过程强调阅读顺序。",
+    "sequence": "文字先按空格拆词，每个词在自己的短滚动区间内变清晰并放大；已经完成的词保留清晰状态。",
+    "mechanism": "同一进度同时控制 scale、opacity 和 blur。它没有把已读词重新模糊，因此更接近依次揭示，而不是只保留一个焦点词。",
+    "pitfall": "默认 minOpacity 为0，不应直接用于必须立即可读的正文；中文会被当作一个长词，wordDuration 也不是播放秒数。",
+    "trigger": "逐步滚动，词语按文本顺序变清晰，最后整段保持可读；倒滚时能看到对应回退。",
+    "preserve": "词序与正常排版一致，缩放不能挤压邻词或造成裁切。",
+    "behavior": ["逐词聚焦", "滚动缩放"],
+    "family": "scroll-text",
+    "roles": ["introduce"],
+    "provides": ["content-visible"],
+    "term": [
+      "聚焦区间",
+      "Focus interval",
+      "给每个词分配一小段滚动范围，在这段范围内完成强调变化。"
+    ],
+    "parameters": [
+      [
+        "聚焦强弱",
+        "minScale / maxBlur / minOpacity",
+        "默认0.85、6px和0；提高初始透明度可改善可读性。"
+      ],
+      [
+        "逐词推进",
+        "staggerFactor / wordDuration",
+        "默认0.8和0.1，控制各词开始位置与完成所需进度。"
+      ],
+      [
+        "阅读环境",
+        "text / scrollContainerRef / offset",
+        "默认 start 90% 到 end 60%；换容器或语言时重新核对。"
+      ]
+    ],
+    "improve": [
+      "把聚焦做得更轻",
+      "保留可读底稿，用较小缩放差和较高初始透明度表达强调；中文按完整字素或短语分组，减少动态效果时直接显示。",
+      "每个词在开始和结束都能识别，中文不溢出，快速滚动不出现持续空白。"
+    ],
+    "suitable": "少量强调语、产品理念、章节开头。",
+    "avoid": "依赖逐词节奏才能得到重要信息的正文，或需要稳定尺寸的表格。",
+    "practice": "把 minScale 改为1，比较只用清晰度和透明度时是否已足够表达节奏。",
+    "combination": "与模糊滚动揭示和文字渐显竞争同一个介绍位置，根据可读性选择其中一个。"
+  },
+  {
+    "slug": "text-on-path-scroll",
+    "title": "沿曲线滚动的文字",
+    "sourceFile": "TextOnPathScroll",
+    "summary": "让文字贴着一条曲线移动，用滚动推动文字经过画面，形成一段有空间感的排版。",
+    "sequence": "文字通过 SVG textPath 绑定到曲线，页面滚动进度经弹簧平滑后改变 startOffset，使同一段文字沿路径移动。",
+    "mechanism": "曲线形状决定文字轨迹，startOffset 决定文字在路径上的起点；外层较长的滚动区域与内部 sticky 画面共同形成持续展示。",
+    "pitfall": "默认区域高800dvh，阅读成本很大；固定 id 为 scroll-path，多实例会冲突。路径文字不适合承担唯一正文，需要静态可读替代。",
+    "trigger": "在原作滚动，文字沿同一曲线移动；反向滚动时轨迹反向，静止后不继续漂移。",
+    "preserve": "路径ID与 textPath 引用一致，文字内容完整，滚动方向与阅读意图协调。",
+    "behavior": ["路径排版", "滚动位移"],
+    "family": "path-text",
+    "roles": ["introduce"],
+    "provides": ["content-visible"],
+    "resources": [
+      {
+        "name": "svg-scroll-path-id",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "*"
+      }
+    ],
+    "term": ["沿路径文字", "Text on a path", "把文字基线放在SVG曲线上，字符沿曲线的方向逐个排列。"],
+    "parameters": [
+      ["曲线形状", "path / scroll-path", "传入带指定ID的SVG路径，多实例时需改成唯一ID并同步引用。"],
+      [
+        "文字与距离",
+        "text / textProps / scrollOffsets",
+        "文字字号由 textProps 调整；示例将起止位置设为100%到-100%。"
+      ],
+      [
+        "平滑与滚动长度",
+        "springOptions / className",
+        "默认弹簧刚度50、阻尼20；外层默认800dvh，可按内容缩短。"
+      ]
+    ],
+    "improve": [
+      "更短的装饰段落",
+      "缩短滚动区域和文字长度，补普通文本版本；为每个实例分配唯一路径ID，在减少动态效果时直接呈现静态排版。",
+      "两实例同时出现不串轨迹；手机能读到文本，不需要滚动很多屏才进入下一段。"
+    ],
+    "suitable": "品牌标语、活动视觉、可作为装饰补充的短句。",
+    "avoid": "唯一的操作说明、长段正文、高频工具界面。",
+    "practice": "先只改变曲线，再只改变 scrollOffsets，区分轨迹形状和移动距离的影响。",
+    "combination": "属于排版原理示例，不提供导航或业务动作；若与其他滚动效果共用长区域，需要重新安排阅读长度。"
+  },
+  {
+    "slug": "scrambled-install-command",
+    "title": "扰动字形的命令切换",
+    "sourceFile": "ScrambledInstallCommand",
+    "summary": "切换安装方式时，让命令中的字符短暂变化再还原，用局部动态强调文字已经更新。",
+    "sequence": "选择包管理器后，由父组件提供新的完整命令；full 模式重播整段扰动，smart 模式只处理前后相同部分之外的差异。复制按钮复制完整原文。",
+    "mechanism": "文本按字素分段，计时器逐步增加已揭示数量，未揭示字符暂时显示符号。最多48步避免长命令无限延长。",
+    "pitfall": "复制处理没有等待 clipboard.writeText 成功就显示完成，需要增加失败分支。作者预览命令含 localhost 地址，只用于演示，不应照抄执行。",
+    "trigger": "切换包管理器后命令正确更新，复制内容是完整命令而不是正在扰动的字符。",
+    "preserve": "可执行文本由真实配置产生，复制结果与最终显示一致，动效不改变命令本身。",
+    "behavior": ["字符扰动", "差异强调", "复制反馈"],
+    "family": "command-display",
+    "roles": ["act"],
+    "provides": ["action-intent"],
+    "reducedMotion": "native",
+    "term": [
+      "差异动画",
+      "Diff animation",
+      "只对新旧内容发生变化的部分加动画，让注意力集中在实际更新处。"
+    ],
+    "parameters": [
+      [
+        "真实命令",
+        "installCommand / pkgManager / setPkgManager",
+        "父组件负责选项与命令一致性，组件不会自动推导安装命令。"
+      ],
+      [
+        "扰动范围",
+        "animationVariant / scrambleIntervalMs",
+        "full 或 smart，默认每32毫秒推进，最长48步。"
+      ],
+      [
+        "复制反馈",
+        "handleCopyInstall / onCopy",
+        "应等待剪贴板写入成功再显示完成；失败时提供手动复制。"
+      ]
+    ],
+    "improve": [
+      "只强调变化并可靠复制",
+      "使用 smart 保留未变化的文本；等待复制承诺成功，失败则显示可选全文。命令从已验证项目配置生成，替换预览中的本机地址。",
+      "连续切换后复制文本与当前选项一致；拒绝剪贴板权限时显示失败且仍可手动复制。"
+    ],
+    "suitable": "文档中的安装方式切换、配置命令示例。",
+    "avoid": "自动执行未审核命令，或让扰动效果掩盖复制失败。",
+    "practice": "在 full 与 smart 间比较相同前后缀是否保持稳定；复制后粘贴到普通文本区核对，不运行命令。",
+    "combination": "可承担文档的复制操作，但它不是表单输入或命令执行器；完整工具路径仍需要真实执行与结果。"
+  },
+  {
+    "slug": "multilingual-quote",
+    "title": "多语言引语切换",
+    "sourceFile": "MultilingualQuote",
+    "summary": "在同一位置切换不同语言的短句，用轻微模糊和位移连接文本变化，同时保留作者信息。",
+    "sequence": "点击语言按钮更新 activeQuoteId，新语言文本进入，旧文本退出；作者署名保持在下方，只有多种语言时才出现选择器。",
+    "mechanism": "每个语种有稳定ID，AnimatePresence 用这个ID区分新旧文本，通过同一网格区域叠放完成过渡。",
+    "pitfall": "组件只切换预先提供的译文，不会翻译或验证引语来源。语言按钮缺少选中语义，正文也没有自动设置 lang，需要明确语言和准确来源。",
+    "trigger": "切换任意语言后，正文与所选语种一致，作者信息与来源链接仍保持正确。",
+    "preserve": "译文含义和引语归属由维护者核对，语言切换不能截断或叠住文字。",
+    "behavior": ["语言切换", "文本过渡"],
+    "family": "localized-text",
+    "roles": ["introduce"],
+    "provides": ["content-visible"],
+    "term": [
+      "内容状态切换",
+      "Content state change",
+      "在同一个界面位置展示不同但相关的内容，并明确当前选中了哪一份。"
+    ],
+    "parameters": [
+      ["语种和文本", "quotes / defaultLanguage", "每项提供id、label、text，默认语言应存在于列表。"],
+      ["归属与来源", "authorName / authorLink", "只显示传入值，引用前需独立核实作者与出处。"],
+      [
+        "排版与动效",
+        "quoteClassName / motion.p transition",
+        "默认0.4秒、8px模糊及5px位移，长译文需核对容器高度。"
+      ]
+    ],
+    "improve": [
+      "切换状态更清楚",
+      "给语言按钮加 aria-pressed 或正确的标签页语义，正文设置 lang；减少动态效果时直接替换，长短译文不互相遮挡。",
+      "键盘切换各语言，读屏能知道当前语种；最长文本完整显示，空列表也有明确处理。"
+    ],
+    "suitable": "有已核对译文和出处的短引语、产品短句展示。",
+    "avoid": "把预设语言切换当作自动翻译，或未经核对就归因给知名人物。",
+    "practice": "切换长短不同的语言，观察作者行是否跳动；再关闭模糊比较阅读清晰度。",
+    "combination": "属于多语言内容展示，可替代普通静态引语；页面语言策略应与站点保持一致。"
+  },
+  {
+    "slug": "curtain-page-transition",
+    "title": "双帘开合转场",
+    "sourceFile": "CurtainPageTransition",
+    "summary": "两块遮罩从相对的两边合到中央，再退回两侧，把内容切换放进短暂闭合的时刻。",
+    "sequence": "点击横向或纵向按钮后，两块面板同时合拢，计时器调用内容切换，再等50毫秒开始退回原方向。",
+    "mechanism": "两块略大于半屏的面板分别改变横向或纵向位移；多出的0.5%重叠避免中缝漏出。",
+    "pitfall": "direction 改变移动轴，vertical 是上下移动，不是竖直分缝；两个方向都需要核对中央没有缝。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。",
+    "trigger": "实际触发原作，确认内容发生切换，过程结束后遮罩不再挡住操作；这只验证演示，不代表真实路由。",
+    "preserve": "保留这一种主要转场规则；内容只在明确交接时改变，结束后恢复可操作状态。",
+    "behavior": ["双向闭合", "内容交接"],
+    "family": "page-transition",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "resources": [
+      {
+        "name": "route-overlay",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "navigation"
+      }
+    ],
+    "term": [
+      "成对遮罩",
+      "Paired masks",
+      "用两个从相对方向进入的图层覆盖旧画面，再一起露出新画面。"
+    ],
+    "parameters": [
+      ["开合方向", "direction", "horizontal 左右开合，vertical 上下开合。"],
+      ["速度与曲线", "duration / ease", "默认单程0.8秒；完整过程另含50毫秒停留。"],
+      [
+        "遮罩覆盖",
+        "panelClassName / getTransform",
+        "颜色需不透明，保留半屏以上的重叠和正确离场方向。"
+      ]
+    ],
+    "improve": [
+      "让转场等待真实内容",
+      "将计时回调改为明确的进入、内容就绪、退出阶段；加载失败可恢复旧页，连续触发只保留有效请求，减少动态效果时直接导航。",
+      "人为延迟和失败加载，确认未就绪时不露出空页，失败能恢复，退场后焦点到新标题，浏览器前进后退正确。"
+    ],
+    "suitable": "需要少量章节切换的作品集、活动或品牌页面。",
+    "avoid": "高频任务切换、需要立即反馈的工具界面，或与另一整屏转场同时运行。",
+    "practice": "比较横向与纵向，注意合拢时分缝位置和退回方向。",
+    "combination": "与其他页面转场属于替代关系；同次导航只由一个转场和路由负责人调度。",
+    "adaptations": [
+      "将计时交接改成真实内容就绪、取消、失败恢复和退场完成；处理焦点、历史及减少动态效果。"
+    ]
+  },
+  {
+    "slug": "interlocking-page-transition",
+    "title": "交错插入转场",
+    "sourceFile": "InterlockingPageTransition",
+    "summary": "相邻条带从相反方向进入，像彼此咬合的梳齿一样覆盖旧内容，再继续离开。",
+    "sequence": "条带按编号错峰进入，奇数和偶数从相反一侧出发；覆盖计时结束后换内容，再按设定方向退场。示例固定4条、单程0.5秒。",
+    "mechanism": "条带数决定条宽，奇偶编号决定出发侧，staggerDelay 决定相邻条带开始的间隔。",
+    "pitfall": "自动条数随窗口尺寸变化，动画中调整尺寸可能重启时序；top 与 bottom 选择同一竖向布局，不能仅凭名字假设起始奇偶相反。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。",
+    "trigger": "实际触发原作，确认内容发生切换，过程结束后遮罩不再挡住操作；这只验证演示，不代表真实路由。",
+    "preserve": "保留这一种主要转场规则；内容只在明确交接时改变，结束后恢复可操作状态。",
+    "behavior": ["交替方向", "错峰覆盖"],
+    "family": "page-transition",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "resources": [
+      {
+        "name": "route-overlay",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "navigation"
+      }
+    ],
+    "term": [
+      "交替位移",
+      "Alternating translation",
+      "让相邻元素从相反侧移动，在同一时刻形成相互穿插的视觉关系。"
+    ],
+    "parameters": [
+      ["条带数量", "columns", "不传时按约120px一条计算、至少3条；预览使用4条。"],
+      [
+        "入场与退场",
+        "direction / exitOpposite",
+        "top、bottom 形成竖条，left、right 形成横条；奇偶方向由内部规则决定。"
+      ],
+      ["整体等待", "duration / staggerDelay", "默认0.75秒及0.075秒间隔，增加条数会延长覆盖时间。"]
+    ],
+    "improve": [
+      "让转场等待真实内容",
+      "将计时回调改为明确的进入、内容就绪、退出阶段；加载失败可恢复旧页，连续触发只保留有效请求，减少动态效果时直接导航。",
+      "人为延迟和失败加载，确认未就绪时不露出空页，失败能恢复，退场后焦点到新标题，浏览器前进后退正确。"
+    ],
+    "suitable": "需要少量章节切换的作品集、活动或品牌页面。",
+    "avoid": "高频任务切换、需要立即反馈的工具界面，或与另一整屏转场同时运行。",
+    "practice": "比较上下交错与左右交错，留意相邻两条从相反方向出发。",
+    "combination": "与其他页面转场属于替代关系；同次导航只由一个转场和路由负责人调度。",
+    "adaptations": [
+      "将计时交接改成真实内容就绪、取消、失败恢复和退场完成；处理焦点、历史及减少动态效果。"
+    ]
+  },
+  {
+    "slug": "sweep-page-transition",
+    "title": "多层扫过转场",
+    "sourceFile": "SweepPageTransition",
+    "summary": "数块整屏色层依次扫过，让颜色形成前后层次，再露出下一份内容。",
+    "sequence": "点击方向按钮后，三块完整色层错峰进入；覆盖后切换示例内容，退场使用反向的层间延迟。",
+    "mechanism": "这里每层都覆盖整屏，颜色数组决定层数和叠放顺序，不是把屏幕切成多条。",
+    "pitfall": "colors 为空无法形成遮罩；多加颜色同时增加图层和等待。半透明颜色不能保证旧内容被隐藏。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。",
+    "trigger": "实际触发原作，确认内容发生切换，过程结束后遮罩不再挡住操作；这只验证演示，不代表真实路由。",
+    "preserve": "保留这一种主要转场规则；内容只在明确交接时改变，结束后恢复可操作状态。",
+    "behavior": ["层叠扫过", "逆序退场"],
+    "family": "page-transition",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "resources": [
+      {
+        "name": "route-overlay",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "navigation"
+      }
+    ],
+    "term": [
+      "图层错峰",
+      "Layer staggering",
+      "让占据同一区域的多个图层在不同时间开始，利用遮挡呈现层次。"
+    ],
+    "parameters": [
+      ["颜色顺序", "colors", "预览用三种玫红；数组顺序影响叠放与露出的颜色。"],
+      ["移动方向", "direction / exitOpposite", "四个入场方向；默认从相反侧离开。"],
+      ["节奏", "duration / staggerDelay", "默认单程0.7秒、层间0.1秒，退场延迟按层序反向计算。"]
+    ],
+    "improve": [
+      "让转场等待真实内容",
+      "将计时回调改为明确的进入、内容就绪、退出阶段；加载失败可恢复旧页，连续触发只保留有效请求，减少动态效果时直接导航。",
+      "人为延迟和失败加载，确认未就绪时不露出空页，失败能恢复，退场后焦点到新标题，浏览器前进后退正确。"
+    ],
+    "suitable": "需要少量章节切换的作品集、活动或品牌页面。",
+    "avoid": "高频任务切换、需要立即反馈的工具界面，或与另一整屏转场同时运行。",
+    "practice": "选两个相反方向，观察最先出现的颜色与最后退场的颜色。",
+    "combination": "与其他页面转场属于替代关系；同次导航只由一个转场和路由负责人调度。",
+    "adaptations": [
+      "将计时交接改成真实内容就绪、取消、失败恢复和退场完成；处理焦点、历史及减少动态效果。"
+    ]
+  },
+  {
+    "slug": "pixel-page-transition",
+    "title": "像素格溶解转场",
+    "sourceFile": "PixelPageTransition",
+    "summary": "小方格以打散顺序变得不透明，覆盖画面后再消失，用颗粒感连接两份内容。",
+    "sequence": "触发后，每格按预先打散的编号延迟出现；约 duration 加 staggerDuration 后换内容并开始淡出。",
+    "mechanism": "窗口宽度决定列数和实际方格尺寸，再按高度补足行数；随机顺序在网格重新计算时生成，并非每次点击都重新洗牌。",
+    "pitfall": "pixelSize 太小会生成大量独立动画节点，0或负数也未被安全限制；需要正数校验和节点预算。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。",
+    "trigger": "实际触发原作，确认内容发生切换，过程结束后遮罩不再挡住操作；这只验证演示，不代表真实路由。",
+    "preserve": "保留这一种主要转场规则；内容只在明确交接时改变，结束后恢复可操作状态。",
+    "behavior": ["网格溶解", "随机顺序"],
+    "family": "page-transition",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "resources": [
+      {
+        "name": "route-overlay",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "navigation"
+      }
+    ],
+    "term": [
+      "随机错峰",
+      "Shuffled staggering",
+      "先打乱元素顺序，再按这个顺序安排出现时间，形成分散的变化。"
+    ],
+    "parameters": [
+      ["颗粒大小", "pixelSize", "默认40px，实际尺寸按整列平分；更小不等于更流畅。"],
+      ["出现时长", "duration / staggerDuration", "默认0.2秒及0.4秒分散区间，总过程约1.2秒。"],
+      [
+        "网格预算",
+        "updateGrid / shuffledIndices",
+        "限制行列总数，尺寸变化时重算；需要每次随机时再明确修改。"
+      ]
+    ],
+    "improve": [
+      "让转场等待真实内容",
+      "将计时回调改为明确的进入、内容就绪、退出阶段；加载失败可恢复旧页，连续触发只保留有效请求，减少动态效果时直接导航。",
+      "人为延迟和失败加载，确认未就绪时不露出空页，失败能恢复，退场后焦点到新标题，浏览器前进后退正确。"
+    ],
+    "suitable": "需要少量章节切换的作品集、活动或品牌页面。",
+    "avoid": "高频任务切换、需要立即反馈的工具界面，或与另一整屏转场同时运行。",
+    "practice": "连续触发两次比较格子顺序，再改变窗口大小查看网格密度。",
+    "combination": "与其他页面转场属于替代关系；同次导航只由一个转场和路由负责人调度。",
+    "adaptations": [
+      "将计时交接改成真实内容就绪、取消、失败恢复和退场完成；处理焦点、历史及减少动态效果。"
+    ]
+  },
+  {
+    "slug": "sine-wave-page-transition",
+    "title": "波浪节奏转场",
+    "sourceFile": "SineWavePageTransition",
+    "summary": "长条仍沿直线移动，但出发时间按波形排列，让覆盖边缘呈现高低起伏。",
+    "sequence": "条带按正弦计算的延迟进入；最晚一条覆盖所需时间结束后切换内容，短暂停留再退场。",
+    "mechanism": "正弦值被映射到0至maxDelay，改变的是每条的开始时间，条带本身没有弯曲。",
+    "pitfall": "columns 为1会在延迟公式中除以0，需限制为至少2；更多条带改善边缘细分，但不会自动增加最大延迟。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。",
+    "trigger": "实际触发原作，确认内容发生切换，过程结束后遮罩不再挡住操作；这只验证演示，不代表真实路由。",
+    "preserve": "保留这一种主要转场规则；内容只在明确交接时改变，结束后恢复可操作状态。",
+    "behavior": ["波形错峰", "直线位移"],
+    "family": "page-transition",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "resources": [
+      {
+        "name": "route-overlay",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "navigation"
+      }
+    ],
+    "term": [
+      "波形时序",
+      "Wave timing",
+      "用周期函数安排各元素的开始时间，让规则位移组成连续起伏的边缘。"
+    ],
+    "parameters": [
+      ["波浪细度", "columns", "默认20条；必须至少2条，并限制总节点数。"],
+      ["波峰落差", "maxDelay / duration", "默认最大延迟0.4秒、单条0.5秒，二者一起决定覆盖时间。"],
+      ["移动轴", "direction / exitOpposite", "四向进入，默认从相反方向退出。"]
+    ],
+    "improve": [
+      "让转场等待真实内容",
+      "将计时回调改为明确的进入、内容就绪、退出阶段；加载失败可恢复旧页，连续触发只保留有效请求，减少动态效果时直接导航。",
+      "人为延迟和失败加载，确认未就绪时不露出空页，失败能恢复，退场后焦点到新标题，浏览器前进后退正确。"
+    ],
+    "suitable": "需要少量章节切换的作品集、活动或品牌页面。",
+    "avoid": "高频任务切换、需要立即反馈的工具界面，或与另一整屏转场同时运行。",
+    "practice": "缓慢观察条带前缘，把时间上的波浪与真正弯曲的几何形状区分开。",
+    "combination": "与其他页面转场属于替代关系；同次导航只由一个转场和路由负责人调度。",
+    "adaptations": [
+      "将计时交接改成真实内容就绪、取消、失败恢复和退场完成；处理焦点、历史及减少动态效果。"
+    ]
+  },
+  {
+    "slug": "cascade-page-transition",
+    "title": "对称阶梯转场",
+    "sourceFile": "CascadePageTransition",
+    "summary": "条带从中央向两边或从两边向中央依次移动，用对称的阶梯轮廓覆盖页面。",
+    "sequence": "入场延迟按离中心或边缘的距离计算；覆盖后换内容，保留200毫秒停留再退场。示例是8条单色、从中间向外。",
+    "mechanism": "成对条带共享延迟，因此左右两边对称；mode 决定先走中间还是边缘，颜色可按条带循环。",
+    "pitfall": "条数、mode 和间隔共同影响总等待；colors 为空没有有效颜色。边缘描线只是装饰，不应当作遮罩覆盖范围。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。",
+    "trigger": "实际触发原作，确认内容发生切换，过程结束后遮罩不再挡住操作；这只验证演示，不代表真实路由。",
+    "preserve": "保留这一种主要转场规则；内容只在明确交接时改变，结束后恢复可操作状态。",
+    "behavior": ["对称错峰", "阶梯轮廓"],
+    "family": "page-transition",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "resources": [
+      {
+        "name": "route-overlay",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "navigation"
+      }
+    ],
+    "term": [
+      "距离时序",
+      "Distance-based timing",
+      "以元素到某个中心或边缘的距离作为延迟依据，形成有方向的展开。"
+    ],
+    "parameters": [
+      ["对称顺序", "mode / columns", "in-to-out 或 out-to-in，默认14条，示例8条。"],
+      ["步阶速度", "duration / staggerDelay", "默认0.55秒及0.035秒，成对条带共享延迟。"],
+      [
+        "色条与边缘",
+        "colors / showLeadingStroke / showTrailingStroke",
+        "描线默认关闭；先保证不透明色条完整覆盖。"
+      ]
+    ],
+    "improve": [
+      "让转场等待真实内容",
+      "将计时回调改为明确的进入、内容就绪、退出阶段；加载失败可恢复旧页，连续触发只保留有效请求，减少动态效果时直接导航。",
+      "人为延迟和失败加载，确认未就绪时不露出空页，失败能恢复，退场后焦点到新标题，浏览器前进后退正确。"
+    ],
+    "suitable": "需要少量章节切换的作品集、活动或品牌页面。",
+    "avoid": "高频任务切换、需要立即反馈的工具界面，或与另一整屏转场同时运行。",
+    "practice": "看中间两条与最外两条谁先开始，再反转 mode 比较轮廓。",
+    "combination": "与其他页面转场属于替代关系；同次导航只由一个转场和路由负责人调度。",
+    "adaptations": [
+      "将计时交接改成真实内容就绪、取消、失败恢复和退场完成；处理焦点、历史及减少动态效果。"
+    ]
+  },
+  {
+    "slug": "venetian-blinds-page-transition",
+    "title": "百叶条带转场",
+    "sourceFile": "VenetianBlindsPageTransition",
+    "summary": "一排细长条逐渐变宽或变高，盖住画面后再收细，形成百叶式开合。",
+    "sequence": "条带从0缩放到1，内容交接后再缩到0；支持依次、中央向外和边缘向内的延迟安排。",
+    "mechanism": "horizontal 用横条的 scaleY，vertical 用竖条的 scaleX；这是二维缩放，并没有真实三维翻转。",
+    "pitfall": "origin 要与缩放方向协调；预览只展示线性错峰和中心原点，不能因此声称已覆盖全部组合。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。",
+    "trigger": "实际触发原作，确认内容发生切换，过程结束后遮罩不再挡住操作；这只验证演示，不代表真实路由。",
+    "preserve": "保留这一种主要转场规则；内容只在明确交接时改变，结束后恢复可操作状态。",
+    "behavior": ["条带缩放", "错峰开合"],
+    "family": "page-transition",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "resources": [
+      {
+        "name": "route-overlay",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "navigation"
+      }
+    ],
+    "term": [
+      "缩放原点",
+      "Transform origin",
+      "指定元素缩放时保持不动的位置，决定它从哪一侧展开或收回。"
+    ],
+    "parameters": [
+      ["条带轴向", "direction / columns", "默认20条，horizontal 为横条，vertical 为竖条。"],
+      ["开始顺序", "staggerType / staggerDelay", "linear、center-out、edge-in；默认间隔0.02秒。"],
+      ["开合位置", "origin / duration", "默认中心、单程0.5秒；覆盖后另停200毫秒。"]
+    ],
+    "improve": [
+      "让转场等待真实内容",
+      "将计时回调改为明确的进入、内容就绪、退出阶段；加载失败可恢复旧页，连续触发只保留有效请求，减少动态效果时直接导航。",
+      "人为延迟和失败加载，确认未就绪时不露出空页，失败能恢复，退场后焦点到新标题，浏览器前进后退正确。"
+    ],
+    "suitable": "需要少量章节切换的作品集、活动或品牌页面。",
+    "avoid": "高频任务切换、需要立即反馈的工具界面，或与另一整屏转场同时运行。",
+    "practice": "比较横条与竖条，注意条带边缘是在伸缩，还是整体移动。",
+    "combination": "与其他页面转场属于替代关系；同次导航只由一个转场和路由负责人调度。",
+    "adaptations": [
+      "将计时交接改成真实内容就绪、取消、失败恢复和退场完成；处理焦点、历史及减少动态效果。"
+    ]
+  },
+  {
+    "slug": "cross-blur-page-transition",
+    "title": "交叉模糊转场",
+    "sourceFile": "CrossBlurPageTransition",
+    "summary": "整幅画面短暂变模糊，再从模糊中恢复为新内容，用较柔和的变化连接两页。",
+    "sequence": "触发后，半透明覆盖层的背景模糊提高，在总时长的一半调用内容切换，再降低模糊并淡出。",
+    "mechanism": "backdropFilter 模糊覆盖层后面的页面，透明度与模糊强度一起变化；内容本身由外部回调替换。",
+    "pitfall": "模糊不是完全遮挡，旧内容仍可能透出；该文件没有路由提供者，duration 是整个过程的时长，与其他单程参数不同。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。",
+    "trigger": "实际触发原作，确认内容发生切换，过程结束后遮罩不再挡住操作；这只验证演示，不代表真实路由。",
+    "preserve": "保留这一种主要转场规则；内容只在明确交接时改变，结束后恢复可操作状态。",
+    "behavior": ["模糊交接", "透明叠层"],
+    "family": "page-transition",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "resources": [
+      {
+        "name": "route-overlay",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "navigation"
+      }
+    ],
+    "term": ["背景滤镜", "Backdrop filter", "处理图层背后的画面，区别于只模糊元素自身的filter。"],
+    "parameters": [
+      ["模糊强度", "maxBlur", "默认20px，强度越高越难读，也可能增加绘制成本。"],
+      ["完整时长", "duration", "默认总计0.6秒，在0.3秒处调用切换。"],
+      [
+        "覆盖策略",
+        "onViewSwap / backdropFilter",
+        "不能把最模糊一刻视为不透明覆盖；敏感切换需另选遮罩。"
+      ]
+    ],
+    "improve": [
+      "让转场等待真实内容",
+      "将计时回调改为明确的进入、内容就绪、退出阶段；加载失败可恢复旧页，连续触发只保留有效请求，减少动态效果时直接导航。模糊层不能当作完全遮挡，需为内容切换另设可靠策略。",
+      "人为延迟和失败加载，确认未就绪时不露出空页，失败能恢复，退场后焦点到新标题，浏览器前进后退正确。"
+    ],
+    "suitable": "需要少量章节切换的作品集、活动或品牌页面。",
+    "avoid": "高频任务切换、需要立即反馈的工具界面，或与另一整屏转场同时运行。",
+    "practice": "触发切换时注意模糊中的文字轮廓仍可能被看见，比较清晰恢复前后的内容。",
+    "combination": "与其他页面转场属于替代关系；同次导航只由一个转场和路由负责人调度。",
+    "adaptations": [
+      "将计时交接改成真实内容就绪、取消、失败恢复和退场完成；处理焦点、历史及减少动态效果。",
+      "半透明模糊不保证遮挡，内容交接需独立策略。"
+    ]
+  },
+  {
+    "slug": "swipe-theme-change",
+    "title": "沿方向扫开的主题",
+    "sourceFile": "SwipeThemeProvider",
+    "summary": "新主题从选定边缘或角落铺开，页面布局保持原位，用一条移动边界解释明暗变化。",
+    "sequence": "点击方向按钮后，根主题立即更新，浏览器的新视图通过多边形裁切逐渐露出；普通四向还可设置斜角。",
+    "mechanism": "clip-path polygon 的顶点变化形成扫过边界。left 表示从左向右；角落模式使用三角形展开，不受斜角参数影响。",
+    "pitfall": "getKeyframes 虽声明支持对象形式，实际只读取数组前两项的 clipPath；自定义时应提供这两个端点。 它会写入整个根元素的dark类和data-theme，并共用根视图样式；需要唯一主题负责人。",
+    "trigger": "实际切换后根主题与显示文案一致，动画结束后可再次操作；减少动态效果或不支持API时应立即切换。",
+    "preserve": "主题是真实状态变化，文字、图片与按钮在新主题中仍可辨认。",
+    "behavior": ["方向扫过", "斜角裁切"],
+    "family": "theme-transition",
+    "roles": ["theme"],
+    "provides": ["theme-change"],
+    "reducedMotion": "native",
+    "resources": [
+      {
+        "name": "theme",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "*"
+      },
+      {
+        "name": "root-view-transition",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "*"
+      }
+    ],
+    "term": [
+      "多边形裁切",
+      "Polygon clipping",
+      "通过一组顶点定义可见区域，改变顶点即可让画面沿直线边界揭示。"
+    ],
+    "parameters": [
+      [
+        "扫过方向",
+        "direction / triggerSwipe",
+        "支持四边、四角和完整方向别名；名称表示新主题从哪边进入。"
+      ],
+      ["斜角与时长", "angle / duration", "默认0度额外倾斜、650毫秒；角落模式使用固定三角形。"],
+      ["自定义边界", "getKeyframes", "传入至少两个带 clipPath 的关键帧，核对最终覆盖整屏。"]
+    ],
+    "improve": [
+      "接入唯一主题状态",
+      "把项目现有主题作为受控状态；统一根视图动画调度，在finished后交还后续动作，避免多个提供者同时写入根元素。",
+      "从项目入口与系统偏好改变主题都一致，重复触发不重叠，减少动态效果下仍完成切换。"
+    ],
+    "suitable": "有明确明暗切换入口的作品集、内容站或设置页。",
+    "avoid": "同页并行运行多个独立主题提供者，或用主题动画代替页面导航和业务反馈。",
+    "practice": "分别点击边缘和角落按钮，再用15度斜角比较普通四向的边界。",
+    "combination": "与其他主题转场是替代关系；组合导航时需协调根视图动画和主题写入。",
+    "adaptations": ["与现有主题状态和根视图调度整合；后续步骤等待真正的结束信号。"]
+  },
+  {
+    "slug": "circular-theme-provider",
+    "title": "从一点展开的主题",
+    "sourceFile": "CircularThemeProvider",
+    "summary": "让新主题从按钮、角落或指定点形成圆形扩散，将状态变化与触发位置联系起来。",
+    "sequence": "触发时解析圆心坐标，更新根主题，让新画面的圆形裁切从0扩展到最远角落之外，结束后恢复按钮。",
+    "mechanism": "最终半径取圆心到最远角落的距离，确保整个窗口都进入新主题；事件坐标、元素中心与预设角落均可作为起点。",
+    "pitfall": "键盘激活按钮时事件坐标可能不是按钮中心；使用 currentTarget 元素作为起点更稳定。传入页面坐标时也要明确这里使用视口坐标。 它会写入整个根元素的dark类和data-theme，并共用根视图样式；需要唯一主题负责人。",
+    "trigger": "实际切换后根主题与显示文案一致，动画结束后可再次操作；减少动态效果或不支持API时应立即切换。",
+    "preserve": "主题是真实状态变化，文字、图片与按钮在新主题中仍可辨认。",
+    "behavior": ["圆形揭示", "位置关联"],
+    "family": "theme-transition",
+    "roles": ["theme"],
+    "provides": ["theme-change"],
+    "reducedMotion": "native",
+    "resources": [
+      {
+        "name": "theme",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "*"
+      },
+      {
+        "name": "root-view-transition",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "*"
+      }
+    ],
+    "term": [
+      "覆盖半径",
+      "Covering radius",
+      "从某个圆心到最远画面角落的距离，让圆形扩张最终覆盖整个窗口。"
+    ],
+    "parameters": [
+      [
+        "扩散起点",
+        "triggerTransition / defaultCenter",
+        "可用角落名称、坐标、事件或元素；元素会读取边界中心。"
+      ],
+      ["扩散速度", "duration / easing", "默认500毫秒、ease-in-out。"],
+      [
+        "状态来源",
+        "theme / onThemeChange",
+        "受控模式与项目现有主题同步，避免另一状态单独切换根元素。"
+      ]
+    ],
+    "improve": [
+      "接入唯一主题状态",
+      "把项目现有主题作为受控状态；统一根视图动画调度，在finished后交还后续动作，避免多个提供者同时写入根元素。",
+      "从项目入口与系统偏好改变主题都一致，重复触发不重叠，减少动态效果下仍完成切换。"
+    ],
+    "suitable": "有明确明暗切换入口的作品集、内容站或设置页。",
+    "avoid": "同页并行运行多个独立主题提供者，或用主题动画代替页面导航和业务反馈。",
+    "practice": "比较左上角与按钮中心两种触发，观察圆心是否对应操作位置。",
+    "combination": "与其他主题转场是替代关系；组合导航时需协调根视图动画和主题写入。",
+    "adaptations": ["与现有主题状态和根视图调度整合；后续步骤等待真正的结束信号。"]
+  },
+  {
+    "slug": "blur-fade-theme-transition",
+    "title": "模糊淡化的主题切换",
+    "sourceFile": "BlurFadeThemeTransition",
+    "summary": "旧主题渐渐模糊淡出，新主题同时从模糊中变清晰，适合不强调方向的短暂切换。",
+    "sequence": "触发后更新根主题，新旧视图同时播放：旧画面从清晰到模糊并消失，新画面反向变化。",
+    "mechanism": "View Transition 的 old(root) 与 new(root) 各有一套 filter 和 opacity 关键帧，两者共享时长。",
+    "pitfall": "整个根视图都参与模糊，长页面和复杂内容需实测绘制成本；不能靠降低透明度解决实际主题配色对比度问题。 它会写入整个根元素的dark类和data-theme，并共用根视图样式；需要唯一主题负责人。",
+    "trigger": "实际切换后根主题与显示文案一致，动画结束后可再次操作；减少动态效果或不支持API时应立即切换。",
+    "preserve": "主题是真实状态变化，文字、图片与按钮在新主题中仍可辨认。",
+    "behavior": ["交叉淡化", "主题模糊"],
+    "family": "theme-transition",
+    "roles": ["theme"],
+    "provides": ["theme-change"],
+    "reducedMotion": "native",
+    "resources": [
+      {
+        "name": "theme",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "*"
+      },
+      {
+        "name": "root-view-transition",
+        "scope": "global",
+        "mode": "exclusive",
+        "phase": "*"
+      }
+    ],
+    "term": [
+      "交叉淡化",
+      "Cross-fade",
+      "让旧画面逐渐减少、新画面逐渐增加，在短时间内共同构成可见结果。"
+    ],
+    "parameters": [
+      ["清晰度变化", "maxBlur", "默认16px，可先减小再判断是否仍需要模糊。"],
+      [
+        "整体速度",
+        "duration / triggerTransition",
+        "默认500毫秒，触发函数可单次覆盖时长与模糊强度。"
+      ],
+      [
+        "过渡曲线",
+        "easing / onTransition",
+        "默认ease-in-out；onTransition在主题应用时发生，不表示动画结束。"
+      ]
+    ],
+    "improve": [
+      "接入唯一主题状态",
+      "把项目现有主题作为受控状态；统一根视图动画调度，在finished后交还后续动作，避免多个提供者同时写入根元素。",
+      "从项目入口与系统偏好改变主题都一致，重复触发不重叠，减少动态效果下仍完成切换。"
+    ],
+    "suitable": "有明确明暗切换入口的作品集、内容站或设置页。",
+    "avoid": "同页并行运行多个独立主题提供者，或用主题动画代替页面导航和业务反馈。",
+    "practice": "触发两次恢复原主题，观察文字从模糊回到清晰后是否完整且对比度足够。",
+    "combination": "与其他主题转场是替代关系；组合导航时需协调根视图动画和主题写入。",
+    "adaptations": ["与现有主题状态和根视图调度整合；后续步骤等待真正的结束信号。"]
+  },
+  {
+    "slug": "linkedin-card",
+    "title": "LinkedIn 职业资料卡",
+    "sourceFile": "LinkedinCard",
+    "summary": "把职业简介放在LinkedIn链接上方，悬停时补充头像、职位、地点与人脉数。",
+    "sequence": "鼠标进入链接区域时卡片从轻微模糊、缩小变为清晰；离开区域后收起。资料完全来自传入属性，用户名用于生成个人链接；预览的10K+是作者填写的示例值，并非从LinkedIn读取。",
+    "mechanism": "指针相对中心的位置经弹簧平滑，控制卡片横向跟随和旋转；上方浮层用透明度、位移及模糊完成出现。预览关闭卡片倾斜。",
+    "pitfall": "headline 超过两行会被截断；需要真实完整介绍时另给详情链接。 悬浮层只有鼠标入口，固定320px宽且向上展开，窄屏与靠近页面边缘时需要调整。",
+    "trigger": "悬停实际链接，核对展开资料与目标账号一致；离开后收起，链接可正常访问。",
+    "preserve": "核心链接始终可访问，资料为补充信息，不以动画或默认值冒充平台认证数据。",
+    "behavior": ["悬浮展开", "位置跟随", "资料摘要"],
+    "family": "social-hover",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": true,
+    "term": ["悬浮资料", "Hover profile", "在主链接附近按需展示补充背景，减少跳转前的不确定性。"],
+    "parameters": [
+      [
+        "职业资料",
+        "name / headline / location / connections",
+        "全部由项目提供，明确统计口径和更新时间。"
+      ],
+      [
+        "真实链接与图片",
+        "username / href / avatarUrl",
+        "不读取平台账号；替换自有或有权使用的头像和真实目标。"
+      ],
+      [
+        "跟随强度",
+        "enableLinkTilt / enableCardTilt / cardTiltMaxRotate",
+        "默认最大5度；减少动态效果时关闭位移与倾斜。"
+      ]
+    ],
+    "improve": [
+      "让资料在触摸和键盘下可读",
+      "为浮层增加可聚焦的开关、关闭方式和触摸入口，限制宽度并按可用空间调整位置；移除无依据的默认资料和统计。",
+      "键盘与触摸可打开关闭，320px视口不溢出，缺图和长简介仍有可读结果。"
+    ],
+    "suitable": "作品集、作者介绍或联系区中的外部账号链接。",
+    "avoid": "依靠平台实时认证或个性化关系的业务界面，以及只有悬停才能看到的重要信息。",
+    "practice": "悬停链接后把指针移到卡片内部，再离开；比较关闭倾斜后可读性。",
+    "combination": "与其他社交悬浮卡是相同交互家族，按真实账号选择，避免在同一区域重复堆叠装饰。"
+  },
+  {
+    "slug": "facebook-card",
+    "title": "Facebook 人物资料卡",
+    "sourceFile": "FacebookCard",
+    "summary": "悬停Facebook链接时展开封面、头像和简介，让外部个人链接更容易辨认。",
+    "sequence": "鼠标进入链接区域时卡片从轻微模糊、缩小变为清晰；离开区域后收起。姓名、朋友和共同朋友数量均是传入的展示内容；原作没有登录Facebook或读取关系数据。",
+    "mechanism": "指针相对中心的位置经弹簧平滑，控制卡片横向跟随和旋转；上方浮层用透明度、位移及模糊完成出现。预览关闭卡片倾斜。",
+    "pitfall": "mutualFriends 默认12且不能代表当前访客真实关系；不应在无数据依据时显示个性化共同朋友数。 悬浮层只有鼠标入口，固定320px宽且向上展开，窄屏与靠近页面边缘时需要调整。",
+    "trigger": "悬停实际链接，核对展开资料与目标账号一致；离开后收起，链接可正常访问。",
+    "preserve": "核心链接始终可访问，资料为补充信息，不以动画或默认值冒充平台认证数据。",
+    "behavior": ["悬浮展开", "位置跟随", "资料摘要"],
+    "family": "social-hover",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": true,
+    "term": ["悬浮资料", "Hover profile", "在主链接附近按需展示补充背景，减少跳转前的不确定性。"],
+    "parameters": [
+      [
+        "人物与关系",
+        "name / bio / friends / mutualFriends",
+        "替换全部示例值，无可靠关系数据时移除该行。"
+      ],
+      [
+        "真实链接与图片",
+        "username / href / avatarUrl",
+        "不读取平台账号；替换自有或有权使用的头像和真实目标。"
+      ],
+      [
+        "跟随强度",
+        "enableLinkTilt / enableCardTilt / cardTiltMaxRotate",
+        "默认最大5度；减少动态效果时关闭位移与倾斜。"
+      ]
+    ],
+    "improve": [
+      "让资料在触摸和键盘下可读",
+      "为浮层增加可聚焦的开关、关闭方式和触摸入口，限制宽度并按可用空间调整位置；移除无依据的默认资料和统计。",
+      "键盘与触摸可打开关闭，320px视口不溢出，缺图和长简介仍有可读结果。"
+    ],
+    "suitable": "作品集、作者介绍或联系区中的外部账号链接。",
+    "avoid": "依靠平台实时认证或个性化关系的业务界面，以及只有悬停才能看到的重要信息。",
+    "practice": "悬停链接后把指针移到卡片内部，再离开；比较关闭倾斜后可读性。",
+    "combination": "与其他社交悬浮卡是相同交互家族，按真实账号选择，避免在同一区域重复堆叠装饰。"
+  },
+  {
+    "slug": "instagram-card",
+    "title": "Instagram 账号资料卡",
+    "sourceFile": "InstagramCard",
+    "summary": "在Instagram链接旁补充头像、简介和三组账号数量，让外链有简明的视觉预览。",
+    "sequence": "鼠标进入链接区域时卡片从轻微模糊、缩小变为清晰；离开区域后收起。卡片把传入的帖子、关注者和正在关注数排成同一行，预览的42、25K和10都是固定示例。",
+    "mechanism": "指针相对中心的位置经弹簧平滑，控制卡片横向跟随和旋转；上方浮层用透明度、位移及模糊完成出现。预览关闭卡片倾斜。",
+    "pitfall": "没有Instagram数据请求或关注操作；头像周围的彩色圆环只是装饰，不说明账号有新动态。 悬浮层只有鼠标入口，固定320px宽且向上展开，窄屏与靠近页面边缘时需要调整。",
+    "trigger": "悬停实际链接，核对展开资料与目标账号一致；离开后收起，链接可正常访问。",
+    "preserve": "核心链接始终可访问，资料为补充信息，不以动画或默认值冒充平台认证数据。",
+    "behavior": ["悬浮展开", "位置跟随", "资料摘要"],
+    "family": "social-hover",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": true,
+    "term": ["悬浮资料", "Hover profile", "在主链接附近按需展示补充背景，减少跳转前的不确定性。"],
+    "parameters": [
+      [
+        "账号摘要",
+        "posts / followers / following / bio",
+        "数据由外部提供；数量过长时检查三列是否挤出卡片。"
+      ],
+      [
+        "真实链接与图片",
+        "username / href / avatarUrl",
+        "不读取平台账号；替换自有或有权使用的头像和真实目标。"
+      ],
+      [
+        "跟随强度",
+        "enableLinkTilt / enableCardTilt / cardTiltMaxRotate",
+        "默认最大5度；减少动态效果时关闭位移与倾斜。"
+      ]
+    ],
+    "improve": [
+      "让资料在触摸和键盘下可读",
+      "为浮层增加可聚焦的开关、关闭方式和触摸入口，限制宽度并按可用空间调整位置；移除无依据的默认资料和统计。",
+      "键盘与触摸可打开关闭，320px视口不溢出，缺图和长简介仍有可读结果。"
+    ],
+    "suitable": "作品集、作者介绍或联系区中的外部账号链接。",
+    "avoid": "依靠平台实时认证或个性化关系的业务界面，以及只有悬停才能看到的重要信息。",
+    "practice": "悬停链接后把指针移到卡片内部，再离开；比较关闭倾斜后可读性。",
+    "combination": "与其他社交悬浮卡是相同交互家族，按真实账号选择，避免在同一区域重复堆叠装饰。"
+  },
+  {
+    "slug": "twitter-card",
+    "title": "X 账号悬浮资料卡",
+    "sourceFile": "TwitterCard",
+    "summary": "鼠标停在X链接上方时展示资料卡，也能改成常驻卡片，给作者链接补充背景。",
+    "sequence": "挂载时从api.fxtwitter.com读取用户资料，成功后替换初始姓名、头像和计数；悬停展开卡片，staticCard模式直接显示。",
+    "mechanism": "外部请求负责资料，鼠标位置负责弹簧跟随与倾斜；staticCard只改变呈现方式，并不关闭请求。",
+    "pitfall": "失败被静默处理，0关注数或默认简介可能只是未加载；请求没有取消及过期结果保护。bannerUrl虽然在接口声明中出现，实际没有被读取。",
+    "trigger": "悬停X链接查看实际显示；记录数据加载情况，不能将默认0值视为已核实统计。",
+    "preserve": "账号地址与资料一致，加载和失败状态不伪装成真实资料。",
+    "behavior": ["悬浮展开", "外部资料", "常驻变体"],
+    "family": "social-hover",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": true,
+    "external": "默认通过第三方api.fxtwitter.com获取账号资料。",
+    "externalAdaptation": "增加完整本地profile属性并跳过内部请求，或移除请求改由项目的数据层提供。",
+    "term": [
+      "外部资料状态",
+      "External profile state",
+      "把未加载、已取得与失败区分开，避免把初始占位值误读成真实结果。"
+    ],
+    "parameters": [
+      [
+        "账号与来源",
+        "username / profile / useEffect",
+        "第三方请求与账号绑定，换用户名需取消或忽略旧响应。"
+      ],
+      ["呈现方式", "staticCard / enableCardTilt", "常驻模式无须悬停，但仍会读取外部资料。"],
+      [
+        "备用信息",
+        "name / avatarUrl / joinedDate / year",
+        "只是初始或缺失时的备用值，bannerUrl属性没有实际实现。"
+      ]
+    ],
+    "improve": [
+      "让资料失败可见且可恢复",
+      "显式记录加载、失败和更新时间，校验外部链接；取消旧请求或按账号版本忽略过期响应，常驻模式支持本地完整资料。",
+      "阻断请求出现失败提示而不是0值；快速换账号不会显示前一个账号的资料，键盘和触摸能取得核心信息。"
+    ],
+    "suitable": "允许读取外部公开资料的作者简介或联系页。",
+    "avoid": "必须离线、必须实时准确、或把第三方资料当作官方认证的场景。",
+    "practice": "比较悬浮与常驻模式，留意常驻并不等于离线；核对显示用户名与资料来源。",
+    "combination": "在允许外部数据时可作为展示补充；与GitHub卡片类似，需要额外的数据失败和输入方式适配。"
+  },
+  {
+    "slug": "radial-gooey-menu",
+    "title": "黏连展开的圆形菜单",
+    "sourceFile": "RadialGooeyMenu",
+    "summary": "点击中心按钮，几个图标向四周散开；圆之间的黏连效果让展开过程显得连续。",
+    "sequence": "中心按钮切换开合，菜单项等角度分布在圆周上；鼠标移动时中心按钮会轻微跟随。预览五个图标没有业务操作。",
+    "mechanism": "SVG先模糊图形再增强透明度对比，形成类似液体连接；菜单位置由正弦和余弦按半径计算。",
+    "pitfall": "关闭时子按钮只变透明，仍可能获得焦点；href虽存在于类型却未使用。没有自动选择后关闭、Escape或展开状态语义，必须补齐。",
+    "trigger": "点击中心按钮展开和关闭，五个图标位置不重叠；选中后的实际动作由项目明确提供。",
+    "preserve": "中心开关与菜单项可辨认，收起的控件不能悄悄接受键盘操作。",
+    "behavior": ["径向展开", "黏连滤镜", "位置跟随"],
+    "family": "compact-menu",
+    "roles": ["act"],
+    "provides": ["action-intent"],
+    "term": [
+      "黏连滤镜",
+      "Gooey filter",
+      "把邻近形状先模糊再提高透明度对比，让它们相接时出现柔软的连接。"
+    ],
+    "parameters": [
+      ["菜单数量与距离", "items / radius", "默认半径80px；项目越多，间距越小，要限制数量。"],
+      ["黏连强度", "blur / RadialGooeyFilter", "默认模糊10，过大可能让图标模糊或增加绘制成本。"],
+      ["真实动作", "onItemSelect / item.onClick", "目前只调用回调，href不会自动导航。"]
+    ],
+    "improve": [
+      "补齐可操作的菜单",
+      "收起时移除子项焦点，中心按钮加aria-expanded；为真实链接使用a，为操作使用button，加入Escape、焦点恢复和减少动态效果。",
+      "仅用键盘完成展开、选择、关闭；关闭后Tab不会落到隐藏项，触摸目标不重叠。"
+    ],
+    "suitable": "少量次级操作、空间充足的展示界面。",
+    "avoid": "数量很多或必须立即发现的主导航，以及用图标隐藏难理解的动作。",
+    "practice": "先展开再收起，用Tab核对隐藏图标是否仍获得焦点；观察移动鼠标与点击开合的区别。",
+    "combination": "可以作为操作入口，但不提供表单、导航结果或任务反馈；与其他紧凑菜单比较选择。"
+  },
+  {
+    "slug": "floating-dock-menu",
+    "title": "展开设置的浮动工具条",
+    "sourceFile": "FloatingDockMenu",
+    "summary": "一排分类按钮按需向上展开设置，切换分类时容器跟随内容变化，让常用配置集中在手边。",
+    "sequence": "点击分类展开，再点同一分类或点击外部关闭；开关保存在组件内存并通知回调，action项只执行提供的onClick。",
+    "mechanism": "activeIndex决定展开内容，LayoutGroup协调工具条与浮层大小变化；各设置按tab和item ID独立存储。",
+    "pitfall": "默认AI、安全、导出条目都只是示例状态或空回调，没有对应服务。开关缺名称、action行是不可聚焦div，隐藏分类文字后也可能无可读名称；传入新tabs不会重置内部开关。",
+    "trigger": "切换分类、改变一项开关再返回，状态保持；点击外部关闭，真实业务需另接。",
+    "preserve": "每个设置有清晰名称和真实结果，未实现的动作不能以可用状态展示。",
+    "behavior": ["分类展开", "布局跟随", "开关状态"],
+    "family": "settings-dock",
+    "roles": ["act"],
+    "provides": ["action-intent"],
+    "term": [
+      "布局动画",
+      "Layout animation",
+      "读取布局变化前后的尺寸位置，再用过渡连接，减少容器突然跳变。"
+    ],
+    "parameters": [
+      [
+        "设置与业务",
+        "tabs / onItemToggle / menuItems.onClick",
+        "toggle是内存布尔值，action调用外部回调，均不自带服务。"
+      ],
+      ["显示位置", "isFixed / menuWidth", "默认固定底部、展开宽310px；预览是相对定位。"],
+      [
+        "过渡节奏",
+        "entryEase / entryDuration / exitEase / exitDuration",
+        "未提供ease时使用弹簧；0时长会被或运算回退，静态模式需修改分支。"
+      ]
+    ],
+    "improve": [
+      "让工具条反映真实设置",
+      "移除示例能力，绑定项目状态；用有名称的switch和button，增加展开语义、Escape及焦点返回，让数据变化与界面同步。",
+      "键盘可触达每项，切换值与实际配置一致，失败能还原；窄屏和软键盘不遮住必要内容。"
+    ],
+    "suitable": "少量分类清楚、可即时反馈的编辑器或工具设置。",
+    "avoid": "把默认AI或安全文案当作已实现能力；需要复杂审批或大规模配置的界面。",
+    "practice": "打开Canvas，改变开关后切换分类再回来，区分内存状态与真实功能。",
+    "combination": "承担设置入口，不等于输入采集或任务执行；和任务反馈结合时需由同一业务状态驱动。"
+  },
+  {
+    "slug": "floating-menu",
+    "title": "展开成面板的浮动导航",
+    "sourceFile": "FloatingMenu",
+    "summary": "顶部短栏展开为分组导航面板，让主要链接、辅助入口和社交链接按层级出现。",
+    "sequence": "点击短栏展开，菜单文字错峰进入；内部主链接点击后关闭，点击外部或Close也关闭。预览链接均为#。",
+    "mechanism": "容器在320×56和380×700之间做弹簧尺寸动画；内容用父子variants按顺序进入与反向退出。",
+    "pitfall": "开关是div，缺键盘按钮语义；展开固定380px宽、700px高，会超出小屏。组件直接依赖next/link，移植其他路由时必须替换。",
+    "trigger": "实际打开、关闭面板，点击主链接会收起；接入后链接必须指向真实页面。",
+    "preserve": "导航层级与目标清楚，关闭后焦点回到入口，移动端能读到全部链接。",
+    "behavior": ["面板展开", "导航分组", "错峰出现"],
+    "family": "navigation-menu",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "term": [
+      "渐进展开",
+      "Progressive disclosure",
+      "先保留简短入口，用户需要时再展示更完整的选项层级。"
+    ],
+    "parameters": [
+      [
+        "导航内容",
+        "primaryLinks / secondaryLinks / socialLinks",
+        "主次链接走Next Link，社交链接另开标签；替换所有#占位。"
+      ],
+      [
+        "尺寸边界",
+        "motion.div animate width / height",
+        "打开默认380×700，需要根据视口可用空间限制。"
+      ],
+      ["触发与路由", "isOpen / next/link", "补原生按钮和键盘关闭，在现有框架接正确链接实现。"]
+    ],
+    "improve": [
+      "变成各输入方式都可用的导航",
+      "把开关改为有展开状态的button，支持Escape与焦点返回；用最大视口宽高限制面板，替换Next Link为项目真实路由并处理导航后关闭。",
+      "320px宽度不横向溢出，小高度可滚动到底部；键盘可打开并访问所有链接，前进后退没有残留浮层。"
+    ],
+    "suitable": "链接数量适中的作品集、机构或品牌网站。",
+    "avoid": "高频工具栏、需要同时持续看到大量导航的后台，或把示例#链接当成完成路由。",
+    "practice": "展开后点击Work观察收起，再比较它是否真的换页；缩小高度检查最下面的社交入口。",
+    "combination": "可提供导航入口，另一个页面转场负责内容交接；统一路由状态，不能由两个监听器分别截获同一次点击。",
+    "adaptations": ["移植next/link到现有路由，补响应式尺寸、键盘与焦点处理，并与转场统一导航状态。"]
+  },
+  {
+    "slug": "animated-link",
+    "title": "有细节反馈的文字链接",
+    "sourceFile": "AnimatedLink",
+    "summary": "让链接在悬停时通过线条、文字填色或替换强调可点击性，保留正文式的轻量外观。",
+    "sequence": "预览提供13种样式：线条伸缩、裁切填色、波浪循环与文字上移；目标都是#占位。",
+    "mechanism": "简单变体用CSS伪元素，填色和文字替换用重叠文字及Motion裁切或位移。",
+    "pitfall": "依赖next/link；多数反馈仅监听hover，需补focus-visible。showArrow只在基础分支出现，不适用于所有变体。",
+    "trigger": "按原作的悬停或点击方式观察链接反馈，核对内容和结束状态；记录未覆盖的变体。",
+    "preserve": "主要内容与操作结果不依赖装饰动画才能取得。",
+    "behavior": ["链接反馈", "裁切填色"],
+    "family": "link-feedback",
+    "roles": ["navigate"],
+    "provides": ["navigation-intent"],
+    "input": true,
+    "term": [
+      "装饰与语义",
+      "Decoration and semantics",
+      "视觉强调可以变化，但链接的可读名称、目标和键盘操作应保持稳定。"
+    ],
+    "parameters": [
+      ["选择风格", "variant", "13种规则按需要选择，同一区域保持一致。"],
+      ["链接目标", "href / next/link", "替换#，适配项目现有路由；复制文字层已有aria-hidden。"],
+      [
+        "动效边界",
+        "isHovered / wavy transition",
+        "波浪循环需在离开和减少动态效果时停下，键盘有等价强调。"
+      ]
+    ],
+    "improve": [
+      "明确可点击且不依赖鼠标",
+      "为键盘焦点加清晰状态，链接目标使用实际路由；减少动态效果时显示静态下划线或颜色强调。",
+      "键盘能辨认当前链接并进入正确页面；长文字不被textRise裁切，读屏不重复读装饰副本。"
+    ],
+    "suitable": "正文链接、作品入口、少量顶部导航。",
+    "avoid": "把持续动态当作唯一可点击提示，或每个链接使用不同风格。",
+    "practice": "比较基础下划线与文字上移，再用键盘检查是否有同样清晰的反馈。",
+    "combination": "承担导航入口这一环节；业务动作、数据和异常仍由完整路径负责。"
+  },
+  {
+    "slug": "terminal-loader",
+    "title": "字符轨迹等待动画",
+    "sourceFile": "TerminalLoader",
+    "summary": "一块色条在等宽字符间来回移动，尾部留下逐渐变淡的字符，营造终端风格的等待感。",
+    "sequence": "默认每50毫秒推进一列，到边缘折返；预览是5行40列，各行显示相同轨迹。",
+    "mechanism": "计时器改变position与direction，字符数组形成尾迹，色块用绝对定位覆盖当前列。",
+    "pitfall": "没有百分比或完成信号，只能表示不确定等待。cols和blockWidth缺边界校验，固定字符宽度也会在窄屏溢出。",
+    "trigger": "按原作的展示或切换方式观察循环等待，核对内容和结束状态；记录未覆盖的变体。",
+    "preserve": "主要内容与操作结果不依赖装饰动画才能取得。",
+    "behavior": ["循环等待", "字符轨迹"],
+    "family": "waiting-indicator",
+    "roles": ["feedback"],
+    "provides": ["status-display"],
+    "input": false,
+    "term": [
+      "不确定进度",
+      "Indeterminate progress",
+      "只表明任务仍在等待或执行，不承诺具体完成比例。"
+    ],
+    "parameters": [
+      ["字符范围", "rows / cols / blockWidth", "默认5×60、色块3列；保证cols大于色块并限制总字符。"],
+      ["运行速度", "speed", "每步间隔，单位毫秒；越小推进越快。"],
+      [
+        "轨迹样式",
+        "charEmpty / charTrail / color / bgColor",
+        "等宽字符才能保持对齐，字符与色块需足够对比。"
+      ]
+    ],
+    "improve": [
+      "等待有原因也能结束",
+      "由真实任务挂载和停止动画，旁边显示正在做什么；离开视口和减少动态效果时静态显示状态，成功失败由真实结果决定。",
+      "任务结束后不再循环，失败有说明；减少动态效果下仍知道当前状态，320px宽不溢出。"
+    ],
+    "suitable": "终端式工具中持续时间未知的短等待。",
+    "avoid": "假装显示真实进度，或把无限循环当成任务完成结果。",
+    "practice": "观察来回折返，确认它没有朝完成比例推进；尝试把速度翻倍理解毫秒间隔。",
+    "combination": "承担等待反馈这一环节；业务动作、数据和异常仍由完整路径负责。"
+  },
+  {
+    "slug": "image-hover-reveal",
+    "title": "按方向揭开的图片",
+    "sourceFile": "ImageHoverReveal",
+    "summary": "从灰度底图中揭开彩色图或另一张图，鼠标进入方向决定揭示从哪边开始。",
+    "sequence": "directional从进入侧展开整张叠图并从离开侧收回；slice只显示随鼠标移动的120px宽或高条带。",
+    "mechanism": "叠图用clip-path inset控制可见部分，鼠标相对中心的角度决定轴向；slice用弹簧让裁切跟随。",
+    "pitfall": "仅有鼠标事件，触摸和键盘没有等价入口；上下两图都有alt会重复描述，固定120px条宽也需适配尺寸。",
+    "trigger": "按原作的悬停或点击方式观察方向揭示，核对内容和结束状态；记录未覆盖的变体。",
+    "preserve": "主要内容与操作结果不依赖装饰动画才能取得。",
+    "behavior": ["方向揭示", "条带跟随"],
+    "family": "image-reveal",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": true,
+    "term": ["裁切窗口", "Clipping window", "两张图仍占据同样的位置，只改变上层可以被看见的范围。"],
+    "parameters": [
+      ["底图与叠图", "src / overlaySrc / alt", "未提供叠图时使用同图彩色版；两图构图需对齐。"],
+      ["揭示方式", "variant", "directional整图揭开；slice的轴由进入方向固定。"],
+      ["跟随宽度", "thickness / springConfig", "条带在源码固定120px，默认刚度400、阻尼30。"]
+    ],
+    "improve": [
+      "让图片内容完整可达",
+      "触摸提供切换按钮，键盘可查看两张图；装饰副本隐藏于读屏，补图像失败说明，静态模式直接显示可读结果。",
+      "从不同方向进入均无空边，触摸能切换，缺图不会让另一图无法读，窄屏条带不过宽。"
+    ],
+    "suitable": "艺术展示、头像变化、同构图视觉对照。",
+    "avoid": "需要精确前后差异比较的唯一入口，或关键信息只出现在悬停层。",
+    "practice": "从左边与上边进入slice，观察条带轴向是否随第一次进入改变。",
+    "combination": "承担内容展示这一环节；业务动作、数据和异常仍由完整路径负责。"
+  },
+  {
+    "slug": "pixel-to-ascii-image",
+    "title": "从图像变成字符画",
+    "sourceFile": "PixelToAsciiImage",
+    "summary": "悬停图片时，画面先变为色块，再由亮度对应的字符重组，离开时恢复原图。",
+    "sequence": "弹簧进度前30%把像素分块，70%之后逐步换成字符；最终字符仍会少量随机闪动。预览600×600、字符24px。",
+    "mechanism": "canvas读取图片像素，每格采样颜色和亮度，再选择字符；坐标哈希让不同格子在不同阶段变化。",
+    "pitfall": "图片需要允许跨域读取像素；无失败处理。charSize为0或负数会让绘制循环无法推进，必须校验。持续逐帧重绘和小字符会增加成本；源码实际从framer-motion导入。",
+    "trigger": "按原作的悬停或点击方式观察像素采样，核对内容和结束状态；记录未覆盖的变体。",
+    "preserve": "主要内容与操作结果不依赖装饰动画才能取得。",
+    "behavior": ["像素采样", "字符映射"],
+    "family": "ascii-image",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": true,
+    "term": [
+      "亮度映射",
+      "Luminance mapping",
+      "把图像区域的明暗换成疏密不同的字符，以字符保留原图轮廓。"
+    ],
+    "parameters": [
+      [
+        "源图与跨域",
+        "src / img.crossOrigin",
+        "使用可读取像素的来源，并处理加载失败或canvas读取异常。"
+      ],
+      [
+        "输出规模",
+        "width / height / charSize",
+        "正尺寸和正字符大小，先预算width×height/charSize²格。"
+      ],
+      ["字符与颜色", "chars / textColor", "默认按根dark类选黑白；可传固定颜色并核对背景对比。"]
+    ],
+    "improve": [
+      "让重绘可控且可访问",
+      "校验正数与最大格数，处理图片失败及旧请求；静止和离屏停止无用重绘，补图片替代文本与触摸入口，静态模式保留原图。",
+      "0、负值、跨域失败不挂住页面；离开后恢复原图，触摸与减少动态效果可取得图像内容。"
+    ],
+    "suitable": "少量艺术肖像、科技主题装饰、图像原理演示。",
+    "avoid": "包含关键文字的图片、低性能设备上的大画布，或需要原图无损识别的内容。",
+    "practice": "悬停并观察色块先出现、字符后出现；比较24px与更大字符的轮廓清晰度。",
+    "combination": "承担内容展示这一环节；业务动作、数据和异常仍由完整路径负责。"
+  },
+  {
+    "slug": "macbook-mockup",
+    "title": "笔记本里的对话演示",
+    "sourceFile": "MacbookMockup",
+    "summary": "用笔记本外壳和左右分栏呈现一段预设对话，帮助访客想象桌面产品的使用场景。",
+    "sequence": "外壳先展开；消息在0.8、2.7、5和7.4秒分步出现，11.5秒重启。autoPlay关闭展示全部，children替换主对话区。",
+    "mechanism": "计时器更新消息列表，弹簧驱动外壳和气泡；侧栏和聊天控件都是静态演示。",
+    "pitfall": "音频按钮只切换未使用的布尔值，没有音频播放；加密文案也不代表服务能力。短消息数组会读到无效项，底座固定520px以上，窄屏易溢出。",
+    "trigger": "按原作的展示或切换方式观察设备展示，核对内容和结束状态；记录未覆盖的变体。",
+    "preserve": "主要内容与操作结果不依赖装饰动画才能取得。",
+    "behavior": ["设备展示", "对话序列"],
+    "family": "device-demo",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": false,
+    "term": [
+      "场景模型",
+      "Scenario mockup",
+      "用预设画面解释一个使用场景，不能以外观推定真实服务存在。"
+    ],
+    "parameters": [
+      ["对话内容", "messages / autoPlay", "自动序列读取前3项再显示全部，需处理短数组。"],
+      ["自定义区域", "children / headerTitle", "children只替换主内容，侧栏和底部外壳仍保留。"],
+      [
+        "尺寸与控件",
+        "bottom width / isPlayingAudio",
+        "底座和双栏需响应式调整，假按钮需移除或明确演示。"
+      ]
+    ],
+    "improve": [
+      "演示可读且不误导",
+      "安全生成消息序列，增加暂停重播；缩放外壳并保持字号可读，移除无功能的音频和安全承诺，减少动态效果时直接展示完整流程。",
+      "0、1、长消息不崩溃，320px无横溢出；暂停后不重启，所有展示功能与实际说明一致。"
+    ],
+    "suitable": "产品介绍和桌面界面作品展示。",
+    "avoid": "作为真实聊天服务直接使用，或以示例加密、音频按钮暗示产品支持这些能力。",
+    "practice": "观察一轮消息和重启，再点击音频按钮区分外观与实际播放。",
+    "combination": "承担内容展示这一环节；业务动作、数据和异常仍由完整路径负责。"
+  },
+  {
+    "slug": "vinyl-album-card",
+    "title": "滑出唱片的专辑卡",
+    "sourceFile": "VinylAlbumCard",
+    "summary": "鼠标经过专辑封面时，唱片向右滑出并旋转，封面轻微倾斜，把平面图片变成可感知的物件。",
+    "sequence": "悬停时唱片移动140px、转180度，封面左移20px并倾斜；离开后两者恢复。",
+    "mechanism": "两层独立弹簧控制唱片和封面，唱片圆环及反光由CSS组成，封面和中心标签共用图片。",
+    "pitfall": "没有播放、购买或跳转；固定500px容器容易超出手机。依赖原站ThemeProvider和framer-motion，需要适配项目环境。",
+    "trigger": "按原作的悬停或点击方式观察物件隐喻，核对内容和结束状态；记录未覆盖的变体。",
+    "preserve": "主要内容与操作结果不依赖装饰动画才能取得。",
+    "behavior": ["物件隐喻", "弹簧位移"],
+    "family": "album-display",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": true,
+    "term": [
+      "物件隐喻",
+      "Object metaphor",
+      "借用现实物体的层次和动作，让数字内容的组织方式更直观。"
+    ],
+    "parameters": [
+      [
+        "专辑信息",
+        "title / artist / releaseType / year / coverImage",
+        "替换示例专辑、未来年份和有权使用的封面。"
+      ],
+      ["唱片动作", "x / rotate / spring", "默认140px及180度，只往目标旋转，不会持续播放转动。"],
+      ["主题与尺寸", "useTheme / w-[500px]", "替换原站主题依赖，按可用宽度限制整体尺寸。"]
+    ],
+    "improve": [
+      "把展示接到真实入口",
+      "保留可读专辑资料，触摸可展开或直接显示唱片；需要播放时单独提供实际播放器，限制位移和容器，静态模式保留封面。",
+      "键盘与触摸能取得资料，手机不溢出，封面失败有替代，展示状态不冒充正在播放。"
+    ],
+    "suitable": "音乐项目作品展示、专辑介绍。",
+    "avoid": "完整音乐播放器、唱片交易操作或依靠悬停完成业务的入口。",
+    "practice": "悬停后等几秒，留意唱片只转到目标角度而非持续播放。",
+    "combination": "承担内容展示这一环节；业务动作、数据和异常仍由完整路径负责。"
+  },
+  {
+    "slug": "avatar-stack",
+    "title": "带姓名提示的头像叠放",
+    "sourceFile": "AvatarStack",
+    "summary": "把少量人物头像叠成紧凑一组，悬停时抬起当前头像并出现姓名，表达参与者关系。",
+    "sequence": "当前头像提升层级并上移；三种提示分别是整体倾斜、内框倾斜、从进入方向模糊滑入。",
+    "mechanism": "负外边距让头像重叠，zIndex保证当前头像在最上层；弹簧按鼠标横向位置轻微移动姓名提示。",
+    "pitfall": "头像只是div，没有选择、链接或键盘入口；默认人物来自示例图片。人数多时没有截断和更多人数入口。",
+    "trigger": "按原作的悬停或点击方式观察头像叠放，核对内容和结束状态；记录未覆盖的变体。",
+    "preserve": "主要内容与操作结果不依赖装饰动画才能取得。",
+    "behavior": ["头像叠放", "姓名提示"],
+    "family": "people-list",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": true,
+    "term": [
+      "局部层级",
+      "Local stacking",
+      "在重叠元素中提升当前项的绘制顺序，避免交互目标被相邻项盖住。"
+    ],
+    "parameters": [
+      ["人物数据", "users / name / img", "使用真实有权展示的头像，空数组自然不显示。"],
+      ["提示变体", "variant", "spring-tilt、spring-box、slide-blur只改变提示方式。"],
+      ["尺寸与重叠", "size / overlapClasses", "sm40、md56、lg72px，越多人越需要明确显示上限。"]
+    ],
+    "improve": [
+      "紧凑但资料可达",
+      "补可聚焦的人物入口，提示与元素关联；限制显示人数并提供完整名单，触摸直接显示或点击查看，静态模式取消漂移。",
+      "每个姓名可通过键盘和触摸取得，长名不越界，缺图有替代；显示人数与完整名单一致。"
+    ],
+    "suitable": "协作者、作者或少量参与者摘要。",
+    "avoid": "完整通讯录、无真实来源的用户背书、必须逐列比较的人员表。",
+    "practice": "比较三种提示里移动的是整个提示还是内框，再尝试只用Tab访问姓名。",
+    "combination": "承担内容展示这一环节；业务动作、数据和异常仍由完整路径负责。"
+  },
+  {
+    "slug": "diagonal-marquee-carousel",
+    "title": "斜向循环图片墙",
+    "sourceFile": "DiagonalMarqueeCarousel",
+    "summary": "多排图片沿斜向持续流动，相邻排可以反向，让静态封面形成有层次的背景。",
+    "sequence": "五排图片以不同周期循环，鼠标悬停某排只暂停该排；整体容器旋转，顶部和底部渐隐。",
+    "mechanism": "每排复制图组后移动半幅完成循环；传入图集先扩成3份，再复制2份，五排合计30倍图片节点。",
+    "pitfall": "baseSpeed实际是秒数，越大越慢；默认6张生成180个img，没有懒加载。全局动画类名可能冲突，缺整体暂停和减少动态效果。",
+    "trigger": "按原作的展示或切换方式观察循环图片，核对内容和结束状态；记录未覆盖的变体。",
+    "preserve": "主要内容与操作结果不依赖装饰动画才能取得。",
+    "behavior": ["循环图片", "斜向排布"],
+    "family": "image-marquee",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": false,
+    "term": [
+      "无缝循环",
+      "Seamless loop",
+      "复制一段内容，在移动到副本对应位置时回到起点，使首尾衔接。"
+    ],
+    "parameters": [
+      ["图片内容", "cards / cardClassName", "不是可点击轮播；卡片只有图片和遮罩，无选择或导航。"],
+      ["倾斜方向", "angle / alternateDirections", "默认-25度，相邻排反向。"],
+      ["播放周期", "baseSpeed", "默认120秒一轮，各排加减偏移；需正数与合理范围。"]
+    ],
+    "improve": [
+      "减少重复和持续运动",
+      "缩减复制数量和离屏图片加载，加入全局暂停及键盘入口；装饰副本从辅助技术隐藏，静态模式使用普通图片网格。",
+      "暂停后所有排静止，减少动态效果无循环，长列表不创建30倍可访问图片，页面滚动仍流畅。"
+    ],
+    "suitable": "可作装饰背景的作品拼贴、活动视觉。",
+    "avoid": "用户必须逐张浏览选择的图库，或大规模图片列表。",
+    "practice": "悬停一排看其他排是否仍移动，理解局部暂停与全局暂停的区别。",
+    "combination": "承担内容展示这一环节；业务动作、数据和异常仍由完整路径负责。"
+  },
+  {
+    "slug": "revision-timeline",
+    "title": "按日期浏览的修订时间轴",
+    "sourceFile": "RevisionTimeline",
+    "summary": "点击日期刻度或前后按钮切换一份记录，当前日期居中，附近刻度升高帮助定位。",
+    "sequence": "数据先排序，同一天只保留time字符串较晚的一项；默认选最新记录，点击有效刻度或箭头切换正文。",
+    "mechanism": "日期范围被补成每日刻度，平移让当前项居中，附近条高按距离衰减；正文用有限的Markdown规则逐行呈现。",
+    "pitfall": "defaultActiveId实际上进入受控模式，必须配回调更新。补位日期硬编码May与July 2026；title和author未直接显示，不能当完整版本审计。长日期跨度会生成大量节点。",
+    "trigger": "按原作的展示或切换方式观察日期选择，核对内容和结束状态；记录未覆盖的变体。",
+    "preserve": "主要内容与操作结果不依赖装饰动画才能取得。",
+    "behavior": ["日期选择", "定位平移"],
+    "family": "timeline-display",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": false,
+    "term": [
+      "离散时间选择",
+      "Discrete time selection",
+      "通过可选时间点浏览一份对应内容，空日期只提供间隔不提供记录。"
+    ],
+    "parameters": [
+      [
+        "记录与同日策略",
+        "revisions / getSortedUniqueRevisions",
+        "日期需合法，time用可排序格式，同日多记录会合并为最后一项。"
+      ],
+      [
+        "当前选择",
+        "defaultActiveId / onActiveIdChange",
+        "传入ID后由父组件负责更新，不是一次性的默认值。"
+      ],
+      [
+        "可见范围",
+        "pastPaddingDays / futurePaddingDays / height",
+        "补位日期需按真实边界生成，长跨度使用分页或窗口化。"
+      ]
+    ],
+    "improve": [
+      "让时间轴准确可浏览",
+      "定义时区和同日记录规则，修复硬编码补位，限制跨度；正文链接校验协议、长内容可读到底，受控选择正确回写，静态模式直接切换。",
+      "跨月跨年、同日多条、非法日期和空数组不误导；首尾按钮状态正确，受控点击确实换记录，底部正文不被渐隐永久遮住。"
+    ],
+    "suitable": "少量发布记录、项目里程碑或按日归档的内容。",
+    "avoid": "保留每次变更的审计日志、跨度很长的历史数据、把内置解析器当完整MDX执行器。",
+    "practice": "从最新一天向前浏览，观察没有记录的日期不可选；核对同一天两条记录是否都保留。",
+    "combination": "承担内容展示这一环节；业务动作、数据和异常仍由完整路径负责。"
+  },
+  {
+    "slug": "card",
+    "title": "有分隔线反馈的图片卡",
+    "sourceFile": "Card",
+    "summary": "图片下方放标题和日期，鼠标经过时中间分隔线从左向右变深，给内容块轻微回应。",
+    "sequence": "进入卡片先把强调线复位，再展开到全宽；离开时收回。图片与标题一直显示。",
+    "mechanism": "两条分隔线叠放，底线始终存在，上层线用scaleX从左端伸展；变化不影响布局。",
+    "pitfall": "卡片是div，没有默认跳转或选择能力。标题和日期都禁止换行，长标题在窄屏可能挤出；调用方覆盖鼠标事件也会覆盖原反馈。",
+    "trigger": "按原作的展示或切换方式观察图片摘要，核对内容和结束状态；记录未覆盖的变体。",
+    "preserve": "主要内容与操作结果不依赖装饰动画才能取得。",
+    "behavior": ["图片摘要", "线条反馈"],
+    "family": "image-card",
+    "roles": ["showcase"],
+    "provides": ["content-visible"],
+    "input": false,
+    "term": [
+      "不改变布局的强调",
+      "Layout-preserving emphasis",
+      "通过覆盖层的视觉变化表达反馈，保持正文位置与尺寸稳定。"
+    ],
+    "parameters": [
+      ["内容数据", "title / src / date", "日期按传入文本显示，组件不解析日期或读取图片元信息。"],
+      ["图片比例", "imgClassName", "默认16:9裁切，核对主体不被裁掉及缺图处理。"],
+      ["线条动画", "lineControls / dividerClassName", "0.3秒从左端展开，只是装饰反馈。"]
+    ],
+    "improve": [
+      "让内容卡承担明确入口",
+      "需要跳转时使用真实可聚焦链接并同步焦点反馈；长标题允许换行或明确截断，补日期语义、图像失败和静态模式。",
+      "长中文标题在320px不溢出，键盘能进入正确目标，减少动态效果保留完整内容，缺图不造成布局跳变。"
+    ],
+    "suitable": "作品、文章或图片列表中的简洁摘要。",
+    "avoid": "直接当作可点击卡片而未提供目标，或用于容纳很多操作的复杂业务面板。",
+    "practice": "悬停观察只有线条变化，再点击确认预览没有自动跳页。",
+    "combination": "承担内容展示这一环节；业务动作、数据和异常仍由完整路径负责。"
+  },
+  {
+    "slug": "minimal-buttons",
+    "title": "轻量立体按钮",
+    "sourceFile": "MinimalButtons",
+    "summary": "用细边框和内阴影形成轻微厚度，五种视觉层级共用同一组尺寸。",
+    "sequence": "加载时保留children并加入转圈图标。 提供href且不在加载时改为Next Link，否则是原生button；预览只展示样式。",
+    "mechanism": "variant与size组合CSS类，isLoading与disabled控制button分支；链接分支只收到href和外观类。",
+    "pitfall": "href分支忽略disabled与其余事件、可访问属性；加载还会把链接变成按钮。必须明确动作语义、恢复焦点边框，并替换next/link依赖。",
+    "trigger": "核对各样式与加载禁用，接入后确认链接和按钮分别执行对应的真实行为。",
+    "preserve": "视觉禁用必须对应实际不可执行，主次操作层级一致。",
+    "behavior": ["操作层级", "立体反馈"],
+    "family": "action-button",
+    "roles": ["act"],
+    "provides": ["action-intent"],
+    "term": [
+      "状态一致性",
+      "State consistency",
+      "界面显示的可用、运行和禁用状态必须与真实可执行能力一致。"
+    ],
+    "parameters": [
+      ["视觉层级", "variant", "primary、secondary、outline、ghost、destructive。"],
+      ["触发尺寸", "size", "default44px、xs24px、sm28px、lg48px；较小尺寸需结合触摸间距。"],
+      [
+        "动作语义",
+        "href / isLoading / disabled",
+        "明确采用链接或按钮，修复链接分支丢失属性和禁用处理。"
+      ]
+    ],
+    "improve": [
+      "修复链接和等待语义",
+      "将导航与提交分别实现，传递必要属性并处理禁用；明确button type、可读名称和focus-visible，接入真实运行状态，加载文字按页面语言提供。",
+      "href加disabled不会继续导航，键盘有可见焦点；加载不重复提交，失败能恢复，中文界面状态文字一致。"
+    ],
+    "suitable": "需要清楚主次层级的确认、提交或导航入口。",
+    "avoid": "把默认样式当作业务功能，或在需要禁用时仍渲染可导航链接。",
+    "practice": "比较普通按钮与加载状态，再查href分支是否真的使用disabled。",
+    "combination": "可作为工具路径的执行入口；不负责输入校验或结果反馈，必须与同一业务状态连接。",
+    "adaptations": ["修复href与disabled语义、焦点和type，适配现有路由并绑定真实执行状态。"]
+  },
+  {
+    "slug": "aceternity-button",
+    "title": "带内发光的按钮",
+    "sourceFile": "AceternityButton",
+    "summary": "用渐变、内阴影和环线形成较明显的按钮层次，按下时轻微缩小。",
+    "sequence": "加载时children被固定英文Processing...替换；默认translate=no。 提供href且不在加载时改为Next Link，否则是原生button；预览只展示样式。",
+    "mechanism": "variant与size组合CSS类，isLoading与disabled控制button分支；链接分支只收到href和外观类。",
+    "pitfall": "href分支忽略disabled与其余事件、可访问属性；加载还会把链接变成按钮。必须明确动作语义、恢复焦点边框，并替换next/link依赖。",
+    "trigger": "核对各样式与加载禁用，接入后确认链接和按钮分别执行对应的真实行为。",
+    "preserve": "视觉禁用必须对应实际不可执行，主次操作层级一致。",
+    "behavior": ["操作层级", "立体反馈"],
+    "family": "action-button",
+    "roles": ["act"],
+    "provides": ["action-intent"],
+    "term": [
+      "状态一致性",
+      "State consistency",
+      "界面显示的可用、运行和禁用状态必须与真实可执行能力一致。"
+    ],
+    "parameters": [
+      ["视觉层级", "variant", "primary、secondary、outline、ghost、destructive。"],
+      ["触发尺寸", "size", "sm36px、md40px、lg44px、xl64px；较小尺寸需结合触摸间距。"],
+      [
+        "动作语义",
+        "href / isLoading / disabled",
+        "明确采用链接或按钮，修复链接分支丢失属性和禁用处理。"
+      ]
+    ],
+    "improve": [
+      "修复链接和等待语义",
+      "将导航与提交分别实现，传递必要属性并处理禁用；明确button type、可读名称和focus-visible，接入真实运行状态，加载文字按页面语言提供。",
+      "href加disabled不会继续导航，键盘有可见焦点；加载不重复提交，失败能恢复，中文界面状态文字一致。"
+    ],
+    "suitable": "需要清楚主次层级的确认、提交或导航入口。",
+    "avoid": "把默认样式当作业务功能，或在需要禁用时仍渲染可导航链接。",
+    "practice": "比较普通按钮与加载状态，再查href分支是否真的使用disabled。",
+    "combination": "可作为工具路径的执行入口；不负责输入校验或结果反馈，必须与同一业务状态连接。",
+    "adaptations": ["修复href与disabled语义、焦点和type，适配现有路由并绑定真实执行状态。"]
+  }
+]

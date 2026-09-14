@@ -1,0 +1,287 @@
+{
+  "animated-path": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "刷新后观察描边从接近0推进到1，填色完成；已保存开始和结束画面。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/animated-path-start.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/animated-path-end.jpg"
+    ]
+  },
+  "deployment-checklist": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "点击启动，观察预设第4项跳过与第5项失败，点击重置恢复初始状态。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/deployment-checklist-idle.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/deployment-checklist-result.jpg"
+    ]
+  },
+  "button": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际点击Primary；检查五种样式与Loading禁用状态，预览未绑定业务处理。",
+    "evidence": ["resources/evidence/018-great-ui-scale/source-browser/button.jpg"]
+  },
+  "github-card": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际悬停GitHub链接与日期格；卡片显示119日贡献及单日提示，尚未核对触摸或请求失败。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/github-card-hover.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/github-card-cell.jpg"
+    ]
+  },
+  "split-theme-provider": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际切换横向向外与纵向向内，根主题从dark变light再回dark；未覆盖其他浏览器。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/split-theme-provider.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/split-theme-provider-return.jpg"
+    ]
+  },
+  "mobile-mockup": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "已观察默认五条消息及图片、刷新后的示例；底部Message为展示文字。尚未逐时刻核对整轮循环。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/mobile-mockup.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/mobile-mockup-cycle.jpg"
+    ]
+  },
+  "scroll-flying-cards": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "在原作内嵌区域滚动，观察首张Discovery卡片进入清晰阅读区并离开；未逐张覆盖其余三张。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/scroll-flying-cards-middle.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/scroll-flying-cards-next.jpg"
+    ]
+  },
+  "color-wipe-page-transition": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际点击Left Wipe，观察内容由介绍切换为完成提示；另触发Right Wipe，未将示例视为真实路由验收。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/color-wipe-page-transition-start.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/color-wipe-page-transition-end.jpg"
+    ]
+  },
+  "team-section": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际悬停Elena与Sarah，观察职位和照片随姓名切换；桌面观察，不代表键盘或手机通过。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/team-section-first.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/team-section-second.jpg"
+    ]
+  },
+  "split-line-fly-in": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "在1280×720刷新后实际向下及回滚，观察分行文字进入清晰位置；末行尚在模糊区，未代表完整手机布局。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/split-line-fly-in-reading.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/split-line-fly-in-middle.jpg"
+    ]
+  },
+  "blur-scroll-reveal": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际滚动原作，首段清晰而后续词仍模糊，观察到分段推进；未逐词覆盖全文与line变体。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/blur-scroll-reveal-reading.jpg"
+    ]
+  },
+  "word-focus-scroll": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际滚动原作，观察前段词清晰、后段词仍缩放模糊的分界；未覆盖中文和静态模式。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/word-focus-scroll-reading.jpg"
+    ]
+  },
+  "text-on-path-scroll": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际滚动，SVG文字startOffset从100%变为约73.84%，曲线上出现文字；未滚完整个长区域。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/text-on-path-scroll-middle.jpg"
+    ]
+  },
+  "scrambled-install-command": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际点击bun，命令由npx切换为bunx；预览命令仍含localhost，未运行命令，也未核对剪贴板。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/scrambled-install-command-bun.jpg"
+    ]
+  },
+  "multilingual-quote": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际点击JA，显示日语文本；未核对引语出处或全部语种语义。",
+    "evidence": ["resources/evidence/018-great-ui-scale/source-browser/multilingual-quote-ja.jpg"]
+  },
+  "curtain-page-transition": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际触发上下双帘，示例切换至完成文案，结束后按钮可见；不是实际路由或数据加载验收。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/curtain-page-transition-active.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/curtain-page-transition-end.jpg"
+    ]
+  },
+  "interlocking-page-transition": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际触发竖向交错，示例切换至完成文案；未覆盖水平布局、尺寸变化或实际路由。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/interlocking-page-transition-active.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/interlocking-page-transition-end.jpg"
+    ]
+  },
+  "sweep-page-transition": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际点击Sweep Right，示例切换至完成文案；未逐一覆盖其余方向，也未验证真实导航。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/sweep-page-transition-active.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/sweep-page-transition-end.jpg"
+    ]
+  },
+  "pixel-page-transition": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际触发像素转场，完成后显示切换内容；未覆盖不同格子尺寸和重复导航。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/pixel-page-transition-active.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/pixel-page-transition-end.jpg"
+    ]
+  },
+  "sine-wave-page-transition": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际点击Sweep Down，完成后内容切换；仅覆盖一个方向，不代表真实路由验收。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/sine-wave-page-transition-active.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/sine-wave-page-transition-end.jpg"
+    ]
+  },
+  "cascade-page-transition": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际点击Enter from Top，完成后显示新内容；未逐一覆盖模式与颜色组合。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/cascade-page-transition-active.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/cascade-page-transition-end.jpg"
+    ]
+  },
+  "venetian-blinds-page-transition": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际触发Horizontal Transition，完成后内容切换；未覆盖其他方向与错峰类型。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/venetian-blinds-page-transition-active.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/venetian-blinds-page-transition-end.jpg"
+    ]
+  },
+  "cross-blur-page-transition": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际点击Trigger transition，从Home Page切换到About Page；此示例不含真实网络加载。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/cross-blur-page-transition-active.jpg",
+      "resources/evidence/018-great-ui-scale/source-browser/cross-blur-page-transition-end.jpg"
+    ]
+  },
+  "swipe-theme-change": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际选择15度斜角并点击Top Left Wipe，页面由dark切为light；未逐方向覆盖。",
+    "evidence": ["resources/evidence/018-great-ui-scale/source-browser/swipe-theme-change.jpg"]
+  },
+  "circular-theme-provider": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际点击Wipe from Button Center，页面由light切为dark；未覆盖其他圆心。",
+    "evidence": ["resources/evidence/018-great-ui-scale/source-browser/circular-theme-provider.jpg"]
+  },
+  "blur-fade-theme-transition": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "点击Switch Theme，页面由dark切换至light；未覆盖其他浏览器与动态偏好。",
+    "evidence": [
+      "resources/evidence/018-great-ui-scale/source-browser/blur-fade-theme-transition.jpg"
+    ]
+  },
+  "linkedin-card": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际悬停LinkedIn链接，看到姓名、横幅、位置与连接数；这是预设资料，不是LinkedIn接口验证。",
+    "evidence": ["resources/evidence/018-great-ui-scale/source-browser/linkedin-card.jpg"]
+  },
+  "facebook-card": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际悬停Facebook链接，看到15K朋友与23共同好友的预设卡片；未访问社交账号。",
+    "evidence": ["resources/evidence/018-great-ui-scale/source-browser/facebook-card.jpg"]
+  },
+  "instagram-card": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际悬停Instagram链接，看到头像、42帖子和25K关注者；均为示例资料，不是接口验证。",
+    "evidence": ["resources/evidence/018-great-ui-scale/source-browser/instagram-card.jpg"]
+  },
+  "twitter-card": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际悬停X链接，卡片显示Saurabh资料、328关注和305关注者；未核对统计真实性，未覆盖请求失败或手机。",
+    "evidence": ["resources/evidence/018-great-ui-scale/source-browser/twitter-card.jpg"]
+  },
+  "radial-gooey-menu": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际展开与关闭径向菜单，看到五个围绕中心的按钮；未将演示按钮当作已接通业务。",
+    "evidence": ["resources/evidence/018-great-ui-scale/source-browser/radial-gooey-menu-open.jpg"]
+  },
+  "floating-dock-menu": {
+    "date": "2026-09-14",
+    "status": "observed-with-limit",
+    "environment": "Codex 内置浏览器，1280×720",
+    "summary": "实际打开Display并切换OLED Midnight开关，aria-checked由false变true；只改变示例开关，页面未变黑，未把它当成真实显示设置。",
+    "evidence": ["resources/evidence/018-great-ui-scale/source-browser/floating-dock-menu.jpg"]
+  }
+}

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '配置和环境变量'
 status: 'current'
-shaped-by: ['001', '004', '005', '009', '010', '013', '014', '015', '016']
+shaped-by: ['001', '004', '005', '009', '010', '013', '014', '015', '016', '018']
 code-sources:
   [
     'package.json',
@@ -26,7 +26,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: 'a0ddf5695ce895b0d0ae7f0f266dd59be51b234698a6d79522aec673117a321f'
+code-revision: '71db1a955d56845a5b836077e7d4b415f2eb0c505fa5ccaf2b04e0ec18205616'
 ---
 
 # 配置和环境变量
@@ -115,3 +115,7 @@ Astro在公共布局启用ClientRouter，`prefetchAll:false`关闭全站自动�
 ESLint仅对public/media/2048/game.js这一份带MIT署名的上游压缩分发文件豁免本项目风格规则；自有媒体代码仍完整检查，原始来源版本见同目录SOURCE.txt，实际游戏操作与总脚本预算仍有测试。
 
 内容验收使用playwright.content.config.ts，仅安装Chromium、不启动Paseo测试服务；完整配置不变。内容分类使用@astrojs/mdx锁定依赖中的MDX解析器，首次环境仍运行npm ci。
+
+## 本地交互学习工作台
+
+Great UI工作台复用已锁定的React、Motion和Lucide依赖，由scripts/great-ui.ts使用现有Vite与React插件单独构建；不进入Astro生产路由。默认预览4325，专用Playwright测试服务4336，均绑定127.0.0.1且端口冲突直接失败。JSX在ESLint专用范围检查，工具TypeScript允许读取构建期MJS。命令、媒体与验收范围见[学习操作路径](../features/great-ui-learning.md)。

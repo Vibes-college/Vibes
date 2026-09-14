@@ -8,6 +8,10 @@
   },
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
+    "great-ui:build": "node --experimental-strip-types scripts/great-ui.ts build",
+    "great-ui:dev": "node --experimental-strip-types scripts/great-ui.ts dev",
+    "great-ui:preview": "node --experimental-strip-types scripts/great-ui.ts preview",
+    "great-ui:test": "playwright test --config playwright.great-ui.config.ts",
     "build": "node --experimental-strip-types scripts/build.ts",
     "check:types": "astro check && tsc -p tsconfig.tools.json",
     "lint": "eslint . --max-warnings 0",
@@ -21,7 +25,7 @@
     "db:migrate": "node --experimental-strip-types scripts/database.ts migrate",
     "preview": "npm run build && wrangler dev --local --config wrangler.local.jsonc --persist-to .wrangler/project-local --ip 127.0.0.1 --port 4322",
     "deploy": "node --experimental-strip-types scripts/release.ts deploy",
-    "verify": "npm run check && npm run db:reset && npm run test:e2e",
+    "verify": "npm run check && npm run db:reset && npm run test:e2e && npm run great-ui:test && npm run great-ui:evaluate && node --experimental-strip-types scripts/great-ui-budget.ts",
     "budget": "npm run build && node --experimental-strip-types scripts/budget.ts",
     "media:prepare": "node --experimental-strip-types scripts/prepare-media.ts",
     "optimize:images": "node --experimental-strip-types scripts/optimize-images.ts",
@@ -37,7 +41,9 @@
     "paseo:build": "node --experimental-strip-types scripts/paseo-webui-build.ts build",
     "paseo:ci": "node --experimental-strip-types scripts/paseo-webui-build.ts ci",
     "paseo:production": "node --experimental-strip-types scripts/paseo-webui-build.ts production",
-    "paseo:test-prepare": "node --experimental-strip-types scripts/paseo-webui-build.ts test-prepare"
+    "paseo:test-prepare": "node --experimental-strip-types scripts/paseo-webui-build.ts test-prepare",
+    "great-ui:evaluate": "node --experimental-strip-types scripts/great-ui-evaluate.ts",
+    "great-ui:budget": "npm run great-ui:build && node --experimental-strip-types scripts/great-ui-budget.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "8.0.0",

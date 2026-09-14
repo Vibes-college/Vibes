@@ -13,7 +13,7 @@ code-sources:
     'scripts/docs-sources.ts',
     'scripts/docs-lessons.ts',
   ]
-code-revision: 'd0a7f463cc04b2c6641b6d46ac5c155075b03529b203f65376a809ac5d22f90c'
+code-revision: '5eab2932a008f0bfd8031373eb08a943e6221401e4243b54b179a14df42ed20d'
 ---
 
 # 功能名：规划开发与维护文档
@@ -33,7 +33,7 @@ code-revision: 'd0a7f463cc04b2c6641b6d46ac5c155075b03529b203f65376a809ac5d22f90c
 7. 功能及系统说明用code-sources对应源码文件，源码改动后复核文字、流程和验收再填写code-revision；只读候选摘要用npm run docs:check -- --revisions查看，正常检查会验证覆盖和摘要。
 8. 合并或重命名功能说明时，使用`legacy-feature-ids`接续旧编号，保留历史规格原文；一个旧编号只能对应一个当前文档。
 
-固定Paseo上游的JSON声明与补丁同样需要code-sources覆盖及摘要；许可证和上游原始格式不改写成治理文档。
+JSX行为代码、Great UI学习目录与评估JSON、固定Paseo上游的JSON声明与补丁同样需要code-sources覆盖及摘要；许可证和上游原始格式不改写成治理文档。
 
 ### 操作之后发生什么
 
