@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Great UI全量学习与组合的执行任务'
-status: 'complete'
+status: 'in-progress'
 amended-by: []
 ---
 
@@ -33,6 +33,16 @@ amended-by: []
 - [x] T016 运行great-ui:verify、本地入口预算、产物和受影响检查器专项，不启动整站回归；修复本任务引入的问题并完成受影响复测。
 - [x] T017 保存并推送有效进度，更新PR的实施清单与可体验入口；由独立Agent审查整个PR并复核最终SHA，处理审查发现。按SC-008交付Draft PR；现有CI仍会把累计差异归为full，不能为转Ready启动用户已排除的整站回归。
 - [x] T018 核对spec、plan、tasks及索引的真实完成状态，保留有用预览并清理任务测试资源；发布保持暂停。
+
+## 正式站接入
+
+- [ ] T019 [US4] 在src/lib/content与great-ui内容读取模块建立Markdown唯一来源、学习模板及合集字段；先迁移accordion并测试缺字段、分区、页面与任务一致性。
+- [ ] T020 [US1] 在works路由接入学习模板、SEO/搜索元数据、GitHub编辑与页面上下文；保留UI，隔离样式和资源命名空间，跑通首件真实页面。
+- [ ] T021 [US4] 将剩余47件迁为work.json与zh.md，移除重复文字来源；添加合集和成员检索，保留源代码与观察证据。
+- [ ] T022 [US1] 完成剩余32段视频及2张图的自有预览，登记来源、许可范围与文件摘要；48件真实解码/播放检查并消除作者媒体依赖。
+- [ ] T023 [US2] 站内单件与组合任务输出绝对在线素材地址；迁入三条可操作示例与版本绑定验证，覆盖页面历史、草稿、失败和少动态偏好。
+- [ ] T024 完成正式站check、verify、budget与产物检查；内置浏览器核对桌面/手机布局、GitHub编辑、媒体、任务、搜索和真实页面上下文。
+- [ ] T025 同步great-ui-learning、recording-previews、content-maintenance、article-read、explore-browse、受影响system文档与索引，保留仍有效证据；独立审查整个PR并复核最终SHA后转Ready，交付用户合并。
 
 ## 交付引用
 
