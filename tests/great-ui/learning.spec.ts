@@ -183,11 +183,8 @@ test('bad details are retryable, and leaving a delayed response cannot replace t
     await gate;
     await route.continue().catch(() => {});
   });
-  await page.getByRole('button', { name: '随机浏览', exact: true }).click();
-  await expect(page.getByRole('button', { name: '随机浏览', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'false',
-  );
+  await page.getByRole('button', { name: '切换为顺序浏览', exact: true }).click();
+  await expect(page.getByRole('button', { name: '切换为随机浏览', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '下一个作品' }).click();
   await expect(page.getByText('正在加载作品材料…')).toBeVisible();
   await page.goBack();

@@ -10,7 +10,7 @@ code-sources:
     'tests/unit/great-ui-content.test.ts',
     'tests/great-ui/learning.spec.ts',
   ]
-code-revision: '59de3662d6196d5f6c82193702581295c12a99bdc82c1499305518f53e38da39'
+code-revision: '1dc8bf47c63d860c24a5e56800c7c289313844d30017e7b0e1f33ffa9ec7da4f'
 ---
 
 # 功能名：录制与维护交互演示

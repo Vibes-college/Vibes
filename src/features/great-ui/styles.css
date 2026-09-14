@@ -486,9 +486,12 @@
     background: #f2f4ed;
     font-size: 9px;
   }
-  .case-shuffle[aria-pressed='true'] {
-    color: #405235;
-    background: #edf1e7;
+  .icon-button.case-order {
+    color: #7b8472;
+    background: transparent;
+  }
+  .case-order:hover {
+    color: #4f5d43;
   }
   .case-round-status {
     display: flex;

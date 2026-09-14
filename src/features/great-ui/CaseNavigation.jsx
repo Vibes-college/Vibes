@@ -1,5 +1,14 @@
 import { useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, LayoutGrid, X, Check, Shuffle, RotateCcw } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  LayoutGrid,
+  X,
+  Check,
+  Shuffle,
+  ListOrdered,
+  RotateCcw,
+} from 'lucide-react';
 import {
   browseMembers,
   moveBrowse,
@@ -62,14 +71,17 @@ export function CaseNavigation({ entries, current, onSelect }) {
           <small>{members.length}</small>
         </button>
         <button
-          className="icon-button case-shuffle"
+          className="icon-button case-order"
           disabled={disabled}
-          aria-label="随机浏览"
-          aria-pressed={shuffle}
-          title={shuffle ? '随机浏览已开启，切换为顺序浏览' : '顺序浏览，切换为随机浏览'}
+          aria-label={shuffle ? '切换为顺序浏览' : '切换为随机浏览'}
+          title={shuffle ? '随机浏览 · 点击切换为顺序' : '顺序浏览 · 点击切换为随机'}
           onClick={() => void apply(toggleBrowse(state, entries))}
         >
-          <Shuffle size={16} />
+          {shuffle ? (
+            <Shuffle size={13} strokeWidth={1.5} aria-hidden="true" />
+          ) : (
+            <ListOrdered size={13} strokeWidth={1.5} aria-hidden="true" />
+          )}
         </button>
         <span className="case-position" aria-live="polite">
           {String(index + 1).padStart(2, '0')}{' '}
