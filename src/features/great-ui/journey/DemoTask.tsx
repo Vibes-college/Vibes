@@ -1,3 +1,4 @@
+import { useAssetBase } from '../AssetContext';
 import { useEffect, useRef, useState } from 'react';
 import { PromptDialog } from '../PromptDialog.jsx';
 import { validateCapabilities } from '../composition/validate';
@@ -40,6 +41,7 @@ function proofRecords(value: unknown): { adapterRevision: string; records: Verif
   return proof as { adapterRevision: string; records: VerificationRecord[] };
 }
 export function DemoTask({ kind, reduced }: { kind: DemoKind; reduced: boolean }) {
+  const assetBase = useAssetBase();
   const dialog = useRef<HTMLDialogElement>(null);
   const [material, setMaterial] = useState<{
     entry: Record<string, unknown>;
@@ -51,7 +53,7 @@ export function DemoTask({ kind, reduced }: { kind: DemoKind; reduced: boolean }
   useEffect(() => {
     const controller = new AbortController();
     const json = async (url: string) => {
-      const response = await fetch(url, { signal: controller.signal });
+      const response = await fetch(assetBase + url, { signal: controller.signal });
       if (!response.ok) throw new Error('示例任务暂时无法加载。');
       return response.json();
     };
@@ -88,7 +90,7 @@ export function DemoTask({ kind, reduced }: { kind: DemoKind; reduced: boolean }
         if (!controller.signal.aborted) setError(cause.message);
       });
     return () => controller.abort();
-  }, [kind, reduced, retry]);
+  }, [kind, reduced, retry, assetBase]);
   return (
     <div className="demo-task" data-plan-id={material?.plan.id}>
       {error ? (

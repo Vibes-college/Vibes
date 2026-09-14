@@ -1,0 +1,56 @@
+{
+  "id": "great-ui-floating-menu",
+  "originalLocale": "zh",
+  "order": 11035,
+  "sourceUrl": "https://www.great-ui.com/components/floating-menu",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "floating-menu",
+    "collectionId": "great-ui-learning",
+    "english": "Floating Menu",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/FloatingMenu.tsx",
+    "previewSource": "components/site/previews/FloatingMenuPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/floating-menu-demo.mp4",
+      "poster": "/great-ui/media/floating-menu-demo-poster.jpg"
+    },
+    "capability": {
+      "family": "navigation-menu",
+      "roles": ["navigate"],
+      "provides": ["navigation-intent"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "移植next/link到现有路由，补响应式尺寸、键盘与焦点处理，并与转场统一导航状态。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

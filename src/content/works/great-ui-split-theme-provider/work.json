@@ -1,0 +1,69 @@
+{
+  "id": "great-ui-split-theme-provider",
+  "originalLocale": "zh",
+  "order": 11007,
+  "sourceUrl": "https://www.great-ui.com/components/split-theme-provider",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "split-theme-provider",
+    "collectionId": "great-ui-learning",
+    "english": "Split Theme Provider",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/SplitThemeProvider.tsx",
+    "previewSource": "components/site/previews/SplitThemeProviderPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/split-theme-provider-demo.mp4",
+      "poster": "/great-ui/media/split-theme-provider-demo-poster.jpg"
+    },
+    "capability": {
+      "family": "theme-transition",
+      "roles": ["theme"],
+      "provides": ["theme-change"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [
+        {
+          "name": "theme",
+          "scope": "global",
+          "mode": "exclusive",
+          "phase": "*"
+        },
+        {
+          "name": "root-view-transition",
+          "scope": "global",
+          "mode": "exclusive",
+          "phase": "*"
+        }
+      ],
+      "adaptations": [
+        "它写入整个 documentElement 的 dark 类和 data-theme，并共用根视图样式；多个主题管理器并存会争抢状态。onTransition 在主题更新时调用，不代表动画已经结束。"
+      ],
+      "reducedMotion": "native",
+      "decorativeTransition": false
+    }
+  }
+}

@@ -4,12 +4,13 @@ import { fileURLToPath } from 'node:url';
 import recordings from '../../src/features/great-ui/data/local-recordings.json' with { type: 'json' };
 
 const recordedFixture = fileURLToPath(
-  new URL('../../src/features/great-ui/media/staggered-source-capture.mp4', import.meta.url),
+  new URL('../../public/great-ui/media/staggered-source-capture.mp4', import.meta.url),
 );
 
-test('all local replacement recordings decode and start without an external media request', async ({
+test('all owned recordings decode and start without an external media request', async ({
   page,
 }) => {
+  test.setTimeout(120_000);
   const external: string[] = [];
   page.on('request', (request) => {
     if (request.url().includes('imagekit.io')) external.push(request.url());
@@ -30,7 +31,7 @@ test('all local replacement recordings decode and start without an external medi
   expect(external).toEqual([]);
 });
 
-test('opening an external MP4 starts muted playback with no launch card or credit row', async ({
+test('opening an owned MP4 starts muted playback with no launch card or credit row', async ({
   page,
 }) => {
   await page.route('https://ik.imagekit.io/**', (route) =>

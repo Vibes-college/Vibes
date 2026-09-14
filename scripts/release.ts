@@ -45,13 +45,14 @@ async function main(): Promise<void> {
   const sha = capture('git', ['rev-parse', 'HEAD']).trim();
   const pr = github(`pulls/${argument}`) as {
     state: string;
-    head: { sha: string; repo: { full_name: string } };
+    head: { sha: string; ref: string; repo: { full_name: string } };
     base: { sha: string };
   };
   if (pr.state !== 'open' || pr.head.sha !== sha || pr.head.repo.full_name !== repository)
     throw new Error('Preview must match the current pushed head of an open repository PR');
   process.env.SITE_URL = releaseTarget.origin;
   process.env.VIBES_DEPLOY = '1';
+  process.env.VIBES_CONTENT_EDIT_REF = pr.head.ref;
   process.env.CLOUDFLARE_ACCOUNT_ID = releaseTarget.accountId;
   process.env.CONTENT_BASE_REF = pr.base.sha;
   if (changedScope(pr.base.sha) === 'content') {

@@ -1,0 +1,102 @@
+---
+import LearningPage from '../features/great-ui/LearningPage.jsx';
+import { compileProse } from '../features/great-ui/compile-prose';
+import { learningMaterials } from '../features/great-ui/site-content';
+import { catalog, type Work } from '../data/works';
+import { contentEditUrl } from '../lib/content/github';
+interface Props {
+  work: Work;
+  html: string;
+}
+const { work, html } = Astro.props;
+const { entries: materials, index: entries } = learningMaterials(
+  catalog,
+  work.locale,
+  Astro.url.origin,
+);
+const entry = await compileProse(materials.find((item) => item.id === work.slug)!);
+const editUrl = contentEditUrl(`src/content/works/${work.slug}/${work.locale}.md`);
+---
+
+<meta data-pagefind-meta="id[content]" content={work.slug} />
+<meta data-pagefind-meta="type[content]" content={work.type} />
+<meta data-pagefind-meta="title[content]" content={work.title} />
+<meta data-pagefind-meta="summary[content]" content={work.summary} />
+<meta data-pagefind-meta="preview[content]" content={work.preview} />
+<meta data-pagefind-meta="color[content]" content={work.color} />
+<meta data-pagefind-meta="eyebrow[content]" content={work.eyebrow} />
+<meta data-pagefind-meta="display[content]" content={work.display} />
+<meta data-pagefind-meta="note[content]" content={work.note} />
+<meta data-pagefind-filter="tag[content]" content={work.type} />
+<nav class="learning-navigation" data-pagefind-ignore aria-label="学习导航">
+  <a href="/zh/works/great-ui-learning/">← Great UI 交互学习</a>
+  <a href={editUrl} target="_blank" rel="noopener noreferrer">在 GitHub 上改进这件作品</a>
+</nav>
+<div data-pagefind-ignore><LearningPage entry={entry} entries={entries} client:load /></div>
+<details class="learning-source-text">
+  <summary>文字版说明</summary>
+  <div class="learning-markdown">
+    <h2>{entry.title}</h2>
+    <p>{entry.summary}</p>
+    <Fragment set:html={html.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '$2')} />
+    <h2>改造目标</h2>
+    {
+      entry.learning.goals.map((goal) => (
+        <section>
+          <>
+            <h3>{goal.title}</h3>
+            <p>{goal.action}</p>
+            <p>如何判断：{goal.judge}</p>
+          </>
+        </section>
+      ))
+    }
+    <h2>可调整的地方</h2>
+    <ul>{entry.learning.adjustments.map((row) => <li>{row.join('：')}</li>)}</ul>
+    <h2>检查结果</h2><ul>{entry.checks.map((check) => <li>{check}</li>)}</ul>
+    <h2>术语说明</h2>
+    {
+      Object.values(entry.glossary).map((term) => (
+        <section>
+          <>
+            <h3>
+              {term.title} · {term.english}
+            </h3>
+            <p>{term.definition}</p>
+            <p>{term.context}</p>
+            <p>{term.parameter}</p>
+            <p>{term.judgment}</p>
+          </>
+        </section>
+      ))
+    }
+  </div>
+</details>
+<noscript><p>完整说明与来源可以直接阅读；生成任务及组合体验需要启用 JavaScript。</p></noscript>
+<style>
+  .learning-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    justify-content: space-between;
+    max-width: 1180px;
+    margin: 24px auto 0;
+    padding: 0 32px;
+    font-size: 13px;
+  }
+  .learning-source-text {
+    max-width: 1116px;
+    margin: 0 auto 40px;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+  .learning-markdown {
+    line-height: 1.9;
+  }
+  @media (max-width: 800px) {
+    .learning-navigation {
+      padding: 0 18px;
+      margin-top: 18px;
+    }
+  }
+</style>

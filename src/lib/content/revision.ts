@@ -27,6 +27,9 @@ export function sourceRevision(work: CatalogWork): string {
         summary: original.data.summary,
         description: original.data.description,
         previewText: original.data.previewText,
+        ...(work.meta.learning
+          ? { learning: work.meta.learning, learningText: original.data.learning }
+          : {}),
         ...(work.meta.media?.length
           ? {
               media: work.meta.media,

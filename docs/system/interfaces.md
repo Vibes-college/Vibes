@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '接口与外部服务'
 status: 'current'
-shaped-by: ['001', '003', '004', '005', '009', '010', '013', '014', '016']
+shaped-by: ['001', '003', '004', '005', '009', '010', '013', '014', '016', '018']
 code-sources:
   [
     'src/scripts/search.ts',
@@ -24,7 +24,7 @@ code-sources:
     'scripts/paseo-webui-preview.ts',
     'public/_headers',
   ]
-code-revision: '9c6dd3398f763a7295af10a3f882cdc662f03027ec1e87ac06936c62ea946a4d'
+code-revision: '15446ce271f099868fcd853068d68c588c9a228f66d2561c6c6abd829a787e58'
 ---
 
 # 接口与外部服务
@@ -61,6 +61,12 @@ code-revision: '9c6dd3398f763a7295af10a3f882cdc662f03027ec1e87ac06936c62ea946a4d
 ### `GET /__release.json`
 
 发布产物包含源码sha与内容digest，用于线上版本核对，不是业务API、不含秘密。普通本地build不生成；release-artifact.ts在发布准备时写入，release-smoke.ts检查该SHA与zh/en页面。
+
+### Great UI学习静态资料
+
+`GET /great-ui/content/catalog.json`提供48件轻量目录；capabilities.json提供组合能力，`<slug>.json`提供由同一Markdown生成的案例和任务所需字段，demo-proof.json只提供当前构建匹配的固定示例验收记录。`GET /great-ui/journeys/<id>.json`提供内置示例项目数据。均在构建时生成、只读、无用户输入和秘密；没有后台编辑或任务执行API。
+
+预览文件为`/great-ui/media/*`，任务使用以学习页公开地址解析的绝对URL；不要求访问维护者本机文件。普通目录只列合集，子项拥有独立作品网址并进入搜索和站点地图。对应src/pages/great-ui与GreatUiDetail.astro。
 
 ## 3 浏览器内部的搜索接口（不是本项目的 HTTP API）
 

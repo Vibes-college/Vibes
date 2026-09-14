@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { X, Copy, Check, ArrowUpRight } from 'lucide-react';
 import { createTask, taskText } from './task.mjs';
+import { useAssetBase } from './AssetContext';
 
 export function PromptDialog({ dialogRef, entry, form, onFormChange, compose }) {
+  const assetBase = useAssetBase();
   const { placement, changes } = form;
   const setPlacement = (placement) => onFormChange({ ...form, placement });
   const setChanges = (changes) => onFormChange({ ...form, changes });
@@ -121,7 +123,12 @@ export function PromptDialog({ dialogRef, entry, form, onFormChange, compose }) 
           value={JSON.stringify(task, null, 2)}
         />
       </details>
-      <a className="source-link" href={`/content/${entry.slug}.json`} target="_blank">
+      <a
+        className="source-link"
+        href={`${assetBase}/content/${entry.slug}.json`}
+        target="_blank"
+        rel="noreferrer"
+      >
         查看同源结构化内容 <ArrowUpRight size={13} />
       </a>
     </dialog>

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '维护作品内容'
 status: 'current'
-shaped-by: ['001', '003', '008', '009', '010', '013', '016']
+shaped-by: ['001', '003', '008', '009', '010', '013', '016', '018']
 code-sources:
   [
     'src/lib/content/',
@@ -13,7 +13,7 @@ code-sources:
     'scripts/migrate-content.ts',
     'tests/content-lifecycle.spec.ts',
   ]
-code-revision: 'c7d7547a8e14e9ce8d659ed04b4ca42b49f132e3308f9c6e4af5267e30445634'
+code-revision: '3126ce6553066af7dd47b2534ccac46bad6a6ba4a001522ba841577a7e1588db'
 ---
 
 # 功能名：维护作品内容
@@ -36,6 +36,10 @@ code-revision: 'c7d7547a8e14e9ce8d659ed04b4ca42b49f132e3308f9c6e4af5267e30445634
 8. 进入[检查与发布网站](project-commands.md)，通过检查并发布后再核对线上页面和搜索。
 
 首次准备维护环境时，网站构建还需按[检查与发布网站](project-commands.md)准备固定Paseo产物；内容校验本身不需要连接电脑或模型账号。
+
+### 维护Great UI学习材料
+
+从学习页顶部进入该语言的GitHub编辑页，修改一份Markdown的三个正文面板及文件头learning中的目标、检查和术语，提出PR并查看检查及阶段预览。共享源码、组合能力与素材路径在同目录work.json；媒体文件放public/great-ui/media，来源及摘要登记在local-recordings.json。页面与复制任务共同读取这些字段，不在组件里另写一份文案。先运行content:validate，再构建核对面板、术语、任务与搜索；编辑源码或共享模板时升级为verify/budget。完整操作和示例见[学习交互作品](great-ui-learning.md#维护同一份材料)，格式见[交互学习材料](../system/content-model.md#交互学习材料)。
 
 ### 添加真实媒体封面
 

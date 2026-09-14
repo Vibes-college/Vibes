@@ -70,21 +70,27 @@ export function CaseView({ entry, entries, state, onChange, onSelect, onStartJou
                   <span className="section-number">0{i + 1}</span>
                   <div>
                     <h3>{s.title}</h3>
-                    <p>
+                    <div className="learning-prose">
                       <RichText text={s.text} />
-                    </p>
+                    </div>
                   </div>
                 </section>
               ))}
               <div className="judgment">
                 <h3>适合用在哪里</h3>
-                <p>{entry.suitable}</p>
+                <div className="learning-prose">
+                  <RichText text={entry.suitable} />
+                </div>
                 <h3>什么时候不用</h3>
-                <p>{entry.avoid}</p>
+                <div className="learning-prose">
+                  <RichText text={entry.avoid} />
+                </div>
               </div>
               <div className="practice">
                 <h3>试一次，就会更懂</h3>
-                <p>{guide.practice}</p>
+                <div className="learning-prose">
+                  <RichText text={guide.practice} />
+                </div>
               </div>
               {entry.related && (
                 <div className="related-learning">
@@ -133,6 +139,11 @@ export function CaseView({ entry, entries, state, onChange, onSelect, onStartJou
           )}
           {section === 'use' && (
             <div className="reading-body agent-guide">
+              {guide.useIntro && (
+                <div className="guide-intro learning-prose">
+                  <RichText text={guide.useIntro} />
+                </div>
+              )}
               <h3>你想改善什么？</h3>
               <div className="goal-options">
                 {guide.goals.map((item) => (
@@ -176,14 +187,21 @@ export function CaseView({ entry, entries, state, onChange, onSelect, onStartJou
             </div>
           )}
           {section === 'compose' && (
-            <CompositionPanel
-              entryId={entry.id}
-              settings={state.composer}
-              onSettings={(composer) => onChange({ composer })}
-              onTask={openTask}
-              onSelect={onSelect}
-              onStartJourney={onStartJourney}
-            />
+            <div>
+              {guide.combinationIntro && (
+                <div className="guide-intro learning-prose">
+                  <RichText text={guide.combinationIntro} />
+                </div>
+              )}
+              <CompositionPanel
+                entryId={entry.id}
+                settings={state.composer}
+                onSettings={(composer) => onChange({ composer })}
+                onTask={openTask}
+                onSelect={onSelect}
+                onStartJourney={onStartJourney}
+              />
+            </div>
           )}
         </section>
       </div>

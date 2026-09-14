@@ -10,7 +10,7 @@ code-sources:
     'tests/unit/great-ui-content.test.ts',
     'tests/great-ui/learning.spec.ts',
   ]
-code-revision: '1ce98e4d7d57839cfeee30c55685c77a2dee74096dfdd0664bf1ffd77807d4ba'
+code-revision: '8d885f3ef4eaf14342a8defaf05adfea754e8117d5b5f868324e5cb596644687'
 ---
 
 # 功能名：录制与维护交互演示
@@ -37,7 +37,7 @@ flowchart LR
 
 ## 已实测的捕获参数
 
-2026-09-14的11段Great UI录屏使用下表。每段约7秒；录制仍按真实时间进行。较快是因为各段只展示关键动作，并复用同一套捕获、编码和检查过程。
+2026-09-14的45段Great UI录屏使用下表。多数约7秒，消息序列为12–13秒，模拟部署流程为19秒；录制仍按真实时间进行。较快是因为各段只展示关键动作，并复用同一套捕获、编码和检查过程。
 
 | 项目     | 使用值与含义                                                           |
 | -------- | ---------------------------------------------------------------------- |
@@ -102,11 +102,11 @@ ffprobe -v error -show_entries stream=codec_name,width,height,pix_fmt \
 
 裁切值只适用于本次原作布局，不能作为所有页面的固定值。先检查帧尺寸、效果覆盖范围和按钮位置；滚动文字与页面级主题过渡尤其不能裁掉关键部分。宽高需适合yuv420p；`scale=960:-2`自动计算偶数高度。`faststart`将播放所需索引放在文件前部，便于尽早播放。海报时间选择实际有内容的一帧，不能统一取开头的空白。
 
-本机FFmpeg没有可用的WebP编码器，本次海报使用JPEG。使用什么格式以已安装工具和实际画质为准，不为了沿用文件后缀假造格式。本次本地工作台的媒体预算为总计2MiB、单文件400KiB；这是该入口的预算，不是以后所有视频的通用上限。正式站已有素材可用`npm run media:prepare`处理，命令见[内容维护](content-maintenance.md)；不要把它和浏览器录制当作同一步。
+本机FFmpeg没有可用的WebP编码器，本次海报使用JPEG。使用什么格式以已安装工具和实际画质为准，不为了沿用文件后缀假造格式。Great UI全部短片与海报的预算为总计5MiB、单视频550KiB；站内学习内容另校验单图200KiB。这是48件学习材料的预算，不是以后所有视频的通用上限。正式站已有素材可用`npm run media:prepare`处理，命令见[内容维护](content-maintenance.md)；不要把它和浏览器录制当作同一步。
 
 ## 来源记录与播放检查
 
-Great UI的已保存素材位于src/features/great-ui/media/；data/local-recordings.json记录每件原作地址、recordedAt、actions、durationSeconds、sourceFrames，以及视频和海报的path、bytes、sha256。content-build.mjs让页面使用对应本地文件，相关单元测试核对摘要。其他内容接入正式站时按[媒体数据结构](../system/content-model.md#多媒体资料与展示)登记，不再建立第二份没有来源的文件表。
+Great UI素材位于public/great-ui/media/；data/local-recordings.json记录48件的原作地址、日期、录制方式、时长，以及视频和海报的path、bytes、sha256。45段连续捕获另有recordedAt、actions与sourceFrames；沿用的初版三段只保留当日记录和编码帧数，没有逐帧时间表，不补造捕获数据。work.json中的learning.media指向本站路径，Markdown读取模块让站内与独立页面使用同一素材，单元测试核对摘要。其他内容接入正式站时按[媒体数据结构](../system/content-model.md#多媒体资料与展示)登记，不再建立第二份没有来源的文件表。
 
 - 原作线上页面不能证明其部署的源码版本。源码核对版本与页面录制日期分别保存；注明这是“本地录制原作交互”，不能标为作者原有MP4。
 - 检查实际尺寸、总时长和关键过程的连续画面，再在真实页面中确认`videoWidth > 0`、`readyState >= 2`、无媒体错误、`currentTime`推进且确实播放。还要检查暂停、离屏暂停和减少动态效果。
@@ -114,7 +114,7 @@ Great UI的已保存素材位于src/features/great-ui/media/；data/local-record
 - 原始帧、录制时间线和验收截图放resources/evidence中的当前任务目录；临时转码文件放.scratch。录制时不要带入账号秘密、聊天或无关窗口。
 - 遇到403、429、登录或访问限制，不通过换参数、账号、代理或连续重试获取受限素材。原作公开交互仍可正常访问时，可以在许可范围内操作并独立录制；没有可用原作时保留缺口。
 
-2026-09-14的实现回执在resources/evidence/018-great-ui-scale：11段新本地视频及海报已逐件核对摘要；live-media-playback.json记录实际工作台的46段MP4和2张图片检查通过。该结果仅代表当次检查，不保证外部媒体持续可用。
+2026-09-14的来源与捕获回执在resources/evidence/018-great-ui-scale及其integration目录：48段本站视频与海报的摘要已核对，站内桌面Chromium逐件解码并播放通过。社交卡片、顶部菜单与设备模型分别检查取景，模拟部署录到原作预设的失败结果；不把该动画描述为真实部署。图片揭示与头像组虽然原作者目录仅提供静态图，原作有实际悬停交互，本站使用独立录制的视频。
 
 ## 已知问题 / 待办
 
@@ -122,28 +122,28 @@ Great UI的已保存素材位于src/features/great-ui/media/；data/local-record
 
 核心预览不能长期依赖不可控的原作者媒体直链。允许保存与展示的关键演示优先使用我们维护的短片和海报，保留原作链接用于溯源；正常打开仍直接播放，海报只用于加载或异常回退，不增加启动卡片。
 
-当前Great UI仍有32段MP4和2张预览图依赖作者地址，尚未全部迁移。外部平台的嵌入也不等于永久可用：X官方说明，帖子被删除、转为受保护或账号被停用后，嵌入中的媒体不会继续加载，见[X嵌入说明](https://help.x.com/en/using-x/how-to-embed-a-post)。不能仅因平台较大就把它作为核心演示的唯一来源。
+当前Great UI的48件核心预览均使用本站文件，原作者直链仅保留在历史来源目录，不再作为页面播放地址。外部平台的嵌入也不等于永久可用：X官方说明，帖子被删除、转为受保护或账号被停用后，嵌入中的媒体不会继续加载，见[X嵌入说明](https://help.x.com/en/using-x/how-to-embed-a-post)。不能仅因平台较大就把它作为核心演示的唯一来源。
 
-后续大量媒体的托管方式需要在正式接入时确定。本机文件不会自动成为线上资产；可以先随本站部署短片，规模增加后再使用自有媒体存储。若选Cloudflare R2，生产访问使用自定义域名并配置缓存；官方明确r2.dev开发地址有限流且不用于生产，见[R2公开访问](https://developers.cloudflare.com/r2/buckets/public-buckets/)。本说明没有创建存储服务或发布任何页面。
+当前短片随本站静态产物交付，浏览器和Agent任务都使用本站地址；规模增加后再评估独立媒体存储。若选Cloudflare R2，生产访问使用自定义域名并配置缓存；官方明确r2.dev开发地址有限流且不用于生产，见[R2公开访问](https://developers.cloudflare.com/r2/buckets/public-buckets/)。当前不需要独立存储服务。
 
 ## 涉及的文件
 
-- src/features/great-ui/media/：已交付的本地MP4与海报；data/local-recordings.json保存录制来源和摘要。
-- src/features/great-ui/content-build.mjs与Recording.jsx：将当前媒体接到工作台播放器。
+- public/great-ui/media/：随站交付的MP4与海报；data/local-recordings.json保存录制来源和摘要。
+- src/features/great-ui/markdown-content.ts、content-build.mjs与Recording.jsx：将同一份媒体接到站内和工作台播放器。
 - scripts/prepare-media.ts与media-tools.ts：正式站已有本地媒体转码工具，不负责打开浏览器录制。
 - resources/evidence/018-great-ui-scale/：最近一次录制和实际播放证据；本地原始证据不随网站发布。
 
 ## 验收标准
 
-- [x] 2026-09-14在内置浏览器录制11件真实原作交互，生成本地MP4与海报，文件摘要检查通过。
-- [x] 同日真实工作台的46段MP4解码并播放、2张图片正常；专用浏览器用例核对11个本地替代素材不再请求作者视频。
-- [x] 同日桌面与手机模拟浏览器的自动播放和交互检查通过；内置浏览器确认本地字符画录屏播放。不是实际手机验收。
-- [ ] 其余32段作者MP4与2张作者图片迁移到自有托管；尚未执行。
+- [x] 2026-09-14完成48件本站短片及海报，其中45件保留连续帧记录，初版三件沿用有效素材；全部文件摘要检查通过。
+- [x] 同日站内桌面Chromium逐件验证48段MP4解码、播放和本站来源。
+- [ ] 迁移后手机Chromium/WebKit、暂停、放大及异常的最终回归；进行中。
+- [x] 其余32段视频与两件图片案例均已独立录制并接到本站；没有下载或代理受限作者视频。
 
 ## 对应的自动化测试
 
-- tests/unit/great-ui-content.test.ts：本地替代录屏与来源、文件大小及SHA-256一致，不再指向失效作者地址。
-- tests/great-ui/learning.spec.ts：本地替代录屏实际解码并自动播放、不请求外部媒体；其余使用请求替身的用例只验证交互逻辑。
+- tests/unit/great-ui-content.test.ts：48件录屏与来源、文件大小及SHA-256一致。
+- tests/great-ui/learning.spec.ts与tests/great-ui-site.spec.ts：分别检查独立和站内48件真实文件解码、播放与来源；媒体替身只能验证播放器逻辑，不代替实际素材验收。
 - 连续画面、合适的裁切和效果呈现仍需人工视觉核对；目前没有通用录制CLI，不能把文档参数当成已实现的新命令。
 
 ## 依赖的其他功能

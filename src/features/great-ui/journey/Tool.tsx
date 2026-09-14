@@ -1,3 +1,4 @@
+import { useAssetBase } from '../AssetContext';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { isProjectData } from './data';
@@ -11,6 +12,7 @@ interface CheckRow {
 // Apply the upstream DeploymentChecklist's state-row pattern to real local checks.
 // No fixed timeout, simulated deployment, external request, or preselected failure.
 export function Tool({ reduced }: { reduced: boolean }) {
+  const assetBase = useAssetBase();
   const [title, setTitle] = useState('');
   const [source, setSource] = useState('');
   const [rows, setRows] = useState<CheckRow[]>([]);
@@ -50,7 +52,9 @@ export function Tool({ reduced }: { reduced: boolean }) {
     setRows(initial);
     setRunning(true);
     try {
-      const response = await fetch('/journeys/field-notes.json', { signal: current.signal });
+      const response = await fetch(assetBase + '/journeys/field-notes.json', {
+        signal: current.signal,
+      });
       if (!response.ok) throw new Error('本地示例暂时无法读取，恢复后可重新检查。');
       const value: unknown = await response.json();
       if (!isProjectData(value)) throw new Error('本地示例缺少必要资料。');

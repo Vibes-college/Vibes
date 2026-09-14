@@ -11,15 +11,17 @@ import reviews from '../../src/features/great-ui/data/source-review.json' with {
 import upstream from '../../src/features/great-ui/data/upstream-catalog.json' with { type: 'json' };
 import recordings from '../../src/features/great-ui/data/local-recordings.json' with { type: 'json' };
 
-test('local replacement recordings match their provenance and never request the unavailable author host', async () => {
-  assert.equal(Object.keys(recordings).length, 11);
+test('all owned recordings match their provenance and never request the unavailable author host', async () => {
+  assert.equal(Object.keys(recordings).length, 48);
   for (const [slug, recording] of Object.entries(recordings)) {
     const entry = entries.find((item: { slug: string }) => item.slug === slug)!;
     assert.equal(entry.reference, recording.source);
-    assert.equal(entry.previewRecording, `/media/${slug}-demo.mp4`);
-    assert.equal(entry.poster, `/media/${slug}-demo-poster.jpg`);
+    assert.equal(entry.previewRecording, recording.video.path.replace(/^public/, ''));
+    assert.equal(entry.poster, recording.poster.path.replace(/^public/, ''));
     assert.match(entry.recordingCredit, /本地录制/);
-    assert.ok(recording.sourceFrames > 10);
+    assert.ok(
+      ('sourceFrames' in recording ? recording.sourceFrames : recording.encodedFrames) > 10,
+    );
     for (const asset of [recording.video, recording.poster]) {
       const bytes = await readFile(new URL('../../' + asset.path, import.meta.url));
       assert.equal(bytes.length, asset.bytes, asset.path);
@@ -136,11 +138,11 @@ test('corrupt nested data, unsafe URLs and stale detail IDs fail before renderin
   assert.throws(() => validateCapabilities(broken));
 });
 
-test('image previews remain images and task formats preserve the same user choices and fixed sources', () => {
+test('recorded hover previews and task formats preserve the same user choices and fixed sources', () => {
   for (const slug of ['image-hover-reveal', 'avatar-stack']) {
     const entry = entries.find((x: { slug: string }) => x.slug === slug)!;
-    assert.equal(entry.previewRecording, null);
-    assert.match(entry.previewImage!, /^https:\/\/www.great-ui.com\/previews\/.*\.png$/);
+    assert.equal(entry.previewRecording, `/great-ui/media/${slug}-demo.mp4`);
+    assert.equal(entry.previewImage, null);
   }
   for (const entry of entries) {
     for (const goal of entry.learning.goals) {

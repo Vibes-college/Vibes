@@ -1,0 +1,62 @@
+{
+  "id": "great-ui-pixel-to-ascii-image",
+  "originalLocale": "zh",
+  "order": 11039,
+  "sourceUrl": "https://www.great-ui.com/components/pixel-to-ascii-image",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "pixel-to-ascii-image",
+    "collectionId": "great-ui-learning",
+    "english": "Pixel To Ascii Image",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/PixelToAsciiImage.tsx",
+    "previewSource": "components/site/previews/PixelToAsciiImagePreview.tsx",
+    "media": {
+      "video": "/great-ui/media/pixel-to-ascii-image-demo.mp4",
+      "poster": "/great-ui/media/pixel-to-ascii-image-demo-poster.jpg"
+    },
+    "capability": {
+      "family": "ascii-image",
+      "roles": ["showcase"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        },
+        {
+          "key": "input",
+          "value": "pointer",
+          "reason": "原作依赖鼠标悬停或位置。",
+          "adaptation": "为触摸与键盘增加可发现的等价入口，并保留静态信息。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "图片需要允许跨域读取像素；无失败处理。charSize为0或负数会让绘制循环无法推进，必须校验。持续逐帧重绘和小字符会增加成本；源码实际从framer-motion导入。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

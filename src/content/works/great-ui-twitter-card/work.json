@@ -1,0 +1,68 @@
+{
+  "id": "great-ui-twitter-card",
+  "originalLocale": "zh",
+  "order": 11032,
+  "sourceUrl": "https://www.great-ui.com/components/twitter-card",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "twitter-card",
+    "collectionId": "great-ui-learning",
+    "english": "Twitter(X) Card",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/TwitterCard.tsx",
+    "previewSource": "components/site/previews/TwitterCardPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/twitter-card-demo.mp4",
+      "poster": "/great-ui/media/twitter-card-demo-poster.jpg"
+    },
+    "capability": {
+      "family": "social-hover",
+      "roles": ["showcase"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        },
+        {
+          "key": "input",
+          "value": "pointer",
+          "reason": "原作依赖鼠标悬停或位置。",
+          "adaptation": "为触摸与键盘增加可发现的等价入口，并保留静态信息。"
+        },
+        {
+          "key": "externalData",
+          "value": "allowed",
+          "reason": "默认通过第三方api.fxtwitter.com获取账号资料。",
+          "adaptation": "增加完整本地profile属性并跳过内部请求，或移除请求改由项目的数据层提供。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "失败被静默处理，0关注数或默认简介可能只是未加载；请求没有取消及过期结果保护。bannerUrl虽然在接口声明中出现，实际没有被读取。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

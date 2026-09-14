@@ -10,6 +10,7 @@ export default defineConfig({
     'mdx.spec.ts',
     'beui.spec.ts',
     'media.spec.ts',
+    'great-ui-site.spec.ts',
     'paseo-loading.spec.ts',
     'paseo-chat.spec.ts',
     'paseo-recovery.spec.ts',

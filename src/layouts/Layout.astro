@@ -18,6 +18,7 @@ interface Props {
   alternates?: { locale: string; path: string }[];
   defaultPath?: string;
   publicWork?: PublicWorkReference | null;
+  workId?: string;
 }
 const {
   locale = 'zh',
@@ -29,6 +30,7 @@ const {
   alternates = [],
   defaultPath,
   publicWork,
+  workId,
 } = Astro.props;
 const t = messages[locale];
 const site = buildSite();
@@ -97,7 +99,7 @@ const paseo = getPaseoBuild();
           </a>
         )
       }
-      {!detail && <LanguageSwitch locale={locale} />}
+      {!detail && <LanguageSwitch locale={locale} id={workId} />}
       <span class="header-note">{t.campus}</span>
     </header>
     <slot />

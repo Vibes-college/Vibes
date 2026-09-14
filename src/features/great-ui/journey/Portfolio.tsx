@@ -1,3 +1,4 @@
+import { useAssetBase } from '../AssetContext';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, type TransitionPhase } from './Transition';
 import { TextReveal } from './TextReveal';
@@ -10,6 +11,7 @@ const projectList = [
 ];
 
 export function Portfolio({ reduced }: { reduced: boolean }) {
+  const assetBase = useAssetBase();
   const [phase, setPhase] = useState<TransitionPhase>('idle');
   const [project, setProject] = useState<ProjectData | null>(null);
   const [ready, setReady] = useState<{
@@ -47,7 +49,9 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
       let data: ProjectData | null = null;
       if (id) {
         if (!projectList.some((item) => item.id === id)) throw new Error('未找到这个示例项目。');
-        const response = await fetch(`/journeys/${id}.json`, { signal: controller.signal });
+        const response = await fetch(`${assetBase}/journeys/${id}.json`, {
+          signal: controller.signal,
+        });
         if (!response.ok) throw new Error('项目暂时无法打开，请重试。');
         const value: unknown = await response.json();
         if (!isProjectData(value) || value.id !== id) throw new Error('项目资料不完整，请重试。');
@@ -83,7 +87,7 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
       const url = new URL(location.href);
       if (ready.id) url.searchParams.set('project', ready.id);
       else url.searchParams.delete('project');
-      history.pushState(null, '', url);
+      history.pushState(history.state, '', url);
     }
     setReady(null);
     focusAfter.current = true;
@@ -109,9 +113,11 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
     };
     if (new URLSearchParams(location.search).get('project')) restore();
     window.addEventListener('popstate', restore);
+    window.addEventListener('great-ui:location', restore);
     return () => {
       request.current?.abort();
       window.removeEventListener('popstate', restore);
+      window.removeEventListener('great-ui:location', restore);
     };
   }, [open]);
 

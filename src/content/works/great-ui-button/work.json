@@ -1,0 +1,54 @@
+{
+  "id": "great-ui-button",
+  "originalLocale": "zh",
+  "order": 11005,
+  "sourceUrl": "https://www.great-ui.com/components/button",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "button",
+    "collectionId": "great-ui-learning",
+    "english": "Button",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/Button.tsx",
+    "previewSource": "components/site/previews/ButtonPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/button-demo.mp4",
+      "poster": "/great-ui/media/button-demo-poster.jpg"
+    },
+    "capability": {
+      "family": "action-button",
+      "roles": ["act"],
+      "provides": ["action-intent"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": ["绑定实际动作、加载结束与失败结果；明确按钮type与可读名称。"],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

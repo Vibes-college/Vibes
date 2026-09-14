@@ -1,5 +1,6 @@
 import { z } from 'astro/zod';
 import { mediaSchema, presentationSchema, mediaTextSchema } from '../media/schema.ts';
+import { learningLanguageSchema, learningMetadataSchema } from './learning.ts';
 
 import { locales, type Locale } from '../i18n/routes.ts';
 export { locales };
@@ -50,6 +51,7 @@ export const workSchema = z
     preview: previewSchema,
     media: z.array(mediaSchema).max(40).optional(),
     presentation: presentationSchema.optional(),
+    learning: learningMetadataSchema.optional(),
     facts: z.array(factSchema).default([]),
     related: z.array(z.object({ targetId: idSchema, reason: localized }).strict()).default([]),
   })
@@ -63,6 +65,7 @@ export const languageSchema = z
     description: text,
     previewText: z.object({ eyebrow: z.string(), display: text, note: z.string() }).strict(),
     mediaText: mediaTextSchema.optional(),
+    learning: learningLanguageSchema.optional(),
     sourceRevision: z
       .string()
       .regex(/^[a-f0-9]{64}$/)

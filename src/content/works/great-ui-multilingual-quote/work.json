@@ -1,0 +1,56 @@
+{
+  "id": "great-ui-multilingual-quote",
+  "originalLocale": "zh",
+  "order": 11017,
+  "sourceUrl": "https://www.great-ui.com/components/multilingual-quote",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "multilingual-quote",
+    "collectionId": "great-ui-learning",
+    "english": "Multilingual Quote",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/MultilingualQuote.tsx",
+    "previewSource": "components/site/previews/MultilingualQuotePreview.tsx",
+    "media": {
+      "video": "/great-ui/media/multilingual-quote-demo.mp4",
+      "poster": "/great-ui/media/multilingual-quote-demo-poster.jpg"
+    },
+    "capability": {
+      "family": "localized-text",
+      "roles": ["introduce"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "组件只切换预先提供的译文，不会翻译或验证引语来源。语言按钮缺少选中语义，正文也没有自动设置 lang，需要明确语言和准确来源。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

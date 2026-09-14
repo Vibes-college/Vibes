@@ -1,3 +1,4 @@
+import { useAssetBase } from '../AssetContext';
 import { useEffect, useMemo, useState } from 'react';
 import { compose } from './planner';
 import { validateCapabilities } from './validate';
@@ -22,13 +23,14 @@ export function CompositionPanel({
   onSelect: (entry: { slug: string }) => void;
   onStartJourney: (id: string) => void;
 }) {
+  const assetBase = useAssetBase();
   const [works, setWorks] = useState<WorkCapability[]>([]);
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     const abort = new AbortController();
     setError('');
-    fetch('/content/capabilities.json', { signal: abort.signal })
+    fetch(assetBase + '/content/capabilities.json', { signal: abort.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error('组合材料无法加载。');
         const value = await response.json();
@@ -39,7 +41,7 @@ export function CompositionPanel({
         if (!abort.signal.aborted) setError(reason.message);
       });
     return () => abort.abort();
-  }, [retry]);
+  }, [retry, assetBase]);
   const template = getTemplate(settings.template) || templates[0];
   const result = useMemo(
     () => compose(works, template, settings.environment, settings.pinned ? entryId : undefined),

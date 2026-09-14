@@ -1,6 +1,6 @@
 ---
 tense: 'living'
-describes: '在本地学习Great UI作品并生成接入任务'
+describes: '在站内学习Great UI作品并生成接入任务'
 status: 'current'
 shaped-by: ['018']
 code-sources:
@@ -13,30 +13,35 @@ code-sources:
     'scripts/great-ui-test.ts',
     'playwright.great-ui.config.ts',
     'tests/great-ui/',
+    'tests/fixtures/great-ui/',
+    'tests/great-ui-site.spec.ts',
+    'tests/unit/learning-content.test.ts',
+    'src/components/GreatUiDetail.astro',
     'tests/unit/great-ui-composition.test.ts',
     'tests/unit/great-ui-content.test.ts',
   ]
-code-revision: '48e61f1d62a30d964179200e37bd6a2effdab4744f141dbf595e870830d4ae29'
+code-revision: '0bb1e099dcf75f9d9af1e9eb1a689d66e92ac12c82ca0633a020c7dd9bebc972'
 ---
 
 # 功能名：学习交互作品并带入自己的项目
 
 ## 一句话说明
 
-在本地工作台浏览48件Great UI作品，理解行为与限制，填写改造意图，复制给Agent执行；需要完整流程时按项目条件选择组合，并体验固定的三条本地示例。
+从Explore的Great UI合集进入48件独立学习页面，观看原作交互、理解设计、选择改造目标，并把同一份说明生成给Agent的任务；需要完整流程时先比较组合，再体验三条已接好的示例。
 
 ## 用户操作路径
 
-1. 在仓库运行`npm run great-ui:build`，再运行`npm run great-ui:preview`，打开`http://127.0.0.1:4325/`。维护者先确认端口是否已有适合复用的服务。这个入口不在正式Explore站内，发布保持暂停。
-2. 在作品列表搜索中文、英文或行为词，按分类缩小范围，点击切换作品。48件来自固定目录，类型、用途、行为分别显示；没有结果时可清空搜索。
-3. 打开作品即加载当前MP4并静音循环播放；不预载其他作品，离开可视区域、隐藏页面或开启减少动态效果时暂停。14件使用本地录屏，32件读取作者MP4，两件显示作者静态预览图。本地素材包含原三例，以及在原作页面实际操作后新录制的11段；来源、操作和文件摘要记在local-recordings.json。预览紧接播放控制和作品切换栏，无启动卡片或额外提示行。录屏提供播放、暂停、进度和放大；媒体失败时可打开原作。
-4. “拆解设计”说明原作顺序、形成原理和接入限制；点击术语了解中文解释。底部按“相似作品”和“相同原理”列出整行入口，点击作品名称所在行即可切换；共同原理以简短文字标在同一行。
-5. “改造设计”选择目标，核对Agent应改的位置与可观察结果。点击“生成修改任务”或“用这个效果”，填写接入位置和要求，查看文本或JSON后复制。任务把原作参考与目标要求分开：例如多项比较按同时展开验收，原作单项规则只作对照。复制失败时保留全文以便手动选择。
-6. “串联设计”先选作品集、产品介绍或任务工具路径，再选择框架、主要输入方式、外部数据、频率和减少动态效果。默认保留当前作品；不适合该路径时解释原因，不硬凑方案。允许必要改造时可以加入普通文本、表单或链接等基础实现。
-7. 候选最多三份，逐步说明所选作品、必要条件和适配。生成整条任务时保留相同用户输入、固定源码版本、每个环节、交接要求与验证范围。候选是建议，用户项目仍需实际接入验证。
-8. 串联栏下方可打开实际接好的三条示例：作品集可进入真实本地JSON详情、展开问答和查看联系入口；产品页可比较两种方案、展开多项问答并确认选择；任务工具可填写资料并运行实际本地检查。产品选择不创建订单，工具检查不执行外部部署。示例下方“复制这条示例的任务”使用同一固定路径、来源与系统动态偏好；显示相符验收记录时才标为该固定示例已验证。
-9. 返回工作台后，本次页面会话中每件作品的标签页、改造输入和组合条件保留；浏览器前进后退可恢复作品或示例入口。刷新会清除内存草稿。
-10. 目录、详情或组合材料失败时有重试入口；不存在的作品可返回首件。切换作品时取消上一份详情请求，避免慢响应替换当前选择。关闭JavaScript或脚本未能启动时，静态说明和原作链接仍可使用。
+1. 在Explore打开“Great UI交互学习”合集，选择一件作品，进入`/zh/works/great-ui-<slug>/`。普通目录只列一次合集；全文搜索可以直接找到每件作品的标题、说明、改造目标和术语。
+2. 打开页面即加载当前MP4并静音循环播放；不会预载其他作品视频。48件都使用随本站提供的短片与封面，离屏、进入后台或开启减少动态效果时暂停。可以手动播放、暂停、拖动进度或放大；放大时其余页面不可操作，Escape关闭后恢复焦点。失败时保留原作入口。
+3. “拆解设计”说明原作顺序、形成原理和接入限制；点击术语看中文解释，点击“相似作品”或“相同原理”整行入口切换案例。作品列表还可搜索中文、英文或行为词并按分类筛选。
+4. “改造设计”选择目标，核对Agent应改的行为与检查结果，再点“生成修改任务”或“用这个效果”。填写接入位置和要求，查看文本或JSON后复制；复制失败时可手动选择全文。原作记录与目标要求分开，例如多项比较按同时展开验收，单项规则只作原作对照。
+5. “串联设计”选择作品集、产品介绍或任务工具，再选框架、输入方式、外部数据、使用频率和动态偏好。默认保留当前作品；不适合时解释原因，不硬凑方案。允许必要改造时可用普通文字、表单或链接补齐。
+6. 候选最多三份，逐步说明作品、必要条件与适配；复制整条任务会带上相同输入、固定源码、每个环节、交接要求和验证范围。候选仍是建议，目标项目需实际接入验证。
+7. 串联栏可进入三个可操作示例。作品集读取本站JSON后切换详情、展开问答和查看联系信息；产品页可比较方案、同时展开答案并确认选择；工具页根据实际输入与读取结果检查资料。选择不创建订单，检查不执行外部部署。示例中的“复制这条示例的任务”使用同一固定路径。
+8. 返回学习页或使用浏览器前进后退，可以恢复当前页面会话中每件作品的面板、输入和组合条件；刷新清除内存草稿。示例网址中的journey与project只恢复对应入口，不保存用户填写的内容。
+9. 点击顶部“在GitHub上改进这件作品”，编辑当前语言的Markdown并提出PR，完整贡献流程见[GitHub内容贡献](../system/content-contributions.md)。本站不保存编辑；正式构建指向main，PR阶段预览指向相应分支。缺少英文译文时明确提示，不生成假译文。
+10. 无JavaScript仍可读初始说明、原作链接，并展开“文字版说明”阅读全部正文、目标、检查与术语；生成任务、筛选和组合需要JavaScript。正文下方没有另一份手工维护的说明。
+11. 点“和Agent聊这篇”时，[本地助手](local-assistant.md)附上当前作品的公开标题和本站网址，保留现有草稿；用户发送前不会提交消息。
 
 ### 示例中的页面切换
 
@@ -50,47 +55,50 @@ flowchart TD
   A -->|减少动态效果| G[读取详情并直接显示]
 ```
 
-顺序对应journey/Portfolio.tsx与Transition.tsx。运行中开启减少动态效果会解除遮挡并继续当前读取，退出时也直接交接；该次读取期间再关闭偏好仍保持直接换页，下次导航才恢复动画。任务中的条件随系统偏好更新。原作计时转场没有这套真实加载协调；本地示例的改造不能当作其他候选或所有上游变体已通过。
+顺序对应journey/Portfolio.tsx与Transition.tsx。运行中开启减少动态效果会解除遮挡并继续读取；该次读取期间再关闭偏好仍直接换页，下次导航才恢复动画。站内页面之间由Astro负责导航，同一学习页内的示例历史由学习组件恢复，避免两套处理同时切页。原作的计时转场没有这套加载协调，示例改造不代表所有上游变体已验证。
+
+## 维护同一份材料
+
+每件作品只维护`src/content/works/great-ui-<slug>/zh.md`。正文必须依次包含`## 拆解设计`、`## 改造设计`和`## 串联设计`；第一节还须保留“适合用在哪里”“什么时候不用”“试一次，就会更懂”三级标题。正文支持段落、强调、列表、链接、代码和`[[术语ID|显示词]]`；HTML、任意组件和未登记术语会被拒绝。
+
+文件头learning保存分类、改造目标、判断方法、可调整项、检查与术语。work.json的learning保存固定源码、合集身份、媒体路径和组合能力。改写说明或目标后，页面与文本/JSON任务从同一来源生成；不再维护平行的MJS文案表。写法及字段见[内容结构](../system/content-model.md#交互学习材料)，完整示例是[折叠问答](../../src/content/works/great-ui-accordion/zh.md)。
+
+录屏和海报位于public/great-ui/media，录制来源与文件摘要保存在data/local-recordings.json。新增或重录时按[录制与维护交互演示](recording-previews.md)完成观察、捕获、转码、登记和真实播放检查。
 
 ## 涉及的文件
 
-- 入口与浏览：src/features/great-ui/App.jsx、CaseView.jsx、CaseNavigation.jsx、Recording.jsx。
-- 材料：src/features/great-ui/data/下的upstream-catalog.json、curation.json、observations.json、source-review.json和local-recordings.json；content-build.mjs导出目录、独立详情和任务文本，relations.mjs维护经源码核对的原理关系。
-- 任务：src/features/great-ui/task.mjs与PromptDialog.jsx；同一结构产生文本和JSON。
-- 组合：src/features/great-ui/composition/下的model.ts、templates.ts、rules.ts、planner.ts、validate.ts和CompositionPanel.tsx。
-- 示例：src/features/great-ui/journey/；sources.json和LICENSE.txt说明来源及改造。
-- 本地构建：scripts/great-ui.ts；输出在.scratch/great-ui-dist，未进入生产Astro路由。
-
-需要新增或重录演示时，按[录制与维护交互演示](recording-previews.md)完成原作观察、捕获、转码、来源登记和真实播放检查。
+- 页面与内容：src/components/GreatUiDetail.astro、src/features/great-ui/LearningPage.jsx、markdown-content.ts、compile-prose.ts和site-content.ts。
+- 浏览与播放器：CaseView.jsx、CaseNavigation.jsx、Recording.jsx、Terms.jsx；样式限制在great-ui区域。
+- 来源依据：data/upstream-catalog.json、observations.json、source-review.json和local-recordings.json；relations.mjs维护经源码核对的原理关系。
+- 任务与组合：task.mjs、PromptDialog.jsx、composition/；同一结构生成文本和JSON。
+- 示例：journey/，sources.json和LICENSE.txt说明来源及改造；本站/great-ui/content与/great-ui/journeys生成对应JSON。
+- 辅助本地入口：scripts/great-ui.ts从同一Markdown生成.scratch/great-ui-dist；运行great-ui:build后用great-ui:preview打开127.0.0.1:4325，先确认服务归属与端口。
 
 ## 验收标准
 
-- [x] 48件独立中文详情、固定源码与预览入口可生成；2026-09-14以great-ui:build校验目录、详情与能力并完成Vite构建。
-- [x] 组合规则拒绝能力缺口与全局冲突，未知条件明确保留，版本变化使记录失效；2026-09-14运行tests/unit/great-ui-composition.test.ts共11项通过。
-- [x] 三条示例的正常路径、慢请求、失败、取消、快速历史切换与动态偏好双向变化通过回归；2026-09-14以great-ui:verify运行16项单元和22项浏览器用例，后者在桌面Chromium、手机Chromium、手机WebKit通过，共66项。
-- [x] 48件原作均取得实际操作观察：原三例补录与其余45件的2026-09-14内置浏览器记录；未覆盖变体明确保留，证据文件摘要随记录保存。
-- [x] 2026-09-14用实际工作台与真实媒体地址检查48件：46个MP4均完成解码并自动播放，2张图片解码成功。没有请求替身或失败重试，结果保存于live-media-playback.json；另在内置浏览器确认本地字符画录屏自动播放。
-- [x] 2026-09-14专用三浏览器覆盖搜索、全量导航、草稿、复制失败和历史恢复；内置浏览器另完成桌面和390px宽度的三条路径、网络失败后继续操作及推荐区布局核对。模拟宽度不等于真实手机验收。
-- [x] 2026-09-14独立预算通过：入口JS约77KiB gzip，全部本地媒体约1.95MiB、单文件最大约325KiB；限额分别为100KiB、2MiB和400KiB，正式站预算未改变。
+- [x] 48件固定源码均有实际原作操作记录；2026-09-14原三例与其余45件的内置浏览器证据仍有效，未覆盖变体明确保留。
+- [x] 48份Markdown材料、来源映射、任务一致性、拒绝坏结构与素材摘要通过2026-09-14单元检查。
+- [x] 2026-09-14站内桌面Chromium逐件验证48段本站MP4解码、自动播放、无外部媒体请求和横向溢出；同轮通过搜索、无JS正文和跨作品草稿恢复。
+- [ ] 站内三个浏览器的完整回归、原生助手作品引用与正式预算最终复核；进行中。
+- [ ] 独立工作台在迁移后的三浏览器回归与预算复核；进行中。
+
+既有2026-09-14组合引擎的11项单元规则、20个结构化需求与原作审查记录保留；迁移后完整页面验收以上述范围为准。原始证据在resources/evidence/018-great-ui-scale/integration，模拟手机宽度不等于真机验收。
 
 ## 对应的自动化测试
 
-- tests/unit/great-ui-composition.test.ts：能力、条件、整份资源冲突、缺口、有界搜索、指定作品及版本失效。
-- tests/great-ui/journey.spec.ts：延迟与失败数据、前进后退、窄屏减少动态效果、产品选择与真实本地工具检查。
-- tests/unit/great-ui-content.test.ts与tests/great-ui/learning.spec.ts：48件结构、来源、术语与改造、搜索、草稿、失败、任务文本/JSON与条件说明。
-- great-ui:evaluate按tests/great-ui/evaluation.json检查20个目标及合成负载；great-ui:budget独立检查压缩入口、目录、详情及本地媒体，原始证据位于resources/evidence/018-great-ui-scale。
-- 单独浏览器入口为`npm run great-ui:test`，完整本地检查为`npm run great-ui:verify`，使用playwright.great-ui.config.ts创建独立测试服务。新增覆盖和最终运行证据以实际结果更新本页。
+- tests/unit/learning-content.test.ts：Markdown到页面与任务的单一来源、结构/术语/素材拒绝、合集与语言边界。
+- tests/unit/great-ui-content.test.ts：48件来源、说明、关系、视频摘要与目标任务。
+- tests/unit/great-ui-composition.test.ts：能力、条件、全局资源冲突、缺口、有界搜索及版本失效。
+- tests/fixtures/great-ui/journey.ts：同一组正常、慢请求、失败、取消、历史及动态偏好测试；由站内great-ui-site.spec.ts和独立journey.spec.ts复用。
+- tests/great-ui-site.spec.ts另覆盖搜索、48段本站播放、无JS、草稿、放大焦点与Paseo作品引用，包含在verify中。
+- great-ui:verify检查独立入口；great-ui:evaluate保存结构化样本和合成负载，great-ui:budget检查入口、详情与媒体。正式站另按verify与budget验收。
 
 ## 依赖的其他功能
 
-本地工作台独立于正式站的内容列表、数据库和本地助手连接；仓库检查、保存与审查沿用[检查与发布网站](project-commands.md)。
+复用[内容维护](content-maintenance.md)、[浏览与搜索](explore-browse.md)、[本地助手](local-assistant.md)和[检查与发布](project-commands.md)。普通文章沿用原有阅读模板。
 
 ## 已知问题 / 待办
 
-- 作者线上页面不能证明部署SHA；实现结论固定于eda1b85ed81ab45d0f0cbc27dc0206560d11c801，浏览器记录只说明访问时的操作范围。source-review记录实现和预览文件摘要；原始证据放resources/evidence/018-great-ui-scale。
-- README与源码页脚宣称MIT，但仓库LICENSE为自定义许可；材料按实际LICENSE说明使用与再分发限制。来源素材与分发范围未获新的发布确认。
-- 32个作者MP4仍依赖外部服务，最近一次真实播放检查通过不保证以后持续可用。11个作者地址曾返回429，当前使用独立录制的本地原作交互，不是受限视频的复制或代理；原作线上页面不能证明部署SHA。
-- 自动组合仍是建议。三条固定示例共享composition/demos.ts路径记录，DemoTask生成同一任务；great-ui:test只有不带筛选参数且全部浏览器通过、源码在测试前后未变时才保存六份动态偏好记录。重建时，来源、内容、能力、规则、项目条件、适配器或测试变化使旧记录失效；原始回执在resources/evidence/018-great-ui-scale/journey-verification.json。
-- 示例通过不等于接入用户项目；全部变体、真机与用户项目仍需各自验证。
-- 2026-09-14的20个结构化需求样本（12个调整、8个保留检查）通过；未指定作品的正向路径覆盖8/8，已知硬冲突漏报和条件披露遗漏为0。这不是自由文本推荐质量或用户研究；开发样本2曾将触摸误当成必然需要悬停适配，已修正为比较基础实现，未据此调整引擎。
-- 同轮1,000/10,000条合成数据的搜索中位耗时约0.69/3.37毫秒，7次最大约0.85/3.67毫秒；结果只说明当前机器的计算成本。运行great-ui:evaluate会保存当前实测JSON。
+- 原作线上页面不能证明部署SHA；源码结论固定于eda1b85ed81ab45d0f0cbc27dc0206560d11c801，浏览器记录说明访问时的操作范围。README与LICENSE描述不一致，许可说明依据实际自定义LICENSE；未打包分发原作组件库。
+- 固定示例只有匹配当前版本的完整验收回执才显示已验证。完整test:e2e写入site-verification.json，独立great-ui:test写入standalone-verification.json；两者不互相代替，筛选重跑不签发回执。源码、Markdown、能力、规则、条件、适配器或测试变化使旧记录失效。
+- 示例通过不等于已接入用户项目。自由文本推荐质量、全部原作变体和真机操作未被结构化样本代替。

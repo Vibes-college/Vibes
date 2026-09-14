@@ -47,6 +47,7 @@ export function createTask(entry, form, plan = null) {
       revision: entry.revision,
       reference: entry.reference,
       previewSource: entry.previewSource,
+      learningUrl: entry.publicUrl || null,
     },
     goal,
     referenceDesign: {
@@ -61,9 +62,11 @@ export function createTask(entry, form, plan = null) {
     glossary: Object.fromEntries(entry.terms.map((id) => [id, entry.glossary[id]])),
     verification: entry.verification,
     media: {
-      url: entry.previewRecording || entry.recording,
+      url: entry.publicUrl
+        ? new URL(entry.previewRecording || entry.recording, entry.publicUrl).href
+        : entry.previewRecording || entry.recording,
       note: entry.recordingNote,
-      localPath: entry.localRecordingPath || null,
+      localPath: entry.publicUrl ? null : entry.localRecordingPath || null,
     },
     license: { url: entry.license, note: entry.licenseNote },
     plan: plan
@@ -100,7 +103,7 @@ export function taskText(task) {
 我的要求：${task.changes || '保留现有配色、字体、内容和布局，只处理这个任务。'}
 
 参考材料
-原作：${selected.reference}
+${selected.learningUrl ? `学习说明：${selected.learningUrl}\n` : ''}原作：${selected.reference}
 固定源码：${selected.source}
 可读取源码：${selected.sourceRaw}
 原作者示例：${selected.previewSource}

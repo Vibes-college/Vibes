@@ -1,39 +1,386 @@
 {
-  "pixel-to-ascii-image": {
-    "source": "https://www.great-ui.com/components/pixel-to-ascii-image",
-    "recordedAt": "2026-09-14T13:33:32.846Z",
-    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
-    "actions": "将指针移入图像、移出，再移入，观察图像与字符画转换。",
-    "durationSeconds": 7,
-    "sourceFrames": 131,
+  "accordion": {
+    "source": "https://www.great-ui.com/components/accordion",
+    "recordedOn": "2026-09-14",
+    "method": "原作页面实际操作后补录，沿用已验收的初版素材；未保留逐帧捕获时间表。",
+    "durationSeconds": 6.4,
+    "encodedFrames": 192,
     "video": {
-      "path": "src/features/great-ui/media/pixel-to-ascii-image-demo.mp4",
-      "bytes": 144978,
-      "sha256": "abcb447fe7540103bb13a346e593b0241fd8805891e475676dd8abeb5508394e"
+      "path": "public/great-ui/media/accordion-source-capture.mp4",
+      "bytes": 66150,
+      "sha256": "81a62def6d14f1248a93d60c8e41f14022fe05f86a939de7672b1af9d75e01d3"
     },
     "poster": {
-      "path": "src/features/great-ui/media/pixel-to-ascii-image-demo-poster.jpg",
-      "bytes": 30584,
-      "sha256": "1841c88d07826aa56e4031395183c4d89e0b4b71df7daa4cb7f703f98c4da168"
+      "path": "public/great-ui/media/accordion-source-poster.png",
+      "bytes": 54498,
+      "sha256": "64eb051445c5bfd2cfc19b906c9497ec51aaa0e5e75251943847bf6ee3fff306"
+    },
+    "limitation": "2026-09-14，在 Great UI 原作页面实际操作后补录。样板只播放这段 MP4，不嵌入上游组件。"
+  },
+  "aceternity-button": {
+    "source": "https://www.great-ui.com/components/aceternity-button",
+    "recordedAt": "2026-09-14T15:09:27.594Z",
+    "actions": [
+      {
+        "at": 0.8,
+        "type": "move",
+        "x": 332,
+        "y": 360
+      },
+      {
+        "at": 2,
+        "type": "move",
+        "x": 447,
+        "y": 360
+      },
+      {
+        "at": 3.2,
+        "type": "move",
+        "x": 560,
+        "y": 360
+      },
+      {
+        "at": 4.4,
+        "type": "move",
+        "x": 663,
+        "y": 360
+      },
+      {
+        "at": 5.6,
+        "type": "move",
+        "x": 1100,
+        "y": 545
+      }
+    ],
+    "durationSeconds": 7.01,
+    "sourceFrames": 136,
+    "video": {
+      "path": "public/great-ui/media/aceternity-button-demo.mp4",
+      "bytes": 12863,
+      "sha256": "dd9b8c05b1a7097f4644aa6ab55ae30ce03dd14472b2c599360717127b115367"
+    },
+    "poster": {
+      "path": "public/great-ui/media/aceternity-button-demo-poster.jpg",
+      "bytes": 6692,
+      "sha256": "38eceb2aac204132bc9e3375afb85f414cb57fce00dc0466c158071d2a0e2092"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "animated-link": {
+    "source": "https://www.great-ui.com/components/animated-link",
+    "recordedAt": "2026-09-14T15:05:10.966Z",
+    "actions": [
+      {
+        "at": 0.7,
+        "type": "move",
+        "x": 297,
+        "y": 240
+      },
+      {
+        "at": 1.7,
+        "type": "move",
+        "x": 514,
+        "y": 319
+      },
+      {
+        "at": 2.7,
+        "type": "move",
+        "x": 740,
+        "y": 319
+      },
+      {
+        "at": 3.7,
+        "type": "move",
+        "x": 952,
+        "y": 399
+      },
+      {
+        "at": 4.7,
+        "type": "move",
+        "x": 295,
+        "y": 480
+      },
+      {
+        "at": 6,
+        "type": "move",
+        "x": 1100,
+        "y": 560
+      }
+    ],
+    "durationSeconds": 7.013,
+    "sourceFrames": 135,
+    "video": {
+      "path": "public/great-ui/media/animated-link-demo.mp4",
+      "bytes": 22246,
+      "sha256": "018e2dea23a0905cb7276674c035eab4c50b3056a0aa0aa2bd85e86f87c25076"
+    },
+    "poster": {
+      "path": "public/great-ui/media/animated-link-demo-poster.jpg",
+      "bytes": 13816,
+      "sha256": "186f5b59338017cc123f408b0a6517fb102bdba059f602f8958c9992459cac23"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "animated-path": {
+    "source": "https://www.great-ui.com/components/animated-path",
+    "recordedAt": "2026-09-14T14:50:09.099Z",
+    "actions": [
+      {
+        "at": 0.2,
+        "type": "reload",
+        "note": "重新载入并记录线条绘制与填充"
+      }
+    ],
+    "durationSeconds": 7.006,
+    "sourceFrames": 132,
+    "video": {
+      "path": "public/great-ui/media/animated-path-demo.mp4",
+      "bytes": 58395,
+      "sha256": "d596cb072ec11ee3c9f72ecab88d0feaff2a0d11d09a60abef227486cf269c56"
+    },
+    "poster": {
+      "path": "public/great-ui/media/animated-path-demo-poster.jpg",
+      "bytes": 17437,
+      "sha256": "398c474fd7b21dbabfdf187257a81bc4ba6f4d8624d6889b666da5a21f9b7bdb"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "avatar-stack": {
+    "source": "https://www.great-ui.com/components/avatar-stack",
+    "recordedAt": "2026-09-14T15:07:27.726Z",
+    "actions": [
+      {
+        "at": 0.8,
+        "type": "move",
+        "x": 578,
+        "y": 267
+      },
+      {
+        "at": 2,
+        "type": "move",
+        "x": 660,
+        "y": 267
+      },
+      {
+        "at": 3.2,
+        "type": "move",
+        "x": 617,
+        "y": 399
+      },
+      {
+        "at": 4.6,
+        "type": "move",
+        "x": 698,
+        "y": 399
+      },
+      {
+        "at": 6,
+        "type": "move",
+        "x": 1080,
+        "y": 520
+      }
+    ],
+    "durationSeconds": 7.009,
+    "sourceFrames": 141,
+    "video": {
+      "path": "public/great-ui/media/avatar-stack-demo.mp4",
+      "bytes": 32776,
+      "sha256": "4b82fb645424c840334e613caa1b59607ba1c74d6fe2b59faef826f607443615"
+    },
+    "poster": {
+      "path": "public/great-ui/media/avatar-stack-demo-poster.jpg",
+      "bytes": 26531,
+      "sha256": "15d8541e15a1ff98516fea03cdd621cf6e0eacd5810f69d0dea373b568bcfd97"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "blur-fade-theme-transition": {
+    "source": "https://www.great-ui.com/components/blur-fade-theme-transition",
+    "recordedAt": "2026-09-14T14:58:16.872Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 640,
+        "y": 553,
+        "note": "由浅色切换深色"
+      },
+      {
+        "at": 3.8,
+        "type": "click",
+        "x": 640,
+        "y": 553,
+        "note": "切回浅色"
+      }
+    ],
+    "durationSeconds": 7.073,
+    "sourceFrames": 126,
+    "video": {
+      "path": "public/great-ui/media/blur-fade-theme-transition-demo.mp4",
+      "bytes": 43992,
+      "sha256": "424460514f095c629e9c54c5935587f8afc7f31a1f49e35ca6c2fbc37bfc3c08"
+    },
+    "poster": {
+      "path": "public/great-ui/media/blur-fade-theme-transition-demo-poster.jpg",
+      "bytes": 13306,
+      "sha256": "d26b999cc13f0b7d5c2a73edf7ba8ab2a8ddd998a2b6b8739627771fec6e6c0f"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "blur-scroll-reveal": {
+    "source": "https://www.great-ui.com/components/blur-scroll-reveal",
+    "recordedAt": "2026-09-14T13:39:29.564Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "从原作初始位置连续向下滚动，观察文字从模糊到清晰。",
+    "durationSeconds": 7,
+    "sourceFrames": 139,
+    "video": {
+      "path": "public/great-ui/media/blur-scroll-reveal-demo.mp4",
+      "bytes": 333147,
+      "sha256": "205e6d2a0b15b648dfae7ebd7cb52e591fcfd29c1ad9eb5b4c3eb2097c48ee6b"
+    },
+    "poster": {
+      "path": "public/great-ui/media/blur-scroll-reveal-demo-poster.jpg",
+      "bytes": 60706,
+      "sha256": "0d56b7ce367bd48c3a017e7a09525351ed7eb4a1928936a76b68d3a864694f28"
     },
     "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
   },
-  "split-theme-provider": {
-    "source": "https://www.great-ui.com/components/split-theme-provider",
-    "recordedAt": "2026-09-14T13:38:07.078Z",
-    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
-    "actions": "依次点击 Horizontal Split Wipe 和 Vertical Split Wipe，观察浅色与深色的分裂切换。",
-    "durationSeconds": 7,
-    "sourceFrames": 121,
+  "button": {
+    "source": "https://www.great-ui.com/components/button",
+    "recordedAt": "2026-09-14T14:51:27.484Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "move",
+        "x": 354,
+        "y": 360,
+        "note": "悬停主要按钮"
+      },
+      {
+        "at": 2.3,
+        "type": "move",
+        "x": 465,
+        "y": 360,
+        "note": "悬停次要按钮"
+      },
+      {
+        "at": 3.7,
+        "type": "move",
+        "x": 576,
+        "y": 360,
+        "note": "悬停描边按钮"
+      },
+      {
+        "at": 5,
+        "type": "move",
+        "x": 671,
+        "y": 360,
+        "note": "悬停轻量按钮"
+      }
+    ],
+    "durationSeconds": 7.018,
+    "sourceFrames": 133,
     "video": {
-      "path": "src/features/great-ui/media/split-theme-provider-demo.mp4",
-      "bytes": 34139,
-      "sha256": "f2b0acf19615060be235246b80f19aa7e23e103c9e9d9a017404a857cf211afe"
+      "path": "public/great-ui/media/button-demo.mp4",
+      "bytes": 13276,
+      "sha256": "2911fdd8d64bc43039f25d085c455f5ac025e2014962fd6a1839d80e79e32a10"
     },
     "poster": {
-      "path": "src/features/great-ui/media/split-theme-provider-demo-poster.jpg",
-      "bytes": 15046,
-      "sha256": "13cbd6b8c9fa2e1c589f241ad9c2e4ad017cdad6e5c63c99847b9d0f175e6678"
+      "path": "public/great-ui/media/button-demo-poster.jpg",
+      "bytes": 7288,
+      "sha256": "ad7f9f4ea7df67d36a7e4b421bd03473fc6bbbca752c2cba8b58fa80b80a5edb"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "card": {
+    "source": "https://www.great-ui.com/components/card",
+    "recordedAt": "2026-09-14T15:08:35.683Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "move",
+        "x": 640,
+        "y": 330
+      },
+      {
+        "at": 5,
+        "type": "move",
+        "x": 1100,
+        "y": 540
+      }
+    ],
+    "durationSeconds": 7.011,
+    "sourceFrames": 138,
+    "video": {
+      "path": "public/great-ui/media/card-demo.mp4",
+      "bytes": 30234,
+      "sha256": "85e7744e1e5f575d917d57777f8234d0e3143e8acbbdb644e019b930a6e837ef"
+    },
+    "poster": {
+      "path": "public/great-ui/media/card-demo-poster.jpg",
+      "bytes": 29624,
+      "sha256": "af4ecf2ffe97081ac71f2872254a70f96e52a460e79ca9b8ebd6ac50dae6e6e0"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "cascade-page-transition": {
+    "source": "https://www.great-ui.com/components/cascade-page-transition",
+    "recordedAt": "2026-09-14T14:57:00.249Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 550,
+        "y": 493,
+        "note": "向下层叠转场"
+      },
+      {
+        "at": 3.8,
+        "type": "click",
+        "x": 670,
+        "y": 493,
+        "note": "向右层叠转场"
+      }
+    ],
+    "durationSeconds": 7.013,
+    "sourceFrames": 135,
+    "video": {
+      "path": "public/great-ui/media/cascade-page-transition-demo.mp4",
+      "bytes": 37144,
+      "sha256": "7ab703de6448e8b21aae56ebe4a4dbc0c50aef6d99e0c15f6149b7f2ed3ffc61"
+    },
+    "poster": {
+      "path": "public/great-ui/media/cascade-page-transition-demo-poster.jpg",
+      "bytes": 12621,
+      "sha256": "9b25133c931317c390c811a35d04c5efffee2c06e905b011dcfcd6ac924911d2"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "circular-theme-provider": {
+    "source": "https://www.great-ui.com/components/circular-theme-provider",
+    "recordedAt": "2026-09-14T13:42:01.882Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "点击 Wipe from Button Center 与 Top Left Corner Wipe，观察圆形主题切换。",
+    "durationSeconds": 7,
+    "sourceFrames": 122,
+    "video": {
+      "path": "public/great-ui/media/circular-theme-provider-demo.mp4",
+      "bytes": 45189,
+      "sha256": "a3d0d7a103a77a852b97b0f316c65ee5d576fe9891d86eebee32f146b1b35ac7"
+    },
+    "poster": {
+      "path": "public/great-ui/media/circular-theme-provider-demo-poster.jpg",
+      "bytes": 19623,
+      "sha256": "8d6df285e647683cc7b54eb547fbff584fd0178d6ac852378962ad5bf2633304"
     },
     "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
   },
@@ -45,111 +392,532 @@
     "durationSeconds": 7,
     "sourceFrames": 126,
     "video": {
-      "path": "src/features/great-ui/media/color-wipe-page-transition-demo.mp4",
+      "path": "public/great-ui/media/color-wipe-page-transition-demo.mp4",
       "bytes": 36006,
       "sha256": "dba4a751fbc06fa21acbadb958813e13e754fb66e828014839d38f29ac08f5df"
     },
     "poster": {
-      "path": "src/features/great-ui/media/color-wipe-page-transition-demo-poster.jpg",
+      "path": "public/great-ui/media/color-wipe-page-transition-demo-poster.jpg",
       "bytes": 16881,
       "sha256": "47684616c5e04f352abc8b8b204afbcb11407baf37aad4400dca6e3418d075d5"
     },
     "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
   },
-  "split-line-fly-in": {
-    "source": "https://www.great-ui.com/components/split-line-fly-in",
-    "recordedAt": "2026-09-14T13:39:09.685Z",
-    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
-    "actions": "从原作初始位置连续向下滚动，观察各行文字交替飞入。",
-    "durationSeconds": 7,
-    "sourceFrames": 129,
+  "cross-blur-page-transition": {
+    "source": "https://www.great-ui.com/components/cross-blur-page-transition",
+    "recordedAt": "2026-09-14T14:57:54.784Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 640,
+        "y": 472,
+        "note": "切换为模糊淡入的新内容"
+      },
+      {
+        "at": 3.8,
+        "type": "click",
+        "x": 640,
+        "y": 472,
+        "note": "切回并记录交接"
+      }
+    ],
+    "durationSeconds": 7.024,
+    "sourceFrames": 134,
     "video": {
-      "path": "src/features/great-ui/media/split-line-fly-in-demo.mp4",
-      "bytes": 278134,
-      "sha256": "da088733bc4db7eb6c86542158f7e95f1d3689a77330292515ecd56a5a2780c7"
+      "path": "public/great-ui/media/cross-blur-page-transition-demo.mp4",
+      "bytes": 39598,
+      "sha256": "320c8d01b488a6bb35c90bf7f8fdf2ba4879ffd96a7b20d417136c47bc8e26f9"
     },
     "poster": {
-      "path": "src/features/great-ui/media/split-line-fly-in-demo-poster.jpg",
-      "bytes": 52645,
-      "sha256": "2ce8330affc3ecf27dde428af392910a72145ec35d3db36113bb99ccf6578008"
+      "path": "public/great-ui/media/cross-blur-page-transition-demo-poster.jpg",
+      "bytes": 9987,
+      "sha256": "a865e22e660a4f4093af10532568ccc5b3306deb6c7d79230bd928fdd3705fd5"
     },
-    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
   },
-  "blur-scroll-reveal": {
-    "source": "https://www.great-ui.com/components/blur-scroll-reveal",
-    "recordedAt": "2026-09-14T13:39:29.564Z",
-    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
-    "actions": "从原作初始位置连续向下滚动，观察文字从模糊到清晰。",
-    "durationSeconds": 7,
-    "sourceFrames": 139,
+  "curtain-page-transition": {
+    "source": "https://www.great-ui.com/components/curtain-page-transition",
+    "recordedAt": "2026-09-14T14:54:23.917Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 610,
+        "y": 501,
+        "note": "纵向幕帘转场"
+      },
+      {
+        "at": 3.8,
+        "type": "click",
+        "x": 670,
+        "y": 501,
+        "note": "横向幕帘转场"
+      }
+    ],
+    "durationSeconds": 7.006,
+    "sourceFrames": 130,
     "video": {
-      "path": "src/features/great-ui/media/blur-scroll-reveal-demo.mp4",
-      "bytes": 333147,
-      "sha256": "205e6d2a0b15b648dfae7ebd7cb52e591fcfd29c1ad9eb5b4c3eb2097c48ee6b"
+      "path": "public/great-ui/media/curtain-page-transition-demo.mp4",
+      "bytes": 38489,
+      "sha256": "ac84f4fa928eeea2212f1c72708ef8c54fb940db4a63204cbe302e2f378c0a0e"
     },
     "poster": {
-      "path": "src/features/great-ui/media/blur-scroll-reveal-demo-poster.jpg",
-      "bytes": 60706,
-      "sha256": "0d56b7ce367bd48c3a017e7a09525351ed7eb4a1928936a76b68d3a864694f28"
+      "path": "public/great-ui/media/curtain-page-transition-demo-poster.jpg",
+      "bytes": 11702,
+      "sha256": "371763622be0a5103347ab1873e36b3bf2968c4a4a171d3af366a52ff97f5118"
     },
-    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
   },
-  "word-focus-scroll": {
-    "source": "https://www.great-ui.com/components/word-focus-scroll",
-    "recordedAt": "2026-09-14T13:39:45.483Z",
-    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
-    "actions": "从原作初始位置连续向下滚动，观察逐词聚焦。",
-    "durationSeconds": 7,
+  "deployment-checklist": {
+    "source": "https://www.great-ui.com/components/deployment-checklist",
+    "recordedAt": "2026-09-14T15:09:54.803Z",
+    "actions": [
+      {
+        "at": 0.8,
+        "type": "click",
+        "x": 640,
+        "y": 552,
+        "note": "运行原作的模拟状态序列，不执行真实部署"
+      }
+    ],
+    "durationSeconds": 19.017,
+    "sourceFrames": 370,
+    "video": {
+      "path": "public/great-ui/media/deployment-checklist-demo.mp4",
+      "bytes": 69713,
+      "sha256": "7063d6bb04f4e82df9cf77094c64700c819c1be2eb6d2cb17194747ae469a90b"
+    },
+    "poster": {
+      "path": "public/great-ui/media/deployment-checklist-demo-poster.jpg",
+      "bytes": 17137,
+      "sha256": "a042d832d329ea7f45cfec73b6a9df3581db2357fe2f6c20eff288ac34019dfb"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "diagonal-marquee-carousel": {
+    "source": "https://www.great-ui.com/components/diagonal-marquee-carousel",
+    "recordedAt": "2026-09-14T15:07:43.242Z",
+    "actions": [],
+    "durationSeconds": 8.018,
+    "sourceFrames": 153,
+    "video": {
+      "path": "public/great-ui/media/diagonal-marquee-carousel-demo.mp4",
+      "bytes": 500540,
+      "sha256": "d74cd060ca900053130918d6df1967be0d87ff593c307931fa153f2b6b97e4b1"
+    },
+    "poster": {
+      "path": "public/great-ui/media/diagonal-marquee-carousel-demo-poster.jpg",
+      "bytes": 75187,
+      "sha256": "dff886413a417e11750a212dd86069d268c93895768363342de17b16c8a3e1ea"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "facebook-card": {
+    "source": "https://www.great-ui.com/components/facebook-card",
+    "recordedAt": "2026-09-14T15:02:27.503Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "move",
+        "x": 687,
+        "y": 360
+      },
+      {
+        "at": 5,
+        "type": "move",
+        "x": 970,
+        "y": 540
+      }
+    ],
+    "durationSeconds": 7.007,
+    "sourceFrames": 136,
+    "video": {
+      "path": "public/great-ui/media/facebook-card-demo.mp4",
+      "bytes": 20897,
+      "sha256": "2574da0de5b2fd0d4763910d6f2b8fb19a287895a95b5a02ad815a4e70a40976"
+    },
+    "poster": {
+      "path": "public/great-ui/media/facebook-card-demo-poster.jpg",
+      "bytes": 12950,
+      "sha256": "4b6401bc8ed3c8befc1c40eff4e731996abae98f41d93ce59f9940f2db85ba85"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "floating-dock-menu": {
+    "source": "https://www.great-ui.com/components/floating-dock-menu",
+    "recordedAt": "2026-09-14T15:04:14.281Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "move",
+        "x": 515,
+        "y": 491
+      },
+      {
+        "at": 2.2,
+        "type": "move",
+        "x": 601,
+        "y": 491
+      },
+      {
+        "at": 3.4,
+        "type": "move",
+        "x": 685,
+        "y": 491
+      },
+      {
+        "at": 4.6,
+        "type": "move",
+        "x": 770,
+        "y": 491
+      },
+      {
+        "at": 6,
+        "type": "move",
+        "x": 970,
+        "y": 540
+      }
+    ],
+    "durationSeconds": 7.072,
+    "sourceFrames": 122,
+    "video": {
+      "path": "public/great-ui/media/floating-dock-menu-demo.mp4",
+      "bytes": 10572,
+      "sha256": "b322be634dded7cc1d15ac536adc9730c3678b24a893d59881463b8c7bbafcf6"
+    },
+    "poster": {
+      "path": "public/great-ui/media/floating-dock-menu-demo-poster.jpg",
+      "bytes": 4966,
+      "sha256": "7330b2ab95b8cbbbd8d48b9631f57d15ed0640009d4fe2a5da3f695054d85414"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "floating-menu": {
+    "source": "https://www.great-ui.com/components/floating-menu",
+    "recordedAt": "2026-09-14T15:04:41.525Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 742,
+        "y": 91
+      },
+      {
+        "at": 5,
+        "type": "click",
+        "x": 742,
+        "y": 91
+      }
+    ],
+    "durationSeconds": 7.044,
+    "sourceFrames": 131,
+    "video": {
+      "path": "public/great-ui/media/floating-menu-demo.mp4",
+      "bytes": 26139,
+      "sha256": "69b9da68f6b54edd2e567ac27f80ead8f7f103ef8e6794c6860d687bb7a886bb"
+    },
+    "poster": {
+      "path": "public/great-ui/media/floating-menu-demo-poster.jpg",
+      "bytes": 16363,
+      "sha256": "c9f3134a13f2dd19fd9257e73da2344ac3cac6b115bb7a1382644424b594ea1b"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "github-card": {
+    "source": "https://www.great-ui.com/components/github-card",
+    "recordedAt": "2026-09-14T14:51:59.686Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "move",
+        "x": 690,
+        "y": 360,
+        "note": "悬停 GitHub 入口展示资料卡"
+      },
+      {
+        "at": 5,
+        "type": "move",
+        "x": 980,
+        "y": 510,
+        "note": "移出并关闭悬浮卡"
+      }
+    ],
+    "durationSeconds": 7.036,
+    "sourceFrames": 130,
+    "video": {
+      "path": "public/great-ui/media/github-card-demo.mp4",
+      "bytes": 19369,
+      "sha256": "676e38fffb6acf665beab5d148fb49798de7730ca5e8d91634d9d79769d58222"
+    },
+    "poster": {
+      "path": "public/great-ui/media/github-card-demo-poster.jpg",
+      "bytes": 15352,
+      "sha256": "f468cc040de599dba7df569615e16052ad1f58cf72763b70560a532348287db5"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "image-hover-reveal": {
+    "source": "https://www.great-ui.com/components/image-hover-reveal",
+    "recordedAt": "2026-09-14T15:06:09.171Z",
+    "actions": [
+      {
+        "at": 0.8,
+        "type": "move",
+        "x": 460,
+        "y": 330
+      },
+      {
+        "at": 2,
+        "type": "move",
+        "x": 635,
+        "y": 375
+      },
+      {
+        "at": 3,
+        "type": "move",
+        "x": 720,
+        "y": 340
+      },
+      {
+        "at": 4,
+        "type": "move",
+        "x": 790,
+        "y": 400
+      },
+      {
+        "at": 5,
+        "type": "move",
+        "x": 845,
+        "y": 360
+      },
+      {
+        "at": 6,
+        "type": "move",
+        "x": 1030,
+        "y": 550
+      }
+    ],
+    "durationSeconds": 7.012,
+    "sourceFrames": 131,
+    "video": {
+      "path": "public/great-ui/media/image-hover-reveal-demo.mp4",
+      "bytes": 50366,
+      "sha256": "c12505922908051ed9d22e8f4dd24a1dc8bd23bb22fe267b4a95756481b03643"
+    },
+    "poster": {
+      "path": "public/great-ui/media/image-hover-reveal-demo-poster.jpg",
+      "bytes": 20727,
+      "sha256": "c3e1aa18f50f6fa78f3d26ff02fbf21d4a168bbfc85e933406377a74d7c55f28"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "instagram-card": {
+    "source": "https://www.great-ui.com/components/instagram-card",
+    "recordedAt": "2026-09-14T15:02:44.665Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "move",
+        "x": 688,
+        "y": 360
+      },
+      {
+        "at": 5,
+        "type": "move",
+        "x": 970,
+        "y": 540
+      }
+    ],
+    "durationSeconds": 7.009,
     "sourceFrames": 133,
     "video": {
-      "path": "src/features/great-ui/media/word-focus-scroll-demo.mp4",
-      "bytes": 275239,
-      "sha256": "234ad1f314b49d0471dd7fd58b3b901829484054fe62b84e9558b3c78ffdf5aa"
+      "path": "public/great-ui/media/instagram-card-demo.mp4",
+      "bytes": 19123,
+      "sha256": "57320f1070833d1de242c65b6ce6d4072a966155b2739369fbef221cfc996f19"
     },
     "poster": {
-      "path": "src/features/great-ui/media/word-focus-scroll-demo-poster.jpg",
-      "bytes": 68644,
-      "sha256": "e689b7571320176d575fa7a9386190410a31716c2eef8ec49ea525a92cbf330d"
+      "path": "public/great-ui/media/instagram-card-demo-poster.jpg",
+      "bytes": 11958,
+      "sha256": "4f9249a4d9771df5c233d570b1378261fd1f1ab0a119beee2a34eeefd91593fd"
     },
-    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
   },
-  "text-on-path-scroll": {
-    "source": "https://www.great-ui.com/components/text-on-path-scroll",
-    "recordedAt": "2026-09-14T13:43:47.961Z",
-    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
-    "actions": "先将曲线文字滚入视口，再连续滚动，观察文字沿曲线移动。",
-    "durationSeconds": 7,
-    "sourceFrames": 133,
+  "interlocking-page-transition": {
+    "source": "https://www.great-ui.com/components/interlocking-page-transition",
+    "recordedAt": "2026-09-14T14:54:51.465Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 610,
+        "y": 493,
+        "note": "纵向咬合面板"
+      },
+      {
+        "at": 3.8,
+        "type": "click",
+        "x": 670,
+        "y": 493,
+        "note": "横向咬合面板"
+      }
+    ],
+    "durationSeconds": 7.05,
+    "sourceFrames": 132,
     "video": {
-      "path": "src/features/great-ui/media/text-on-path-scroll-demo.mp4",
-      "bytes": 77117,
-      "sha256": "49db5314a374fbd1f8d882d240a99bc57b6c0bb9752e9e02f72773a68f707011"
+      "path": "public/great-ui/media/interlocking-page-transition-demo.mp4",
+      "bytes": 35727,
+      "sha256": "c40a3556745fcb98b40c57907ad87f68240c4e42b451be9302484761e179c644"
     },
     "poster": {
-      "path": "src/features/great-ui/media/text-on-path-scroll-demo-poster.jpg",
-      "bytes": 7920,
-      "sha256": "e9c0176090d87206936ae9d07aa11e91d196673ad9954a879e4fd5c28d2eadb1"
+      "path": "public/great-ui/media/interlocking-page-transition-demo-poster.jpg",
+      "bytes": 12644,
+      "sha256": "89143be05fd82f375ef315db61be103c090942f2a4a88c405d327f39759b714e"
     },
-    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
   },
-  "scrambled-install-command": {
-    "source": "https://www.great-ui.com/components/scrambled-install-command",
-    "recordedAt": "2026-09-14T13:40:59.901Z",
-    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
-    "actions": "依次切换 pnpm、yarn、bun，观察安装命令的乱码过渡。",
-    "durationSeconds": 7,
-    "sourceFrames": 129,
+  "linkedin-card": {
+    "source": "https://www.great-ui.com/components/linkedin-card",
+    "recordedAt": "2026-09-14T15:02:11.123Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "move",
+        "x": 686,
+        "y": 360
+      },
+      {
+        "at": 5,
+        "type": "move",
+        "x": 970,
+        "y": 540
+      }
+    ],
+    "durationSeconds": 7.015,
+    "sourceFrames": 131,
     "video": {
-      "path": "src/features/great-ui/media/scrambled-install-command-demo.mp4",
-      "bytes": 56170,
-      "sha256": "b3c6bd7aed7b4bdd937dbfba8372e77368832173b4f200a5cb11f69f7a55d311"
+      "path": "public/great-ui/media/linkedin-card-demo.mp4",
+      "bytes": 16936,
+      "sha256": "12a810dddc9e8737a9d40e27664e325a73c30e235cbdec9a60fa207675d5f2aa"
     },
     "poster": {
-      "path": "src/features/great-ui/media/scrambled-install-command-demo-poster.jpg",
-      "bytes": 8658,
-      "sha256": "d8e6e995e250c8220f4619cb1e2007bd154e94311efbfd509401e285956a3bfa"
+      "path": "public/great-ui/media/linkedin-card-demo-poster.jpg",
+      "bytes": 10933,
+      "sha256": "286a6b89052bb8d7435eefe2f352e0792527bbeec2cc476709a3f599ecbe3216"
     },
-    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "macbook-mockup": {
+    "source": "https://www.great-ui.com/components/macbook-mockup",
+    "recordedAt": "2026-09-14T15:06:26.975Z",
+    "actions": [
+      {
+        "at": 0.2,
+        "type": "reload",
+        "note": "记录原作聊天示例的自动消息序列"
+      }
+    ],
+    "durationSeconds": 13.028,
+    "sourceFrames": 249,
+    "video": {
+      "path": "public/great-ui/media/macbook-mockup-demo.mp4",
+      "bytes": 88989,
+      "sha256": "843a850862f2fafcc1ddc1ef4f7bb0e1d89a8ac80d28e895f36e97c12d8d4d28"
+    },
+    "poster": {
+      "path": "public/great-ui/media/macbook-mockup-demo-poster.jpg",
+      "bytes": 24035,
+      "sha256": "bb7fd363279b74fde5b381504f096cb91aa33b6898b03f0368832adcf07bcad6"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "minimal-buttons": {
+    "source": "https://www.great-ui.com/components/minimal-buttons",
+    "recordedAt": "2026-09-14T15:08:56.938Z",
+    "actions": [
+      {
+        "at": 0.8,
+        "type": "move",
+        "x": 345,
+        "y": 360
+      },
+      {
+        "at": 2,
+        "type": "move",
+        "x": 459,
+        "y": 360
+      },
+      {
+        "at": 3.2,
+        "type": "move",
+        "x": 572,
+        "y": 360
+      },
+      {
+        "at": 4.4,
+        "type": "move",
+        "x": 670,
+        "y": 360
+      },
+      {
+        "at": 5.6,
+        "type": "move",
+        "x": 1100,
+        "y": 545
+      }
+    ],
+    "durationSeconds": 7.021,
+    "sourceFrames": 137,
+    "video": {
+      "path": "public/great-ui/media/minimal-buttons-demo.mp4",
+      "bytes": 12204,
+      "sha256": "27ca2b6e0b8dd4aed055c83473cb3d2b4679f90292c55de4bae316f48721562a"
+    },
+    "poster": {
+      "path": "public/great-ui/media/minimal-buttons-demo-poster.jpg",
+      "bytes": 6231,
+      "sha256": "162762cedf928385b236f769456352060b58181e0d72484698b4073cbf45f7a2"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "mobile-mockup": {
+    "source": "https://www.great-ui.com/components/mobile-mockup",
+    "recordedAt": "2026-09-14T14:52:39.773Z",
+    "actions": [
+      {
+        "at": 0.2,
+        "type": "reload",
+        "note": "记录自动消息序列；展示模型没有真实发送能力"
+      }
+    ],
+    "durationSeconds": 12.015,
+    "sourceFrames": 222,
+    "video": {
+      "path": "public/great-ui/media/mobile-mockup-demo.mp4",
+      "bytes": 59071,
+      "sha256": "7148638db88bc644cd08d93dd2569deb89d3537662d82c8a3ab517d2b5cc3c3a"
+    },
+    "poster": {
+      "path": "public/great-ui/media/mobile-mockup-demo-poster.jpg",
+      "bytes": 14409,
+      "sha256": "04bb9c6be003a5f2e641b48caa9cc000a3c6d92d5a82fd741732f6048056b3f9"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
   },
   "multilingual-quote": {
     "source": "https://www.great-ui.com/components/multilingual-quote",
@@ -159,16 +927,538 @@
     "durationSeconds": 7,
     "sourceFrames": 111,
     "video": {
-      "path": "src/features/great-ui/media/multilingual-quote-demo.mp4",
+      "path": "public/great-ui/media/multilingual-quote-demo.mp4",
       "bytes": 17494,
       "sha256": "b857c7f5813c3b524034612e11d6184c8f3765c9e80c65166d4da3151ad9b74e"
     },
     "poster": {
-      "path": "src/features/great-ui/media/multilingual-quote-demo-poster.jpg",
+      "path": "public/great-ui/media/multilingual-quote-demo-poster.jpg",
       "bytes": 5464,
       "sha256": "d2acdb60cbbc961e142e78902c3d1d773959134a8f139abebf1c7b8331086e64"
     },
     "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "pixel-page-transition": {
+    "source": "https://www.great-ui.com/components/pixel-page-transition",
+    "recordedAt": "2026-09-14T14:55:36.234Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 640,
+        "y": 493,
+        "note": "触发随机像素遮挡并揭开"
+      },
+      {
+        "at": 4,
+        "type": "click",
+        "x": 640,
+        "y": 493,
+        "note": "再次切换页面状态"
+      }
+    ],
+    "durationSeconds": 7.009,
+    "sourceFrames": 127,
+    "video": {
+      "path": "public/great-ui/media/pixel-page-transition-demo.mp4",
+      "bytes": 257606,
+      "sha256": "da75c8e12325a4c1a1be80fbbc47437b782fa6c9e47eb9b34920739e77e16dbb"
+    },
+    "poster": {
+      "path": "public/great-ui/media/pixel-page-transition-demo-poster.jpg",
+      "bytes": 12368,
+      "sha256": "98822abd401c0c13e1de5993254195b428ae40ab74255b13c1450694774f78ce"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "pixel-to-ascii-image": {
+    "source": "https://www.great-ui.com/components/pixel-to-ascii-image",
+    "recordedAt": "2026-09-14T13:33:32.846Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "将指针移入图像、移出，再移入，观察图像与字符画转换。",
+    "durationSeconds": 7,
+    "sourceFrames": 131,
+    "video": {
+      "path": "public/great-ui/media/pixel-to-ascii-image-demo.mp4",
+      "bytes": 144978,
+      "sha256": "abcb447fe7540103bb13a346e593b0241fd8805891e475676dd8abeb5508394e"
+    },
+    "poster": {
+      "path": "public/great-ui/media/pixel-to-ascii-image-demo-poster.jpg",
+      "bytes": 30584,
+      "sha256": "1841c88d07826aa56e4031395183c4d89e0b4b71df7daa4cb7f703f98c4da168"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "radial-gooey-menu": {
+    "source": "https://www.great-ui.com/components/radial-gooey-menu",
+    "recordedAt": "2026-09-14T15:03:35.756Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 640,
+        "y": 360
+      },
+      {
+        "at": 3.5,
+        "type": "move",
+        "x": 640,
+        "y": 260
+      },
+      {
+        "at": 5,
+        "type": "click",
+        "x": 640,
+        "y": 360
+      }
+    ],
+    "durationSeconds": 7.018,
+    "sourceFrames": 137,
+    "video": {
+      "path": "public/great-ui/media/radial-gooey-menu-demo.mp4",
+      "bytes": 12909,
+      "sha256": "183b7f2ba8d919f5a4edd9e007cbb71396f223d70106c3896fb6d8e9943baaca"
+    },
+    "poster": {
+      "path": "public/great-ui/media/radial-gooey-menu-demo-poster.jpg",
+      "bytes": 4515,
+      "sha256": "96bd0df8ca7db697d11f34ae79335b831e88f9eda7b9ec40ac60113e7e3b8f03"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "revision-timeline": {
+    "source": "https://www.great-ui.com/components/revision-timeline",
+    "recordedAt": "2026-09-14T15:08:15.512Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 429,
+        "y": 568
+      },
+      {
+        "at": 2.5,
+        "type": "click",
+        "x": 429,
+        "y": 568
+      },
+      {
+        "at": 4,
+        "type": "click",
+        "x": 850,
+        "y": 568
+      },
+      {
+        "at": 5.5,
+        "type": "click",
+        "x": 850,
+        "y": 568
+      }
+    ],
+    "durationSeconds": 8.135,
+    "sourceFrames": 158,
+    "video": {
+      "path": "public/great-ui/media/revision-timeline-demo.mp4",
+      "bytes": 131910,
+      "sha256": "0a2a0c4961aef8f5c0d5f7133dcb742cb5a3ea2f191dc2903dd6c904d86f8647"
+    },
+    "poster": {
+      "path": "public/great-ui/media/revision-timeline-demo-poster.jpg",
+      "bytes": 17766,
+      "sha256": "03a77da111eb3f541aada6c9f44dfd9769be4361e18f1da628f04014ab5a8976"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "scrambled-install-command": {
+    "source": "https://www.great-ui.com/components/scrambled-install-command",
+    "recordedAt": "2026-09-14T13:40:59.901Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "依次切换 pnpm、yarn、bun，观察安装命令的乱码过渡。",
+    "durationSeconds": 7,
+    "sourceFrames": 129,
+    "video": {
+      "path": "public/great-ui/media/scrambled-install-command-demo.mp4",
+      "bytes": 56170,
+      "sha256": "b3c6bd7aed7b4bdd937dbfba8372e77368832173b4f200a5cb11f69f7a55d311"
+    },
+    "poster": {
+      "path": "public/great-ui/media/scrambled-install-command-demo-poster.jpg",
+      "bytes": 8658,
+      "sha256": "d8e6e995e250c8220f4619cb1e2007bd154e94311efbfd509401e285956a3bfa"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "scroll-flying-cards": {
+    "source": "https://www.great-ui.com/components/scroll-flying-cards",
+    "recordedAt": "2026-09-14T14:53:31.992Z",
+    "actions": [
+      {
+        "at": 0.8,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 0.9500000000000001,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 1.1,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 1.25,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 1.4,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 1.55,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 1.7,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 1.85,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 2,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 2.15,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 2.3,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 2.45,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 2.5999999999999996,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 2.75,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 2.9000000000000004,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 3.05,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 3.2,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 3.3499999999999996,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": 60,
+        "note": "向下滚动卡片进入并退出"
+      },
+      {
+        "at": 4.5,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": -60,
+        "note": "反向滚动核对可逆过程"
+      },
+      {
+        "at": 4.65,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": -60,
+        "note": "反向滚动核对可逆过程"
+      },
+      {
+        "at": 4.8,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": -60,
+        "note": "反向滚动核对可逆过程"
+      },
+      {
+        "at": 4.95,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": -60,
+        "note": "反向滚动核对可逆过程"
+      },
+      {
+        "at": 5.1,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": -60,
+        "note": "反向滚动核对可逆过程"
+      },
+      {
+        "at": 5.25,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": -60,
+        "note": "反向滚动核对可逆过程"
+      },
+      {
+        "at": 5.4,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": -60,
+        "note": "反向滚动核对可逆过程"
+      },
+      {
+        "at": 5.55,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": -60,
+        "note": "反向滚动核对可逆过程"
+      },
+      {
+        "at": 5.7,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": -60,
+        "note": "反向滚动核对可逆过程"
+      },
+      {
+        "at": 5.85,
+        "type": "scroll",
+        "x": 1050,
+        "y": 420,
+        "dy": -60,
+        "note": "反向滚动核对可逆过程"
+      }
+    ],
+    "durationSeconds": 7.014,
+    "sourceFrames": 135,
+    "video": {
+      "path": "public/great-ui/media/scroll-flying-cards-demo.mp4",
+      "bytes": 65655,
+      "sha256": "4bfaa9faad8be1973bd3f4ce8483b7885e0261c9998b7943636afc745f6426b6"
+    },
+    "poster": {
+      "path": "public/great-ui/media/scroll-flying-cards-demo-poster.jpg",
+      "bytes": 16338,
+      "sha256": "ee537ec9db9c16207b5ea6b0533e15bd88c3a7ceb6d15cce2a59e1d341a0d7c8"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "sine-wave-page-transition": {
+    "source": "https://www.great-ui.com/components/sine-wave-page-transition",
+    "recordedAt": "2026-09-14T14:56:38.681Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 550,
+        "y": 514,
+        "note": "向下波浪遮挡"
+      },
+      {
+        "at": 3.8,
+        "type": "click",
+        "x": 670,
+        "y": 514,
+        "note": "向右波浪遮挡"
+      }
+    ],
+    "durationSeconds": 7.009,
+    "sourceFrames": 134,
+    "video": {
+      "path": "public/great-ui/media/sine-wave-page-transition-demo.mp4",
+      "bytes": 52112,
+      "sha256": "ea76ddb8b0a1080f13d98d35070c8eadd70e2027b016f826f2c8f2162bd80853"
+    },
+    "poster": {
+      "path": "public/great-ui/media/sine-wave-page-transition-demo-poster.jpg",
+      "bytes": 12847,
+      "sha256": "fe3a2cd93b26b4ecf28dbc5612331b44438e4d96b4e9d7e67b5313fdf72e7435"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "split-line-fly-in": {
+    "source": "https://www.great-ui.com/components/split-line-fly-in",
+    "recordedAt": "2026-09-14T13:39:09.685Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "从原作初始位置连续向下滚动，观察各行文字交替飞入。",
+    "durationSeconds": 7,
+    "sourceFrames": 129,
+    "video": {
+      "path": "public/great-ui/media/split-line-fly-in-demo.mp4",
+      "bytes": 278134,
+      "sha256": "da088733bc4db7eb6c86542158f7e95f1d3689a77330292515ecd56a5a2780c7"
+    },
+    "poster": {
+      "path": "public/great-ui/media/split-line-fly-in-demo-poster.jpg",
+      "bytes": 52645,
+      "sha256": "2ce8330affc3ecf27dde428af392910a72145ec35d3db36113bb99ccf6578008"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "split-theme-provider": {
+    "source": "https://www.great-ui.com/components/split-theme-provider",
+    "recordedAt": "2026-09-14T13:38:07.078Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "依次点击 Horizontal Split Wipe 和 Vertical Split Wipe，观察浅色与深色的分裂切换。",
+    "durationSeconds": 7,
+    "sourceFrames": 121,
+    "video": {
+      "path": "public/great-ui/media/split-theme-provider-demo.mp4",
+      "bytes": 34139,
+      "sha256": "f2b0acf19615060be235246b80f19aa7e23e103c9e9d9a017404a857cf211afe"
+    },
+    "poster": {
+      "path": "public/great-ui/media/split-theme-provider-demo-poster.jpg",
+      "bytes": 15046,
+      "sha256": "13cbd6b8c9fa2e1c589f241ad9c2e4ad017cdad6e5c63c99847b9d0f175e6678"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "staggered-page-transition": {
+    "source": "https://www.great-ui.com/components/staggered-page-transition",
+    "recordedOn": "2026-09-14",
+    "method": "原作页面实际操作后补录，沿用已验收的初版素材；未保留逐帧捕获时间表。",
+    "durationSeconds": 4.566667,
+    "encodedFrames": 137,
+    "video": {
+      "path": "public/great-ui/media/staggered-source-capture.mp4",
+      "bytes": 54362,
+      "sha256": "ded3ea07b14a113a27d882b78a1d94e03930b486e164d47fb980e690793771f6"
+    },
+    "poster": {
+      "path": "public/great-ui/media/staggered-source-poster.png",
+      "bytes": 62657,
+      "sha256": "84cff3c2bfe36e0281f57e65f523cd5be1c2147f1867544dea014a80b81e2a54"
+    },
+    "limitation": "2026-09-14，作者视频地址返回 HTTP 429。样板使用在 Great UI 原作页面实际点击 Top Curtain 时补录的画面，未下载该受限视频。"
+  },
+  "sweep-page-transition": {
+    "source": "https://www.great-ui.com/components/sweep-page-transition",
+    "recordedAt": "2026-09-14T14:55:14.639Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 550,
+        "y": 493,
+        "note": "向下多层扫过"
+      },
+      {
+        "at": 3.8,
+        "type": "click",
+        "x": 670,
+        "y": 493,
+        "note": "向右多层扫过"
+      }
+    ],
+    "durationSeconds": 7.01,
+    "sourceFrames": 139,
+    "video": {
+      "path": "public/great-ui/media/sweep-page-transition-demo.mp4",
+      "bytes": 36171,
+      "sha256": "e8d8230df1b06034d82e7c0e2900c4fe0c364790515a6d0d54d8083de5b08c66"
+    },
+    "poster": {
+      "path": "public/great-ui/media/sweep-page-transition-demo-poster.jpg",
+      "bytes": 12792,
+      "sha256": "9f2c861fcee3de1b91026a17ff584ec5d852020d661596c2b05d3617edca5786"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
   },
   "swipe-theme-change": {
     "source": "https://www.great-ui.com/components/swipe-theme-change",
@@ -178,33 +1468,242 @@
     "durationSeconds": 7,
     "sourceFrames": 111,
     "video": {
-      "path": "src/features/great-ui/media/swipe-theme-change-demo.mp4",
+      "path": "public/great-ui/media/swipe-theme-change-demo.mp4",
       "bytes": 33483,
       "sha256": "1611889008fb9efef4de671ecfc02d638da5939fe3191d992f29e6066183eba3"
     },
     "poster": {
-      "path": "src/features/great-ui/media/swipe-theme-change-demo-poster.jpg",
+      "path": "public/great-ui/media/swipe-theme-change-demo-poster.jpg",
       "bytes": 15534,
       "sha256": "517679f1eee574db43d775ae5f26c81d2a46b458c788ddfbafa95d3fc576c378"
     },
     "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
   },
-  "circular-theme-provider": {
-    "source": "https://www.great-ui.com/components/circular-theme-provider",
-    "recordedAt": "2026-09-14T13:42:01.882Z",
-    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
-    "actions": "点击 Wipe from Button Center 与 Top Left Corner Wipe，观察圆形主题切换。",
-    "durationSeconds": 7,
-    "sourceFrames": 122,
+  "team-section": {
+    "source": "https://www.great-ui.com/components/team-section",
+    "recordedAt": "2026-09-14T14:54:01.570Z",
+    "actions": [
+      {
+        "at": 0.8,
+        "type": "move",
+        "x": 570,
+        "y": 224,
+        "note": "悬停第一位人物"
+      },
+      {
+        "at": 2,
+        "type": "move",
+        "x": 570,
+        "y": 292,
+        "note": "向下切换人物"
+      },
+      {
+        "at": 3.2,
+        "type": "move",
+        "x": 570,
+        "y": 427,
+        "note": "继续向下切换"
+      },
+      {
+        "at": 4.5,
+        "type": "move",
+        "x": 570,
+        "y": 359,
+        "note": "向上切换核对照片方向"
+      },
+      {
+        "at": 6,
+        "type": "move",
+        "x": 1100,
+        "y": 560,
+        "note": "移出名单"
+      }
+    ],
+    "durationSeconds": 7.07,
+    "sourceFrames": 135,
     "video": {
-      "path": "src/features/great-ui/media/circular-theme-provider-demo.mp4",
-      "bytes": 45189,
-      "sha256": "a3d0d7a103a77a852b97b0f316c65ee5d576fe9891d86eebee32f146b1b35ac7"
+      "path": "public/great-ui/media/team-section-demo.mp4",
+      "bytes": 77980,
+      "sha256": "25135bf1d2841a8ea71a4210e41eacf50670e365b6287668ab10a6ffd3c44992"
     },
     "poster": {
-      "path": "src/features/great-ui/media/circular-theme-provider-demo-poster.jpg",
-      "bytes": 19623,
-      "sha256": "8d6df285e647683cc7b54eb547fbff584fd0178d6ac852378962ad5bf2633304"
+      "path": "public/great-ui/media/team-section-demo-poster.jpg",
+      "bytes": 25235,
+      "sha256": "48310be0452a7fd1b98543adddfa331ee00e9ac2836a9ae7a2ea935249c833dc"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "terminal-loader": {
+    "source": "https://www.great-ui.com/components/terminal-loader",
+    "recordedAt": "2026-09-14T15:05:32.285Z",
+    "actions": [],
+    "durationSeconds": 7.009,
+    "sourceFrames": 141,
+    "video": {
+      "path": "public/great-ui/media/terminal-loader-demo.mp4",
+      "bytes": 27913,
+      "sha256": "5e64cca7d2ae268cf67741085562f8b682d71aa4ffac4c8de3fc2d31ee23a247"
+    },
+    "poster": {
+      "path": "public/great-ui/media/terminal-loader-demo-poster.jpg",
+      "bytes": 8561,
+      "sha256": "0a5db885e99db054c7991cc95b84ae7885210e8afeb23c4fc7ea275a1d1558a5"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "text-on-path-scroll": {
+    "source": "https://www.great-ui.com/components/text-on-path-scroll",
+    "recordedAt": "2026-09-14T13:43:47.961Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "先将曲线文字滚入视口，再连续滚动，观察文字沿曲线移动。",
+    "durationSeconds": 7,
+    "sourceFrames": 133,
+    "video": {
+      "path": "public/great-ui/media/text-on-path-scroll-demo.mp4",
+      "bytes": 77117,
+      "sha256": "49db5314a374fbd1f8d882d240a99bc57b6c0bb9752e9e02f72773a68f707011"
+    },
+    "poster": {
+      "path": "public/great-ui/media/text-on-path-scroll-demo-poster.jpg",
+      "bytes": 7920,
+      "sha256": "e9c0176090d87206936ae9d07aa11e91d196673ad9954a879e4fd5c28d2eadb1"
+    },
+    "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
+  },
+  "text-reveal": {
+    "source": "https://www.great-ui.com/components/text-reveal",
+    "recordedOn": "2026-09-14",
+    "method": "原作页面实际操作后补录，沿用已验收的初版素材；未保留逐帧捕获时间表。",
+    "durationSeconds": 7.766667,
+    "encodedFrames": 233,
+    "video": {
+      "path": "public/great-ui/media/text-reveal-source-capture.mp4",
+      "bytes": 94084,
+      "sha256": "9425df4b3330d25f4b3a7365f136eeac8965d4a31549b260896bb89335dd37e1"
+    },
+    "poster": {
+      "path": "public/great-ui/media/text-reveal-source-poster.png",
+      "bytes": 83430,
+      "sha256": "a5f6e70c1cd4c5d57cce886a553433f6a23f05b8a2aa0205f929e4ecdd2f887d"
+    },
+    "limitation": "2026-09-14，在 Great UI 原作页面实际操作后补录。样板只播放这段 MP4，不嵌入上游组件。"
+  },
+  "twitter-card": {
+    "source": "https://www.great-ui.com/components/twitter-card",
+    "recordedAt": "2026-09-14T15:03:08.186Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "move",
+        "x": 690,
+        "y": 360
+      },
+      {
+        "at": 5,
+        "type": "move",
+        "x": 970,
+        "y": 540
+      }
+    ],
+    "durationSeconds": 7.01,
+    "sourceFrames": 138,
+    "video": {
+      "path": "public/great-ui/media/twitter-card-demo.mp4",
+      "bytes": 20670,
+      "sha256": "a3b6e555294f49b2d54b47cda676ab6962996277764de10e2ba9206d8bbe2c1a"
+    },
+    "poster": {
+      "path": "public/great-ui/media/twitter-card-demo-poster.jpg",
+      "bytes": 13984,
+      "sha256": "2c7d3e09c4c82d43b479d9689f72bd4d1fb9fc616744385c2ddd8df85e1de652"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "venetian-blinds-page-transition": {
+    "source": "https://www.great-ui.com/components/venetian-blinds-page-transition",
+    "recordedAt": "2026-09-14T14:57:24.019Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "click",
+        "x": 608,
+        "y": 493,
+        "note": "横向叶片翻转"
+      },
+      {
+        "at": 3.8,
+        "type": "click",
+        "x": 672,
+        "y": 493,
+        "note": "纵向叶片翻转"
+      }
+    ],
+    "durationSeconds": 7.046,
+    "sourceFrames": 133,
+    "video": {
+      "path": "public/great-ui/media/venetian-blinds-page-transition-demo.mp4",
+      "bytes": 96953,
+      "sha256": "82c2e2b62eb81479fa6404da40ed3ee920eec7901df9bf5d92e41c8a292da592"
+    },
+    "poster": {
+      "path": "public/great-ui/media/venetian-blinds-page-transition-demo-poster.jpg",
+      "bytes": 13416,
+      "sha256": "38c2fcfe0c70cf65753c41e32831f3d037f928ffef5ed51be148ea593f084a5d"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "vinyl-album-card": {
+    "source": "https://www.great-ui.com/components/vinyl-album-card",
+    "recordedAt": "2026-09-14T15:06:51.486Z",
+    "actions": [
+      {
+        "at": 1,
+        "type": "move",
+        "x": 640,
+        "y": 316
+      },
+      {
+        "at": 5.2,
+        "type": "move",
+        "x": 1040,
+        "y": 545
+      }
+    ],
+    "durationSeconds": 7.015,
+    "sourceFrames": 134,
+    "video": {
+      "path": "public/great-ui/media/vinyl-album-card-demo.mp4",
+      "bytes": 25608,
+      "sha256": "77e8b61da297b6e6e03cf600adb65db9a599714c6e4281fca9f9b2ed3e99caac"
+    },
+    "poster": {
+      "path": "public/great-ui/media/vinyl-album-card-demo-poster.jpg",
+      "bytes": 12832,
+      "sha256": "b65038b7768c1865e04f3e540db650784d8a4c94e363e476f5cc4c625fc54777"
+    },
+    "method": "Codex 内置浏览器实际操作与连续屏幕捕获，按时间戳编码 H.264 MP4，无音轨。",
+    "limitation": "记录访问时的原作页面，无法由页面确认部署 SHA；不是作者 MP4 的副本。"
+  },
+  "word-focus-scroll": {
+    "source": "https://www.great-ui.com/components/word-focus-scroll",
+    "recordedAt": "2026-09-14T13:39:45.483Z",
+    "method": "Codex 内置浏览器实际操作与屏幕录制，截取演示区域，H.264 MP4，无音轨。",
+    "actions": "从原作初始位置连续向下滚动，观察逐词聚焦。",
+    "durationSeconds": 7,
+    "sourceFrames": 133,
+    "video": {
+      "path": "public/great-ui/media/word-focus-scroll-demo.mp4",
+      "bytes": 275239,
+      "sha256": "234ad1f314b49d0471dd7fd58b3b901829484054fe62b84e9558b3c78ffdf5aa"
+    },
+    "poster": {
+      "path": "public/great-ui/media/word-focus-scroll-demo-poster.jpg",
+      "bytes": 68644,
+      "sha256": "e689b7571320176d575fa7a9386190410a31716c2eef8ec49ea525a92cbf330d"
     },
     "limitation": "录制的是访问时的原作线上页面，不能由页面确认部署 SHA；不是作者原有 MP4 的副本。"
   }

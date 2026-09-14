@@ -1,0 +1,67 @@
+{
+  "id": "great-ui-swipe-theme-change",
+  "originalLocale": "zh",
+  "order": 11026,
+  "sourceUrl": "https://www.great-ui.com/components/swipe-theme-change",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "swipe-theme-change",
+    "collectionId": "great-ui-learning",
+    "english": "Swipe Theme Provider",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/SwipeThemeProvider.tsx",
+    "previewSource": "components/site/previews/SwipeThemeChangePreview.tsx",
+    "media": {
+      "video": "/great-ui/media/swipe-theme-change-demo.mp4",
+      "poster": "/great-ui/media/swipe-theme-change-demo-poster.jpg"
+    },
+    "capability": {
+      "family": "theme-transition",
+      "roles": ["theme"],
+      "provides": ["theme-change"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [
+        {
+          "name": "theme",
+          "scope": "global",
+          "mode": "exclusive",
+          "phase": "*"
+        },
+        {
+          "name": "root-view-transition",
+          "scope": "global",
+          "mode": "exclusive",
+          "phase": "*"
+        }
+      ],
+      "adaptations": ["与现有主题状态和根视图调度整合；后续步骤等待真正的结束信号。"],
+      "reducedMotion": "native",
+      "decorativeTransition": false
+    }
+  }
+}

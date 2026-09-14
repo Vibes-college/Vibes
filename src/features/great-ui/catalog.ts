@@ -23,6 +23,7 @@ const media = (v: unknown) => {
   if (typeof v !== 'string') return false;
   return (
     /^\/media\/[a-zA-Z0-9._-]+$/.test(v) ||
+    /^\/great-ui\/media\/[a-z0-9._-]+$/.test(v) ||
     /^https:\/\/ik\.imagekit\.io\//.test(v) ||
     /^https:\/\/www\.great-ui\.com\/(previews|components)\/[a-zA-Z0-9._-]+$/.test(v)
   );

@@ -1,4 +1,4 @@
-import { createContext, useContext, useRef, useState } from 'react';
+import { createContext, createElement, useContext, useRef, useState } from 'react';
 import { X, ArrowUpRight } from 'lucide-react';
 const TermContext = createContext(null);
 
@@ -36,7 +36,7 @@ export function TermProvider({ children, entry }) {
     invoker.current?.focus({ preventScroll: true });
   }
   return (
-    <TermContext.Provider value={{ show, open, termId, glossary }}>
+    <TermContext.Provider value={{ show, open, termId, glossary, prose: entry.prose }}>
       {children}
       <div
         ref={panel}
@@ -87,15 +87,45 @@ export function Term({ id, children }) {
     </button>
   );
 }
-export function RichText({ text }) {
-  return text.split(/(\[\[[^\]]+\]\])/).map((part, i) => {
-    const m = part.match(/^\[\[([^|]+)\|([^\]]+)\]\]$/);
-    return m ? (
-      <Term key={i} id={m[1]}>
-        {m[2]}
+const proseTags = new Set([
+  'p',
+  'strong',
+  'em',
+  'del',
+  'a',
+  'code',
+  'pre',
+  'ul',
+  'ol',
+  'li',
+  'blockquote',
+  'br',
+  'hr',
+  'h4',
+  'h5',
+  'h6',
+]);
+const textParts = (text) =>
+  text.split(/(\[\[[^\]]+\]\])/).map((part, i) => {
+    const match = part.match(/^\[\[([^|]+)\|([^\]]+)\]\]$/);
+    return match ? (
+      <Term key={i} id={match[1]}>
+        {match[2]}
       </Term>
     ) : (
       part
     );
   });
+function proseNode(node, index) {
+  if (typeof node.text === 'string') return <span key={index}>{textParts(node.text)}</span>;
+  if (!proseTags.has(node.tag)) return null;
+  const props = { key: index };
+  if (node.tag === 'a' && /^(https?:\/\/|mailto:|\/(?!\/)|#)/i.test(node.href || ''))
+    props.href = node.href;
+  if (node.tag === 'ol' && Number.isInteger(node.start)) props.start = node.start;
+  return createElement(node.tag, props, ...(node.children || []).map(proseNode));
+}
+export function RichText({ text }) {
+  const { prose } = useContext(TermContext);
+  return prose?.[text] ? prose[text].map(proseNode) : <p>{textParts(text)}</p>;
 }

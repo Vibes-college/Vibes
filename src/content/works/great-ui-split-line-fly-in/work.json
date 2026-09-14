@@ -1,0 +1,56 @@
+{
+  "id": "great-ui-split-line-fly-in",
+  "originalLocale": "zh",
+  "order": 11012,
+  "sourceUrl": "https://www.great-ui.com/components/split-line-fly-in",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "split-line-fly-in",
+    "collectionId": "great-ui-learning",
+    "english": "Split Line Fly In",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/SplitLineFlyIn.tsx",
+    "previewSource": "components/site/previews/SplitLineFlyInPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/split-line-fly-in-demo.mp4",
+      "poster": "/great-ui/media/split-line-fly-in-demo-poster.jpg"
+    },
+    "capability": {
+      "family": "scroll-text",
+      "roles": ["introduce"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "animationDuration 表示滚动进度区间，不是秒数。自动分行以空格拆词，中文、字体迟加载及同词数换文案需要重新分词和测量；每行禁止换行，过长行可能被裁掉。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '浏览与搜索作品'
 status: 'current'
-shaped-by: ['001', '003', '005', '010', '013']
+shaped-by: ['001', '003', '005', '010', '013', '018']
 legacy-feature-ids: ['explore-filter', 'not-found', 'responsive-access']
 code-sources:
   [
@@ -35,7 +35,7 @@ code-sources:
     'public/icons/',
     'tests/explore.spec.ts',
   ]
-code-revision: 'fa656159b84905eadb49b7a6989bab4f9da841981a88392d52286480cba379d2'
+code-revision: '9baaaa0153d15cc197ab25d54106f45d0ae4dee64791c2ac2ac25a6d869e63b5'
 ---
 
 # 功能名：浏览与搜索作品
@@ -54,6 +54,8 @@ code-revision: 'fa656159b84905eadb49b7a6989bab4f9da841981a88392d52286480cba379d2
 6. 无结果时点“清空搜索与筛选”重新浏览；搜索框×只清关键词。加载失败时显示“重试”，不会把失败显示成零结果。
 7. 打开不存在的地址时显示404，可返回中文目录；手机使用相同路径。
 8. 需要自己的Agent帮忙时点右下角透明背景的吉祥物图案按钮，打开[本地助手](local-assistant.md)；按钮的可访问名称为“本地助手”。按安装与配对说明连接电脑，在小窗交流，或展开后从原生菜单选择项目和历史会话；未点击前不下载Paseo或建立助手连接。浏览、筛选和搜索仍可独立完成。
+
+Great UI在普通目录中只显示一个[交互学习合集](great-ui-learning.md)，合集链接48个独立详情；关键词搜索仍覆盖每件作品的说明、目标和术语。子项不重复铺进普通浏览卡片。
 
 ### 操作之后发生什么
 

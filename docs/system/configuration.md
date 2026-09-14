@@ -26,7 +26,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: '1880e6c7cc21f6b0dbc9d1f658a5afb311a4b2d4e4d74499dff53a865111f5d2'
+code-revision: '92ae16bf81b81be257e4b0e164d3efeaa41f59e5f62c17497ed78d324f5b2db3'
 ---
 
 # 配置和环境变量
@@ -54,7 +54,7 @@ code-revision: '1880e6c7cc21f6b0dbc9d1f658a5afb311a4b2d4e4d74499dff53a865111f5d2
 
 ## Markdown与排版依赖
 
-Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，普通Markdown正文不需要React。@astrojs/mdx与@astrojs/react分别提供MDX编译和React islands；网站的react/react-dom在需要交互的岛上加载，@types/react及@types/react-dom用于类型检查，tsconfig.json使用react-jsx。Paseo另带固定原生运行时，仅首次主动打开助手后加载。Motion用于beUI组件动画，lucide-react提供其原版图标，clsx与tailwind-merge保留原版类合并行为；Tailwind与@tailwindcss/vite在构建期生成组件样式，不加载浏览器运行库，不导入全局Preflight，仅扫描beUI组件及演示目录。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
+Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，普通文章模板的Markdown正文不需要React；Great UI学习模板把Markdown说明编译后交给共享React交互页。@astrojs/mdx与@astrojs/react分别提供MDX编译和React islands；网站的react/react-dom在需要交互的岛上加载，@types/react及@types/react-dom用于类型检查，tsconfig.json使用react-jsx。Paseo另带固定原生运行时，仅首次主动打开助手后加载。Motion用于beUI组件动画，lucide-react提供其原版图标，clsx与tailwind-merge保留原版类合并行为；Tailwind与@tailwindcss/vite在构建期生成组件样式，不加载浏览器运行库，不导入全局Preflight，仅扫描beUI组件及演示目录。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
 
 构建后scripts/content-security.ts扫描HTML中的内联可执行脚本，并接收固定2048打包模板与原生Mermaid沙盒的脚本摘要，按精确内容补充dist/_headers的SHA256许可，支持从普通页面连续导航到互动文章。Astro内置CSP当前不兼容ClientRouter，因此不同时开启两套策略；主页面脚本不使用unsafe-inline或unsafe-eval。
 
@@ -118,4 +118,6 @@ ESLint仅对public/media/2048/game.js这一份带MIT署名的上游压缩分发�
 
 ## 本地交互学习工作台
 
-Great UI工作台复用已锁定的React、Motion和Lucide依赖，由scripts/great-ui.ts使用现有Vite与React插件单独构建；不进入Astro生产路由。默认预览4325，专用Playwright测试服务4336，均绑定127.0.0.1且端口冲突直接失败。JSX在ESLint专用范围检查，工具TypeScript允许读取构建期MJS。命令、媒体与验收范围见[学习操作路径](../features/great-ui-learning.md)。
+Great UI工作台复用已锁定的React、Motion和Lucide依赖，站内Astro学习页与scripts/great-ui.ts辅助Vite入口读取同一份Markdown。默认预览4325，专用Playwright测试服务4336，均绑定127.0.0.1且端口冲突直接失败。JSX在ESLint专用范围检查，工具TypeScript允许读取构建期MJS。命令、媒体与验收范围见[学习操作路径](../features/great-ui-learning.md)。
+
+Great UI学习页的GitHub编辑链接读取VIBES_CONTENT_EDIT_REF或GITHUB_HEAD_REF以指向PR分支；发布预览命令从已核对的PR设置前者，正式main构建默认main。开发回退当前Git分支。astro.config.mjs仅允许当前根目录与实际node_modules目录被开发服务读取，支持隔离检出复用已安装依赖，不扩大到父仓库。

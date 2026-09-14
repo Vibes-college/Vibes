@@ -26,7 +26,7 @@ async function exportContent(): Promise<void> {
   validateCatalog(index);
   validateCapabilities(capabilities);
   for (const item of entries) validateDetail(item, item);
-  const proof = await currentDemoProof();
+  const proof = await currentDemoProof('standalone');
   await writeFile(
     path.join(publicDir, 'content/demo-proof.json'),
     JSON.stringify({ adapterRevision: proof.adapterRevision, records: proof.records }),
@@ -39,7 +39,7 @@ async function exportContent(): Promise<void> {
       JSON.stringify(project) + '\n',
     );
   }
-  await cp(path.join(root, 'src/features/great-ui/media'), path.join(publicDir, 'media'), {
+  await cp(path.join(root, 'public/great-ui/media'), path.join(publicDir, 'great-ui/media'), {
     recursive: true,
   });
   for (const entry of entries) {

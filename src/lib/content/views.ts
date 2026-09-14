@@ -85,7 +85,7 @@ export interface BrowsePage {
 export function browsePages(catalog: Catalog, locale: Locale): BrowsePage[] {
   const pages: BrowsePage[] = [];
   for (const tag of [undefined, ...catalog.taxonomy.map((entry) => entry.id)]) {
-    const works = publishedWorks(catalog, locale, tag);
+    const works = publishedWorks(catalog, locale, tag).filter((work) => !work.meta.learning);
     if (tag && !works.length) continue;
     const count = Math.max(1, Math.ceil(works.length / pageSize));
     for (let page = 1; page <= count; page++)
