@@ -26,42 +26,52 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
   const busy = useRef(false);
   const focusAfter = useRef(false);
   const heading = useRef<HTMLHeadingElement>(null);
+  const motionPreference = useRef(reduced);
+  motionPreference.current = reduced;
 
-  const open = useCallback(
-    async (id: string | null, push = true) => {
-      if (push && busy.current) return;
-      request.current?.abort();
-      setEpoch(++generation.current);
-      const controller = new AbortController();
-      request.current = controller;
-      busy.current = true;
-      setPending(true);
-      setError('');
-      setReady(null);
-      setContact(false);
-      setPhase(reduced ? 'covered' : 'covering');
-      try {
-        let data: ProjectData | null = null;
-        if (id) {
-          if (!projectList.some((item) => item.id === id)) throw new Error('未找到这个示例项目。');
-          const response = await fetch(`/journeys/${id}.json`, { signal: controller.signal });
-          if (!response.ok) throw new Error('项目暂时无法打开，请重试。');
-          const value: unknown = await response.json();
-          if (!isProjectData(value) || value.id !== id) throw new Error('项目资料不完整，请重试。');
-          data = value;
-        }
-        if (controller.signal.aborted) return;
-        setReady({ data, id, push });
-      } catch (cause) {
-        if (controller.signal.aborted) return;
-        setError(cause instanceof Error ? cause.message : '项目暂时无法打开。');
-        setPhase('idle');
-        setPending(false);
-        busy.current = false;
+  const open = useCallback(async (id: string | null, push = true) => {
+    if (push && busy.current) return;
+    request.current?.abort();
+    setEpoch(++generation.current);
+    const controller = new AbortController();
+    request.current = controller;
+    busy.current = true;
+    setPending(true);
+    setError('');
+    setReady(null);
+    setContact(false);
+    setPhase(motionPreference.current ? 'covered' : 'covering');
+    try {
+      let data: ProjectData | null = null;
+      if (id) {
+        if (!projectList.some((item) => item.id === id)) throw new Error('未找到这个示例项目。');
+        const response = await fetch(`/journeys/${id}.json`, { signal: controller.signal });
+        if (!response.ok) throw new Error('项目暂时无法打开，请重试。');
+        const value: unknown = await response.json();
+        if (!isProjectData(value) || value.id !== id) throw new Error('项目资料不完整，请重试。');
+        data = value;
       }
-    },
-    [reduced],
-  );
+      if (controller.signal.aborted) return;
+      setReady({ data, id, push });
+    } catch (cause) {
+      if (controller.signal.aborted) return;
+      setError(cause instanceof Error ? cause.message : '项目暂时无法打开。');
+      setPhase('idle');
+      setPending(false);
+      busy.current = false;
+    }
+  }, []);
+
+  // Changing the preference completes the visual handoff without aborting the data request.
+  useEffect(() => {
+    if (!reduced) return;
+    if (phase === 'covering') setPhase('covered');
+    if (phase === 'revealing') {
+      setPhase('idle');
+      setPending(false);
+      busy.current = false;
+    }
+  }, [reduced, phase]);
 
   useEffect(() => {
     if (phase !== 'covered' || !ready) return;
@@ -203,7 +213,7 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
               setPhase((current) => (current === 'covering' ? 'covered' : current));
           }}
           onRevealed={() => {
-            if (epoch !== generation.current) return;
+            if (epoch !== generation.current || motionPreference.current) return;
             setPhase('idle');
             setPending(false);
             busy.current = false;

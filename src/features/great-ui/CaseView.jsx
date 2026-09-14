@@ -6,6 +6,7 @@ import { PromptDialog } from './PromptDialog.jsx';
 import { CaseNavigation } from './CaseNavigation.jsx';
 import { Taxonomy } from './Taxonomy.jsx';
 import { CompositionPanel } from './composition/CompositionPanel';
+import { createTask } from './task.mjs';
 
 export function CaseView({ entry, entries, state, onChange, onSelect, onStartJourney }) {
   const { section, form } = state;
@@ -13,6 +14,7 @@ export function CaseView({ entry, entries, state, onChange, onSelect, onStartJou
   const [compose, setCompose] = useState(false);
   const guide = entry.learning;
   const goal = guide.goals.find((item) => item.id === form.goalId) || guide.goals[0];
+  const requirements = createTask(entry, form);
   const openTask = (combined = null) => {
     setCompose(combined);
     task.current.showModal();
@@ -163,17 +165,11 @@ export function CaseView({ entry, entries, state, onChange, onSelect, onStartJou
               </details>
               <details className="adjustment-reference">
                 <summary>需要保留的关系与检查</summary>
-                <p>
-                  {goal.id === 'compare'
-                    ? '允许多项展开时，有意替换原作的单项规则；标题可见、状态清楚和答案可操作仍需保留。'
-                    : entry.preserve.join('；') + '。'}
-                </p>
+                <p>{requirements.preserve.join('；')}</p>
                 <ul>
-                  {entry.checks
-                    .filter((c) => goal.id !== 'compare' || !c.includes('初始第二项'))
-                    .map((c) => (
-                      <li key={c}>{c}</li>
-                    ))}
+                  {requirements.checks.map((c) => (
+                    <li key={c}>{c}</li>
+                  ))}
                 </ul>
               </details>
             </div>

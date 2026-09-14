@@ -136,6 +136,7 @@ function curatedEntry(item) {
 const details = [
   ...samples.map((item) => ({
     ...structuredEntry(item),
+    sections: item.sections,
     category: categories[sourceIndex.get(item.slug).category],
   })),
   ...curation.map(curatedEntry),

@@ -14,10 +14,16 @@ code-sources:
     'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '4af3de2fed2d93933241b3984f109b69b0e83ebd9c132161695934736b6a08cd'
+code-revision: '815a9196e2ce499e8d6c37354d055291c7d6cb691974a9c44a84cb48d8461e13'
 ---
 
 # 检查与发布
+
+## 本地检查的影响边界
+
+先核对真实接入与依赖边界，不因文件叫组件、页面或测试就运行整站回归。未被正式站引用、打包或发布，且构建、资源与测试入口独立的本地页面、样板或实验，只运行自身必要的检查和预算；不启动整站、Paseo或数据库回归，也不自动并入整站verify。仅放在同一仓库、复用已安装依赖或新增独立命令不构成整站影响。实际改动站点路由、共用组件、全局样式、依赖解析或构建/发布链时，按受影响范围升级；运行整站回归前说明具体依赖与理由。未知先查引用和构建入口，不能把“不确定”直接作为全量理由。
+
+独立入口的构建、单元、交互、异常和资源预算仍须按实际风险验证；共享检查器的修改验证检查器本身，不因此启动无关网站浏览器。改动真正接入网站时再补对应接入验证。当前本地改动与整个PR累计差异分开判断，不能机械把CI的保守路径分类套成本地开发命令。
 
 ## 检查入口
 
@@ -118,25 +124,25 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 
 需要Node22.20或兼容更新版本。首次或依赖变化后运行`npm ci`；首次运行E2E时执行`npx playwright install chromium webkit`，Linux CI使用`--with-deps`。Playwright已在锁文件中，不新增npm依赖。
 
-| 命令                                | 行为与使用场景                                                                                   |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `npm run dev`                       | Astro开发服务，地址以终端为准，通常为127.0.0.1:4321                                              |
-| `npm run preview`                   | 构建后以wrangler.local.jsonc启动本地4322预览，Ctrl+C停止                                         |
-| `npm run docs:check`                | 治理文档标签、目录/索引、关系、冻结保护；篇幅仅提示                                              |
-| `npm run format:check`              | 检查格式，不修改文件                                                                             |
-| `npm run check`                     | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                                                 |
-| `npm run test:e2e`                  | 构建→Playwright启动专用本地Worker→桌面Chromium及手机Chromium/WebKit测试→清理服务                 |
-| `npm run verify`                    | check→db:reset→test:e2e→great-ui:test→great-ui:evaluate→本地入口预算，完整验收，失败停止；不部署 |
-| `npm run budget`                    | 构建并检查脚本、首页和优化图片体积；限值见[常量](../system/rules.md)                             |
-| `npm run optimize:images`           | 对已有dist单独生成图片变体和manifest；通常由build自动调用                                        |
-| `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/content/full，不执行检查                           |
-| `npm run db:reset`                  | 删除本项目本机测试D1数据，迁移并填入固定样例                                                     |
-| `npm run db:migrate`                | 只应用本地未执行迁移；不接受线上参数                                                             |
-| `npm run deploy`                    | 拒绝本地直接生产部署，main检查成功后自动发布                                                     |
-| `npm run release:preview -- <PR号>` | 本地按范围验收后上传PR预览版本，不提升生产                                                       |
-| `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                                        |
+| 命令                                | 行为与使用场景                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------- |
+| `npm run dev`                       | Astro开发服务，地址以终端为准，通常为127.0.0.1:4321                              |
+| `npm run preview`                   | 构建后以wrangler.local.jsonc启动本地4322预览，Ctrl+C停止                         |
+| `npm run docs:check`                | 治理文档标签、目录/索引、关系、冻结保护；篇幅仅提示                              |
+| `npm run format:check`              | 检查格式，不修改文件                                                             |
+| `npm run check`                     | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                                 |
+| `npm run test:e2e`                  | 构建→Playwright启动专用本地Worker→桌面Chromium及手机Chromium/WebKit测试→清理服务 |
+| `npm run verify`                    | check→db:reset→test:e2e，网站完整验收，失败停止；不部署                          |
+| `npm run budget`                    | 构建并检查脚本、首页和优化图片体积；限值见[常量](../system/rules.md)             |
+| `npm run optimize:images`           | 对已有dist单独生成图片变体和manifest；通常由build自动调用                        |
+| `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/content/full，不执行检查           |
+| `npm run db:reset`                  | 删除本项目本机测试D1数据，迁移并填入固定样例                                     |
+| `npm run db:migrate`                | 只应用本地未执行迁移；不接受线上参数                                             |
+| `npm run deploy`                    | 拒绝本地直接生产部署，main检查成功后自动发布                                     |
+| `npm run release:preview -- <PR号>` | 本地按范围验收后上传PR预览版本，不提升生产                                       |
+| `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                        |
 
-按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；受限内容修改运行verify:content；页面组件和测试基础设施修改运行verify与budget。
+按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；受限内容修改运行verify:content；影响正式网站的页面组件或共用测试基础设施修改运行verify与budget；独立本地入口执行自己的检查。
 
 ## 媒体处理
 
@@ -197,4 +203,4 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 ## Great UI学习工作台检查
 
-本地入口用`great-ui:build`校验目录、详情及能力结构，并输出.scratch/great-ui-dist；`great-ui:test`通过scripts/great-ui-test.ts运行独立Playwright配置，启动4336测试服务，结束由测试框架释放。不带筛选参数且全部用例通过时，核对测试前后源码摘要一致，再保存固定示例的路径记录；筛选重跑不能生成整体验证记录。great-ui-proof.ts在重建时核对记录与当前来源、规则、适配器和测试，过期记录不显示为已验证。verify会执行该专项、great-ui:evaluate和本地入口预算；单独运行great-ui:budget会先构建再检查压缩JS、CSS、目录、详情与本地媒体，不改变正式站预算。不会调用发布命令。当前回归范围和待补覆盖见[功能说明](../features/great-ui-learning.md)，原始材料与浏览器证据不作为自动通过依据。
+本地入口用`great-ui:build`校验目录、详情及能力结构，并输出.scratch/great-ui-dist；`great-ui:test`通过scripts/great-ui-test.ts运行独立Playwright配置，启动4336测试服务，结束由测试框架释放。不带筛选参数且全部用例通过时，核对测试前后源码摘要一致，再保存固定示例的路径记录；筛选重跑不能生成整体验证记录。great-ui-proof.ts在重建时核对记录与当前来源、规则、适配器和测试，过期记录不显示为已验证。great-ui:verify执行该入口的单元、浏览器、great-ui:evaluate与预算检查，独立于整站verify；单独运行great-ui:budget会先构建再检查压缩JS、CSS、目录、详情与本地媒体，不改变正式站预算。不会调用发布命令。当前回归范围和待补覆盖见[功能说明](../features/great-ui-learning.md)，原始材料与浏览器证据不作为自动通过依据。

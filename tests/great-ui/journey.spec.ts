@@ -1,5 +1,48 @@
 import { expect, test } from '@playwright/test';
 
+for (const phase of ['idle', 'covering', 'covered', 'revealing']) {
+  test(`live motion preference during ${phase} preserves navigation and updates the exported context`, async ({
+    page,
+  }) => {
+    let release: () => void = () => {};
+    if (phase === 'covering' || phase === 'covered') {
+      const gate = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      await page.route('**/journeys/field-notes.json', async (route) => {
+        await gate;
+        await route.continue().catch(() => {});
+      });
+    }
+    await page.goto('/?journey=portfolio');
+    const portfolio = page.locator('.journey-portfolio');
+    if (phase !== 'idle') {
+      await page.getByRole('link', { name: '编辑设计 山野手记' }).click();
+      await expect(portfolio).toHaveAttribute('data-phase', phase);
+    }
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(page.locator('.journey-transition')).toHaveCount(0);
+    release();
+    if (phase === 'idle') await page.getByRole('link', { name: '编辑设计 山野手记' }).click();
+    await expect(portfolio).toHaveAttribute('data-project', 'field-notes');
+    await expect(portfolio).toHaveAttribute('data-phase', 'idle');
+    await expect(page.locator('[inert]')).toHaveCount(0);
+    await expect(page.locator('[data-effect="static"]')).toBeVisible();
+    await page.getByRole('button', { name: '复制这条示例的任务', exact: true }).click();
+    await page.getByText('查看同一任务的 JSON', { exact: true }).click();
+    expect(
+      JSON.parse(await page.getByLabel('结构化任务', { exact: true }).inputValue()).plan.contextKey,
+    ).toContain('motion=reduced');
+    await page.getByRole('button', { name: '关闭复制材料' }).click();
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await expect(page.locator('[data-effect="scroll-reveal"]')).toBeVisible();
+    await page.getByRole('button', { name: '← 全部项目' }).click();
+    await expect(portfolio).toHaveAttribute('data-project', 'list');
+    await expect(portfolio).toHaveAttribute('data-phase', 'idle');
+    await expect(page.locator('[inert]')).toHaveCount(0);
+  });
+}
+
 test('portfolio waits for both cover and real content, then reveals and restores navigation', async ({
   page,
 }) => {

@@ -36,7 +36,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '278ba52a58e6e8a7ba73bee1aa1906c82cd475861bb81349644e51befae803f7'
+code-revision: '27c33525aae846fd3ea45010d59caf71c8e45d4e1020e49ef298c4ff30a42ea5'
 ---
 
 # 功能名：检查与发布网站
@@ -143,4 +143,4 @@ flowchart TD
 
 ## Great UI本地工作台
 
-`npm run great-ui:build`构建48件学习材料与三条固定示例；`npm run great-ui:preview`在127.0.0.1:4325预览，`npm run great-ui:dev`用于开发，`npm run great-ui:test`运行独立Playwright用例。先复用已确认归属的健康服务，详情见[学习操作路径](great-ui-learning.md)。great-ui:evaluate运行20个结构化需求样本和合成负载；great-ui:budget构建后检查独立资源上限，verify包含全部专项。这些命令不会发布或向生产Astro路由添加入口。
+`npm run great-ui:build`构建48件学习材料与三条固定示例；`npm run great-ui:preview`在127.0.0.1:4325预览，`npm run great-ui:dev`用于开发，`npm run great-ui:test`运行独立Playwright用例。先复用已确认归属的健康服务，详情见[学习操作路径](great-ui-learning.md)。great-ui:evaluate运行20个结构化需求样本和合成负载；great-ui:budget构建后检查独立资源上限，great-ui:verify串联本地专项，不进入整站verify，也不准备Paseo或重置数据库。这些命令不会发布或向生产Astro路由添加入口。

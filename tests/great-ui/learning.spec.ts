@@ -1,5 +1,68 @@
 import { test, expect } from '@playwright/test';
-import { index } from '../../src/features/great-ui/content-build.mjs';
+import { entries, index } from '../../src/features/great-ui/content-build.mjs';
+import { fileURLToPath } from 'node:url';
+
+const recordedFixture = fileURLToPath(
+  new URL('../../src/features/great-ui/media/staggered-source-capture.mp4', import.meta.url),
+);
+
+test('opening an external MP4 starts muted playback with no launch card or credit row', async ({
+  page,
+}) => {
+  await page.route('https://ik.imagekit.io/**', (route) =>
+    route.fulfill({ path: recordedFixture, contentType: 'video/mp4' }),
+  );
+  await page.goto('/?case=scroll-flying-cards');
+  const video = page.locator('.recording-stage video');
+  await expect
+    .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime))
+    .toBeGreaterThan(0);
+  expect(await video.evaluate((node: HTMLVideoElement) => node.muted && !node.paused)).toBe(true);
+  await expect(page.getByRole('button', { name: '播放作者演示', exact: true })).toHaveCount(0);
+  await expect(page.locator('.preview-credit, .external-preview-actions')).toHaveCount(0);
+  const gap = await page.evaluate(
+    () =>
+      document.querySelector('.case-navigation')!.getBoundingClientRect().top -
+      document.querySelector('.video-player')!.getBoundingClientRect().bottom,
+  );
+  expect(gap).toBeLessThanOrEqual(1);
+});
+
+test('script-disabled and failed startup retain explanation and an original source link', async ({
+  browser,
+  page: enabledPage,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto('http://127.0.0.1:4336/');
+  await expect(
+    page.getByText('Great UI 学习工作台正在加载，浏览与生成任务需要 JavaScript。'),
+  ).toBeVisible();
+  await expect(page.getByRole('link', { name: '查看 Great UI 原作' })).toHaveAttribute(
+    'href',
+    'https://www.great-ui.com',
+  );
+  await context.close();
+  await enabledPage.route('**/assets/index*.js', (route) => route.abort());
+  await enabledPage.goto('/');
+  await expect(enabledPage.getByRole('link', { name: '查看 Great UI 原作' })).toBeVisible();
+  await expect(
+    enabledPage.getByText('Great UI 学习工作台正在加载，浏览与生成任务需要 JavaScript。'),
+  ).toBeVisible();
+});
+
+test('the original three examples retain glossary controls inside their explanations', async ({
+  page,
+}) => {
+  for (const slug of ['staggered-page-transition', 'accordion', 'text-reveal']) {
+    await page.goto('/?case=' + slug);
+    const term = page.locator('.explanation .term').first();
+    await term.click();
+    await expect(page.locator('.term-popover')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.term-popover')).toBeHidden();
+  }
+});
 
 test('all 48 details, glossary and modification goals render without loading other videos', async ({
   page,
@@ -7,11 +70,15 @@ test('all 48 details, glossary and modification goals render without loading oth
   test.setTimeout(120_000);
   const errors: string[] = [];
   const externalMedia: string[] = [];
+  await page.route('https://ik.imagekit.io/**', (route) =>
+    route.fulfill({ path: recordedFixture, contentType: 'video/mp4' }),
+  );
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('request', (request) => {
     if (request.url().includes('imagekit.io')) externalMedia.push(request.url());
   });
   for (const entry of index) {
+    externalMedia.length = 0;
     await page.goto('/?case=' + entry.slug);
     await expect(
       page.getByRole('heading', { name: entry.title, exact: true, level: 1 }),
@@ -24,9 +91,13 @@ test('all 48 details, glossary and modification goals render without loading oth
       () => document.documentElement.scrollWidth > innerWidth + 1,
     );
     expect(overflow, entry.slug + ' horizontal overflow').toBe(false);
+    const current = entries.find((item: { slug: string }) => item.slug === entry.slug)!;
+    expect(
+      externalMedia.every((url) => url === current.previewRecording),
+      entry.slug + ' only loads its own recording',
+    ).toBe(true);
   }
   expect(errors).toEqual([]);
-  expect(externalMedia).toEqual([]);
 });
 
 test('search, category, empty results, draft state and history stay usable', async ({ page }) => {

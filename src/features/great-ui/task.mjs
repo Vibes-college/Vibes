@@ -1,10 +1,41 @@
 export const plain = (text) => text.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '$2');
 
+/** @param {(import('./composition/model.ts').CompositionPlan & {handoffs?: string[], verification?: import('./composition/model.ts').VerificationRecord | null}) | null} plan */
 export function createTask(entry, form, plan = null) {
-  const goal =
+  const selectedGoal =
     entry.learning.goals.find((item) => item.id === form.goalId) || entry.learning.goals[0];
+  const goal = plan
+    ? {
+        id: plan.templateId,
+        title: plan.title,
+        action: '按完整路径分配各环节职责，落实列出的适配与交接；省略的效果不再加入。',
+        judge: '实际走完所列路径，结果来自真实状态；每个交接与适配均有操作证据。',
+      }
+    : selectedGoal;
+  const commonChecks = [
+    '完整内容、键盘与触摸操作均可用；窄屏不裁切必要内容。',
+    '减少动态效果时可以直接完成同一任务；失败、取消和重复操作不会留下阻塞。',
+  ];
+  // Original behavior is evidence, not an unconditional requirement after adaptation.
+  const preserve = plan
+    ? [...(plan.handoffs || []), ...plan.issues.map((issue) => issue.detail)]
+    : goal.id === 'faithful'
+      ? entry.preserve
+      : [goal.action];
+  const checks = plan
+    ? [
+        ...plan.steps
+          .filter((step) => !step.omitted)
+          .map((step) => `${step.slot.title}：${step.slot.purpose}`),
+        ...preserve,
+        goal.judge,
+        ...commonChecks,
+      ]
+    : goal.id === 'faithful'
+      ? [...entry.checks, goal.judge]
+      : [goal.judge, ...commonChecks];
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     mode: plan ? 'composition' : 'single',
     placement: form.placement.trim(),
     changes: form.changes.trim(),
@@ -18,12 +49,15 @@ export function createTask(entry, form, plan = null) {
       previewSource: entry.previewSource,
     },
     goal,
-    explanation: entry.sections.map((item) => ({ ...item, text: plain(item.text) })),
-    adjustments: entry.learning.adjustments,
-    preserve: entry.preserve,
-    checks: entry.checks.filter(
-      (check) => form.goalId !== 'compare' || !check.includes('初始第二项'),
-    ),
+    referenceDesign: {
+      note: '以下记录原作，供比较和追溯；修改后的行为由 goal、preserve、checks 和 plan 决定。',
+      explanation: entry.sections.map((item) => ({ ...item, text: plain(item.text) })),
+      adjustments: entry.learning.adjustments,
+      preserve: entry.preserve,
+      checks: entry.checks,
+    },
+    preserve,
+    checks,
     glossary: Object.fromEntries(entry.terms.map((id) => [id, entry.glossary[id]])),
     verification: entry.verification,
     media: {
@@ -59,7 +93,7 @@ export function createTask(entry, form, plan = null) {
 }
 
 export function taskText(task) {
-  const { selected, goal, plan } = task;
+  const { selected, goal, plan, referenceDesign } = task;
   return `请帮我${plan ? `实现这条操作路径：${plan.title}` : `把「${selected.title}」接入项目`}。
 任务模式：${plan ? '组合完整操作路径' : '接入并改进单个效果'}
 接入位置：${task.placement || '先查看项目并定位合适位置；必要信息不足时再确认。'}
@@ -77,15 +111,18 @@ ${task.media.localPath ? `本机素材：${task.media.localPath}\n无法访问�
 许可：${task.license.url}
 ${task.license.note}
 
-设计说明
-${task.explanation.map((section) => `${section.title}：${section.text}`).join('\n')}
-核心关系：${task.preserve.join('；')}。
+原作参考
+${referenceDesign.note}
+${referenceDesign.explanation.map((section) => `${section.title}：${section.text}`).join('\n')}
+原作核心关系：${referenceDesign.preserve.join('；')}。
+原作检查记录：${referenceDesign.checks.join('；')}
 
 修改目标：${goal.title}
 让 Agent 这样改：${goal.action}
 改好后看什么：${goal.judge}
-可调整的位置：
-${task.adjustments.map(([title, source, note]) => `${title} / ${source}：${note}`).join('\n')}
+目标要求：${task.preserve.join('；')}。
+原作可调整的位置（按目标取用）：
+${referenceDesign.adjustments.map(([title, source, note]) => `${title} / ${source}：${note}`).join('\n')}
 数值建议只作为比较起点，不代表最优参数。
 ${
   plan

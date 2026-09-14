@@ -25,7 +25,7 @@
     "db:migrate": "node --experimental-strip-types scripts/database.ts migrate",
     "preview": "npm run build && wrangler dev --local --config wrangler.local.jsonc --persist-to .wrangler/project-local --ip 127.0.0.1 --port 4322",
     "deploy": "node --experimental-strip-types scripts/release.ts deploy",
-    "verify": "npm run check && npm run db:reset && npm run test:e2e && npm run great-ui:test && npm run great-ui:evaluate && node --experimental-strip-types scripts/great-ui-budget.ts",
+    "verify": "npm run check && npm run db:reset && npm run test:e2e",
     "budget": "npm run build && node --experimental-strip-types scripts/budget.ts",
     "media:prepare": "node --experimental-strip-types scripts/prepare-media.ts",
     "optimize:images": "node --experimental-strip-types scripts/optimize-images.ts",
@@ -43,7 +43,8 @@
     "paseo:production": "node --experimental-strip-types scripts/paseo-webui-build.ts production",
     "paseo:test-prepare": "node --experimental-strip-types scripts/paseo-webui-build.ts test-prepare",
     "great-ui:evaluate": "node --experimental-strip-types scripts/great-ui-evaluate.ts",
-    "great-ui:budget": "npm run great-ui:build && node --experimental-strip-types scripts/great-ui-budget.ts"
+    "great-ui:budget": "npm run great-ui:build && node --experimental-strip-types scripts/great-ui-budget.ts",
+    "great-ui:verify": "node --experimental-strip-types --test tests/unit/great-ui-*.test.ts && npm run great-ui:test && npm run great-ui:evaluate && node --experimental-strip-types scripts/great-ui-budget.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "8.0.0",

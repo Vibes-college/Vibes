@@ -4,6 +4,7 @@ import { entries, index, capabilities } from '../../src/features/great-ui/conten
 import { validateCatalog, validateDetail } from '../../src/features/great-ui/catalog.ts';
 import { validateCapabilities } from '../../src/features/great-ui/composition/validate.ts';
 import { createTask, taskText } from '../../src/features/great-ui/task.mjs';
+import { demoPlan } from '../../src/features/great-ui/composition/demos.ts';
 import reviews from '../../src/features/great-ui/data/source-review.json' with { type: 'json' };
 import upstream from '../../src/features/great-ui/data/upstream-catalog.json' with { type: 'json' };
 
@@ -46,6 +47,32 @@ test('all 48 published works have distinct Chinese learning material, fixed sour
       );
       assert.notEqual(related.slug, entry.slug);
     }
+  }
+});
+
+test('adapted targets do not inherit incompatible original requirements', () => {
+  const accordion = entries.find((entry: { slug: string }) => entry.slug === 'accordion')!;
+  const single = createTask(accordion, { placement: '', changes: '', goalId: 'compare' });
+  assert.ok(single.referenceDesign.preserve.includes('同一时刻最多展开一项'));
+  assert.match(single.goal.action, /多个展开项/);
+  assert.doesNotMatch(JSON.stringify([single.preserve, single.checks]), /最多展开一项|初始第二项/);
+  const product = createTask(
+    accordion,
+    { placement: '', changes: '', goalId: 'faithful' },
+    demoPlan(capabilities, 'product', 'normal'),
+  );
+  assert.equal(product.goal.id, 'product');
+  assert.match(JSON.stringify([product.preserve, product.checks]), /问答允许同时展开/);
+  assert.doesNotMatch(
+    JSON.stringify([product.goal, product.preserve, product.checks]),
+    /最多展开一项|初始第二项/,
+  );
+  for (const slug of ['staggered-page-transition', 'accordion', 'text-reveal']) {
+    const entry = entries.find((item: { slug: string }) => item.slug === slug)!;
+    assert.ok(
+      entry.sections.some((section: { text: string }) => /\[\[.+?\|.+?\]\]/.test(section.text)),
+      slug,
+    );
   }
 });
 

@@ -1,4 +1,4 @@
-import { useReducedMotion } from 'motion/react';
+import { useEffect, useState } from 'react';
 import { DemoTask } from './DemoTask';
 import { Portfolio } from './Portfolio';
 import { Product } from './Product';
@@ -7,7 +7,16 @@ import { journeyNames, type JourneyKind } from './data';
 import './journey.css';
 
 export default function Journey({ kind, onExit }: { kind: JourneyKind; onExit: () => void }) {
-  const reduced = Boolean(useReducedMotion());
+  const [reduced, setReduced] = useState(
+    () => matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+  useEffect(() => {
+    const preference = matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReduced(preference.matches);
+    update();
+    preference.addEventListener('change', update);
+    return () => preference.removeEventListener('change', update);
+  }, []);
   return (
     <div className="journey-workbench">
       <nav className="journey-toolbar" aria-label="组合体验">

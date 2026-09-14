@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/great-ui',
+  outputDir: './.scratch/great-ui-test-results',
   fullyParallel: false,
   workers: 1,
   forbidOnly: Boolean(process.env.CI),

@@ -15,7 +15,7 @@ shaped-by: ['002', '004', '015']
 
 ## 验证与现状同步
 
-- [ ] T001 在实际受影响路径完成实现与必要测试，按影响运行文档检查、check或verify与budget。
+- [ ] T001 在实际受影响路径完成实现与必要测试，按实际接入和依赖边界运行文档检查、check、独立入口专项或网站verify与budget；未接入网站的独立页面不启动整站回归。
 - [ ] T002 更新 docs/features/<name>.md 为合并后的最终行为，更新shaped-by；更新 docs/features/README.md 与 specs/README.md 状态。此项未完成converge不通过。
 
 ## 交付引用

@@ -1,31 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Play, Pause, Maximize2, Minimize2, ArrowUpRight } from 'lucide-react';
 export function Recording({ entry }) {
-  const [enabled, setEnabled] = useState(Boolean(entry.localRecordingPath));
   const [imageFailed, setImageFailed] = useState(false);
-  if (!enabled)
-    return (
-      <div className="video-player external-preview">
-        <div className="recording-stage">
-          {entry.poster && <img src={entry.poster} alt={entry.title + '原作页面'} />}
-          <div className="external-preview-actions">
-            <p>{entry.title}</p>
-            {(entry.previewRecording || entry.previewImage) && (
-              <button className="primary-button" onClick={() => setEnabled(true)}>
-                <Play size={16} />
-                {entry.previewImage ? '查看作者预览图' : '播放作者演示'}
-              </button>
-            )}
-            <a href={entry.reference} target="_blank" rel="noreferrer">
-              打开原作交互 <ArrowUpRight size={14} />
-            </a>
-          </div>
-        </div>
-        <p className="preview-credit">
-          by Great UI · {entry.previewImage ? '作者提供的是静态预览图' : '点击后从原作媒体地址加载'}
-        </p>
-      </div>
-    );
   if (entry.previewImage)
     return (
       <div className="video-player external-preview">
@@ -40,12 +16,6 @@ export function Recording({ entry }) {
             />
           )}
         </div>
-        <p className="preview-credit">
-          作者静态预览 ·{' '}
-          <a href={entry.reference} target="_blank" rel="noreferrer">
-            打开原作交互 ↗
-          </a>
-        </p>
       </div>
     );
   return <RecordedPlayer entry={entry} />;
@@ -138,7 +108,7 @@ function RecordedPlayer({ entry }) {
           muted
           playsInline
           loop
-          preload="metadata"
+          preload="auto"
           aria-label={entry.title + '原作录屏'}
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
