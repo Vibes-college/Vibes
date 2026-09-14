@@ -54,34 +54,22 @@ learning:
       - 中文、英文与 emoji 分组不同；分得越细，越需要检查阅读和渲染成本。
   glossary:
     scroll:
-      title: 滚动进度
-      english: Scroll progress
-      kind: 原语
-      definition: 把一段滚动距离转换为从 0 到 1 的连续数值。
+      term: 'scroll-progress'
       context: 原作以目标区块的起点和终点经过容器高度 60% 处来界定动画区间。
       parameter: 'useScroll offset: ["start 0.6", "end 0.6"]；录屏的时间轴只用于观察原作，不是项目的滚动变量。'
       judgment: 真实接入必须绑定实际滚动容器；不能把进度条演示当成页面滚动验收。
     characters:
-      title: 逐字揭示
-      english: Character reveal
-      kind: 行为
-      definition: 给每个字符分配自己的进度区间，按阅读顺序改变显示状态。
+      term: 'character-reveal'
       context: 原作先按段落、再按空格分词、再拆字符；各段落平分总进度。
       parameter: 每字颜色经过底稿色、强调色、正文色，透明度由 0.3 到 1。
       judgment: 英文空格切词不能直接保证中文和组合 emoji 的正确分组，接入时需检查文字分段。
     blur:
-      title: 模糊
-      english: Blur
-      kind: 原语
-      definition: 把文字或图像的边缘变软，削弱细节的清晰程度。
+      term: 'blur'
       context: 原作每个字符在自己的区间内由 2px 模糊过渡到 1px，最终为 0。
       parameter: 'filter: blur(2px) → blur(1px) → blur(0px)。'
       judgment: 长文本逐字符模糊可能增加渲染负担，应在真实手机上检查滚动流畅度。
     reduced:
-      title: 减少动态效果
-      english: Reduced motion
-      kind: 使用规范
-      definition: 尊重用户在系统中减少动画的偏好，为大范围运动提供更安静的替代方式。
+      term: 'reduced-motion'
       context: 样板尊重减少动态效果偏好，不自动播放录屏；接入时应直接显示完整、清晰的文字。
       parameter: 原作未内置此分支，接入时应跳过模糊和低透明度阶段。
       judgment: 保留操作结果和内容变化，让用户仍然能完成相同的任务。

@@ -52,10 +52,7 @@ learning:
       - 默认 start end 到 end 60%，错峰0.85，单项进度跨度0.12。
   glossary:
     blur-scroll-reveal-mechanism:
-      title: 清晰度揭示
-      english: Blur reveal
-      kind: 行为与原理
-      definition: 通过逐渐降低模糊，让内容从轮廓走向可阅读状态。
+      term: 'blur-reveal'
       context: 每个词或行有自己的起止进度，分别映射透明度、模糊、纵向位移和缩放；这些属性可以独立调节。
       parameter: variant / text：word 逐词处理，line 依实际 offsetTop 分行；中文需要适配分段。；opacity / blur / y / scale：默认0到1透明度、12px到0模糊、10px到0位移，缩放保持1。；offset / staggerFactor / animationDuration：默认 start end 到 end 60%，错峰0.85，单项进度跨度0.12。
       judgment: 默认初始透明度为0，重要内容可能暂时不可见；分词依赖空格，减少动态效果、中文分词和字体变化需要额外处理。animationDuration 是进度跨度。

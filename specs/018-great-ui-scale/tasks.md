@@ -44,6 +44,13 @@ amended-by: []
 - [ ] T024 完成正式站check、verify、budget与产物检查；内置浏览器核对桌面/手机布局、GitHub编辑、媒体、任务、搜索和真实页面上下文。
 - [ ] T025 同步great-ui-learning、recording-previews、content-maintenance、article-read、explore-browse、受影响system文档与索引，保留仍有效证据；独立审查整个PR并复核最终SHA后转Ready，交付用户合并。
 
+## 共享术语
+
+- [x] T026 [US4] 在src/content/glossary保存用户提供的完整文章、分层索引与收录模板，整理首批词条及来源，归并现有同义术语。
+- [x] T027 [US1] 实现src/lib/content/glossary.ts解析与引用校验，迁移48件Markdown，页面和任务使用统一解释并保留案例上下文。
+- [x] T028 [US2] 将关联词条纳入内容修订和组合证据，测试共享编辑、缺失引用、重复词与案例保留；完成check、构建、预算和静态产物核对，不重复用户已免除的浏览器回归与独立审查。
+- [x] T029 [US4] 同步术语维护操作文档及相关索引、内容模型、源码摘要和PR，保存并推送可审阅结果，保留未合并、未部署与完整验收待办状态。
+
 ## 交付引用
 
 每件的原始证据在resources/evidence/018-great-ui-scale；详细检查与来源状态以实际生成记录为准。PR、文档与收尾遵循docs/system/checks-and-release.md。

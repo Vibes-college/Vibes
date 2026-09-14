@@ -52,10 +52,7 @@ learning:
       - 条带在源码固定120px，默认刚度400、阻尼30。
   glossary:
     image-hover-reveal-mechanism:
-      title: 裁切窗口
-      english: Clipping window
-      kind: 行为与原理
-      definition: 两张图仍占据同样的位置，只改变上层可以被看见的范围。
+      term: 'clipping-window'
       context: 叠图用clip-path inset控制可见部分，鼠标相对中心的角度决定轴向；slice用弹簧让裁切跟随。
       parameter: src / overlaySrc / alt：未提供叠图时使用同图彩色版；两图构图需对齐。；variant：directional整图揭开；slice的轴由进入方向固定。；thickness / springConfig：条带在源码固定120px，默认刚度400、阻尼30。
       judgment: 仅有鼠标事件，触摸和键盘没有等价入口；上下两图都有alt会重复描述，固定120px条宽也需适配尺寸。

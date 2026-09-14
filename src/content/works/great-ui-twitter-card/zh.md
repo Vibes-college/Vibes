@@ -53,10 +53,7 @@ learning:
       - 只是初始或缺失时的备用值，bannerUrl属性没有实际实现。
   glossary:
     twitter-card-mechanism:
-      title: 外部资料状态
-      english: External profile state
-      kind: 行为与原理
-      definition: 把未加载、已取得与失败区分开，避免把初始占位值误读成真实结果。
+      term: 'external-profile-state'
       context: 外部请求负责资料，鼠标位置负责弹簧跟随与倾斜；staticCard只改变呈现方式，并不关闭请求。
       parameter: username / profile / useEffect：第三方请求与账号绑定，换用户名需取消或忽略旧响应。；staticCard / enableCardTilt：常驻模式无须悬停，但仍会读取外部资料。；name / avatarUrl / joinedDate / year：只是初始或缺失时的备用值，bannerUrl属性没有实际实现。
       judgment: 失败被静默处理，0关注数或默认简介可能只是未加载；请求没有取消及过期结果保护。bannerUrl虽然在接口声明中出现，实际没有被读取。

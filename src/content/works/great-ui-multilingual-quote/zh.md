@@ -52,10 +52,7 @@ learning:
       - 默认0.4秒、8px模糊及5px位移，长译文需核对容器高度。
   glossary:
     multilingual-quote-mechanism:
-      title: 内容状态切换
-      english: Content state change
-      kind: 行为与原理
-      definition: 在同一个界面位置展示不同但相关的内容，并明确当前选中了哪一份。
+      term: 'content-state-change'
       context: 每个语种有稳定ID，AnimatePresence 用这个ID区分新旧文本，通过同一网格区域叠放完成过渡。
       parameter: quotes / defaultLanguage：每项提供id、label、text，默认语言应存在于列表。；authorName / authorLink：只显示传入值，引用前需独立核实作者与出处。；quoteClassName / motion.p transition：默认0.4秒、8px模糊及5px位移，长译文需核对容器高度。
       judgment: 组件只切换预先提供的译文，不会翻译或验证引语来源。语言按钮缺少选中语义，正文也没有自动设置 lang，需要明确语言和准确来源。

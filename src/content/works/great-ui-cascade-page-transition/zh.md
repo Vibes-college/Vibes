@@ -52,10 +52,7 @@ learning:
       - 描线默认关闭；先保证不透明色条完整覆盖。
   glossary:
     cascade-page-transition-mechanism:
-      title: 距离时序
-      english: Distance-based timing
-      kind: 行为与原理
-      definition: 以元素到某个中心或边缘的距离作为延迟依据，形成有方向的展开。
+      term: 'distance-based-timing'
       context: 成对条带共享延迟，因此左右两边对称；mode 决定先走中间还是边缘，颜色可按条带循环。
       parameter: mode / columns：in-to-out 或 out-to-in，默认14条，示例8条。；duration / staggerDelay：默认0.55秒及0.035秒，成对条带共享延迟。；colors / showLeadingStroke / showTrailingStroke：描线默认关闭；先保证不透明色条完整覆盖。
       judgment: 条数、mode 和间隔共同影响总等待；colors 为空没有有效颜色。边缘描线只是装饰，不应当作遮罩覆盖范围。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。

@@ -52,10 +52,7 @@ learning:
       - 默认0.75秒及0.075秒间隔，增加条数会延长覆盖时间。
   glossary:
     interlocking-page-transition-mechanism:
-      title: 交替位移
-      english: Alternating translation
-      kind: 行为与原理
-      definition: 让相邻元素从相反侧移动，在同一时刻形成相互穿插的视觉关系。
+      term: 'alternating-translation'
       context: 条带数决定条宽，奇偶编号决定出发侧，staggerDelay 决定相邻条带开始的间隔。
       parameter: columns：不传时按约120px一条计算、至少3条；预览使用4条。；direction / exitOpposite：top、bottom 形成竖条，left、right 形成横条；奇偶方向由内部规则决定。；duration / staggerDelay：默认0.75秒及0.075秒间隔，增加条数会延长覆盖时间。
       judgment: 自动条数随窗口尺寸变化，动画中调整尺寸可能重启时序；top 与 bottom 选择同一竖向布局，不能仅凭名字假设起始奇偶相反。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。

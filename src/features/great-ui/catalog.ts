@@ -110,6 +110,18 @@ export function validateDetail(value: unknown, item: CatalogItem) {
   )
     return fail();
   for (const id of detail.terms) {
+    const term = detail.glossary[id];
+    if (
+      !fields(term, ['reference', 'term', 'provenance']) ||
+      !/^https:\/\/github\.com\/Vibes-college\/Vibes\/blob\//.test(term.reference) ||
+      !Array.isArray(term.sources) ||
+      !term.sources.length ||
+      !term.sources.every(
+        (source) =>
+          fields(source, ['title', 'author', 'section', 'url']) && /^https:\/\//.test(source.url),
+      )
+    )
+      return fail();
     if (
       !fields(detail.glossary[id], [
         'title',

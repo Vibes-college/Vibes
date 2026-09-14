@@ -52,10 +52,7 @@ learning:
       - 明确采用链接或按钮，修复链接分支丢失属性和禁用处理。
   glossary:
     aceternity-button-mechanism:
-      title: 状态一致性
-      english: State consistency
-      kind: 行为与原理
-      definition: 界面显示的可用、运行和禁用状态必须与真实可执行能力一致。
+      term: 'state-consistency'
       context: variant与size组合CSS类，isLoading与disabled控制button分支；链接分支只收到href和外观类。
       parameter: variant：primary、secondary、outline、ghost、destructive。；size：sm36px、md40px、lg44px、xl64px；较小尺寸需结合触摸间距。；href / isLoading / disabled：明确采用链接或按钮，修复链接分支丢失属性和禁用处理。
       judgment: href分支忽略disabled与其余事件、可访问属性；加载还会把链接变成按钮。必须明确动作语义、恢复焦点边框，并替换next/link依赖。

@@ -54,42 +54,27 @@ learning:
       - 阅读和复制不应意外收起；保留明确的标题按钮控制。
   glossary:
     disclosure:
-      title: 渐进披露
-      english: Progressive disclosure
-      kind: 交互方法
-      definition: 先展示判断所需的线索，再让用户按需打开细节。
+      term: 'progressive-disclosure'
       context: 五个问题标题一直可见，答案只在展开时出现。
       parameter: items 中的 title 是入口，description 是补充内容；间距由源码样式控制。
       judgment: 重要限制和必读内容不应藏在默认关闭的答案里。
     single:
-      title: 单项展开
-      english: Single-open accordion
-      kind: 行为
-      definition: 一组折叠项中最多保留一个打开项。
+      term: 'single-open-accordion'
       context: activeIndex 记录当前题目，点击同一题设为 null，点击另一题替换编号。
       parameter: 原作 activeIndex 初值为 1；点击答案或组件外部也会收起。
       judgment: 阅读对比任务可能更适合允许多项同时展开，需要按任务重新决定。
     height:
-      title: 高度动画
-      english: Height transition
-      kind: 原语
-      definition: 逐步改变内容区域占用的高度，让周围布局随之重新排列。
+      term: 'height-transition'
       context: '答案由 height: 0 变为 auto，opacity 同时从 0 到 1。'
       parameter: 原作 duration = 0.3 秒，ease = easeInOut。
       judgment: 真实文本高度会随语言和屏幕宽度变化，不要写死答案高度。
     easing:
-      title: 缓动
-      english: Easing
-      kind: 原语
-      definition: 描述动画过程中速度如何变化。即使总时长相同，匀速、先慢后快、先快后慢的感觉也不同。
+      term: 'easing'
       context: 答案展开与收起使用 easeInOut，在开始和结束时减速。
       parameter: 'transition = { duration: 0.3, ease: "easeInOut" }。'
       judgment: 阅读组件应迅速响应；时长太长会阻碍连续查阅。
     reduced:
-      title: 减少动态效果
-      english: Reduced motion
-      kind: 使用规范
-      definition: 尊重用户在系统中减少动画的偏好，为大范围运动提供更安静的替代方式。
+      term: 'reduced-motion'
       context: 样板尊重减少动态效果偏好，不自动播放录屏；接入时应直接展开答案。
       parameter: 原作未内置此处理；接入时给高度、透明度和图标动画提供替代。
       judgment: 保留操作结果和内容变化，让用户仍然能完成相同的任务。

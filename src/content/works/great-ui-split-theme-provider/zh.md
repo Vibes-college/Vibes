@@ -52,10 +52,7 @@ learning:
       - 受控模式由应用提供主题并接收变更；根属性仍由组件写入。
   glossary:
     split-theme-provider-mechanism:
-      title: 视图过渡
-      english: View Transition
-      kind: 行为与原理
-      definition: 浏览器保存状态改变前后的画面，通过独立的过渡层连接这两个状态。
+      term: 'view-transition'
       context: View Transition 保存新旧根视图，clip-path 的 inset 从中央窄条扩展为整屏，或反向收拢旧视图；主题状态与视觉过渡由同一次触发协调。
       parameter: direction / mode：horizontal 或 vertical；in-to-out 展开新画面，out-to-in 收拢旧画面。；duration / easing：默认600毫秒与 ease-in-out，持续时间单位是毫秒。；theme / onThemeChange / useSplitTheme：受控模式由应用提供主题并接收变更；根属性仍由组件写入。
       judgment: 它写入整个 documentElement 的 dark 类和 data-theme，并共用根视图样式；多个主题管理器并存会争抢状态。onTransition 在主题更新时调用，不代表动画已经结束。

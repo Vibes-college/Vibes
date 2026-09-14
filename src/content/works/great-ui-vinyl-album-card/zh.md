@@ -52,10 +52,7 @@ learning:
       - 替换原站主题依赖，按可用宽度限制整体尺寸。
   glossary:
     vinyl-album-card-mechanism:
-      title: 物件隐喻
-      english: Object metaphor
-      kind: 行为与原理
-      definition: 借用现实物体的层次和动作，让数字内容的组织方式更直观。
+      term: 'object-metaphor'
       context: 两层独立弹簧控制唱片和封面，唱片圆环及反光由CSS组成，封面和中心标签共用图片。
       parameter: title / artist / releaseType / year / coverImage：替换示例专辑、未来年份和有权使用的封面。；x / rotate / spring：默认140px及180度，只往目标旋转，不会持续播放转动。；useTheme / w-[500px]：替换原站主题依赖，按可用宽度限制整体尺寸。
       judgment: 没有播放、购买或跳转；固定500px容器容易超出手机。依赖原站ThemeProvider和framer-motion，需要适配项目环境。

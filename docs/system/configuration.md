@@ -26,7 +26,7 @@ code-sources:
     'public/_headers',
     'public/_redirects',
   ]
-code-revision: '92ae16bf81b81be257e4b0e164d3efeaa41f59e5f62c17497ed78d324f5b2db3'
+code-revision: '77c96ccd2a0b9998f72a34ae559dcc691d4e7462327189c755119b353364dc3e'
 ---
 
 # 配置和环境变量
@@ -86,6 +86,8 @@ Paseo按固定上游及补丁独立构建，默认产品构建必须包含有效
 
 外部快照在 `resources/references/`，本地证据在 `resources/evidence/`；`.gitignore`、`.prettierignore`、`eslint.config.mjs` 同步排除这两项，`tsconfig.json` 排除resources。它们不属于网站构建输入。node_modules目录及隔离worktree复用依赖的同名符号链接均不提交，.gitignore以node_modules匹配。完整文件职责见 [仓库地图](../README.md)。
 
+共享词条在src/content/glossary/terms参与内容构建；同目录sources保存用于词条整理的完整原始文章，进入Git但不随站打包，.prettierignore保留其原始字节。词条摘要使用现有Astro frontmatter解析，不新增浏览器Markdown解析器或运行依赖。
+
 CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GITHUB_OUTPUT用于传递范围和main验收复用决定。GitHub自动提供仓库ID、PR事件、运行ID/attempt和SHA；scope的GH_TOKEN仅用于只读证据查询，不需要新增用户secret。CI_ACCEPTANCE_REUSED仅由可信判定后的main生产准备和示例回执恢复步骤设置，不能作为本地跳过回归的配置。后者的CI_ACCEPTANCE_RUN与CI_ACCEPTANCE_ATTEMPT来自同一判定，记录被复用的完整PR验收来源。冻结检查独立使用DOCS_BASE_REF，缺失基线失败。详见[CI](../system/checks-and-release.md)。
 
 ## 内容构建与隔离测试
@@ -120,4 +122,4 @@ ESLint仅对public/media/2048/game.js这一份带MIT署名的上游压缩分发�
 
 Great UI工作台复用已锁定的React、Motion和Lucide依赖，站内Astro学习页与scripts/great-ui.ts辅助Vite入口读取同一份Markdown。默认预览4325，专用Playwright测试服务4336，均绑定127.0.0.1且端口冲突直接失败。JSX在ESLint专用范围检查，工具TypeScript允许读取构建期MJS。命令、媒体与验收范围见[学习操作路径](../features/great-ui-learning.md)。
 
-Great UI学习页的GitHub编辑链接读取VIBES_CONTENT_EDIT_REF或GITHUB_HEAD_REF以指向PR分支；发布预览命令从已核对的PR设置前者，正式main构建默认main。开发回退当前Git分支。astro.config.mjs仅允许当前根目录与实际node_modules目录被开发服务读取，支持隔离检出复用已安装依赖，不扩大到父仓库。
+Great UI学习页的GitHub编辑链接和完整词条链接读取VIBES_CONTENT_EDIT_REF或GITHUB_HEAD_REF以指向PR分支；发布预览命令从已核对的PR设置前者，正式main构建默认main。开发回退当前Git分支。astro.config.mjs仅允许当前根目录与实际node_modules目录被开发服务读取，支持隔离检出复用已安装依赖，不扩大到父仓库。

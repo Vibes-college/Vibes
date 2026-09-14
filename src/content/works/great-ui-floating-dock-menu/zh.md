@@ -53,10 +53,7 @@ learning:
       - 未提供ease时使用弹簧；0时长会被或运算回退，静态模式需修改分支。
   glossary:
     floating-dock-menu-mechanism:
-      title: 布局动画
-      english: Layout animation
-      kind: 行为与原理
-      definition: 读取布局变化前后的尺寸位置，再用过渡连接，减少容器突然跳变。
+      term: 'layout-animation'
       context: activeIndex决定展开内容，LayoutGroup协调工具条与浮层大小变化；各设置按tab和item ID独立存储。
       parameter: tabs / onItemToggle / menuItems.onClick：toggle是内存布尔值，action调用外部回调，均不自带服务。；isFixed / menuWidth：默认固定底部、展开宽310px；预览是相对定位。；entryEase / entryDuration / exitEase / exitDuration：未提供ease时使用弹簧；0时长会被或运算回退，静态模式需修改分支。
       judgment: 默认AI、安全、导出条目都只是示例状态或空回调，没有对应服务。开关缺名称、action行是不可聚焦div，隐藏分类文字后也可能无可读名称；传入新tabs不会重置内部开关。

@@ -12,8 +12,9 @@ code-sources:
     'scripts/build.ts',
     'scripts/migrate-content.ts',
     'tests/content-lifecycle.spec.ts',
+    'tests/unit/glossary.test.ts',
   ]
-code-revision: '3126ce6553066af7dd47b2534ccac46bad6a6ba4a001522ba841577a7e1588db'
+code-revision: 'd0e0a0da83c600609b649155aa1b31622ec264a2323de914080cab5a7b54193c'
 ---
 
 # 功能名：维护作品内容
@@ -39,7 +40,15 @@ code-revision: '3126ce6553066af7dd47b2534ccac46bad6a6ba4a001522ba841577a7e1588db
 
 ### 维护Great UI学习材料
 
-从学习页顶部进入该语言的GitHub编辑页，修改一份Markdown的三个正文面板及文件头learning中的目标、检查和术语，提出PR并查看检查及阶段预览。共享源码、组合能力与素材路径在同目录work.json；媒体文件放public/great-ui/media，来源及摘要登记在local-recordings.json。页面与复制任务共同读取这些字段，不在组件里另写一份文案。先运行content:validate，再构建核对面板、术语、任务与搜索；编辑源码或共享模板时升级为verify/budget。完整操作和示例见[学习交互作品](great-ui-learning.md#维护同一份材料)，格式见[交互学习材料](../system/content-model.md#交互学习材料)。
+从学习页顶部编辑图标进入该语言的GitHub编辑页，修改一份Markdown的三个正文面板及文件头learning中的目标、检查和术语引用，提出PR并查看检查及阶段预览。共享源码、组合能力与素材路径在同目录work.json；媒体文件放public/great-ui/media，来源及摘要登记在local-recordings.json。页面与复制任务共同读取这些字段，不在组件里另写一份文案。先运行content:validate，再构建核对面板、术语、任务与搜索；编辑源码或共享模板时升级为verify/budget。完整操作和示例见[学习交互作品](great-ui-learning.md#维护同一份材料)，格式见[交互学习材料](../system/content-model.md#交互学习材料)。
+
+### 收录与引用UI/UX术语
+
+1. 从[共享词库索引](../../src/content/glossary/README.md)按中英文与别名查找；已有同义词时修改同一词条，不再写一份解释。先读[原文](../../src/content/glossary/sources/adrian-punk-motion-part-1.md)理解四层结构及编排。
+2. 新词复制[模板](../../src/content/glossary/_TEMPLATE.md)到terms目录，填写稳定ID、名称、别名、分类及可定位出处。正文第一段是页面共用解释，其后维护变体、适用场景、不用场景与提示词；原文摘录和Vibes补充分清，原始下载文件保持不变。
+3. 在作品learning.glossary的局部ID下填写term（共享ID），只另写context（本例应用）、parameter（本例参数）、judgment（如何判断）。正文的`[[局部ID|显示文字]]`保持可读；通用解释不再写入作品。词条弹层和文字版说明都能打开完整词条，链接随预览分支或正式main选择。
+4. 修改共享解释前查找所有引用它的作品，逐件核对应用是否仍匹配。content:validate拒绝缺失引用、重复词条和别名冲突；构建后页面、文本及JSON任务共用更新后的解释与出处，详情包只包含本页词条摘要。
+5. 关联词条的解释、正文与来源变化会更新作品的原文修订及组合内容摘要；其他词条不改变该作品的修订。旧翻译须据实复核，完整示例回执也须匹配当前词库与实现。维护仍通过GitHub PR，站内没有词条编辑后台。
 
 ### 添加真实媒体封面
 
@@ -83,6 +92,7 @@ flowchart TD
 
 - 内容：`src/content/works/{id}/work.json`、`src/content/works/{id}/zh.md`、`src/content/works/{id}/en.md`（两种语言均可改用`.mdx`），其中`{id}`是作品目录占位符；现有示例为`src/content/works/attention-is-all-you-need/`。
 - 分类：`src/data/taxonomy.json`。
+- 共享词库：`src/content/glossary/README.md`、`terms/*.md`、`sources/`与`_TEMPLATE.md`；解析和引用校验在`src/lib/content/glossary.ts`。
 - 内容规则：`src/lib/content/schema.ts`、`src/lib/content/catalog.ts`、`src/lib/content/validate.ts`、`src/lib/content/revision.ts`、`src/lib/content/relations.ts`、`src/lib/content/views.ts`。
 - 读取和校验：`src/content.config.ts`、`scripts/validate-content.ts`、`scripts/build.ts`。
 - 字段与命令边界见[规则](../system/rules.md)和[CLI](../system/checks-and-release.md)。网站内容不存入D1。
@@ -96,6 +106,7 @@ flowchart TD
 - [x] 核对译文并更新摘要后解除待复核提示，命令本身不自动批准发布。
 - [x] 全部草稿或空目录可以构建，且不残留旧搜索索引。
 - [x] MDX与Markdown共存、重复语言文件拒绝，互动文章可按语言搜索与阅读。
+- [x] 2026-09-14共享词条编辑、来源与引用校验、相关修订失效通过3项专项单元；48页静态产物与两种任务同源，正文及60处案例说明迁移前后相同，原文文件完整保留。未重复浏览器回归。
 
 MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器140项通过及4项按设备适用性跳过；新增英文文章使旧数量断言失败，修正该测试后在三种浏览器专项3项通过，其余代码未变。budget通过。原版十组件、双语调色、无JS、减少动画、320px、加载隔离与MDX横拖禁用均有覆盖；证据在`resources/evidence/009-mdx-articles/`，真机iOS未专项验收。
 
@@ -110,6 +121,7 @@ MDX有效验收：2026-09-07，完整运行71项单元测试通过、浏览器14
 - `tests/unit/content.test.ts`：真实作品身份、正文、HTTPS来源、MDX文件及重复语言拒绝；`tests/mdx.spec.ts`验证互动文章真实构建后的阅读路径。
 - `tests/unit/content-validation.test.ts`：内容格式与跨文件约束。
 - `tests/unit/content-revision.test.ts`：摘要与待复核状态。
+- `tests/unit/glossary.test.ts`：词库重复/别名/来源拒绝、跨作品共用解释、任务同步和关联内容修订。
 - `tests/unit/content-relations.test.ts`：事实与双向关系。
 - `tests/unit/i18n.test.ts`：发布语言、路径与分页。
 - `tests/content-lifecycle.spec.ts`中的`isolated builds preserve original-first publication and translation review lifecycle`：实际构建的草稿、发布、待复核与零发布阶段。

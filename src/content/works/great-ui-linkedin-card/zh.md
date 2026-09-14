@@ -53,10 +53,7 @@ learning:
       - 默认最大5度；减少动态效果时关闭位移与倾斜。
   glossary:
     linkedin-card-mechanism:
-      title: 悬浮资料
-      english: Hover profile
-      kind: 行为与原理
-      definition: 在主链接附近按需展示补充背景，减少跳转前的不确定性。
+      term: 'hover-profile'
       context: 指针相对中心的位置经弹簧平滑，控制卡片横向跟随和旋转；上方浮层用透明度、位移及模糊完成出现。预览关闭卡片倾斜。
       parameter: name / headline / location / connections：全部由项目提供，明确统计口径和更新时间。；username / href / avatarUrl：不读取平台账号；替换自有或有权使用的头像和真实目标。；enableLinkTilt / enableCardTilt / cardTiltMaxRotate：默认最大5度；减少动态效果时关闭位移与倾斜。
       judgment: headline 超过两行会被截断；需要真实完整介绍时另给详情链接。 悬浮层只有鼠标入口，固定320px宽且向上展开，窄屏与靠近页面边缘时需要调整。

@@ -52,10 +52,7 @@ learning:
       - 传入至少两个带 clipPath 的关键帧，核对最终覆盖整屏。
   glossary:
     swipe-theme-change-mechanism:
-      title: 多边形裁切
-      english: Polygon clipping
-      kind: 行为与原理
-      definition: 通过一组顶点定义可见区域，改变顶点即可让画面沿直线边界揭示。
+      term: 'polygon-clipping'
       context: clip-path polygon 的顶点变化形成扫过边界。left 表示从左向右；角落模式使用三角形展开，不受斜角参数影响。
       parameter: direction / triggerSwipe：支持四边、四角和完整方向别名；名称表示新主题从哪边进入。；angle / duration：默认0度额外倾斜、650毫秒；角落模式使用固定三角形。；getKeyframes：传入至少两个带 clipPath 的关键帧，核对最终覆盖整屏。
       judgment: getKeyframes 虽声明支持对象形式，实际只读取数组前两项的 clipPath；自定义时应提供这两个端点。 它会写入整个根元素的dark类和data-theme，并共用根视图样式；需要唯一主题负责人。

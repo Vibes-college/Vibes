@@ -39,6 +39,7 @@ export async function currentDemoProof(scope: ProofScope = 'site') {
     ...(await files('tests/great-ui')),
     ...(await files('tests/fixtures/great-ui')),
     ...(await files('src/lib/content')),
+    ...(await files('src/content/glossary/terms')),
     ...(await files(process.env.VIBES_CONTENT_DIR || 'src/content/works')).filter((file) =>
       /\/great-ui-[^/]+\//.test(file),
     ),

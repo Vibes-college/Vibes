@@ -15,7 +15,7 @@ code-sources:
     'scripts/validate-content.ts',
     'scripts/migrate-content.ts',
   ]
-code-revision: '772dd6107f94706a948782502e062bfa186ea6ff276b812410a025bc1d30df08'
+code-revision: 'b8faadc61f1a622629e84ab706597443ed0fd2fbfc8ee175fcc7169776ffa675'
 ---
 
 # 数据和内容结构
@@ -83,10 +83,16 @@ Great UI学习页沿用work.json加每语言一份Markdown，ID为great-ui-<slug
 | capability             | family、roles、provides、requires、resources、adaptations、reducedMotion、decorativeTransition，供组合规则判定                                     |
 | 语言文件头learning     | category、classification、placementHint、changesHint、preserve、checks、goals、adjustments、glossary                                               |
 | goals                  | 非空列表，每项id、title、action、judge，ID不得重复；三个面板与任务引用同一组目标                                                                   |
-| adjustments / glossary | 三列调整表；术语包含title、english、kind、definition、context、parameter、judgment                                                                 |
+| adjustments / glossary | 三列调整表；术语以局部ID映射term（共享词条ID）、context、parameter、judgment；不接受本地重复definition                                             |
 | 正文                   | 按顺序保留拆解设计、改造设计、串联设计三个二级标题；第一节保留适合用在哪里、什么时候不用、试一次，就会更懂三级标题                                 |
 
-正文编译为可供React安全渲染的结构树，支持段落、强调、列表、链接、代码和术语按钮；拒绝原始HTML、未知术语及不支持的元素。原始文字同时进入任务文本/JSON与全文索引。文件头和正文都纳入原文摘要。写作示例与修改步骤见[维护同一份材料](../features/great-ui-learning.md#维护同一份材料)。录制依据见[录制演示](../features/recording-previews.md)，素材路径以public/great-ui/media和来源登记为准。
+正文编译为可供React安全渲染的结构树，支持段落、强调、列表、链接、代码和术语按钮；拒绝原始HTML、未知术语及不支持的元素。原始文字同时进入任务文本/JSON与全文索引。文件头、正文及引用词条的完整内容都纳入原文摘要。写作示例与修改步骤见[维护同一份材料](../features/great-ui-learning.md#维护同一份材料)。录制依据见[录制演示](../features/recording-previews.md)，素材路径以public/great-ui/media和来源登记为准。
+
+### 共享术语文件
+
+src/content/glossary/terms/<id>.md包含id、title、english、aliases、category、provenance和sources。分类为基础概念、技术工具、触发方式、动效类型、UX规则；来源方式为原文摘录与补充、原文概述整理、案例整理。每个来源包含title、author、HTTPS url及section，不能夹带账号密码。ID须匹配文件名，名称及别名规范化后不得跨词条冲突。
+
+正文一级标题与中英文名称一致，第一段纯文本为统一definition，其后依次为常见变体、适合用在哪里、什么时候不用、提示词例子四节。sources目录保留原始文章；索引与模板不作为词条加载。读取器只为作品保留其引用的词条，浏览器及任务只导出名称、分类、解释、出处和本例说明，不携带整库或完整长文。模板与收录步骤见[共享词库](../../src/content/glossary/README.md)。
 
 ## 相关作品记录
 

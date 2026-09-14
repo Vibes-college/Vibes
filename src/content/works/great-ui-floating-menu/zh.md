@@ -53,10 +53,7 @@ learning:
       - 补原生按钮和键盘关闭，在现有框架接正确链接实现。
   glossary:
     floating-menu-mechanism:
-      title: 渐进展开
-      english: Progressive disclosure
-      kind: 行为与原理
-      definition: 先保留简短入口，用户需要时再展示更完整的选项层级。
+      term: 'progressive-disclosure'
       context: 容器在320×56和380×700之间做弹簧尺寸动画；内容用父子variants按顺序进入与反向退出。
       parameter: primaryLinks / secondaryLinks / socialLinks：主次链接走Next Link，社交链接另开标签；替换所有#占位。；motion.div animate width / height：打开默认380×700，需要根据视口可用空间限制。；isOpen / next/link：补原生按钮和键盘关闭，在现有框架接正确链接实现。
       judgment: 开关是div，缺键盘按钮语义；展开固定380px宽、700px高，会超出小屏。组件直接依赖next/link，移植其他路由时必须替换。

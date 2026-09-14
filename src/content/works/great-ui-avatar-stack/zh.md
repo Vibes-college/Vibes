@@ -52,10 +52,7 @@ learning:
       - sm40、md56、lg72px，越多人越需要明确显示上限。
   glossary:
     avatar-stack-mechanism:
-      title: 局部层级
-      english: Local stacking
-      kind: 行为与原理
-      definition: 在重叠元素中提升当前项的绘制顺序，避免交互目标被相邻项盖住。
+      term: 'local-stacking'
       context: 负外边距让头像重叠，zIndex保证当前头像在最上层；弹簧按鼠标横向位置轻微移动姓名提示。
       parameter: users / name / img：使用真实有权展示的头像，空数组自然不显示。；variant：spring-tilt、spring-box、slide-blur只改变提示方式。；size / overlapClasses：sm40、md56、lg72px，越多人越需要明确显示上限。
       judgment: 头像只是div，没有选择、链接或键盘入口；默认人物来自示例图片。人数多时没有截断和更多人数入口。

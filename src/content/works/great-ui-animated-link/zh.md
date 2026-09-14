@@ -52,10 +52,7 @@ learning:
       - 波浪循环需在离开和减少动态效果时停下，键盘有等价强调。
   glossary:
     animated-link-mechanism:
-      title: 装饰与语义
-      english: Decoration and semantics
-      kind: 行为与原理
-      definition: 视觉强调可以变化，但链接的可读名称、目标和键盘操作应保持稳定。
+      term: 'decoration-and-semantics'
       context: 简单变体用CSS伪元素，填色和文字替换用重叠文字及Motion裁切或位移。
       parameter: variant：13种规则按需要选择，同一区域保持一致。；href / next/link：替换#，适配项目现有路由；复制文字层已有aria-hidden。；isHovered / wavy transition：波浪循环需在离开和减少动态效果时停下，键盘有等价强调。
       judgment: 依赖next/link；多数反馈仅监听hover，需补focus-visible。showArrow只在基础分支出现，不适用于所有变体。

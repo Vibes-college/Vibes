@@ -62,6 +62,7 @@ export function learningMaterials(
         contentRevision: digest({
           sections: entry.sections,
           learning: entry.learning,
+          glossary: works.find((item) => item.meta.id === entry.id)!.glossary,
           verification: entry.verification,
         }),
         capabilityRevision: digest(capability),

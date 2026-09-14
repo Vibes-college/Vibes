@@ -52,10 +52,7 @@ learning:
       - 限制行列总数，尺寸变化时重算；需要每次随机时再明确修改。
   glossary:
     pixel-page-transition-mechanism:
-      title: 随机错峰
-      english: Shuffled staggering
-      kind: 行为与原理
-      definition: 先打乱元素顺序，再按这个顺序安排出现时间，形成分散的变化。
+      term: 'shuffled-staggering'
       context: 窗口宽度决定列数和实际方格尺寸，再按高度补足行数；随机顺序在网格重新计算时生成，并非每次点击都重新洗牌。
       parameter: pixelSize：默认40px，实际尺寸按整列平分；更小不等于更流畅。；duration / staggerDuration：默认0.2秒及0.4秒分散区间，总过程约1.2秒。；updateGrid / shuffledIndices：限制行列总数，尺寸变化时重算；需要每次随机时再明确修改。
       judgment: pixelSize 太小会生成大量独立动画节点，0或负数也未被安全限制；需要正数校验和节点预算。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。

@@ -52,10 +52,7 @@ learning:
       - 0.3秒从左端展开，只是装饰反馈。
   glossary:
     card-mechanism:
-      title: 不改变布局的强调
-      english: Layout-preserving emphasis
-      kind: 行为与原理
-      definition: 通过覆盖层的视觉变化表达反馈，保持正文位置与尺寸稳定。
+      term: 'layout-preserving-emphasis'
       context: 两条分隔线叠放，底线始终存在，上层线用scaleX从左端伸展；变化不影响布局。
       parameter: title / src / date：日期按传入文本显示，组件不解析日期或读取图片元信息。；imgClassName：默认16:9裁切，核对主体不被裁掉及缺图处理。；lineControls / dividerClassName：0.3秒从左端展开，只是装饰反馈。
       judgment: 卡片是div，没有默认跳转或选择能力。标题和日期都禁止换行，长标题在窄屏可能挤出；调用方覆盖鼠标事件也会覆盖原反馈。

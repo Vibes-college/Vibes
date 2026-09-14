@@ -52,10 +52,7 @@ learning:
       - 受控模式与项目现有主题同步，避免另一状态单独切换根元素。
   glossary:
     circular-theme-provider-mechanism:
-      title: 覆盖半径
-      english: Covering radius
-      kind: 行为与原理
-      definition: 从某个圆心到最远画面角落的距离，让圆形扩张最终覆盖整个窗口。
+      term: 'covering-radius'
       context: 最终半径取圆心到最远角落的距离，确保整个窗口都进入新主题；事件坐标、元素中心与预设角落均可作为起点。
       parameter: triggerTransition / defaultCenter：可用角落名称、坐标、事件或元素；元素会读取边界中心。；duration / easing：默认500毫秒、ease-in-out。；theme / onThemeChange：受控模式与项目现有主题同步，避免另一状态单独切换根元素。
       judgment: 键盘激活按钮时事件坐标可能不是按钮中心；使用 currentTarget 元素作为起点更稳定。传入页面坐标时也要明确这里使用视口坐标。 它会写入整个根元素的dark类和data-theme，并共用根视图样式；需要唯一主题负责人。

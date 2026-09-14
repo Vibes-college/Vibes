@@ -52,10 +52,7 @@ learning:
       - 等宽字符才能保持对齐，字符与色块需足够对比。
   glossary:
     terminal-loader-mechanism:
-      title: 不确定进度
-      english: Indeterminate progress
-      kind: 行为与原理
-      definition: 只表明任务仍在等待或执行，不承诺具体完成比例。
+      term: 'indeterminate-progress'
       context: 计时器改变position与direction，字符数组形成尾迹，色块用绝对定位覆盖当前列。
       parameter: rows / cols / blockWidth：默认5×60、色块3列；保证cols大于色块并限制总字符。；speed：每步间隔，单位毫秒；越小推进越快。；charEmpty / charTrail / color / bgColor：等宽字符才能保持对齐，字符与色块需足够对比。
       judgment: 没有百分比或完成信号，只能表示不确定等待。cols和blockWidth缺边界校验，固定字符宽度也会在窄屏溢出。

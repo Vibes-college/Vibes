@@ -53,10 +53,7 @@ learning:
       - 默认黑白；换图用0.4秒的位移，新旧照片在相同位置交接。
   glossary:
     team-section-mechanism:
-      title: 方向感知切换
-      english: Direction-aware transition
-      kind: 行为与原理
-      definition: 根据用户选择顺序决定新内容从哪一侧进入，让变化与浏览方向一致。
+      term: 'direction-aware-transition'
       context: activeIndex 与 prevIndex 决定选中人物和图片进入方向，AnimatePresence 让旧照片缩小淡出、新照片从上方或下方进入。
       parameter: speakers / Speaker：提供姓名、职位、公司、图片和可选社交地址；空数组不渲染。；slideDistance / align / rowClassName：职位默认移动20px进入，行可按中心、基线或底端对齐。；grayscale / activeImageClassName / imageVariants：默认黑白；换图用0.4秒的位移，新旧照片在相同位置交接。
       judgment: 桌面行只监听鼠标进入，没有等价键盘选择；social 链接只在窄屏卡片出现。桌面上需要同时补齐可聚焦入口和每位人物的实际链接。

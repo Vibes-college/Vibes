@@ -52,10 +52,7 @@ learning:
       - 默认按根dark类选黑白；可传固定颜色并核对背景对比。
   glossary:
     pixel-to-ascii-image-mechanism:
-      title: 亮度映射
-      english: Luminance mapping
-      kind: 行为与原理
-      definition: 把图像区域的明暗换成疏密不同的字符，以字符保留原图轮廓。
+      term: 'luminance-mapping'
       context: canvas读取图片像素，每格采样颜色和亮度，再选择字符；坐标哈希让不同格子在不同阶段变化。
       parameter: src / img.crossOrigin：使用可读取像素的来源，并处理加载失败或canvas读取异常。；width / height / charSize：正尺寸和正字符大小，先预算width×height/charSize²格。；chars / textColor：默认按根dark类选黑白；可传固定颜色并核对背景对比。
       judgment: 图片需要允许跨域读取像素；无失败处理。charSize为0或负数会让绘制循环无法推进，必须校验。持续逐帧重绘和小字符会增加成本；源码实际从framer-motion导入。

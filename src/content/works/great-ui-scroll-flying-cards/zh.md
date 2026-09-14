@@ -52,10 +52,7 @@ learning:
       - 每卡依据 start end 到 end start 的进度变化，内嵌区域要传入它自己的滚动元素。
   glossary:
     scroll-flying-cards-mechanism:
-      title: 滚动进度映射
-      english: Scroll progress mapping
-      kind: 行为与原理
-      definition: 用元素经过视口的位置控制视觉变化，滚动速度与方向由读者决定。
+      term: 'scroll-progress-mapping'
       context: 每张卡片的滚动进度分别控制位移、角度、透明度、缩放和模糊。0.4到0.6附近是稳定阅读区，奇偶卡片使用相反倾斜方向。
       parameter: animationConfig.direction / offset：默认向上，偏移300px；窄屏应按实际可见区域缩小。；animationConfig.rotation / scale / blur：默认10度、0.85与20px模糊，中段归零旋转和模糊并恢复正常大小。；scrollContainerRef / useScroll offset：每卡依据 start end 到 end start 的进度变化，内嵌区域要传入它自己的滚动元素。
       judgment: 每张卡占用约一屏以上的滚动距离，数量一多会明显拖长页面；scrollContainerRef 必须指向真实滚动容器，减少动态效果时需保留静态内容。

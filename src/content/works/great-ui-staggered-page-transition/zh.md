@@ -55,50 +55,32 @@ learning:
       - 遮挡完成与目标内容就绪是两个条件；回调不是加载完成的证明。
   glossary:
     stagger:
-      title: 错峰
-      english: Stagger
-      kind: 行为
-      definition: 同组元素按顺序、带着时间间隔开始运动。差异来自开始时间，元素本身可以使用相同的动画。
+      term: 'stagger'
       context: 原作的五块遮挡层每隔 75 毫秒启动一块，让一次页面切换产生连续的节奏。
       parameter: staggerDelay = 0.075 秒；第 i 块的延迟 = i × staggerDelay（i 从 0 开始）。
       judgment: 间隔太大会让最后一块迟迟不到位。增加块数时，也要检查整体等待时间。
     overlay:
-      title: 遮挡层
-      english: Overlay
-      kind: 原语
-      definition: 放在内容上方的独立视觉层。它可以暂时盖住底下的内容，而不用移动内容本身。
+      term: 'overlay'
       context: 原作把全屏遮挡层分成五块；先盖住旧页面，再从同一位置揭开新页面。
       parameter: columns 控制分块数量，panelClassName 控制遮挡层的颜色与外观。
       judgment: 遮挡只是视觉手段。它本身不会让目标页面的数据更快加载完成。
     transform:
-      title: 位移
-      english: Translate
-      kind: 原语
-      definition: 改变元素在画面里的显示位置，同时保留它在布局中的占位。
+      term: 'translate'
       context: 顶部进入时，每块面板从视口上方移动到中央，再向下离开。底下的文字并没有一起滑动。
       parameter: '原作使用 y: -100dvh → 0 → 100dvh；左右方向改用 x 与 dvw。'
       judgment: 方向应帮助读者理解变化。普通列表刷新通常不需要全屏位移。
     easing:
-      title: 缓动
-      english: Easing
-      kind: 原语
-      definition: 描述动画过程中速度如何变化。即使总时长相同，匀速、先慢后快、先快后慢的感觉也不同。
+      term: 'easing'
       context: 原作使用两端慢、中段快的曲线，让面板有一个明确的起步和收尾。
       parameter: ease = [0.85, 0, 0.15, 1]，对应 cubic-bezier(0.85, 0, 0.15, 1)。
       judgment: 先保留原曲线，再调整时长；同时改变太多参数，会很难判断节奏为什么变了。
     swap:
-      title: 内容切换时机
-      english: View swap
-      kind: 交互术语
-      definition: 把旧视图替换成新视图的时刻。它需要与动画的遮挡状态协调。
+      term: 'view-swap'
       context: 等最后一块面板也完全到位，调用 onViewSwap，再停留 50 毫秒后开始退场。
       parameter: 完全遮住的时刻 = duration + (columns − 1) × staggerDelay。原始参数下为 1.05 秒。
       judgment: onViewSwap 只是回调，不能保证异步路由已经渲染完。接入真实项目时要单独处理加载与失败。
     reduced:
-      title: 减少动态效果
-      english: Reduced motion
-      kind: 使用规范
-      definition: 尊重用户在系统中减少动画的偏好，为大范围运动提供更安静的替代方式。
+      term: 'reduced-motion'
       context: 这个样板在系统开启此偏好时不自动播放录屏。接入项目时，直接完成内容切换。
       parameter: 通过 prefers-reduced-motion 检查偏好。原作该文件没有内置此处理，实际接入时应补上。
       judgment: 保留操作结果和内容变化，让用户仍然能完成相同的任务。

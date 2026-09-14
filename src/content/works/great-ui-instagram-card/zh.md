@@ -53,10 +53,7 @@ learning:
       - 默认最大5度；减少动态效果时关闭位移与倾斜。
   glossary:
     instagram-card-mechanism:
-      title: 悬浮资料
-      english: Hover profile
-      kind: 行为与原理
-      definition: 在主链接附近按需展示补充背景，减少跳转前的不确定性。
+      term: 'hover-profile'
       context: 指针相对中心的位置经弹簧平滑，控制卡片横向跟随和旋转；上方浮层用透明度、位移及模糊完成出现。预览关闭卡片倾斜。
       parameter: posts / followers / following / bio：数据由外部提供；数量过长时检查三列是否挤出卡片。；username / href / avatarUrl：不读取平台账号；替换自有或有权使用的头像和真实目标。；enableLinkTilt / enableCardTilt / cardTiltMaxRotate：默认最大5度；减少动态效果时关闭位移与倾斜。
       judgment: 没有Instagram数据请求或关注操作；头像周围的彩色圆环只是装饰，不说明账号有新动态。 悬浮层只有鼠标入口，固定320px宽且向上展开，窄屏与靠近页面边缘时需要调整。

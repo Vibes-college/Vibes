@@ -52,10 +52,7 @@ learning:
       - 默认ease-in-out；onTransition在主题应用时发生，不表示动画结束。
   glossary:
     blur-fade-theme-transition-mechanism:
-      title: 交叉淡化
-      english: Cross-fade
-      kind: 行为与原理
-      definition: 让旧画面逐渐减少、新画面逐渐增加，在短时间内共同构成可见结果。
+      term: 'crossfade'
       context: View Transition 的 old(root) 与 new(root) 各有一套 filter 和 opacity 关键帧，两者共享时长。
       parameter: maxBlur：默认16px，可先减小再判断是否仍需要模糊。；duration / triggerTransition：默认500毫秒，触发函数可单次覆盖时长与模糊强度。；easing / onTransition：默认ease-in-out；onTransition在主题应用时发生，不表示动画结束。
       judgment: 整个根视图都参与模糊，长页面和复杂内容需实测绘制成本；不能靠降低透明度解决实际主题配色对比度问题。 它会写入整个根元素的dark类和data-theme，并共用根视图样式；需要唯一主题负责人。

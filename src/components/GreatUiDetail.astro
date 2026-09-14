@@ -75,6 +75,9 @@ const editUrl = contentEditUrl(`src/content/works/${work.slug}/${work.locale}.md
               {term.title} · {term.english}
             </h3>
             <p>{term.definition}</p>
+            <a href={term.reference} target="_blank" rel="noreferrer">
+              查看完整词条与出处
+            </a>
             <p>{term.context}</p>
             <p>{term.parameter}</p>
             <p>{term.judgment}</p>

@@ -3,6 +3,7 @@ import { validateMediaFiles } from '../media/files.ts';
 import { locales, type Catalog } from './schema.ts';
 import { parseLearningBody } from './learning.ts';
 import { validateLearningFiles } from './learning-files.ts';
+import { resolveGlossary } from './glossary.ts';
 
 // 校验跨文件身份、引用和发布关系，拒绝重复或静默修复坏数据。
 export function validateCatalog(catalog: Catalog): void {
@@ -25,7 +26,7 @@ export function validateCatalog(catalog: Catalog): void {
   if (ids.size !== catalog.works.length) throw new Error('content/works: duplicate work id');
   if (orders.size !== catalog.works.length) throw new Error('content/works: duplicate order');
   const pairs = new Set<string>();
-  for (const { meta, versions } of catalog.works) {
+  for (const { meta, versions, glossary } of catalog.works) {
     const file = `content/works/${meta.id}/work.json`;
     try {
       validateMedia(meta.media || [], meta.presentation);
@@ -52,6 +53,13 @@ export function validateCatalog(catalog: Catalog): void {
         if (version.file.endsWith('.mdx'))
           throw new Error(`${version.file}: learning uses Markdown`);
         const body = parseLearningBody(version.body, version.file);
+        try {
+          resolveGlossary(version.data.learning!.glossary, glossary);
+        } catch (error) {
+          throw new Error(`${version.file}: ${error instanceof Error ? error.message : error}`, {
+            cause: error,
+          });
+        }
         for (const match of JSON.stringify(body).matchAll(/\[\[([^|]+)\|[^\]]+\]\]/g))
           if (!version.data.learning!.glossary[match[1]])
             throw new Error(`${version.file}: unknown learning term ${match[1]}`);

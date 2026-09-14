@@ -10,11 +10,13 @@ import {
   type CatalogWork,
 } from './schema.ts';
 import { validateCatalog } from './validate.ts';
+import { readGlossary } from './glossary.ts';
 
 // CLI与Astro共用同一读取及校验入口，隔离测试可显式传入内容目录。
 export function readCatalog(
   root = process.env.VIBES_CONTENT_DIR || 'src/content/works',
   taxonomyFile = process.env.VIBES_TAXONOMY_FILE || 'src/data/taxonomy.json',
+  glossaryRoot = 'src/content/glossary/terms',
 ): Catalog {
   const taxonomy = parseContent(
     taxonomySchema,
@@ -44,6 +46,19 @@ export function readCatalog(
       versions[data.locale] = { data, body: parsed.content, file: path };
     }
     works.push({ meta, versions });
+  }
+  if (works.some((work) => work.meta.learning)) {
+    const glossary = readGlossary(glossaryRoot);
+    for (const work of works.filter((item) => item.meta.learning)) {
+      const ids = new Set(
+        Object.values(work.versions).flatMap((version) =>
+          Object.values(version.data.learning!.glossary).map((usage) => usage.term),
+        ),
+      );
+      work.glossary = Object.fromEntries(
+        [...ids].flatMap((id) => (Object.hasOwn(glossary, id) ? [[id, glossary[id]]] : [])),
+      );
+    }
   }
   const catalog = { taxonomy, works: works.sort((a, b) => a.meta.order - b.meta.order) };
   validateCatalog(catalog);

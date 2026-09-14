@@ -64,10 +64,7 @@ export const learningLanguageSchema = z
       slug,
       z
         .object({
-          title: text,
-          english: text,
-          kind: text,
-          definition: text,
+          term: slug,
           context: text,
           parameter: text,
           judgment: text,

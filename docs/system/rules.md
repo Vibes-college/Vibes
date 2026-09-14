@@ -23,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'b0504c3eddb984ee628a164b4f729db01f292637c00c9a386846e9af3e5bc4e5'
+code-revision: 'a728bd962e153637780c4f43485a7df568db4f743963b56ba8aef0026657c54f'
 ---
 
 # 常量、规则表与正则
@@ -35,6 +35,7 @@ code-revision: 'b0504c3eddb984ee628a164b4f729db01f292637c00c9a386846e9af3e5bc4e5
 - `src/lib/content/catalog.ts`允许每种语言一个.md或.mdx，重复后缀拒绝；`src/lib/content/schema.ts`限定zh/en、稳定小写ID、非空语言字段、无凭据HTTPS来源、预览枚举/颜色、可选事实及单一关联；`validate.ts`校验目录身份、ID/顺序唯一、引用与发布关系。
 - `src/data/taxonomy.json`是类型/标签名称及别名唯一源；原文语言、排序、事实顺序和关系属于各作品work.json。目录只包含当前语言published版本，每页24件；路径函数在`src/lib/i18n/routes.ts`。
 - `src/lib/content/revision.ts`对规范化原文与影响理解的字段计算SHA256；排序和其他语言变化不影响摘要。已发布译文摘要不一致时标待复核，不自动撤回或更新。
+- `src/lib/content/glossary.ts`校验共享词条稳定ID、跨词条名称/别名唯一、HTTPS出处及固定正文结构；作品只引用规范ID和本例说明。关联词条完整内容进入原文及组合内容摘要，未关联词条不改变该作品摘要；完整示例回执还覆盖词库整体文件树。
 - 搜索为Pagefind语言全文索引，与tag分类取交集；构建限定[data-pagefind-body]根，零发布时不生成索引并移除旧索引；不再用卡片文本过滤。q最长160字符、输入延迟150ms、请求15秒超时、每批24项；索引/分片重试释放失败实例；程序下载失败重试刷新页面保留q，清除模块失败缓存；结果序号隔离旧请求。规则在src/scripts/explore.ts与search.ts。
 - 目录路径`/{locale}/`、分类`/{locale}/tags/{tagId}/`、分页`page/{n}/`、详情`/{locale}/works/{id}/`；旧根路径转中文，旧type转分类。UI文案在src/lib/i18n/messages.ts。
 - `src/config/site.ts`统一来源；发布要求HTTPS SITE_URL，拒绝localhost和非纯origin地址，vibes.college已获授权。canonical去查询，语言替代链接仅含实际版本，sitemap不含搜索或草稿。

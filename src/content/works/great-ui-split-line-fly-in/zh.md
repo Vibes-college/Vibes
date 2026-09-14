@@ -52,10 +52,7 @@ learning:
       - 默认0.6错峰因子、0.4进度跨度，结束字距0.25em。
   glossary:
     split-line-fly-in-mechanism:
-      title: 分行测量
-      english: Line measurement
-      kind: 行为与原理
-      definition: 读取文字实际排版后各词的纵向位置，把落在同一行的内容作为一组处理。
+      term: 'line-measurement'
       context: 同一行共享横向位移、透明度、模糊和 wordSpacing。每行的起点由行号与 staggerFactor 决定，因此行与行依次到位。
       parameter: text / lines / calculateLines：自动分组按空格拆词并读取 offsetTop，或用 lines 明确每行。；direction / flyInDistance / blurStart：默认交替方向、70vw距离、12px模糊，移动端应缩小。；staggerFactor / animationDuration / wordSpacingEnd：默认0.6错峰因子、0.4进度跨度，结束字距0.25em。
       judgment: animationDuration 表示滚动进度区间，不是秒数。自动分行以空格拆词，中文、字体迟加载及同词数换文案需要重新分词和测量；每行禁止换行，过长行可能被裁掉。

@@ -52,10 +52,7 @@ learning:
       - 不能把最模糊一刻视为不透明覆盖；敏感切换需另选遮罩。
   glossary:
     cross-blur-page-transition-mechanism:
-      title: 背景滤镜
-      english: Backdrop filter
-      kind: 行为与原理
-      definition: 处理图层背后的画面，区别于只模糊元素自身的filter。
+      term: 'backdrop-filter'
       context: backdropFilter 模糊覆盖层后面的页面，透明度与模糊强度一起变化；内容本身由外部回调替换。
       parameter: maxBlur：默认20px，强度越高越难读，也可能增加绘制成本。；duration：默认总计0.6秒，在0.3秒处调用切换。；onViewSwap / backdropFilter：不能把最模糊一刻视为不透明覆盖；敏感切换需另选遮罩。
       judgment: 模糊不是完全遮挡，旧内容仍可能透出；该文件没有路由提供者，duration 是整个过程的时长，与其他单程参数不同。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。

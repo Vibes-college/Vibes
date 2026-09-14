@@ -52,10 +52,7 @@ learning:
       - 默认中心、单程0.5秒；覆盖后另停200毫秒。
   glossary:
     venetian-blinds-page-transition-mechanism:
-      title: 缩放原点
-      english: Transform origin
-      kind: 行为与原理
-      definition: 指定元素缩放时保持不动的位置，决定它从哪一侧展开或收回。
+      term: 'transform-origin'
       context: horizontal 用横条的 scaleY，vertical 用竖条的 scaleX；这是二维缩放，并没有真实三维翻转。
       parameter: direction / columns：默认20条，horizontal 为横条，vertical 为竖条。；staggerType / staggerDelay：linear、center-out、edge-in；默认间隔0.02秒。；origin / duration：默认中心、单程0.5秒；覆盖后另停200毫秒。
       judgment: origin 要与缩放方向协调；预览只展示线性错峰和中心原点，不能因此声称已覆盖全部组合。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。

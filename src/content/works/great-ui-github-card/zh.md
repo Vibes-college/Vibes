@@ -53,10 +53,7 @@ learning:
       - 颜色数组对应 level；自定义总数要说明与格子的统计范围。
   glossary:
     github-card-mechanism:
-      title: 位置映射
-      english: Position mapping
-      kind: 行为与原理
-      definition: 把指针在某个区域里的位置转换为角度、位移等反馈值。
+      term: 'position-mapping'
       context: 鼠标相对链接或卡片中心的位置被映射为弹簧跟随的旋转角度。119个日期按7行排列，颜色深浅来自数据中的 level。
       parameter: username / contributionsData / year：year 是显示文本；需要年度数据时应实际筛选并同步总数。；enableLinkTilt / enableCardTilt / linkTiltMaxRotate / cardTiltMaxRotate：链接与卡片分别控制，默认最大5度；作者示例关闭了卡片倾斜。；themeScheme / calendarTheme / totalContributions：颜色数组对应 level；自定义总数要说明与格子的统计范围。
       judgment: year 只改变底部年份文案，不会筛选那一年的数据；默认截取最近119天。即使传入 contributionsData，资料请求仍会发生；请求失败被静默处理，零格不等于确认没有贡献。

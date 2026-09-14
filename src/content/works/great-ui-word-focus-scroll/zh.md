@@ -52,10 +52,7 @@ learning:
       - 默认 start 90% 到 end 60%；换容器或语言时重新核对。
   glossary:
     word-focus-scroll-mechanism:
-      title: 聚焦区间
-      english: Focus interval
-      kind: 行为与原理
-      definition: 给每个词分配一小段滚动范围，在这段范围内完成强调变化。
+      term: 'focus-interval'
       context: 同一进度同时控制 scale、opacity 和 blur。它没有把已读词重新模糊，因此更接近依次揭示，而不是只保留一个焦点词。
       parameter: minScale / maxBlur / minOpacity：默认0.85、6px和0；提高初始透明度可改善可读性。；staggerFactor / wordDuration：默认0.8和0.1，控制各词开始位置与完成所需进度。；text / scrollContainerRef / offset：默认 start 90% 到 end 60%；换容器或语言时重新核对。
       judgment: 默认 minOpacity 为0，不应直接用于必须立即可读的正文；中文会被当作一个长词，wordDuration 也不是播放秒数。

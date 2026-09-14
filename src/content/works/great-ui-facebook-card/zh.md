@@ -53,10 +53,7 @@ learning:
       - 默认最大5度；减少动态效果时关闭位移与倾斜。
   glossary:
     facebook-card-mechanism:
-      title: 悬浮资料
-      english: Hover profile
-      kind: 行为与原理
-      definition: 在主链接附近按需展示补充背景，减少跳转前的不确定性。
+      term: 'hover-profile'
       context: 指针相对中心的位置经弹簧平滑，控制卡片横向跟随和旋转；上方浮层用透明度、位移及模糊完成出现。预览关闭卡片倾斜。
       parameter: name / bio / friends / mutualFriends：替换全部示例值，无可靠关系数据时移除该行。；username / href / avatarUrl：不读取平台账号；替换自有或有权使用的头像和真实目标。；enableLinkTilt / enableCardTilt / cardTiltMaxRotate：默认最大5度；减少动态效果时关闭位移与倾斜。
       judgment: mutualFriends 默认12且不能代表当前访客真实关系；不应在无数据依据时显示个性化共同朋友数。 悬浮层只有鼠标入口，固定320px宽且向上展开，窄屏与靠近页面边缘时需要调整。

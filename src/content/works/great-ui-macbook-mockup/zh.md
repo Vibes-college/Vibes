@@ -52,10 +52,7 @@ learning:
       - 底座和双栏需响应式调整，假按钮需移除或明确演示。
   glossary:
     macbook-mockup-mechanism:
-      title: 场景模型
-      english: Scenario mockup
-      kind: 行为与原理
-      definition: 用预设画面解释一个使用场景，不能以外观推定真实服务存在。
+      term: 'scenario-mockup'
       context: 计时器更新消息列表，弹簧驱动外壳和气泡；侧栏和聊天控件都是静态演示。
       parameter: messages / autoPlay：自动序列读取前3项再显示全部，需处理短数组。；children / headerTitle：children只替换主内容，侧栏和底部外壳仍保留。；bottom width / isPlayingAudio：底座和双栏需响应式调整，假按钮需移除或明确演示。
       judgment: 音频按钮只切换未使用的布尔值，没有音频播放；加密文案也不代表服务能力。短消息数组会读到无效项，底座固定520px以上，窄屏易溢出。

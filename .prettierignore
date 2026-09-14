@@ -6,6 +6,8 @@ dist/
 .openai/
 resources/references/
 resources/evidence/
+# Preserve the user-provided article byte for byte.
+src/content/glossary/sources/
 test-results/
 playwright-report/
 package-lock.json

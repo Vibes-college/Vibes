@@ -25,6 +25,8 @@ Markdown是给你看的代码说明，不是另一套可以晚些更新的报告
 
 正文组件与扩展语法见[Markdown排版](system/markdown.md)。
 
+查找UI/UX术语、变体、提示词和出处见[共享词库](../src/content/glossary/README.md)，收录与作品引用步骤见[内容维护](features/content-maintenance.md#收录与引用uiux术语)。
+
 新增演示短片的操作方法见[录制与维护交互演示](features/recording-previews.md)，包括原作录制、编码、来源登记和播放检查。
 
 ## 目录只按阅读目的划分

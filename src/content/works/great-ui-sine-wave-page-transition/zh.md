@@ -52,10 +52,7 @@ learning:
       - 四向进入，默认从相反方向退出。
   glossary:
     sine-wave-page-transition-mechanism:
-      title: 波形时序
-      english: Wave timing
-      kind: 行为与原理
-      definition: 用周期函数安排各元素的开始时间，让规则位移组成连续起伏的边缘。
+      term: 'wave-timing'
       context: 正弦值被映射到0至maxDelay，改变的是每条的开始时间，条带本身没有弯曲。
       parameter: columns：默认20条；必须至少2条，并限制总节点数。；maxDelay / duration：默认最大延迟0.4秒、单条0.5秒，二者一起决定覆盖时间。；direction / exitOpposite：四向进入，默认从相反方向退出。
       judgment: columns 为1会在延迟公式中除以0，需限制为至少2；更多条带改善边缘细分，但不会自动增加最大延迟。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。

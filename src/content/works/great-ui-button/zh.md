@@ -52,10 +52,7 @@ learning:
       - 运行状态由业务提供，isLoading 与 disabled 任一为真都会禁用。
   glossary:
     button-mechanism:
-      title: 操作层级
-      english: Action hierarchy
-      kind: 行为与原理
-      definition: 通过视觉强弱区分一个界面中最重要的动作与辅助动作。
+      term: 'action-hierarchy'
       context: 视觉层级由颜色、边框和背景区分，交互能力仍来自原生按钮；loading 只是由外部传入的状态，不会自动执行异步任务。
       parameter: variant：支持 primary、secondary、outline、ghost、destructive；不能只因好看就把多个操作都设为主按钮。；size / className：默认 md 高40px；icon 是40px正方形，实际触摸目标需结合周围间距检查。；isLoading / disabled / onClick：运行状态由业务提供，isLoading 与 disabled 任一为真都会禁用。
       judgment: 示例中的六个按钮没有业务处理；默认也没有固定 type，放进表单时应明确 submit 或 button。纯图标按钮需补可读名称，加载状态需有文字提示。

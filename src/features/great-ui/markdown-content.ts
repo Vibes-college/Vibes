@@ -1,5 +1,6 @@
 import type { CatalogWork, Locale } from '../../lib/content/schema.ts';
 import { parseLearningBody } from '../../lib/content/learning.ts';
+import { resolveGlossary } from '../../lib/content/glossary.ts';
 import observations from './data/observations.json' with { type: 'json' };
 import recordings from './data/local-recordings.json' with { type: 'json' };
 
@@ -51,7 +52,7 @@ export function learningEntry(work: CatalogWork, locale: Locale, origin?: string
     preserve: text.preserve,
     checks: text.checks,
     terms: Object.keys(text.glossary),
-    glossary: text.glossary,
+    glossary: resolveGlossary(text.glossary, work.glossary),
     placementHint: text.placementHint,
     changesHint: text.changesHint,
     learning: {

@@ -52,10 +52,7 @@ learning:
       - 默认填色0.8秒，基础延迟1.2秒，另加每条路径一半的错峰间隔。
   glossary:
     animated-path-mechanism:
-      title: 路径描画
-      english: Path drawing
-      kind: 行为与原理
-      definition: 通过改变可见的描边长度，让一条已有路径看起来正在被画出。
+      term: 'path-drawing'
       context: 每条路径用 pathLength 表示已经描画的比例，用 fillOpacity 表示填色程度；两组动画各有时长和延迟，因此线条与填色可以重叠进行。
       parameter: rawSvg / paths / viewBox：提供可支持的路径与正确画布范围；rawSvg 优先于 paths。；pathLengthDuration / pathDelay：默认描边1.5秒，路径之间隔0.1秒；线条多时需缩短间隔。；fillDuration / fillDelay：默认填色0.8秒，基础延迟1.2秒，另加每条路径一半的错峰间隔。
       judgment: rawSvg 只解析 g、path、rect 和 circle 的部分属性，不是完整 SVG 渲染器；带渐变、蒙版、单引号属性或其他形状的素材要先核对转换结果。

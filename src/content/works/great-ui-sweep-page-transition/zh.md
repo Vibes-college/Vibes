@@ -52,10 +52,7 @@ learning:
       - 默认单程0.7秒、层间0.1秒，退场延迟按层序反向计算。
   glossary:
     sweep-page-transition-mechanism:
-      title: 图层错峰
-      english: Layer staggering
-      kind: 行为与原理
-      definition: 让占据同一区域的多个图层在不同时间开始，利用遮挡呈现层次。
+      term: 'layer-staggering'
       context: 这里每层都覆盖整屏，颜色数组决定层数和叠放顺序，不是把屏幕切成多条。
       parameter: colors：预览用三种玫红；数组顺序影响叠放与露出的颜色。；direction / exitOpposite：四个入场方向；默认从相反侧离开。；duration / staggerDelay：默认单程0.7秒、层间0.1秒，退场延迟按层序反向计算。
       judgment: colors 为空无法形成遮罩；多加颜色同时增加图层和等待。半透明颜色不能保证旧内容被隐藏。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。

@@ -53,10 +53,7 @@ learning:
       - 应等待剪贴板写入成功再显示完成；失败时提供手动复制。
   glossary:
     scrambled-install-command-mechanism:
-      title: 差异动画
-      english: Diff animation
-      kind: 行为与原理
-      definition: 只对新旧内容发生变化的部分加动画，让注意力集中在实际更新处。
+      term: 'diff-animation'
       context: 文本按字素分段，计时器逐步增加已揭示数量，未揭示字符暂时显示符号。最多48步避免长命令无限延长。
       parameter: installCommand / pkgManager / setPkgManager：父组件负责选项与命令一致性，组件不会自动推导安装命令。；animationVariant / scrambleIntervalMs：full 或 smart，默认每32毫秒推进，最长48步。；handleCopyInstall / onCopy：应等待剪贴板写入成功再显示完成；失败时提供手动复制。
       judgment: 复制处理没有等待 clipboard.writeText 成功就显示完成，需要增加失败分支。作者预览命令含 localhost 地址，只用于演示，不应照抄执行。

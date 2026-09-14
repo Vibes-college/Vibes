@@ -14,7 +14,7 @@ code-sources:
     'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '54fd9e833c76baec637566ff63279e3d53e33f718f3cd432cb5b241b9a597e0f'
+code-revision: '659698e88a19424ce06f9b719a44b4b7d9f99fee83ad4c6273e276f25e1a4728'
 ---
 
 # 检查与发布
@@ -68,7 +68,7 @@ PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA�
 
 篇幅提示不属于错误，不使CI失败；根据职责、重复和导航决定是否整理。
 
-缺少标签会阻断项目治理Markdown；产品文章及固定上游资产采用自己的格式。自然语言是否精确表达现状仍需人工审核，脚本不使用禁词或固定任务措辞判断自然语言质量。
+缺少标签会阻断项目治理Markdown；产品文章、src/content/glossary中的词条/原文/模板及固定上游资产采用自己的格式。词条通过内容读取器校验，sources原文不经格式化器改写。自然语言是否精确表达现状仍需人工审核，脚本不使用禁词或固定任务措辞判断自然语言质量。
 
 ## 分支与PR的工作单位
 

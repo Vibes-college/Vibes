@@ -52,10 +52,7 @@ learning:
       - 补位日期需按真实边界生成，长跨度使用分页或窗口化。
   glossary:
     revision-timeline-mechanism:
-      title: 离散时间选择
-      english: Discrete time selection
-      kind: 行为与原理
-      definition: 通过可选时间点浏览一份对应内容，空日期只提供间隔不提供记录。
+      term: 'discrete-time-selection'
       context: 日期范围被补成每日刻度，平移让当前项居中，附近条高按距离衰减；正文用有限的Markdown规则逐行呈现。
       parameter: revisions / getSortedUniqueRevisions：日期需合法，time用可排序格式，同日多记录会合并为最后一项。；defaultActiveId / onActiveIdChange：传入ID后由父组件负责更新，不是一次性的默认值。；pastPaddingDays / futurePaddingDays / height：补位日期需按真实边界生成，长跨度使用分页或窗口化。
       judgment: defaultActiveId实际上进入受控模式，必须配回调更新。补位日期硬编码May与July 2026；title和author未直接显示，不能当完整版本审计。长日期跨度会生成大量节点。

@@ -52,10 +52,7 @@ learning:
       - 默认弹簧刚度50、阻尼20；外层默认800dvh，可按内容缩短。
   glossary:
     text-on-path-scroll-mechanism:
-      title: 沿路径文字
-      english: Text on a path
-      kind: 行为与原理
-      definition: 把文字基线放在SVG曲线上，字符沿曲线的方向逐个排列。
+      term: 'text-on-a-path'
       context: 曲线形状决定文字轨迹，startOffset 决定文字在路径上的起点；外层较长的滚动区域与内部 sticky 画面共同形成持续展示。
       parameter: path / scroll-path：传入带指定ID的SVG路径，多实例时需改成唯一ID并同步引用。；text / textProps / scrollOffsets：文字字号由 textProps 调整；示例将起止位置设为100%到-100%。；springOptions / className：默认弹簧刚度50、阻尼20；外层默认800dvh，可按内容缩短。
       judgment: 默认区域高800dvh，阅读成本很大；固定 id 为 scroll-path，多实例会冲突。路径文字不适合承担唯一正文，需要静态可读替代。

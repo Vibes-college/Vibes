@@ -52,10 +52,7 @@ learning:
       - 颜色需不透明，保留半屏以上的重叠和正确离场方向。
   glossary:
     curtain-page-transition-mechanism:
-      title: 成对遮罩
-      english: Paired masks
-      kind: 行为与原理
-      definition: 用两个从相对方向进入的图层覆盖旧画面，再一起露出新画面。
+      term: 'paired-masks'
       context: 两块略大于半屏的面板分别改变横向或纵向位移；多出的0.5%重叠避免中缝漏出。
       parameter: direction：horizontal 左右开合，vertical 上下开合。；duration / ease：默认单程0.8秒；完整过程另含50毫秒停留。；panelClassName / getTransform：颜色需不透明，保留半屏以上的重叠和正确离场方向。
       judgment: direction 改变移动轴，vertical 是上下移动，不是竖直分缝；两个方向都需要核对中央没有缝。 原作以计时器交接，没有等待目标数据或提供失败恢复；真实导航还需处理键盘焦点、历史和重复触发。

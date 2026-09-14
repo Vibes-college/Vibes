@@ -53,7 +53,7 @@ code-sources:
     'tests/fixtures/paseo-webui/article-reference.ts',
     'tests/explore.spec.ts',
   ]
-code-revision: '57b5f3acb8707a9404f815432ce170721aa22bd6bd6f2b7a0bf47ba2055f1670'
+code-revision: 'a7b3244b0f1004dc1f9e279ad7f59e560d2eabea1e743ccfa9c05a24c6f36db6'
 ---
 
 # 功能名：阅读作品详情
@@ -66,7 +66,7 @@ code-revision: '57b5f3acb8707a9404f815432ce170721aa22bd6bd6f2b7a0bf47ba2055f1670
 
 正文上方可进入该语言源文件的GitHub编辑页；登录、fork、PR审阅和发布步骤见[GitHub内容贡献](../system/content-contributions.md)。站内不保存编辑。
 
-以下整屏翻阅路径适用于普通文章。Great UI条目在同一作品网址使用[交互学习模板](great-ui-learning.md)：直接显示视频与三个面板，保留本站语言状态、GitHub编辑和助手作品引用，不安装文章整屏手势或进度胶囊。
+以下整屏翻阅路径适用于普通文章。Great UI条目在同一作品网址使用[交互学习模板](great-ui-learning.md)：直接显示视频与三个面板，保留本站语言状态、GitHub编辑和助手作品引用；术语共用词库解释并保留本例说明，可打开完整词条与出处，不安装文章整屏手势或进度胶囊。
 
 1. 从目录点击卡片，进入`/{locale}/works/{id}/`，先看来源、预览、标题、介绍和已有的作者/类型等信息。
 2. 点击原站链接，在新标签页打开原始作品；有媒体的封面按下面的路径播放或操作，未配置媒体的作品保留静态预览。

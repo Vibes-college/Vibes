@@ -60,6 +60,9 @@ export function TermProvider({ children, entry }) {
           <span>{term.english}</span>
         </h2>
         <p>{term.definition}</p>
+        <a className="source-link" href={term.reference} target="_blank" rel="noreferrer">
+          查看完整词条与出处 <ArrowUpRight size={13} />
+        </a>
         <div className="term-context">
           <h3>在这个案例里</h3>
           <p>{term.context}</p>

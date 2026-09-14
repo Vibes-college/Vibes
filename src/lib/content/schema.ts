@@ -94,6 +94,7 @@ export interface Version {
 export interface CatalogWork {
   meta: WorkMetadata;
   versions: Partial<Record<Locale, Version>>;
+  glossary?: import('./glossary.ts').Glossary;
 }
 export interface Catalog {
   works: CatalogWork[];

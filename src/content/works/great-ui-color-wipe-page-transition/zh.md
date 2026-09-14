@@ -52,10 +52,7 @@ learning:
       - 默认从左进入并原路退出；要等待实际数据和动画完成，必须增加明确交接。
   glossary:
     color-wipe-page-transition-mechanism:
-      title: 运动前缘
-      english: Leading edge
-      kind: 行为与原理
-      definition: 运动元素面向前进方向的一侧，可以通过颜色或线条强调进入方向。
+      term: 'leading-edge'
       context: 面板本体负责遮挡，窄色条贴在它的前后边缘。上下进入时是竖向分块，左右进入时改为横向分条；颜色按数组循环分配。
       parameter: columns / duration / staggerDelay：组件默认10块、每次0.45秒、错开0.03秒；示例覆盖为8块。；showLeadingStroke / showTrailingStroke / strokeWidth：默认前后缘都显示、宽10px；示例关闭后缘。；direction / exitOpposite / onViewSwap：默认从左进入并原路退出；要等待实际数据和动画完成，必须增加明确交接。
       judgment: onViewSwap 来自固定计时，并不会等待路由数据或实际退场。附带的 RouteTransitionProvider 拦截文档链接，需要与项目路由、下载链接及并发导航规则核对。

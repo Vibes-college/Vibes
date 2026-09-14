@@ -52,10 +52,7 @@ learning:
       - 默认120秒一轮，各排加减偏移；需正数与合理范围。
   glossary:
     diagonal-marquee-carousel-mechanism:
-      title: 无缝循环
-      english: Seamless loop
-      kind: 行为与原理
-      definition: 复制一段内容，在移动到副本对应位置时回到起点，使首尾衔接。
+      term: 'seamless-loop'
       context: 每排复制图组后移动半幅完成循环；传入图集先扩成3份，再复制2份，五排合计30倍图片节点。
       parameter: cards / cardClassName：不是可点击轮播；卡片只有图片和遮罩，无选择或导航。；angle / alternateDirections：默认-25度，相邻排反向。；baseSpeed：默认120秒一轮，各排加减偏移；需正数与合理范围。
       judgment: baseSpeed实际是秒数，越大越慢；默认6张生成180个img，没有懒加载。全局动画类名可能冲突，缺整体暂停和减少动态效果。 悬停类名不等于实际暂停，需要核对真正运动层的状态。

@@ -153,7 +153,7 @@ ${plan.issues.map((issue) => `${issue.severity}：${issue.detail}`).join('\n') |
 ${Object.values(task.glossary)
   .map(
     (term) =>
-      `${term.title} / ${term.english}：${term.definition}\n本例：${term.context}\n参数：${term.parameter}`,
+      `${term.title} / ${term.english}：${term.definition}\n词条：${term.reference}\n出处：${term.sources.map((source) => `${source.author}，${source.title}，${source.section}（${source.url}）`).join('；')}\n本例：${term.context}\n参数：${term.parameter}`,
   )
   .join('\n\n')}
 

@@ -53,10 +53,7 @@ learning:
       - 目前只调用回调，href不会自动导航。
   glossary:
     radial-gooey-menu-mechanism:
-      title: 黏连滤镜
-      english: Gooey filter
-      kind: 行为与原理
-      definition: 把邻近形状先模糊再提高透明度对比，让它们相接时出现柔软的连接。
+      term: 'gooey-filter'
       context: SVG先模糊图形再增强透明度对比，形成类似液体连接；菜单位置由正弦和余弦按半径计算。
       parameter: items / radius：默认半径80px；项目越多，间距越小，要限制数量。；blur / RadialGooeyFilter：默认模糊10，过大可能让图标模糊或增加绘制成本。；onItemSelect / item.onClick：目前只调用回调，href不会自动导航。
       judgment: 关闭时子按钮只变透明，仍可能获得焦点；href虽存在于类型却未使用。没有自动选择后关闭、Escape或展开状态语义，必须补齐。

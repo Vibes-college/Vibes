@@ -52,10 +52,7 @@ learning:
       - 使用自己的演示人物与素材；外壳不同断点有固定高度，需要核对实际文字。
   glossary:
     mobile-mockup-mechanism:
-      title: 演示状态
-      english: Demonstration state
-      kind: 行为与原理
-      definition: 由预设内容和时间驱动的展示状态，用于解释流程，不等于真实服务正在运行。
+      term: 'demonstration-state'
       context: 多个计时器更新可见消息数组和 typing 状态，消息气泡用弹簧动效进入；手机外壳另有进入与悬停反馈。
       parameter: messages / children：children 可替换对话内容；自动播放假设至少存在前4条消息。；autoPlay / runSequence：默认每10.8秒循环；需要根据消息长度生成序列，或改为用户控制播放。；headerTitle / avatarUrl / className：使用自己的演示人物与素材；外壳不同断点有固定高度，需要核对实际文字。
       judgment: 它是展示模型，没有聊天、通话、输入或发送能力。自动序列直接读取 messages 的前4个位置，过短数组会出现无效消息；长消息还需核对滚动与可读时间。

@@ -52,10 +52,7 @@ learning:
       - 重试需处理旧请求，关闭面板与取消任务应有明确区别。
   glossary:
     deployment-checklist-mechanism:
-      title: 任务状态
-      english: Task state
-      kind: 行为与原理
-      definition: 以明确状态记录一个步骤处于等待、运行、完成或异常中的哪一阶段。
+      term: 'task-state'
       context: 每个任务有 pending、running、success、skipped、failed 五种状态；图标与补充说明根据状态替换，说明区通过网格行高度展开。
       parameter: initialTasks / Task：定义ID、标题和说明；不要把示例中的数字ID视为业务规则。；runPipeline / setTasks：替换固定延时和预设第4、第5项分支，绑定真实异步结果与取消。；resetChecklist / isOpen：重试需处理旧请求，关闭面板与取消任务应有明确区别。
       judgment: runPipeline 是固定延时演示，没有克隆、构建或部署能力；initialTasks 只改变初始任务，运行时仍按数字ID预设结果。接入必须用真实任务结果驱动状态。
