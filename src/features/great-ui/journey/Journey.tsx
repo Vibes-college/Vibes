@@ -1,4 +1,5 @@
 import { useReducedMotion } from 'motion/react';
+import { DemoTask } from './DemoTask';
 import { Portfolio } from './Portfolio';
 import { Product } from './Product';
 import { Tool } from './Tool';
@@ -21,6 +22,7 @@ export default function Journey({ kind, onExit }: { kind: JourneyKind; onExit: (
       ) : (
         <Portfolio reduced={reduced} />
       )}
+      <DemoTask kind={kind} reduced={reduced} />
       <details className="journey-adaptations">
         <summary>这条路径做了哪些改造</summary>
         {kind === 'portfolio' ? (

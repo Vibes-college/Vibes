@@ -7,6 +7,7 @@ import { entries, index, capabilities } from '../src/features/great-ui/content-b
 import { createTask, taskText } from '../src/features/great-ui/task.mjs';
 import { validateCatalog, validateDetail } from '../src/features/great-ui/catalog.ts';
 import { validateCapabilities } from '../src/features/great-ui/composition/validate.ts';
+import { currentDemoProof } from './great-ui-proof.ts';
 import { projects } from '../src/features/great-ui/journey/data.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -25,6 +26,11 @@ async function exportContent(): Promise<void> {
   validateCatalog(index);
   validateCapabilities(capabilities);
   for (const item of entries) validateDetail(item, item);
+  const proof = await currentDemoProof();
+  await writeFile(
+    path.join(publicDir, 'content/demo-proof.json'),
+    JSON.stringify({ adapterRevision: proof.adapterRevision, records: proof.records }),
+  );
   await writeFile(path.join(publicDir, 'content/catalog.json'), JSON.stringify(index));
   await writeFile(path.join(publicDir, 'content/capabilities.json'), JSON.stringify(capabilities));
   for (const project of projects) {

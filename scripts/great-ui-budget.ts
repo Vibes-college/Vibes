@@ -12,8 +12,8 @@ const group = (filter: (name: string) => boolean) =>
     .filter(([name]) => filter(name))
     .reduce((sum, [, size]) => sum + size, 0);
 const actual = {
-  initialJs: group((x) => x.startsWith('index-') && x.endsWith('.js')),
-  initialCss: group((x) => x.startsWith('index-') && x.endsWith('.css')),
+  initialJs: group((x) => !x.startsWith('Journey-') && x.endsWith('.js')),
+  initialCss: group((x) => !x.startsWith('Journey-') && x.endsWith('.css')),
   journeyJs: group((x) => x.startsWith('Journey-') && x.endsWith('.js')),
   catalog: gzipSync(await readFile(path.join(root, 'content/catalog.json'))).length,
   capabilities: gzipSync(await readFile(path.join(root, 'content/capabilities.json'))).length,

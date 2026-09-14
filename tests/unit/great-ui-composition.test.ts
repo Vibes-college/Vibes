@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { demoPlan } from '../../src/features/great-ui/composition/demos.ts';
+import { capabilities } from '../../src/features/great-ui/content-build.mjs';
+import { validateCapabilities } from '../../src/features/great-ui/composition/validate.ts';
 import { test } from 'node:test';
 import {
   candidatesFor,
@@ -223,4 +226,26 @@ test('malformed duplicated catalogs or paths do not produce plausible-looking pl
   assert.throws(() => compose([work('a'), work('a')], path(), environment), /unique/);
   assert.throws(() => compose([], path([]), environment), /1–8/);
   assert.throws(() => compose([], path([slot, slot]), environment), /unique/);
+});
+
+test('fixed demo records describe actual component choices and keep simplified steps explicit', () => {
+  const works = validateCapabilities(capabilities);
+  const selected = {
+    portfolio: ['staggered-page-transition', 'text-reveal', 'accordion'],
+    product: ['accordion'],
+    tool: ['deployment-checklist'],
+  };
+  for (const kind of ['portfolio', 'product', 'tool'] as const) {
+    const normal = demoPlan(works, kind, 'normal');
+    const reduced = demoPlan(works, kind, 'reduced');
+    assert.deepEqual(
+      normal.steps.flatMap((step) => (step.work ? [step.work.slug] : [])),
+      selected[kind],
+    );
+    assert.equal(normal.id, reduced.id);
+    assert.notEqual(normal.contextKey, reduced.contextKey);
+    assert.ok(normal.issues.some((issue) => issue.code === 'demo-adaptation'));
+    assert.ok(!normal.issues.some((issue) => issue.severity === 'blocked'));
+    assert.equal(normal.steps.length, 5);
+  }
 });

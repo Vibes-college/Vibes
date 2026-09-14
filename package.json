@@ -11,7 +11,7 @@
     "great-ui:build": "node --experimental-strip-types scripts/great-ui.ts build",
     "great-ui:dev": "node --experimental-strip-types scripts/great-ui.ts dev",
     "great-ui:preview": "node --experimental-strip-types scripts/great-ui.ts preview",
-    "great-ui:test": "playwright test --config playwright.great-ui.config.ts",
+    "great-ui:test": "node --experimental-strip-types scripts/great-ui-test.ts",
     "build": "node --experimental-strip-types scripts/build.ts",
     "check:types": "astro check && tsc -p tsconfig.tools.json",
     "lint": "eslint . --max-warnings 0",

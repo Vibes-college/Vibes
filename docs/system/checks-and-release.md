@@ -14,7 +14,7 @@ code-sources:
     'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '70599a2dd09cb9ceea3ccd84be424970e8ac075a427113207771e643c6526d54'
+code-revision: '4af3de2fed2d93933241b3984f109b69b0e83ebd9c132161695934736b6a08cd'
 ---
 
 # 检查与发布
@@ -197,4 +197,4 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 ## Great UI学习工作台检查
 
-本地入口用`great-ui:build`校验目录、详情及能力结构，并输出.scratch/great-ui-dist；`great-ui:test`通过独立Playwright配置启动4336测试服务，结束由测试框架释放。verify会执行该专项、great-ui:evaluate和本地入口预算；单独运行great-ui:budget会先构建再检查压缩JS、CSS、目录、详情与本地媒体，不改变正式站预算。不会调用发布命令。当前回归范围和待补覆盖见[功能说明](../features/great-ui-learning.md)，原始材料与浏览器证据不作为自动通过依据。
+本地入口用`great-ui:build`校验目录、详情及能力结构，并输出.scratch/great-ui-dist；`great-ui:test`通过scripts/great-ui-test.ts运行独立Playwright配置，启动4336测试服务，结束由测试框架释放。不带筛选参数且全部用例通过时，核对测试前后源码摘要一致，再保存固定示例的路径记录；筛选重跑不能生成整体验证记录。great-ui-proof.ts在重建时核对记录与当前来源、规则、适配器和测试，过期记录不显示为已验证。verify会执行该专项、great-ui:evaluate和本地入口预算；单独运行great-ui:budget会先构建再检查压缩JS、CSS、目录、详情与本地媒体，不改变正式站预算。不会调用发布命令。当前回归范围和待补覆盖见[功能说明](../features/great-ui-learning.md)，原始材料与浏览器证据不作为自动通过依据。

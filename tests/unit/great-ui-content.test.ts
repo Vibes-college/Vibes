@@ -10,6 +10,9 @@ import upstream from '../../src/features/great-ui/data/upstream-catalog.json' wi
 test('all 48 published works have distinct Chinese learning material, fixed source review and resolvable relations', () => {
   assert.equal(validateCatalog(index).length, 48);
   assert.equal(validateCapabilities(capabilities).length, 48);
+  assert.ok(
+    validateCapabilities(capabilities).every((work) => work.sourceReviewed && work.browserObserved),
+  );
   assert.deepEqual(
     new Set(index.map((x: { slug: string }) => x.slug)),
     new Set(upstream.entries.map((x) => x.slug)),

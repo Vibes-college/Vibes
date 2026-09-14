@@ -35,7 +35,7 @@ test('portfolio waits for both cover and real content, then reveals and restores
   await expect(page.getByRole('heading', { name: '山野手记', exact: true })).toBeVisible();
 });
 
-test('failed and cancelled requests leave an operable page and no overlay', async ({ page }) => {
+test('failed requests leave an operable page and no overlay', async ({ page }) => {
   await page.route('**/journeys/field-notes.json', (route) =>
     route.fulfill({ status: 503, body: 'unavailable' }),
   );
@@ -99,4 +99,88 @@ test('tool status follows input and data checks rather than a fixed demonstratio
   await page.getByRole('button', { name: '检查资料' }).click();
   await expect(page.getByRole('status')).toHaveText('有1项需要完善。');
   await expect(page.locator('[data-state="failed"]')).toContainText('本地示例');
+});
+
+test('cancellation ignores a late response and reduced motion never covers a slow request', async ({
+  page,
+}) => {
+  let release: () => void = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route('**/journeys/field-notes.json', async (route) => {
+    await gate;
+    await route.continue().catch(() => {});
+  });
+  await page.goto('/?journey=portfolio');
+  await page.getByRole('link', { name: '编辑设计 山野手记' }).click();
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-phase', 'covered');
+  await page.getByRole('button', { name: '取消', exact: true }).click();
+  await expect(page.locator('.journey-transition')).toHaveCount(0);
+  await page.getByRole('link', { name: '产品设计 专注时刻' }).click();
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-project', 'quiet-work');
+  release();
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-phase', 'idle');
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-project', 'quiet-work');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  let releaseReduced: () => void = () => {};
+  const reducedGate = new Promise<void>((resolve) => {
+    releaseReduced = resolve;
+  });
+  await page.route('**/journeys/field-notes.json', async (route) => {
+    await reducedGate;
+    await route.continue().catch(() => {});
+  });
+  await page.goto('/?journey=portfolio');
+  await page.getByRole('link', { name: '编辑设计 山野手记' }).click();
+  await expect(page.getByRole('button', { name: '取消', exact: true })).toBeVisible();
+  await expect(page.locator('.journey-transition')).toHaveCount(0);
+  releaseReduced();
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-project', 'field-notes');
+});
+
+test('rapid history navigation restores only the latest requested project', async ({ page }) => {
+  await page.goto('/?journey=portfolio');
+  await page.getByRole('link', { name: '编辑设计 山野手记' }).click();
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-phase', 'idle');
+  await page.getByRole('button', { name: '← 全部项目' }).click();
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-project', 'list');
+  await page.goBack();
+  await page.goForward();
+  await page.goBack();
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-phase', 'idle');
+  await expect(page.locator('.journey-portfolio')).toHaveAttribute('data-project', 'field-notes');
+  await expect(page.locator('.journey-transition')).toHaveCount(0);
+});
+
+test('fixed demo task uses the displayed path and preserves reduced-motion results', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const kind of ['portfolio', 'product', 'tool']) {
+    await page.goto('/?journey=' + kind);
+    await page.getByRole('button', { name: '复制这条示例的任务', exact: true }).click();
+    await page.getByText('查看同一任务的 JSON', { exact: true }).click();
+    const task = JSON.parse(await page.getByLabel('结构化任务', { exact: true }).inputValue());
+    expect(task.plan.id).toBe(await page.locator('.demo-task').getAttribute('data-plan-id'));
+    expect(task.plan.templateId).toBe(kind);
+    expect(task.plan.contextKey).toContain('motion=reduced');
+    expect(task.plan.steps).toHaveLength(5);
+    await page.getByRole('button', { name: '关闭复制材料' }).click();
+    if (kind === 'portfolio') {
+      await page.getByRole('link', { name: '编辑设计 山野手记' }).click();
+      await expect(page.locator('[data-effect="static"]')).toBeVisible();
+    }
+    if (kind === 'product') {
+      await page.getByRole('button', { name: '选择共同整理' }).click();
+      await page.getByRole('button', { name: '确认选择' }).click();
+      await expect(page.locator('.journey-product [role="status"]')).toContainText(
+        '已确认：共同整理',
+      );
+    }
+    if (kind === 'tool') {
+      await page.getByRole('button', { name: '检查资料' }).click();
+      await expect(page.locator('.journey-tool [role="status"]')).toContainText('有2项需要完善。');
+    }
+  }
 });

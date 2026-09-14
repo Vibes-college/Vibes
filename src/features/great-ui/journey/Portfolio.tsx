@@ -20,6 +20,8 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
   const [contact, setContact] = useState(false);
+  const generation = useRef(0);
+  const [epoch, setEpoch] = useState(0);
   const request = useRef<AbortController | null>(null);
   const busy = useRef(false);
   const focusAfter = useRef(false);
@@ -29,6 +31,7 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
     async (id: string | null, push = true) => {
       if (push && busy.current) return;
       request.current?.abort();
+      setEpoch(++generation.current);
       const controller = new AbortController();
       request.current = controller;
       busy.current = true;
@@ -101,6 +104,7 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
 
   function cancel() {
     request.current?.abort();
+    setEpoch(++generation.current);
     setReady(null);
     setPending(false);
     setPhase('idle');
@@ -190,15 +194,22 @@ export function Portfolio({ reduced }: { reduced: boolean }) {
           </>
         )}
       </div>
-      <Transition
-        phase={phase}
-        onCovered={() => setPhase((current) => (current === 'covering' ? 'covered' : current))}
-        onRevealed={() => {
-          setPhase('idle');
-          setPending(false);
-          busy.current = false;
-        }}
-      />
+      {!reduced && (
+        <Transition
+          key={epoch}
+          phase={phase}
+          onCovered={() => {
+            if (epoch === generation.current)
+              setPhase((current) => (current === 'covering' ? 'covered' : current));
+          }}
+          onRevealed={() => {
+            if (epoch !== generation.current) return;
+            setPhase('idle');
+            setPending(false);
+            busy.current = false;
+          }}
+        />
+      )}
     </div>
   );
 }
