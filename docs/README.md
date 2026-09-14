@@ -25,6 +25,8 @@ Markdown是给你看的代码说明，不是另一套可以晚些更新的报告
 
 正文组件与扩展语法见[Markdown排版](system/markdown.md)。
 
+新增演示短片的操作方法见[录制与维护交互演示](features/recording-previews.md)，包括原作录制、编码、来源登记和播放检查。
+
 ## 目录只按阅读目的划分
 
 ```text

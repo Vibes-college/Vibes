@@ -61,6 +61,8 @@ flowchart TD
 - 示例：src/features/great-ui/journey/；sources.json和LICENSE.txt说明来源及改造。
 - 本地构建：scripts/great-ui.ts；输出在.scratch/great-ui-dist，未进入生产Astro路由。
 
+需要新增或重录演示时，按[录制与维护交互演示](recording-previews.md)完成原作观察、捕获、转码、来源登记和真实播放检查。
+
 ## 验收标准
 
 - [x] 48件独立中文详情、固定源码与预览入口可生成；2026-09-14以great-ui:build校验目录、详情与能力并完成Vite构建。
