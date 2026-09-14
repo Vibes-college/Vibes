@@ -480,15 +480,23 @@
     background: transparent;
     color: #66715b;
   }
-  .case-picker small {
-    border-radius: 3px;
-    padding: 2px 4px;
-    background: #f2f4ed;
-    font-size: 9px;
+  .case-browse-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
   .icon-button.case-order {
+    width: 24px;
     color: #7b8472;
     background: transparent;
+  }
+  .case-order-glyph {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 18px;
+    border-radius: 3px;
+    background: #f2f4ed;
   }
   .case-order:hover {
     color: #4f5d43;

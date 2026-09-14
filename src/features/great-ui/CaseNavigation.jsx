@@ -53,36 +53,39 @@ export function CaseNavigation({ entries, current, onSelect }) {
   return (
     <>
       <nav className="case-navigation" aria-label="作品切换">
-        <button
-          className="case-picker"
-          disabled={disabled}
-          aria-label={`浏览作品：${scopeLabel}，${members.length}件`}
-          onClick={() => {
-            setCategory(scope);
-            setQuery('');
-            setLimit(60);
-            dialog.current.showModal();
-            document.body.style.overflow = 'hidden';
-          }}
-          aria-haspopup="dialog"
-        >
-          <LayoutGrid size={15} />
-          <span>{scopeLabel}</span>
-          <small>{members.length}</small>
-        </button>
-        <button
-          className="icon-button case-order"
-          disabled={disabled}
-          aria-label={shuffle ? '切换为顺序浏览' : '切换为随机浏览'}
-          title={shuffle ? '随机浏览 · 点击切换为顺序' : '顺序浏览 · 点击切换为随机'}
-          onClick={() => void apply(toggleBrowse(state, entries))}
-        >
-          {shuffle ? (
-            <Shuffle size={13} strokeWidth={1.5} aria-hidden="true" />
-          ) : (
-            <ListOrdered size={13} strokeWidth={1.5} aria-hidden="true" />
-          )}
-        </button>
+        <div className="case-browse-controls">
+          <button
+            className="case-picker"
+            disabled={disabled}
+            aria-label={`浏览作品：${scopeLabel}`}
+            onClick={() => {
+              setCategory(scope);
+              setQuery('');
+              setLimit(60);
+              dialog.current.showModal();
+              document.body.style.overflow = 'hidden';
+            }}
+            aria-haspopup="dialog"
+          >
+            <LayoutGrid size={15} />
+            <span>{scopeLabel}</span>
+          </button>
+          <button
+            className="icon-button case-order"
+            disabled={disabled}
+            aria-label={shuffle ? '切换为顺序浏览' : '切换为随机浏览'}
+            title={shuffle ? '随机浏览 · 点击切换为顺序' : '顺序浏览 · 点击切换为随机'}
+            onClick={() => void apply(toggleBrowse(state, entries))}
+          >
+            <span className="case-order-glyph">
+              {shuffle ? (
+                <Shuffle size={13} strokeWidth={1.5} aria-hidden="true" />
+              ) : (
+                <ListOrdered size={13} strokeWidth={1.5} aria-hidden="true" />
+              )}
+            </span>
+          </button>
+        </div>
         <span className="case-position" aria-live="polite">
           {String(index + 1).padStart(2, '0')}{' '}
           <span>/ {String(members.length).padStart(2, '0')}</span>
