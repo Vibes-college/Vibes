@@ -23,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'b6d61af4f8bb769618d5a2d0bf18d2bf97bf3ba8d5855132199aacddca358990'
+code-revision: '6973b19ea2b3e51b8d824223d89048730acc811e77b1aad1916877e661eedc81'
 ---
 
 # 常量、规则表与正则
@@ -109,7 +109,7 @@ scripts/docs-policy.ts定义白名单与篇幅指南：功能说明120行、宪�
 
 裁剪依据是重复、过期、时态混杂和导航不清，不按代码量删必要说明。文档计数包含空行和元数据；代码计数覆盖src/scripts/tests下的TS/JS/Astro/CSS/Shell，排除产品文章与上游资产；网站资源体积预算独立且仍严格执行。
 
-治理Markdown必须在白名单，附加产物须spec声明并说明用途；项目preset命令与hook参考使用工具原生格式，纳入源码摘要并由docs/system/agent-guidance.md解释，不用于存放无关治理材料；front matter支持简单YAML字符串与flow字符串数组。缺标签、错误索引/关系、冻结篡改等正确性错误阻断CI。
+治理Markdown必须在白名单，规格附加产物须spec声明并说明用途；docs/topics中已登记的主题方向与合集策划使用living元数据，链接与标签照常校验，不要求绑定尚未实施的源码；项目preset命令与hook参考使用工具原生格式，纳入源码摘要并由docs/system/agent-guidance.md解释，不用于存放无关治理材料；front matter支持简单YAML字符串与flow字符串数组。缺标签、错误索引/关系、冻结篡改等正确性错误阻断CI。
 
 CI范围路径白名单在scripts/check-scope.ts，默认未知路径full；纯Skills文案、preset及Spec Kit workflow配置属于docs，混入脚本、网页、依赖或GitHub CI配置仍完整检查。Draft的docs范围也只检查文档与格式。tests/unit/check-scope.test.ts覆盖规则路径、混合差异及删除/改名/新增。元数据只检查确定性规则，自然语言不设禁词，任务不要求固定位置和措辞；research-trigger接受非空的技术未知或重要取舍理由。frozen-at可省略，提供时校验有效日期，冻结后仅允许首次补记。
 

@@ -13,7 +13,7 @@ code-sources:
     'scripts/docs-sources.ts',
     'scripts/docs-lessons.ts',
   ]
-code-revision: 'b009c3209f02ba2278f5d7539ed25a6ba337ed4d4a5fdf82cf767cfb43470f42'
+code-revision: '82425c8393bfa1bad3ecea8b51bdbc77afc19d3ef3c9e320a68fb7d46582f8ff'
 ---
 
 # 功能名：规划开发与维护文档
@@ -27,7 +27,7 @@ code-revision: 'b009c3209f02ba2278f5d7539ed25a6ba337ed4d4a5fdf82cf767cfb43470f42
 1. 用户描述要完成的事情；AI按任务从[功能索引](README.md)找到相关操作路径；已知路径的小修正直接读相关文件，已读且未变化的资料不重复读取。
 2. 新功能或跨模块改造先明确用户、成功路径与不做范围，使用Spec Kit形成spec、plan、tasks；范围明确且用户已授权时连续执行；只有缺少关键决定或用户要求阶段审阅才暂停；首版spec形成就建Draft PR并提供可打开链接与任务摘要。小修复、文档和小型规则补充直接在当前工作分支修改、验证与提交，不开spec或独立PR；仅需要Spec Kit的需求走PR。
 3. 采用Spec Kit的需求在开发时通过PR描述更新当前进度、阻塞、下一步、阶段预览，重要证据写评论；详细清单以tasks.md为准，阶段/交接/暂停前提交推送，不强制逐commit push；功能说明按[模板](./_TEMPLATE.md)描述一条完整操作路径，包括成功、失败和必要的系统响应图，不按组件或样式拆篇。
-4. 更新功能现状与索引；技术配置和完整命令链接到docs/system，历史原因从shaped-by找到specs。
+4. 更新功能现状与索引；技术配置和完整命令链接到docs/system，历史原因从shaped-by找到specs。具体主题的选题方向、合集目录和候选清单放docs/topics，并由文档地图提供入口；区分已确认方向与候选计划，不写成已实现功能或整个项目定位。
 5. 运行`npm run docs:check`与`npm run format:check`。遇到缺标签、索引不一致或冻结改写时，按错误定位修正，不通过就不称文档检查完成。
 6. 采用Spec Kit的需求在实现和验收完成后同步spec/plan/tasks及索引为complete，再提交一批完整相关改动供审阅，用户决定合并。合并后规格正文冻结，下一次决定另写规格并关联旧规格；当前功能说明原地维护。
 7. 功能及系统说明用code-sources对应源码文件，源码改动后复核文字、流程和验收再填写code-revision；只读候选摘要用npm run docs:check -- --revisions查看，正常检查会验证覆盖和摘要。

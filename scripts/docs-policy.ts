@@ -15,6 +15,8 @@ const livingFiles = new Set([
   'docs/LESSONS.md',
   '.github/pull_request_template.md',
   'docs/PROJECT_ANALYSIS.md',
+  'docs/topics/ui-ux.md',
+  'docs/topics/ui-ux-motion-interaction.md',
   'specs/README.md',
   'resources/README.md',
   'docs/system/configuration.md',
