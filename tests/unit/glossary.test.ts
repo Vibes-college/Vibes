@@ -85,7 +85,7 @@ test('one shared Markdown edit reaches both works and task formats, invalidating
 test('all learning entries resolve shared terms and cannot silently fall back to a local definition', () => {
   const catalog = readCatalog();
   const works = catalog.works.filter((work) => work.meta.learning);
-  assert.equal(works.length, 48);
+  assert.equal(works.length, 51);
   for (const work of works) {
     for (const usage of Object.values(work.versions.zh!.data.learning!.glossary)) {
       assert.ok(glossary[usage.term]);

@@ -14,7 +14,7 @@ code-sources:
     'tests/content-lifecycle.spec.ts',
     'tests/unit/glossary.test.ts',
   ]
-code-revision: '2b8725ba953a2ea0603bd2a8bc2379c808e7d7d2869723178f01feb86e1a4ff6'
+code-revision: 'a22f983f1ee5d1d98b9495fdbf8376816f7b4efb6bba53c3296e150b0c2fee57'
 ---
 
 # 功能名：维护作品内容
@@ -39,6 +39,8 @@ code-revision: '2b8725ba953a2ea0603bd2a8bc2379c808e7d7d2869723178f01feb86e1a4ff6
 首次准备维护环境时，网站构建还需按[检查与发布网站](project-commands.md)准备固定Paseo产物；内容校验本身不需要连接电脑或模型账号。
 
 ### 维护网页动效与交互学习材料
+
+合集正文按[教程写作说明](../topics/ui-ux-motion-interaction.md#教程写作与参考依据)围绕一个可完成的任务组织问题、解释、练习与检查，分类索引用于后续查找。独立案例继续承担具体行为的拆解与改造，不能仅把案例列表当作合集正文。
 
 从学习页顶部编辑图标进入该语言的GitHub编辑页，修改一份Markdown的三个正文面板及文件头learning中的目标、检查和术语引用，提出PR并查看检查及阶段预览。共享源码、组合能力与素材路径在同目录work.json；媒体文件放public/great-ui/media，来源及各版本摘要登记在local-recordings.json；高清、手机构图与合集轻量封面按[录制与维护交互演示](recording-previews.md)分别检查。页面与复制任务共同读取这些字段，不在组件里另写一份文案。先运行content:validate，再构建核对面板、术语、任务与搜索；编辑源码或共享模板时升级为verify/budget。完整操作和示例见[学习交互作品](great-ui-learning.md#维护同一份材料)，格式见[交互学习材料](../system/content-model.md#交互学习材料)。
 

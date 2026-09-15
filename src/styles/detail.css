@@ -199,6 +199,8 @@
   padding: 24px 0 80px;
   scroll-margin-top: 0;
 }
+/* Page containers receive paging focus; individual controls keep their focus indicators. */
+.detail-cover:focus,
 .reading-page:focus {
   outline: none;
 }
