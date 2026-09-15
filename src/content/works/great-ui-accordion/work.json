@@ -1,0 +1,70 @@
+{
+  "id": "great-ui-accordion",
+  "originalLocale": "zh",
+  "order": 11001,
+  "sourceUrl": "https://www.great-ui.com/components/accordion",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "accordion",
+    "collectionId": "great-ui-learning",
+    "english": "Accordion",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/Accordion.tsx",
+    "previewSource": "components/site/previews/AccordionPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/accordion-source-capture.mp4",
+      "poster": "/great-ui/media/accordion-source-poster.jpg",
+      "width": 1072,
+      "height": 1040,
+      "mobile": {
+        "video": "/great-ui/media/accordion-mobile.mp4",
+        "poster": "/great-ui/media/accordion-mobile-poster.jpg",
+        "width": 588,
+        "height": 1300,
+        "duration": 8.033333
+      },
+      "card": {
+        "video": "/great-ui/media/accordion-card.mp4",
+        "poster": "/great-ui/media/accordion-card-poster.jpg",
+        "width": 480,
+        "height": 466,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "disclosure",
+      "roles": ["answer"],
+      "provides": ["answer-toggle"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": ["补齐展开状态与语义；需要比较答案时改为多项状态。"],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

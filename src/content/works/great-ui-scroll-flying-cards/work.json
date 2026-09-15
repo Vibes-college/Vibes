@@ -1,0 +1,72 @@
+{
+  "id": "great-ui-scroll-flying-cards",
+  "originalLocale": "zh",
+  "order": 11009,
+  "sourceUrl": "https://www.great-ui.com/components/scroll-flying-cards",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "scroll-flying-cards",
+    "collectionId": "great-ui-learning",
+    "english": "Scroll Flying Cards",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/ScrollFlyingCards.tsx",
+    "previewSource": "components/site/previews/ScrollFlyingCardsPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/scroll-flying-cards-demo.mp4",
+      "poster": "/great-ui/media/scroll-flying-cards-demo-poster.jpg",
+      "width": 1920,
+      "height": 904,
+      "mobile": {
+        "video": "/great-ui/media/scroll-flying-cards-mobile.mp4",
+        "poster": "/great-ui/media/scroll-flying-cards-mobile-poster.jpg",
+        "width": 716,
+        "height": 1480,
+        "duration": 11.033333
+      },
+      "card": {
+        "video": "/great-ui/media/scroll-flying-cards-card.mp4",
+        "poster": "/great-ui/media/scroll-flying-cards-card-poster.jpg",
+        "width": 480,
+        "height": 518,
+        "duration": 3.5
+      }
+    },
+    "capability": {
+      "family": "scroll-card",
+      "roles": ["showcase"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "每张卡占用约一屏以上的滚动距离，数量一多会明显拖长页面；scrollContainerRef 必须指向真实滚动容器，减少动态效果时需保留静态内容。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

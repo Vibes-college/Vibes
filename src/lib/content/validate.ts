@@ -1,6 +1,9 @@
 import { validateMedia } from '../media/validate.ts';
 import { validateMediaFiles } from '../media/files.ts';
 import { locales, type Catalog } from './schema.ts';
+import { parseLearningBody } from './learning.ts';
+import { validateLearningFiles } from './learning-files.ts';
+import { resolveGlossary } from './glossary.ts';
 
 // 校验跨文件身份、引用和发布关系，拒绝重复或静默修复坏数据。
 export function validateCatalog(catalog: Catalog): void {
@@ -23,11 +26,12 @@ export function validateCatalog(catalog: Catalog): void {
   if (ids.size !== catalog.works.length) throw new Error('content/works: duplicate work id');
   if (orders.size !== catalog.works.length) throw new Error('content/works: duplicate order');
   const pairs = new Set<string>();
-  for (const { meta, versions } of catalog.works) {
+  for (const { meta, versions, glossary } of catalog.works) {
     const file = `content/works/${meta.id}/work.json`;
     try {
       validateMedia(meta.media || [], meta.presentation);
       validateMediaFiles(meta.media || []);
+      if (meta.learning) validateLearningFiles(meta.learning.media);
     } catch (error) {
       throw new Error(`${file}: ${error instanceof Error ? error.message : error}`, {
         cause: error,
@@ -41,6 +45,25 @@ export function validateCatalog(catalog: Catalog): void {
       throw new Error(`${file}: duplicate tagIds`);
     for (const id of meta.tagIds) if (!tags.has(id)) throw new Error(`${file}: missing tag ${id}`);
     for (const version of Object.values(versions)) {
+      if (Boolean(meta.learning) !== Boolean(version.data.learning))
+        throw new Error(`${version.file}: learning metadata and text must appear together`);
+      if (meta.learning) {
+        if (meta.id !== `great-ui-${meta.learning.slug}` || !ids.has(meta.learning.collectionId))
+          throw new Error(`${file}: learning identity or collection is invalid`);
+        if (version.file.endsWith('.mdx'))
+          throw new Error(`${version.file}: learning uses Markdown`);
+        const body = parseLearningBody(version.body, version.file);
+        try {
+          resolveGlossary(version.data.learning!.glossary, glossary);
+        } catch (error) {
+          throw new Error(`${version.file}: ${error instanceof Error ? error.message : error}`, {
+            cause: error,
+          });
+        }
+        for (const match of JSON.stringify(body).matchAll(/\[\[([^|]+)\|[^\]]+\]\]/g))
+          if (!version.data.learning!.glossary[match[1]])
+            throw new Error(`${version.file}: unknown learning term ${match[1]}`);
+      }
       try {
         validateMedia(meta.media || [], meta.presentation, version.data.mediaText || {});
       } catch (error) {

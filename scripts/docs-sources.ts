@@ -6,8 +6,9 @@ import { featurePattern } from './docs-policy.ts';
 // 结构和行为代码需要说明；作品正文与素材是内容，不要求每次日更改架构文档。
 export function isImplementation(path: string): boolean {
   return (
-    /^(src|scripts|tests)\/.*\.(ts|tsx|js|mjs|astro|css)$/.test(path) ||
+    /^(src|scripts|tests)\/.*\.(ts|tsx|js|jsx|mjs|astro|css)$/.test(path) ||
     path === 'src/data/taxonomy.json' ||
+    /^(src\/features\/great-ui|tests\/great-ui)\/.*\.json$/.test(path) ||
     /^third_party\/paseo-webui\/.*\.(json|patch)$/.test(path) ||
     /^\.specify\/presets\/vibes\/(?:preset\.yml|commands\/speckit\.[a-z]+\.md|references\/hooks\.md)$/.test(
       path,

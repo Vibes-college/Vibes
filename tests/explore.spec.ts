@@ -8,6 +8,11 @@ import { readCatalog } from '../src/lib/content/catalog.ts';
 const publishedPapers = readCatalog().works.filter(
   (work) => work.meta.typeId === 'paper' && work.versions.zh?.data.status === 'published',
 ).length;
+const learningWorks = new Set(
+  readCatalog()
+    .works.filter((work) => work.meta.learning)
+    .map((work) => work.meta.id),
+);
 
 test('local filtering, empty state, and URL survive refresh', async ({ page }) => {
   // Filtering does not test YouTube availability; a remote thumbnail must not stall teardown.
@@ -107,6 +112,13 @@ test('static output stays small and content routes exist', async ({ request, pag
   });
   for (const slug of readdirSync('dist/zh/works')) {
     const html = readFileSync(`dist/zh/works/${slug}/index.html`, 'utf8');
+    if (learningWorks.has(slug)) {
+      expect(html).toContain('class="learning-page"');
+      expect(html).toContain('class="learning-markdown"');
+      expect(html).toContain('data-pagefind-body');
+      expect(html).toContain('/great-ui/media/');
+      continue;
+    }
     expect(html).toContain('id="reading"');
     expect(html).toMatch(/<h2\b/);
     expect(html).toContain('class="original-site"');

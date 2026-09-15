@@ -1,0 +1,775 @@
+{
+  "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+  "reviewedAt": "2026-09-14",
+  "scope": "48 published registry entries; implementation and preview read. Browser observations are recorded separately and may cover only one variant.",
+  "entries": [
+    {
+      "id": "great-ui-staggered-page-transition",
+      "slug": "staggered-page-transition",
+      "implementation": {
+        "path": "components/ui/StaggeredPageTransition.tsx",
+        "sha256": "23bce3fbfb7553c7de260aa498c5f649eae3c6d5c68b8382488f7973f7adaf07",
+        "bytes": 6518,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/StaggeredPageTransitionPreview.tsx",
+        "sha256": "b8071ce062859310a700cb94a5cd2851e0551a3c7da6576d8349a131c9e84796",
+        "bytes": 7331,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-accordion",
+      "slug": "accordion",
+      "implementation": {
+        "path": "components/ui/Accordion.tsx",
+        "sha256": "2f1407bd71884c78f3ae91c22c328fc938802dd7bebbac17dea9bc181d7bb22c",
+        "bytes": 3938,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/AccordionPreview.tsx",
+        "sha256": "88c21081fecd052dbe32cb412f9f4d1af5bd404f10024b8a74e7d843018f8d25",
+        "bytes": 1580,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-text-reveal",
+      "slug": "text-reveal",
+      "implementation": {
+        "path": "components/ui/TextReveal.tsx",
+        "sha256": "33b34b10a9c6a33fb76980eea8797f3c211b1eaed1c1c7cd08137f8b1a91aa6d",
+        "bytes": 7046,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/TextRevealPreview.tsx",
+        "sha256": "49f53131c556378ebc7fbb1e296513ea6a5dfe1baa5eb6696b5ca354ed29b4e6",
+        "bytes": 1609,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-animated-path",
+      "slug": "animated-path",
+      "implementation": {
+        "path": "components/ui/AnimatedPath.tsx",
+        "sha256": "770b7421b2f2b0340c97d09e85eb6c7894a6f4c8f681fa53729c75d14d44910c",
+        "bytes": 5812,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/AnimatedPathPreview.tsx",
+        "sha256": "0aacd6c50f6c4d28dc9387e9698dde9658679a9bd7e308a9fbd2cc82fbfb3952",
+        "bytes": 14603,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-deployment-checklist",
+      "slug": "deployment-checklist",
+      "implementation": {
+        "path": "components/ui/DeploymentChecklist.tsx",
+        "sha256": "b8e0a179e90fc2847176c267242aa4387635f89f02f3abb7aba6a323ae5cd8bb",
+        "bytes": 26701,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/DeploymentChecklistPreview.tsx",
+        "sha256": "3b4d45a8fd2ab019e4a4e2ff60118157262d861d292694c6a5587a9fd6130660",
+        "bytes": 245,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-button",
+      "slug": "button",
+      "implementation": {
+        "path": "components/ui/Button.tsx",
+        "sha256": "f2b8fa31fc7c1ceab10d7523096445bae1eb53f3a2d741b00cb74e72b23f4622",
+        "bytes": 4050,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/ButtonPreview.tsx",
+        "sha256": "618cda400d2416b67952a89f97cb52bfbbf2e7e9087c10fa5814adc226c22a52",
+        "bytes": 513,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-github-card",
+      "slug": "github-card",
+      "implementation": {
+        "path": "components/ui/GithubCard.tsx",
+        "sha256": "4b4735c73efeae8b36d0e2c4d3452d4efd73cdcac7cd1410edc843bc2cac8512",
+        "bytes": 12581,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/GithubCardPreview.tsx",
+        "sha256": "359f77f917232004d02f58c0a3ad4438e1284570e4f9e7cd0f1ad0508efe437f",
+        "bytes": 408,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-split-theme-provider",
+      "slug": "split-theme-provider",
+      "implementation": {
+        "path": "components/ui/SplitThemeProvider.tsx",
+        "sha256": "d689a65ce3660bc9ad95990f2205a942a5c6d0144fe7e45bb2db6ecb8abc0e82",
+        "bytes": 8269,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/SplitThemeProviderPreview.tsx",
+        "sha256": "bf2a80a6573ad7424cef472dfba24364a419a5104977c2a54e92fd810ceb44eb",
+        "bytes": 5950,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-mobile-mockup",
+      "slug": "mobile-mockup",
+      "implementation": {
+        "path": "components/ui/MobileMockup.tsx",
+        "sha256": "2d27e5e636169c6ca1a26389497efaa2982f75dd96102406779ffb3ecadfc61e",
+        "bytes": 20726,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/MobileMockupPreview.tsx",
+        "sha256": "85bc28d4c2b82803558070dadc99c4c549eac50ce05833c8e7378d89563fa265",
+        "bytes": 259,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-scroll-flying-cards",
+      "slug": "scroll-flying-cards",
+      "implementation": {
+        "path": "components/ui/ScrollFlyingCards.tsx",
+        "sha256": "091592d677ac80d50c8f4733f5fba9774af131fd7b5319f0e082525941a8051d",
+        "bytes": 6648,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/ScrollFlyingCardsPreview.tsx",
+        "sha256": "225375d211dc555128910e21a436f3ee982862b61a163c2933ffc5cf8707b2a3",
+        "bytes": 9792,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-color-wipe-page-transition",
+      "slug": "color-wipe-page-transition",
+      "implementation": {
+        "path": "components/ui/ColorWipePageTransition.tsx",
+        "sha256": "333642bf3e1dc72ddac213d89541d478bae4b39f287dd3c1011fd71d42138817",
+        "bytes": 9253,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/ColorWipePageTransitionPreview.tsx",
+        "sha256": "435edc14bb34d1c4a3220c352a099a4772219a03d836bfa8506af183ec7b57ae",
+        "bytes": 7441,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-team-section",
+      "slug": "team-section",
+      "implementation": {
+        "path": "components/ui/TeamSection.tsx",
+        "sha256": "dd19a0ac45c37a4070dc296d4e7fd9996d1d38867ca80a85f2b5f249ba95e61b",
+        "bytes": 8584,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/TeamSectionPreview.tsx",
+        "sha256": "b4617cbe27f838f6bf66c5a48079ed872f7b1baaf2e603d8cebd14227dc1a602",
+        "bytes": 1490,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-split-line-fly-in",
+      "slug": "split-line-fly-in",
+      "implementation": {
+        "path": "components/ui/SplitLineFlyIn.tsx",
+        "sha256": "2aaf7b1e6f7afb356426cb240167de556312b59b31263a8ca4e88465fc5878de",
+        "bytes": 7569,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/SplitLineFlyInPreview.tsx",
+        "sha256": "237db57c5de7254f97d44b043ca0dae64b5de853ba4585129d10fb116ef76a84",
+        "bytes": 1519,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-blur-scroll-reveal",
+      "slug": "blur-scroll-reveal",
+      "implementation": {
+        "path": "components/ui/BlurScrollReveal.tsx",
+        "sha256": "97d1c090e39b1a513bf41b2171744cb93b9cf4a3a41886d84396fd99e521848d",
+        "bytes": 7487,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/BlurScrollRevealPreview.tsx",
+        "sha256": "fd99612e9db9436324ec9756754ffd8a5db0310026a28429a698e4b18df3d567",
+        "bytes": 1520,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-word-focus-scroll",
+      "slug": "word-focus-scroll",
+      "implementation": {
+        "path": "components/ui/WordFocusScroll.tsx",
+        "sha256": "db609e86e762c5468a26f76b7232c87994f714b7f21edc09932362be4f896811",
+        "bytes": 3632,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/WordFocusScrollPreview.tsx",
+        "sha256": "ee60dde46c460988660e12e0e72007c424fad3a824e4e0229bcc5d9574259c02",
+        "bytes": 1546,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-text-on-path-scroll",
+      "slug": "text-on-path-scroll",
+      "implementation": {
+        "path": "components/ui/TextOnPathScroll.tsx",
+        "sha256": "e1c7b87278ece715cc20a7fd60d63deb48f2ec045d2dac3a647a5cc919bc858c",
+        "bytes": 3638,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/TextOnPathScrollPreview.tsx",
+        "sha256": "51f37398a1157cb96e760689fc767af778566ed15b87ae72ac54eb59caae9263",
+        "bytes": 2306,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-scrambled-install-command",
+      "slug": "scrambled-install-command",
+      "implementation": {
+        "path": "components/ui/ScrambledInstallCommand.tsx",
+        "sha256": "81edbdeae868e2c01edcd32da0ca1dd2e554ad8d899665148ee9c79825695024",
+        "bytes": 10212,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/ScrambledInstallCommandPreview.tsx",
+        "sha256": "5d493bedb336beaef509e76ac2920c30d4db696789c09d79e8dd27335c8e6838",
+        "bytes": 1065,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-multilingual-quote",
+      "slug": "multilingual-quote",
+      "implementation": {
+        "path": "components/ui/MultilingualQuote.tsx",
+        "sha256": "458477890fb751a32032c2db3741df7bee31d02d7ec3f105b9df79d19c283f1b",
+        "bytes": 4091,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/MultilingualQuotePreview.tsx",
+        "sha256": "48006d43935896b99631eb2ef4413b5084af45b00f5b86725eae5c7f40c52f89",
+        "bytes": 879,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-curtain-page-transition",
+      "slug": "curtain-page-transition",
+      "implementation": {
+        "path": "components/ui/CurtainPageTransition.tsx",
+        "sha256": "5b2c58080d837dc31d016e71b2f1eb2364c2b8a154c6027ba0302927af9b3fea",
+        "bytes": 5983,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/CurtainPageTransitionPreview.tsx",
+        "sha256": "ca798eaeab0dde9ff240352010f9a0ff3cfbe13c0527d920d3e7a835875b0a66",
+        "bytes": 6006,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-interlocking-page-transition",
+      "slug": "interlocking-page-transition",
+      "implementation": {
+        "path": "components/ui/InterlockingPageTransition.tsx",
+        "sha256": "468206fc2bfebc871c6b07fef02ea56ed1fc17a01dfa88a501c4cc2e96d18af3",
+        "bytes": 7620,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/InterlockingPageTransitionPreview.tsx",
+        "sha256": "5c3120531e0e285095adfd3e99aff6a78e502b0088fc805ccac36c06d7b9bbec",
+        "bytes": 6298,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-sweep-page-transition",
+      "slug": "sweep-page-transition",
+      "implementation": {
+        "path": "components/ui/SweepPageTransition.tsx",
+        "sha256": "b7ae7f4afa0ade61d7004897e3ffc3c5605ceec00f9dbc9974826a782d27ad52",
+        "bytes": 6264,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/SweepPageTransitionPreview.tsx",
+        "sha256": "4dd423fee7ce520a9b634d35cc172a719d2efef7d3ff607b8249962dcce26c1b",
+        "bytes": 7893,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-pixel-page-transition",
+      "slug": "pixel-page-transition",
+      "implementation": {
+        "path": "components/ui/PixelPageTransition.tsx",
+        "sha256": "1ca2688d3ebb8ac54f77d977cc4519d442fe4954fcb211c344c3c0dac1d62897",
+        "bytes": 6301,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/PixelPageTransitionPreview.tsx",
+        "sha256": "45bd93970942a78baa9899c26acc88c847764a76efb6f2c3e16f4c0e6ed52066",
+        "bytes": 4280,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-sine-wave-page-transition",
+      "slug": "sine-wave-page-transition",
+      "implementation": {
+        "path": "components/ui/SineWavePageTransition.tsx",
+        "sha256": "e02f5ba3c8c79428f5bc21675640100288ee7387059f404f5005d8d13cedc496",
+        "bytes": 6619,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/SineWavePageTransitionPreview.tsx",
+        "sha256": "8d3e31af5a85591e49f07df6977b0a76f418aafa674982f0bccc660066ed2e19",
+        "bytes": 8029,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-cascade-page-transition",
+      "slug": "cascade-page-transition",
+      "implementation": {
+        "path": "components/ui/CascadePageTransition.tsx",
+        "sha256": "02f5979d90eb3e487367ba45199705f42739c49fe44b134dc1867d7d93f106e1",
+        "bytes": 10301,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/CascadePageTransitionPreview.tsx",
+        "sha256": "314f9f09167ef196e7181bbb316622f29fd28f1ea343a00247f51292962b6795",
+        "bytes": 8033,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-venetian-blinds-page-transition",
+      "slug": "venetian-blinds-page-transition",
+      "implementation": {
+        "path": "components/ui/VenetianBlindsPageTransition.tsx",
+        "sha256": "30a82dc91a641f8f968aef08be62a65a0cfb0184ebc0fc9074a52d654d944de7",
+        "bytes": 6892,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/VenetianBlindsPageTransitionPreview.tsx",
+        "sha256": "ce46ca99331f8b10cd9e1d9e8272ab0d054d82f9519b04d4274e959d39f7ae58",
+        "bytes": 6827,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-cross-blur-page-transition",
+      "slug": "cross-blur-page-transition",
+      "implementation": {
+        "path": "components/ui/CrossBlurPageTransition.tsx",
+        "sha256": "b54026aac59af7bb82b2194a1122805fae73f04d0b8175c65fdedd202c064c6e",
+        "bytes": 2560,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/CrossBlurPageTransitionPreview.tsx",
+        "sha256": "d1e82a8595d2aabf773bd54dc05b5a5d2b2419d2688d7c339df826dc3df45a7a",
+        "bytes": 4391,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-swipe-theme-change",
+      "slug": "swipe-theme-change",
+      "implementation": {
+        "path": "components/ui/SwipeThemeProvider.tsx",
+        "sha256": "84a153a45d3a9fe1fce9763d776a127fe1bdb3d6f26462bb75a1bb8eca3e17f3",
+        "bytes": 10522,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/SwipeThemeChangePreview.tsx",
+        "sha256": "7426ce77f84a968ed670e9fa460896d5a593c2ed5a981bd8d401ccb74b3c6069",
+        "bytes": 12786,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-circular-theme-provider",
+      "slug": "circular-theme-provider",
+      "implementation": {
+        "path": "components/ui/CircularThemeProvider.tsx",
+        "sha256": "7a7411cd42687996279d8b9074b4bbb90170cf82ea5f8b243a49002350ce6ea9",
+        "bytes": 9429,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/CircularThemeProviderPreview.tsx",
+        "sha256": "190db44c9d738aabc75789a3fb185145d8ca23a0c0f5c1e5efeede68ca7bef25",
+        "bytes": 7712,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-blur-fade-theme-transition",
+      "slug": "blur-fade-theme-transition",
+      "implementation": {
+        "path": "components/ui/BlurFadeThemeTransition.tsx",
+        "sha256": "e3decbbabaaf28a5a9a9cfc8efd977f84a5b38afb244be62baba8b70181b00c8",
+        "bytes": 7062,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/BlurFadeThemeTransitionPreview.tsx",
+        "sha256": "4fab06593796c2823825e3aaeafb6154289c1d948ddcdb90367d802070141bef",
+        "bytes": 4702,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-linkedin-card",
+      "slug": "linkedin-card",
+      "implementation": {
+        "path": "components/ui/LinkedinCard.tsx",
+        "sha256": "0611a02ceec623ef97a844c153834e7aa12b951331cf76352ec1b517a0a03ca6",
+        "bytes": 8626,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/LinkedinCardPreview.tsx",
+        "sha256": "d1c5182ab36ac55682828e5f83a8af6687344bf36f55f228d1f686ad3fef3fc2",
+        "bytes": 483,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-facebook-card",
+      "slug": "facebook-card",
+      "implementation": {
+        "path": "components/ui/FacebookCard.tsx",
+        "sha256": "e8514b2112bb8fead63a41c69f0026e2d3e12b9a8a8f2fa01cd101898c379265",
+        "bytes": 8392,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/FacebookCardPreview.tsx",
+        "sha256": "2f813186a59ee4d1d3ef139fc5b5b1efbdb404c968f3f9caab432855aebf4a24",
+        "bytes": 517,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-instagram-card",
+      "slug": "instagram-card",
+      "implementation": {
+        "path": "components/ui/InstagramCard.tsx",
+        "sha256": "986c1fe7c1614a2b197b2f19a47d7bbf4c7c0951c3b642af7d983b9aa5623e1b",
+        "bytes": 9102,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/InstagramCardPreview.tsx",
+        "sha256": "07f42a0e9b2b4f3db7e978b494e7b0b0a2d5ac9b65c9aa69609557001b5e78eb",
+        "bytes": 536,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-twitter-card",
+      "slug": "twitter-card",
+      "implementation": {
+        "path": "components/ui/TwitterCard.tsx",
+        "sha256": "393e3b25df9bf7d8e1120b06fcbc202c03a1e056256a830ea3e86c7f4fb5e9d7",
+        "bytes": 18674,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/TwitterCardPreview.tsx",
+        "sha256": "94e984751ee6fe42bd8e9d1115fa929f44d1f0d6f0d0e53f26f96e5f4bfb3cd8",
+        "bytes": 375,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-radial-gooey-menu",
+      "slug": "radial-gooey-menu",
+      "implementation": {
+        "path": "components/ui/RadialGooeyMenu.tsx",
+        "sha256": "55b7a57dec0971cc172eca7cf7d68b4e2ba82e94ff51ab389cbe9295b0dbb126",
+        "bytes": 7047,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/RadialGooeyMenuPreview.tsx",
+        "sha256": "851f51cdde193303f4b3ea5f2c0c88e1afe1f333a8cb47a1c4994eed2e7c2dd1",
+        "bytes": 3212,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-floating-dock-menu",
+      "slug": "floating-dock-menu",
+      "implementation": {
+        "path": "components/ui/FloatingDockMenu.tsx",
+        "sha256": "a861cd264dbb37374dca6fe93b1e06009d1c56b5a50c9b0d23103be5a375daa0",
+        "bytes": 27217,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/FloatingDockMenuPreview.tsx",
+        "sha256": "6fd2e11bf66c665a4857cba1ecd01ef6c97f7720bb931fbdeea70ee737fe7914",
+        "bytes": 326,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-floating-menu",
+      "slug": "floating-menu",
+      "implementation": {
+        "path": "components/ui/FloatingMenu.tsx",
+        "sha256": "f3d31e11d96c1178ef892e604f8a8ee0e776a8fa401c0ea2f76d2fa417035ab6",
+        "bytes": 10814,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/FloatingMenuPreview.tsx",
+        "sha256": "af2ff9191500e48631619b30d6da5c714d537fedc18e006da479979b4075828d",
+        "bytes": 1025,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-animated-link",
+      "slug": "animated-link",
+      "implementation": {
+        "path": "components/ui/AnimatedLink.tsx",
+        "sha256": "df071c62102a97ce50a307c66b779e97d04e9044802a67744eedd5b5989623db",
+        "bytes": 11252,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/AnimatedLinkPreview.tsx",
+        "sha256": "42c2c97038292a6132b60a59d0febab9dde87f8bf1ecd43b63185c5a5971ea21",
+        "bytes": 1562,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-terminal-loader",
+      "slug": "terminal-loader",
+      "implementation": {
+        "path": "components/ui/TerminalLoader.tsx",
+        "sha256": "ac66271333f07c45614bf4eacc88e4e140bd22e20ff81ada1f5338658ff20527",
+        "bytes": 2802,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/TerminalLoaderPreview.tsx",
+        "sha256": "5a1b679125c7cb771d7c0f26a279d80fc10f07212b722ad61778f092eda66403",
+        "bytes": 423,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-image-hover-reveal",
+      "slug": "image-hover-reveal",
+      "implementation": {
+        "path": "components/ui/ImageHoverReveal.tsx",
+        "sha256": "0561107b21db2c4b37aea689d148692edf91d05de8fbef89420acc3f85cba9c1",
+        "bytes": 6967,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/ImageHoverRevealPreview.tsx",
+        "sha256": "3cb0613e8290992f24c9d770341a5839a8b68b4891ca079883a10c0ec0a85ea1",
+        "bytes": 1519,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-pixel-to-ascii-image",
+      "slug": "pixel-to-ascii-image",
+      "implementation": {
+        "path": "components/ui/PixelToAsciiImage.tsx",
+        "sha256": "ca0047aaf4f60002ca206021446c7b9b38d40e1681b889af561040e5b4d2c2dd",
+        "bytes": 6168,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/PixelToAsciiImagePreview.tsx",
+        "sha256": "d8e57fbb7058773db1abf0134a56f2fdf56a2c4b5c30d78bb9f0caf96fbe470b",
+        "bytes": 349,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-macbook-mockup",
+      "slug": "macbook-mockup",
+      "implementation": {
+        "path": "components/ui/MacbookMockup.tsx",
+        "sha256": "022b3056e09b89f1e44fea23454f3d90129fa249675ab1d585fbf6c7f60a9d9b",
+        "bytes": 26085,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/MacbookMockupPreview.tsx",
+        "sha256": "b73b5e27f4d212c648efe98b389bf86f98fa85823159532e9452504e643e8d53",
+        "bytes": 263,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-vinyl-album-card",
+      "slug": "vinyl-album-card",
+      "implementation": {
+        "path": "components/ui/VinylAlbumCard.tsx",
+        "sha256": "80a593ef8012b30e8c1f18ce9a4795fbc4d9c9c51158ab6d702e8a203bc999f5",
+        "bytes": 6676,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/VinylAlbumCardPreview.tsx",
+        "sha256": "0835f1d156f6eb37c6704bac86dcbf14e67dff1f96d5c9dfd7c5fc1680f725d0",
+        "bytes": 225,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-avatar-stack",
+      "slug": "avatar-stack",
+      "implementation": {
+        "path": "components/ui/AvatarStack.tsx",
+        "sha256": "2659b4167ba83f73b8cff7f1a90418b1e454b0c85f7eb04a9809533359a9d552",
+        "bytes": 7641,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/AvatarStackPreview.tsx",
+        "sha256": "6704e5337aef0f2e737a6e2fcf0452e9ee5cb500284574921a4adf3cd6bd22d8",
+        "bytes": 2293,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-diagonal-marquee-carousel",
+      "slug": "diagonal-marquee-carousel",
+      "implementation": {
+        "path": "components/ui/DiagonalMarqueeCarousel.tsx",
+        "sha256": "dd18661d0641e3033392ebf332e9974d1c8712afb3977ae88c850f881536ba35",
+        "bytes": 5795,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/DiagonalMarqueeCarouselPreview.tsx",
+        "sha256": "7d65e0a2cba224d09c8fadca17fd39d0a3446a5c362d081f4ed4d1efce4e9a18",
+        "bytes": 320,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-revision-timeline",
+      "slug": "revision-timeline",
+      "implementation": {
+        "path": "components/ui/RevisionTimeline.tsx",
+        "sha256": "89edc70ba4cd4a50d2a17b31dffcf59bc195aca6ddfc53bf9c750a656d6edf4f",
+        "bytes": 25416,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/RevisionTimelinePreview.tsx",
+        "sha256": "cc5682ce0cb31b3728e33a00ab960882a336888931bf62917504e88b0f466bdc",
+        "bytes": 2363,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-card",
+      "slug": "card",
+      "implementation": {
+        "path": "components/ui/Card.tsx",
+        "sha256": "2a5f4eeb952fc5844e85d18cc37bea85541eed806f6c50b9bedd4a0e17b1186a",
+        "bytes": 2963,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/CardPreview.tsx",
+        "sha256": "110443276acc6553afcfda75db3d466b120dafa3490d64f07e98067489725a1b",
+        "bytes": 505,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-minimal-buttons",
+      "slug": "minimal-buttons",
+      "implementation": {
+        "path": "components/ui/MinimalButtons.tsx",
+        "sha256": "64caeb01ad9e865334a6f76c7a128cfedd863fd3db01620fbbd3928a6b97ae54",
+        "bytes": 4790,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/MinimalButtonsPreview.tsx",
+        "sha256": "cd5b9770eb625c6b99225275e9c169c8b2ab527d4289b0822e212887b4ad4b48",
+        "bytes": 694,
+        "reviewed": true
+      }
+    },
+    {
+      "id": "great-ui-aceternity-button",
+      "slug": "aceternity-button",
+      "implementation": {
+        "path": "components/ui/AceternityButton.tsx",
+        "sha256": "1442100d32d2909352b3235c6174465be0fb38bb0a7b23390af2367a1b38a68a",
+        "bytes": 5692,
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/site/previews/AceternityButtonPreview.tsx",
+        "sha256": "304ffef5efc24b690ac9019ab791716d3eba593435799e2f1c61554ab7c9b763",
+        "bytes": 724,
+        "reviewed": true
+      }
+    }
+  ]
+}

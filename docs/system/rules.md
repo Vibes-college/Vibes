@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '常量、规则表与正则'
 status: 'current'
-shaped-by: ['001', '003', '005', '006', '007', '009', '010', '013', '014', '015', '016']
+shaped-by: ['001', '003', '005', '006', '007', '009', '010', '013', '014', '015', '016', '018']
 code-sources:
   [
     '.github/workflows/check.yml',
@@ -23,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '5e15d0fe4d29b6ce14d3fe5e5eabd051df889678a04569108ed99d3a53d5b0c7'
+code-revision: 'b6d61af4f8bb769618d5a2d0bf18d2bf97bf3ba8d5855132199aacddca358990'
 ---
 
 # 常量、规则表与正则
@@ -35,6 +35,7 @@ code-revision: '5e15d0fe4d29b6ce14d3fe5e5eabd051df889678a04569108ed99d3a53d5b0c7
 - `src/lib/content/catalog.ts`允许每种语言一个.md或.mdx，重复后缀拒绝；`src/lib/content/schema.ts`限定zh/en、稳定小写ID、非空语言字段、无凭据HTTPS来源、预览枚举/颜色、可选事实及单一关联；`validate.ts`校验目录身份、ID/顺序唯一、引用与发布关系。
 - `src/data/taxonomy.json`是类型/标签名称及别名唯一源；原文语言、排序、事实顺序和关系属于各作品work.json。目录只包含当前语言published版本，每页24件；路径函数在`src/lib/i18n/routes.ts`。
 - `src/lib/content/revision.ts`对规范化原文与影响理解的字段计算SHA256；排序和其他语言变化不影响摘要。已发布译文摘要不一致时标待复核，不自动撤回或更新。
+- `src/lib/content/glossary.ts`校验共享词条稳定ID、跨词条名称/别名唯一、HTTPS出处及固定正文结构；作品只引用规范ID和本例说明。关联词条完整内容进入原文及组合内容摘要，未关联词条不改变该作品摘要；完整示例回执还覆盖词库整体文件树。
 - 搜索为Pagefind语言全文索引，与tag分类取交集；构建限定[data-pagefind-body]根，零发布时不生成索引并移除旧索引；不再用卡片文本过滤。q最长160字符、输入延迟150ms、请求15秒超时、每批24项；索引/分片重试释放失败实例；程序下载失败重试刷新页面保留q，清除模块失败缓存；结果序号隔离旧请求。规则在src/scripts/explore.ts与search.ts。
 - 目录路径`/{locale}/`、分类`/{locale}/tags/{tagId}/`、分页`page/{n}/`、详情`/{locale}/works/{id}/`；旧根路径转中文，旧type转分类。UI文案在src/lib/i18n/messages.ts。
 - `src/config/site.ts`统一来源；发布要求HTTPS SITE_URL，拒绝localhost和非纯origin地址，vibes.college已获授权。canonical去查询，语言替代链接仅含实际版本，sitemap不含搜索或草稿。
@@ -138,7 +139,7 @@ public/_headers提供已登记播放器/原站frame来源、指定视频源和�
 
 ## 可读代码说明的对应规则
 
-scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序与样式、taxonomy、SQL、静态代码资产、根配置与工作流），Paseo固定来源的JSON声明和补丁也纳入说明覆盖；作品正文和work.json不重复当作架构说明。code-sources是实际文件或以斜杠结束的目录，禁止越界路径、空列表和无匹配条目；code-revision是路径与字节的SHA256。全体结构代码必须有说明覆盖，当前文档本地链接必须存在。
+scripts/docs-sources.ts定义结构代码范围（src/scripts/tests中的程序与样式，含JSX、Great UI学习及评估JSON、taxonomy、SQL、静态代码资产、根配置与工作流），Paseo固定来源的JSON声明和补丁也纳入说明覆盖；作品正文和work.json不重复当作架构说明。code-sources是实际文件或以斜杠结束的目录，禁止越界路径、空列表和无匹配条目；code-revision是路径与字节的SHA256。全体结构代码必须有说明覆盖，当前文档本地链接必须存在。
 
 新规格实现完成状态为complete，保留旧merged兼容；complete进入main后同样冻结，已完成任务不允许继续in-progress。实现/合并/发布是不同事实；测试与完整命令见checks-and-release.md。
 
@@ -150,8 +151,10 @@ docs/DECISIONS.md只能追加，原LESSONS历史迁移时保留旧正文；新�
 
 正文组件、暖白底色、字体与扩展参数统一见[Markdown排版](markdown.md)。
 
-MDX仅为需要交互的文章启用React islands；普通Markdown正文不需要React，多实例共享模块，主动打开助手另行加载其原生运行时。章节和事实锚点限制见[MDX规则](markdown.md#mdx互动文章)。detail.ts、detail-gestures.ts与detail-paging.ts共用组件区域排除，避免键盘、横滑和纵向翻页抢走组件输入。scripts/content-security.ts仅为本次构建产物的确切内联脚本向主页面追加SHA256许可，主页面不启用脚本unsafe-inline。
+MDX仅为需要交互的文章启用React islands；普通文章模板的Markdown正文不需要React，多实例共享模块，主动打开助手另行加载其原生运行时。章节和事实锚点限制见[MDX规则](markdown.md#mdx互动文章)。detail.ts、detail-gestures.ts与detail-paging.ts共用组件区域排除，避免键盘、横滑和纵向翻页抢走组件输入。scripts/content-security.ts仅为本次构建产物的确切内联脚本向主页面追加SHA256许可，主页面不启用脚本unsafe-inline。
 
-MDX格式整篇关闭左右拖动及长按拖动换篇，作品概览页顶部的相邻文章链接保留；普通Markdown维持原有手势。组件区域仍排除阅读键盘和纵向封面翻页手势。
+MDX格式整篇关闭左右拖动及长按拖动换篇，作品概览页顶部的相邻文章链接保留；普通文章模板的Markdown维持原有手势。组件区域仍排除阅读键盘和纵向封面翻页手势。
 
 内容发布范围新增content：正文与受限MDX通过AST分类后执行内容构建、预算和页面冒烟；新增执行逻辑回退full。Paseo静态缓存及凭据隔离规则集中于[内容贡献](content-contributions.md)，不免除生产SHA与资源门槛。
+
+Great UI学习条目以work.json的learning选择专用模板，正文仍是Markdown；只在普通目录列合集，子项保留搜索和独立网址。学习模板使用共享React并局限样式作用域，不安装普通文章的整屏手势；三节正文与结构字段校验见[内容结构](content-model.md#交互学习材料)。媒体均为/great-ui/media下的本站文件，单高清2MiB、单图200KiB、单封面短片150KiB、封面短片合计4MiB、整个集合48MiB；合集只加载当前轻量短片，详情按800px断点选择一份高清素材。正式站脚本预算保持原上限，学习页按交互页计入完整额外模块预算。

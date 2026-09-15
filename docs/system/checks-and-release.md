@@ -11,12 +11,19 @@ code-sources:
     '.github/workflows/',
     'playwright.config.ts',
     'playwright.content.config.ts',
+    'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '4535b90af05487aa5d019a378b243c6c241f773a8eafab6f170e5efdc1726e6d'
+code-revision: 'b33228c5d1df6719b9df77a042d156df415a7590af4b367302d6e29106d29b85'
 ---
 
 # 检查与发布
+
+## 本地检查的影响边界
+
+先核对真实接入与依赖边界，不因文件叫组件、页面或测试就运行整站回归。未被正式站引用、打包或发布，且构建、资源与测试入口独立的本地页面、样板或实验，只运行自身必要的检查和预算；不启动整站、Paseo或数据库回归，也不自动并入整站verify。仅放在同一仓库、复用已安装依赖或新增独立命令不构成整站影响。实际改动站点路由、共用组件、全局样式、依赖解析或构建/发布链时，按受影响范围升级；运行整站回归前说明具体依赖与理由。未知先查引用和构建入口，不能把“不确定”直接作为全量理由。
+
+独立入口的构建、单元、交互、异常和资源预算仍须按实际风险验证；共享检查器的修改验证检查器本身，不因此启动无关网站浏览器。改动真正接入网站时再补对应接入验证。当前本地改动与整个PR累计差异分开判断，不能机械把CI的保守路径分类套成本地开发命令。
 
 ## 检查入口
 
@@ -61,7 +68,7 @@ PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA�
 
 篇幅提示不属于错误，不使CI失败；根据职责、重复和导航决定是否整理。
 
-缺少标签会阻断项目治理Markdown；产品文章及固定上游资产采用自己的格式。自然语言是否精确表达现状仍需人工审核，脚本不使用禁词或固定任务措辞判断自然语言质量。
+缺少标签会阻断项目治理Markdown；产品文章、src/content/glossary中的词条/原文/模板及固定上游资产采用自己的格式。词条通过内容读取器校验，sources原文不经格式化器改写。自然语言是否精确表达现状仍需人工审核，脚本不使用禁词或固定任务措辞判断自然语言质量。
 
 ## 分支与PR的工作单位
 
@@ -125,7 +132,7 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 | `npm run format:check`              | 检查格式，不修改文件                                                             |
 | `npm run check`                     | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                                 |
 | `npm run test:e2e`                  | 构建→Playwright启动专用本地Worker→桌面Chromium及手机Chromium/WebKit测试→清理服务 |
-| `npm run verify`                    | check→db:reset→test:e2e，完整验收，失败停止；不部署                              |
+| `npm run verify`                    | check→db:reset→test:e2e，网站完整验收，失败停止；不部署                          |
 | `npm run budget`                    | 构建并检查脚本、首页和优化图片体积；限值见[常量](../system/rules.md)             |
 | `npm run optimize:images`           | 对已有dist单独生成图片变体和manifest；通常由build自动调用                        |
 | `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/content/full，不执行检查           |
@@ -135,7 +142,7 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 | `npm run release:preview -- <PR号>` | 本地按范围验收后上传PR预览版本，不提升生产                                       |
 | `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                        |
 
-按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；受限内容修改运行verify:content；页面组件和测试基础设施修改运行verify与budget。
+按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；受限内容修改运行verify:content；影响正式网站的页面组件或共用测试基础设施修改运行verify与budget；独立本地入口执行自己的检查。
 
 ## 媒体处理
 
@@ -188,8 +195,16 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 ## 源码与说明同步检查
 
-功能、系统说明和项目总览的code-sources绑定真实实现文件或目录，code-revision保存复核过的SHA256摘要。docs:check读取Git管理范围及未跟踪新源码，检查路径、全体实现覆盖、当前说明本地链接和摘要一致性。源码新增、改名、删除、字节变化会要求复核对应说明；历史规格链接保留当时路径。
+功能、系统说明和项目总览的code-sources绑定真实实现文件或目录，code-revision保存复核过的SHA256摘要。docs:check读取Git管理范围及未跟踪新源码，检查路径、全体实现覆盖、当前说明本地链接和摘要一致性。源码含JSX及Great UI学习/评估JSON；新增、改名、删除、字节变化会要求复核对应说明；历史规格链接保留当时路径。
 
 `npm run docs:check -- --revisions`只打印当前源码的候选摘要，不写文件，不表示说明正确，也不替代正常docs:check。先对照改动核对文案、流程和验收，再记录摘要并运行正常检查。测试见tests/unit/docs-sources.test.ts；内容正文及work.json不在结构代码摘要里，数量从content:validate读取。
 
 新规格complete表示实现及验收完成，不等于已合并或已部署。全部任务已勾选而状态仍in-progress会失败；main中的complete与历史merged同样保护正文。合并后核对无需再创建状态补丁PR。
+
+## Great UI学习工作台检查
+
+本地入口用`great-ui:build`校验目录、详情及能力结构，并输出.scratch/great-ui-dist；`great-ui:test`通过scripts/great-ui-test.ts运行独立Playwright配置，启动4336测试服务，结束由测试框架释放。不带筛选参数且全部用例通过时，核对测试前后源码摘要一致，再保存固定示例的路径记录；筛选重跑不能生成整体验证记录。great-ui-proof.ts在重建时核对记录与当前来源、Markdown、规则、适配器和测试，过期记录不显示为已验证。独立记录只用于standalone构建；正式学习页读取site记录，由test:e2e完整通过且测试前后源码一致时生成，两份回执不能相互替代。main的可信整树复用路径由great-ui-reuse.ts重建site回执，必须通过GitHub Actions、仓库、main push、当前SHA、干净文件树与原PR run/attempt守卫；记录明确标注复用来源，不当作本次重跑。great-ui:verify执行该入口的单元、浏览器、great-ui:evaluate与预算检查，独立于整站verify；单独运行great-ui:budget会先构建再检查压缩JS、CSS、目录、详情与本地媒体，不改变正式站预算。独立构建沿用站内规则，动态模块的预加载只准备依赖，目标模块由普通import加载，避免WebKit保留失败预加载；失败时提供返回说明和整页重载。不会调用发布命令。当前回归范围和待补覆盖见[功能说明](../features/great-ui-learning.md)，原始材料与浏览器证据不作为自动通过依据。
+
+48件高清、30件独立手机版本、轻量封面及海报按原始大小另计总量48MiB、单高清2MiB、单封面短片150KiB且封面短片合计4MiB、单海报200KiB。只加载当前选中素材；整套存储量不等于首页下载量，普通页面脚本预算不变。本地素材的来源、录制操作及文件摘要由data/local-recordings.json记录，单元检查拒绝缺失或摘要不符。稳定交互回归中的远端视频替身不证明外部可用性；实际媒体另检查解码与播放时间推进，并注明检查日期、原始地址及未重试的失败结果。
+
+tests/great-ui-previews.spec.ts覆盖三类两端素材、有效放大、键盘和鼠标移动、退出焦点、合集离屏无下载及旧视频释放、减少动态/省流量手动播放、连续旋转与失败入口。三个浏览器配置均检查回到开头时建立有界副本、后续跳转复用、无分段读取、超限拒绝及失败后不自动重播；首次正常播放不能额外fetch副本。手机Chromium另通过CDP发送双指缩放和单指移动；WebKit验证控件与鼠标/键盘移动，不将其等同于真机触摸。tests/great-ui-site.spec.ts逐件检查48段当前设备素材的解码、播放及无外部视频请求。

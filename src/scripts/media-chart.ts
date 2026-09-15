@@ -1,3 +1,4 @@
+import { readLimited } from '../lib/media/read';
 import { parseChartData } from '../lib/media/data';
 import { isMediaDatasetUrl, mediaLimits } from '../config/media';
 import type { Media, MediaText } from '../lib/media/schema';
@@ -12,34 +13,9 @@ export async function mountChart(
 ) {
   if (!isMediaDatasetUrl(item.dataset)) throw new Error('Invalid dataset source');
   const response = await fetch(item.dataset, { signal });
-  if (!response.ok || Number(response.headers.get('content-length')) > mediaLimits.dataBytes)
-    throw new Error('Chart data unavailable or too large');
-  // Bound the body while reading, including chunked responses without Content-Length.
-  const reader = response.body!.getReader();
-  const chunks: Uint8Array[] = [];
-  let bytes = 0;
-  try {
-    while (true) {
-      const next = await reader.read();
-      if (next.done) break;
-      bytes += next.value.byteLength;
-      if (bytes > mediaLimits.dataBytes) {
-        await reader.cancel();
-        throw new Error('Chart data exceeds limit');
-      }
-      chunks.push(next.value);
-    }
-  } finally {
-    reader.releaseLock();
-  }
-  const all = new Uint8Array(bytes);
-  let offset = 0;
-  for (const chunk of chunks) {
-    all.set(chunk, offset);
-    offset += chunk.length;
-  }
+  const blob = await readLimited(response, mediaLimits.dataBytes);
   const rows = parseChartData(
-    new TextDecoder().decode(all),
+    await blob.text(),
     item.columns.map((column) => column.key),
   );
   if (signal.aborted) return;

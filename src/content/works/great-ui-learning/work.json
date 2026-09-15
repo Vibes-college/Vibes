@@ -1,0 +1,25 @@
+{
+  "id": "great-ui-learning",
+  "originalLocale": "zh",
+  "order": 10999,
+  "sourceUrl": "https://www.great-ui.com",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "整理"
+      },
+      "value": {
+        "zh": "Vibes · 原作 Great UI"
+      }
+    }
+  ],
+  "related": []
+}

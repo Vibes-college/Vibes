@@ -21,6 +21,27 @@ export default [
   ...tseslint.configs.recommended,
   ...astro.configs.recommended,
   {
+    files: ['src/features/great-ui/**/*.jsx', 'src/features/great-ui/useRecordingView.js'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: { ecmaFeatures: { jsx: true } },
+      globals: Object.fromEntries(
+        [
+          'navigator',
+          'IntersectionObserver',
+          'ResizeObserver',
+          'MutationObserver',
+          'HTMLElement',
+          'HTMLVideoElement',
+          'requestAnimationFrame',
+          'cancelAnimationFrame',
+          'matchMedia',
+          'innerHeight',
+        ].map((name) => [name, 'readonly']),
+      ),
+    },
+  },
+  {
     languageOptions: {
       globals: Object.fromEntries(
         [
@@ -40,6 +61,7 @@ export default [
           'innerWidth',
           'getComputedStyle',
           'AbortSignal',
+          'AbortController',
         ].map((name) => [name, 'readonly']),
       ),
     },

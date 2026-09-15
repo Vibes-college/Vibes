@@ -1,0 +1,70 @@
+{
+  "id": "great-ui-aceternity-button",
+  "originalLocale": "zh",
+  "order": 11047,
+  "sourceUrl": "https://www.great-ui.com/components/aceternity-button",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "aceternity-button",
+    "collectionId": "great-ui-learning",
+    "english": "Aceternity Button",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/AceternityButton.tsx",
+    "previewSource": "components/site/previews/AceternityButtonPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/aceternity-button-demo.mp4",
+      "poster": "/great-ui/media/aceternity-button-demo-poster.jpg",
+      "width": 1472,
+      "height": 248,
+      "mobile": {
+        "video": "/great-ui/media/aceternity-button-mobile.mp4",
+        "poster": "/great-ui/media/aceternity-button-mobile-poster.jpg",
+        "width": 508,
+        "height": 560,
+        "duration": 7.033333
+      },
+      "card": {
+        "video": "/great-ui/media/aceternity-button-card.mp4",
+        "poster": "/great-ui/media/aceternity-button-card-poster.jpg",
+        "width": 480,
+        "height": 530,
+        "duration": 7.083333
+      }
+    },
+    "capability": {
+      "family": "action-button",
+      "roles": ["act"],
+      "provides": ["action-intent"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": ["修复href与disabled语义、焦点和type，适配现有路由并绑定真实执行状态。"],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "id": "great-ui-animated-link",
+  "originalLocale": "zh",
+  "order": 11036,
+  "sourceUrl": "https://www.great-ui.com/components/animated-link",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "animated-link",
+    "collectionId": "great-ui-learning",
+    "english": "Animated Link",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/AnimatedLink.tsx",
+    "previewSource": "components/site/previews/AnimatedLinkPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/animated-link-demo.mp4",
+      "poster": "/great-ui/media/animated-link-demo-poster.jpg",
+      "width": 1752,
+      "height": 648,
+      "mobile": {
+        "video": "/great-ui/media/animated-link-mobile.mp4",
+        "poster": "/great-ui/media/animated-link-mobile-poster.jpg",
+        "width": 604,
+        "height": 1164,
+        "duration": 8.033333
+      },
+      "card": {
+        "video": "/great-ui/media/animated-link-card.mp4",
+        "poster": "/great-ui/media/animated-link-card-poster.jpg",
+        "width": 480,
+        "height": 480,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "link-feedback",
+      "roles": ["navigate"],
+      "provides": ["navigation-intent"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        },
+        {
+          "key": "input",
+          "value": "pointer",
+          "reason": "原作依赖鼠标悬停或位置。",
+          "adaptation": "为触摸与键盘增加可发现的等价入口，并保留静态信息。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "依赖next/link；多数反馈仅监听hover，需补focus-visible。showArrow只在基础分支出现，不适用于所有变体。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

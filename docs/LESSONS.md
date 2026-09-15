@@ -17,6 +17,10 @@ shaped-by: ['004']
 
 ## 已转化
 
+- [2026-09-14] 现象：对未接入正式站的本地工作台启动整站回归，用户连续指出范围错误｜证据：018任务对话及resources/evidence/018-great-ui-scale/verify.log中的中止运行
+  原因：将组件路径和CI的保守分类直接套成本地验证，未先核对实际构建、引用和发布边界。
+  转化：[检查与发布](system/checks-and-release.md)及[执行入口](../AGENTS.md)要求独立本地入口只运行自身检查；[great-ui:verify](../package.json)提供独立命令｜验证：018本地16项单元、66项浏览器、独立预算通过｜转化日期：2026-09-14｜状态：已转化
+
 - [2026-09-06] 现象：连续导航返回搜索结果两次出现约123px滚动偏差｜证据：resources/evidence/005-continuous-navigation/verify-initial-failures.log及专项回归
   原因：异步结果短暂令页面变矮，换页后的scrollend可能先覆盖目标history滚动值，page-load才读取已太迟。
   转化：[explore.ts](../src/scripts/explore.ts)在before-preparation保存目标位置，结果恢复后再对齐｜验证：[navigation.spec.ts](../tests/navigation.spec.ts)覆盖，WebKit连续5次专项通过｜转化日期：2026-09-06｜状态：已转化

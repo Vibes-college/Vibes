@@ -6,6 +6,7 @@ import { workFacts } from '../data/work-facts';
 import { adjacentWorks } from '../lib/content/views';
 import { messages } from '../lib/i18n/messages';
 import { browsePath, workPath, htmlLanguages } from '../lib/i18n/routes';
+import { collectionHtml } from '../lib/media/render';
 interface Props {
   work: Work;
 }
@@ -103,7 +104,9 @@ const meta = {
     >
   </div>
   {
-    work.meta.presentation ? (
+    work.mediaCard?.collection ? (
+      <Fragment set:html={collectionHtml(work, work.locale, true)} />
+    ) : work.meta.presentation ? (
       <MediaDetail work={work} />
     ) : (
       <a

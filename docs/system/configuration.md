@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '配置和环境变量'
 status: 'current'
-shaped-by: ['001', '004', '005', '009', '010', '013', '014', '015', '016']
+shaped-by: ['001', '004', '005', '009', '010', '013', '014', '015', '016', '018']
 code-sources:
   [
     'package.json',
@@ -25,8 +25,11 @@ code-sources:
     'src/config/site.ts',
     'public/_headers',
     'public/_redirects',
+    'src/features/great-ui/browse-storage.ts',
+    'src/features/great-ui/useCaseBrowser.jsx',
+    'src/scripts/media-collection.ts',
   ]
-code-revision: 'a0ddf5695ce895b0d0ae7f0f266dd59be51b234698a6d79522aec673117a321f'
+code-revision: 'a328695a760c8bc8afd72d67a3fa6c1197679c4cde6c54dec09acd286dc0a68d'
 ---
 
 # 配置和环境变量
@@ -54,7 +57,7 @@ code-revision: 'a0ddf5695ce895b0d0ae7f0f266dd59be51b234698a6d79522aec673117a321f
 
 ## Markdown与排版依赖
 
-Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，普通Markdown正文不需要React。@astrojs/mdx与@astrojs/react分别提供MDX编译和React islands；网站的react/react-dom在需要交互的岛上加载，@types/react及@types/react-dom用于类型检查，tsconfig.json使用react-jsx。Paseo另带固定原生运行时，仅首次主动打开助手后加载。Motion用于beUI组件动画，lucide-react提供其原版图标，clsx与tailwind-merge保留原版类合并行为；Tailwind与@tailwindcss/vite在构建期生成组件样式，不加载浏览器运行库，不导入全局Preflight，仅扫描beUI组件及演示目录。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
+Astro使用官方`@astrojs/markdown-remark`处理器，以remark-directive、remark-math和rehype-katex编译扩展块与公式，Shiki在构建期高亮。`@prose-ui/style`仅提供CSS；Geist字体与Lucide图标作为附许可证的本地静态文件使用，普通文章模板的Markdown正文不需要React；Great UI学习模板把Markdown说明编译后交给共享React交互页。@astrojs/mdx与@astrojs/react分别提供MDX编译和React islands；网站的react/react-dom在需要交互的岛上加载，@types/react及@types/react-dom用于类型检查，tsconfig.json使用react-jsx。Paseo另带固定原生运行时，仅首次主动打开助手后加载。Motion用于beUI组件动画，lucide-react提供其原版图标，clsx与tailwind-merge保留原版类合并行为；Tailwind与@tailwindcss/vite在构建期生成组件样式，不加载浏览器运行库，不导入全局Preflight，仅扫描beUI组件及演示目录。版本锁定在package.json；接线为astro.config.mjs及src/lib/markdown/config.ts。作用域、资源和写法见[Markdown排版](markdown.md)。
 
 构建后scripts/content-security.ts扫描HTML中的内联可执行脚本，并接收固定2048打包模板与原生Mermaid沙盒的脚本摘要，按精确内容补充dist/_headers的SHA256许可，支持从普通页面连续导航到互动文章。Astro内置CSP当前不兼容ClientRouter，因此不同时开启两套策略；主页面脚本不使用unsafe-inline或unsafe-eval。
 
@@ -86,7 +89,9 @@ Paseo按固定上游及补丁独立构建，默认产品构建必须包含有效
 
 外部快照在 `resources/references/`，本地证据在 `resources/evidence/`；`.gitignore`、`.prettierignore`、`eslint.config.mjs` 同步排除这两项，`tsconfig.json` 排除resources。它们不属于网站构建输入。node_modules目录及隔离worktree复用依赖的同名符号链接均不提交，.gitignore以node_modules匹配。完整文件职责见 [仓库地图](../README.md)。
 
-CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GITHUB_OUTPUT用于传递范围和main验收复用决定。GitHub自动提供仓库ID、PR事件、运行ID/attempt和SHA；scope的GH_TOKEN仅用于只读证据查询，不需要新增用户secret。CI_ACCEPTANCE_REUSED仅由可信判定后的main生产准备步骤设置，不能作为本地跳过回归的配置。冻结检查独立使用DOCS_BASE_REF，缺失基线失败。详见[CI](../system/checks-and-release.md)。
+共享词条在src/content/glossary/terms参与内容构建；同目录sources保存用于词条整理的完整原始文章，进入Git但不随站打包，.prettierignore保留其原始字节。词条摘要使用现有Astro frontmatter解析，不新增浏览器Markdown解析器或运行依赖。
+
+CI范围由CHECK_BASE_REF（默认origin/main）和GITHUB_EVENT_NAME决定；GITHUB_OUTPUT用于传递范围和main验收复用决定。GitHub自动提供仓库ID、PR事件、运行ID/attempt和SHA；scope的GH_TOKEN仅用于只读证据查询，不需要新增用户secret。CI_ACCEPTANCE_REUSED仅由可信判定后的main生产准备和示例回执恢复步骤设置，不能作为本地跳过回归的配置。后者的CI_ACCEPTANCE_RUN与CI_ACCEPTANCE_ATTEMPT来自同一判定，记录被复用的完整PR验收来源。冻结检查独立使用DOCS_BASE_REF，缺失基线失败。详见[CI](../system/checks-and-release.md)。
 
 ## 内容构建与隔离测试
 
@@ -112,6 +117,22 @@ Astro在公共布局启用ClientRouter，`prefetchAll:false`关闭全站自动�
 
 媒体和平台登记见src/config/media.ts及[媒体规则](rules.md#媒体加载与体积)。浏览器只在点击后创建YouTube、Spotify、B站或已核对原站的iframe；媒体下载、账号和地区限制由平台决定，无平台API密钥。音视频文件只从同源或指定来源加载，图表数据经有界GET读取；完整来源不提前挂到元素。2048仅在点击后读取本站MIT源码模板，以不允许同源访问的sandbox运行。构建时scripts/sandbox-game.ts将固定游戏的CSS/JS内嵌到64KiB以内的game-bundled.txt，保留旧game.txt，脚本按精确SHA256加入所有页面共用的CSP；沙盒不再发起样式或脚本子请求，避免部分浏览器网络环境阻止不透明来源的资源访问。开发服务器仍读取原始素材。游戏脚本继续计入媒体预算一次，不访问父页面DOM或持久存储；仅向父页面报告初始化，父页面核对消息确实来自当前沙盒。5秒没有初始化信号会停止并提供完整刷新入口，恢复旧页面继承CSP不含新摘要的情况。
 
+astro.config.mjs将媒体登记与有界读取两个小工具合入同一共享资源，按调用处延迟加载；不把播放器或图表加入普通页面启动脚本。src/lib/media/read.ts按实际响应流累计字节，错误状态、超限响应头或流式超限均取消读取；结果直接作为Blob供视频使用或解码为文字，避免重复拼接副本。
+
 ESLint仅对public/media/2048/game.js这一份带MIT署名的上游压缩分发文件豁免本项目风格规则；自有媒体代码仍完整检查，原始来源版本见同目录SOURCE.txt，实际游戏操作与总脚本预算仍有测试。
 
 内容验收使用playwright.content.config.ts，仅安装Chromium、不启动Paseo测试服务；完整配置不变。内容分类使用@astrojs/mdx锁定依赖中的MDX解析器，首次环境仍运行npm ci。
+
+## 本地交互学习工作台
+
+Great UI工作台复用已锁定的React、Motion和Lucide依赖，站内Astro学习页与scripts/great-ui.ts辅助Vite入口读取同一份Markdown。默认预览4325，专用Playwright测试服务4336，均绑定127.0.0.1且端口冲突直接失败。JSX与浏览器查看器hook在ESLint专用范围检查，工具TypeScript允许读取构建期MJS。命令、媒体与验收范围见[学习操作路径](../features/great-ui-learning.md)。
+
+Great UI学习页的GitHub编辑链接和完整词条链接读取VIBES_CONTENT_EDIT_REF或GITHUB_HEAD_REF以指向PR分支；发布预览命令从已核对的PR设置前者，正式main构建默认main。开发回退当前Git分支。astro.config.mjs仅允许当前根目录与实际node_modules目录被开发服务读取，支持隔离检出复用已安装依赖，不扩大到父仓库。
+
+## Great UI浏览偏好与记录
+
+合集封面选择另存sessionStorage的`vibes:collection:<语言>:<合集ID>`，值仅为当前作品ID；关闭标签页后结束。读取时只接受当前已发布成员，存储不可用时在本次页面维持切换。它与学习页的浏览轮次、范围和草稿互不影响。
+
+作品页的范围和随机开关保存在localStorage的`vibes:great-ui:browse-preferences:v1`，用于同源下次访问；同一标签页的轮次、已看作品及前后记录保存在sessionStorage的`vibes:great-ui:browse-session:v1`。每个页面的history.state另存`vibesGreatUiBrowse`快照，浏览器返回优先恢复对应页，写入时保留Astro的字段。记录只含作品ID、分类与模式，不包含改造草稿或账号数据，不提交服务器。
+
+导航前先暂存目标会话，成功进入目标页后保存其快照；导航失败恢复原记录。读取时校验版本、作品范围、唯一性和索引，随机目录增删导致旧轮次不完整时重新开始；范围外直达回到全部分类。历史最多保留最近1,000次操作；存储被禁用或写满时以内存维持当前访问，无法保证关闭后或刷新继续保留。清除这两个存储键及当前history快照会恢复首次默认。源码为browse-storage.ts、useCaseBrowser.jsx，纯规则在browsing.ts；用户操作见[选择浏览范围与顺序](../features/great-ui-learning.md#选择浏览范围与顺序)。

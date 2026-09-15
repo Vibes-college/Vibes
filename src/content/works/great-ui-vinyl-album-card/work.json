@@ -1,0 +1,78 @@
+{
+  "id": "great-ui-vinyl-album-card",
+  "originalLocale": "zh",
+  "order": 11041,
+  "sourceUrl": "https://www.great-ui.com/components/vinyl-album-card",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "vinyl-album-card",
+    "collectionId": "great-ui-learning",
+    "english": "Vinyl Album Card",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/VinylAlbumCard.tsx",
+    "previewSource": "components/site/previews/VinylAlbumCardPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/vinyl-album-card-demo.mp4",
+      "poster": "/great-ui/media/vinyl-album-card-demo-poster.jpg",
+      "width": 1000,
+      "height": 840,
+      "mobile": {
+        "video": "/great-ui/media/vinyl-album-card-demo.mp4",
+        "poster": "/great-ui/media/vinyl-album-card-demo-poster.jpg",
+        "width": 1000,
+        "height": 840,
+        "duration": 8.066667
+      },
+      "card": {
+        "video": "/great-ui/media/vinyl-album-card-card.mp4",
+        "poster": "/great-ui/media/vinyl-album-card-card-poster.jpg",
+        "width": 480,
+        "height": 404,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "album-display",
+      "roles": ["showcase"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        },
+        {
+          "key": "input",
+          "value": "pointer",
+          "reason": "原作依赖鼠标悬停或位置。",
+          "adaptation": "为触摸与键盘增加可发现的等价入口，并保留静态信息。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "没有播放、购买或跳转；固定500px容器容易超出手机。依赖原站ThemeProvider和framer-motion，需要适配项目环境。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

@@ -1,0 +1,234 @@
+[
+  {
+    "id": "goal-01",
+    "split": "development",
+    "goal": "作品集需要完整介绍、答疑和联系",
+    "template": "portfolio",
+    "environment": {},
+    "pinned": null,
+    "expectPlans": true,
+    "expectIssue": null
+  },
+  {
+    "id": "goal-02",
+    "split": "development",
+    "goal": "手机上了解产品并比较方案",
+    "template": "product",
+    "environment": {
+      "input": "touch"
+    },
+    "pinned": null,
+    "expectPlans": true,
+    "expectIssue": "base-implementation"
+  },
+  {
+    "id": "goal-03",
+    "split": "development",
+    "goal": "高频工具填写后检查并修正",
+    "template": "tool",
+    "environment": {
+      "navigation": "frequent"
+    },
+    "pinned": null,
+    "expectPlans": true,
+    "expectIssue": "base-implementation"
+  },
+  {
+    "id": "goal-04",
+    "split": "development",
+    "goal": "非React作品集允许移植",
+    "template": "portfolio",
+    "environment": {
+      "framework": "other"
+    },
+    "pinned": null,
+    "expectPlans": true,
+    "expectIssue": "required-adaptation"
+  },
+  {
+    "id": "goal-05",
+    "split": "development",
+    "goal": "不接外部服务的产品展示",
+    "template": "product",
+    "environment": {
+      "externalData": "blocked"
+    },
+    "pinned": null,
+    "expectPlans": true,
+    "expectIssue": null
+  },
+  {
+    "id": "goal-06",
+    "split": "development",
+    "goal": "未知项目条件先给需确认方案",
+    "template": "portfolio",
+    "environment": {
+      "framework": "unknown",
+      "input": "unknown",
+      "externalData": "unknown"
+    },
+    "pinned": null,
+    "expectPlans": true,
+    "expectIssue": "unknown-condition"
+  },
+  {
+    "id": "goal-07",
+    "split": "development",
+    "goal": "作品集必须保留错峰转场",
+    "template": "portfolio",
+    "environment": {},
+    "pinned": "staggered-page-transition",
+    "expectPlans": true,
+    "expectIssue": "integration-task"
+  },
+  {
+    "id": "goal-08",
+    "split": "development",
+    "goal": "频繁任务不保留像素全屏转场",
+    "template": "tool",
+    "environment": {
+      "navigation": "frequent"
+    },
+    "pinned": "pixel-page-transition",
+    "expectPlans": false,
+    "expectIssue": "frequent-navigation"
+  },
+  {
+    "id": "goal-09",
+    "split": "development",
+    "goal": "产品选择不能用主题切换充当",
+    "template": "product",
+    "environment": {},
+    "pinned": "split-theme-provider",
+    "expectPlans": false,
+    "expectIssue": "pinned-incompatible"
+  },
+  {
+    "id": "goal-10",
+    "split": "development",
+    "goal": "不允许改造时不可冒称可直接接入",
+    "template": "product",
+    "environment": {
+      "allowAdaptation": false
+    },
+    "pinned": null,
+    "expectPlans": false,
+    "expectIssue": "integration-task"
+  },
+  {
+    "id": "goal-11",
+    "split": "development",
+    "goal": "触摸访问领英卡片需替代入口",
+    "template": "portfolio",
+    "environment": {
+      "input": "touch"
+    },
+    "pinned": "linkedin-card",
+    "expectPlans": true,
+    "expectIssue": "required-adaptation"
+  },
+  {
+    "id": "goal-12",
+    "split": "development",
+    "goal": "工具结果清单要绑定真实执行",
+    "template": "tool",
+    "environment": {},
+    "pinned": "deployment-checklist",
+    "expectPlans": true,
+    "expectIssue": "integration-task"
+  },
+  {
+    "id": "goal-13",
+    "split": "held-out",
+    "goal": "减少动态效果也能阅读作品集",
+    "template": "portfolio",
+    "environment": {
+      "motion": "reduced"
+    },
+    "pinned": null,
+    "expectPlans": true,
+    "expectIssue": "reduced-motion"
+  },
+  {
+    "id": "goal-14",
+    "split": "held-out",
+    "goal": "触摸工具保留真实输入和结果",
+    "template": "tool",
+    "environment": {
+      "input": "touch",
+      "navigation": "frequent"
+    },
+    "pinned": null,
+    "expectPlans": true,
+    "expectIssue": "base-implementation"
+  },
+  {
+    "id": "goal-15",
+    "split": "held-out",
+    "goal": "非React且不许改造不能直接接入",
+    "template": "portfolio",
+    "environment": {
+      "framework": "other",
+      "allowAdaptation": false
+    },
+    "pinned": null,
+    "expectPlans": false,
+    "expectIssue": "condition-mismatch"
+  },
+  {
+    "id": "goal-16",
+    "split": "held-out",
+    "goal": "外部数据未知的GitHub卡片需披露",
+    "template": "portfolio",
+    "environment": {
+      "externalData": "unknown"
+    },
+    "pinned": "github-card",
+    "expectPlans": true,
+    "expectIssue": "unknown-condition"
+  },
+  {
+    "id": "goal-17",
+    "split": "held-out",
+    "goal": "产品答疑保留折叠组件",
+    "template": "product",
+    "environment": {},
+    "pinned": "accordion",
+    "expectPlans": true,
+    "expectIssue": "integration-task"
+  },
+  {
+    "id": "goal-18",
+    "split": "held-out",
+    "goal": "频繁工具不保留多层扫过",
+    "template": "tool",
+    "environment": {
+      "navigation": "frequent"
+    },
+    "pinned": "sweep-page-transition",
+    "expectPlans": false,
+    "expectIssue": "frequent-navigation"
+  },
+  {
+    "id": "goal-19",
+    "split": "held-out",
+    "goal": "产品路径不能用圆形主题补齐必需步骤",
+    "template": "product",
+    "environment": {},
+    "pinned": "circular-theme-provider",
+    "expectPlans": false,
+    "expectIssue": "pinned-incompatible"
+  },
+  {
+    "id": "goal-20",
+    "split": "held-out",
+    "goal": "停止外部服务时GitHub卡片需要数据适配",
+    "template": "portfolio",
+    "environment": {
+      "externalData": "blocked"
+    },
+    "pinned": "github-card",
+    "expectPlans": true,
+    "expectIssue": "required-adaptation"
+  }
+]

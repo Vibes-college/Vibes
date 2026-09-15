@@ -1,0 +1,78 @@
+{
+  "id": "great-ui-team-section",
+  "originalLocale": "zh",
+  "order": 11011,
+  "sourceUrl": "https://www.great-ui.com/components/team-section",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "team-section",
+    "collectionId": "great-ui-learning",
+    "english": "Team Section",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/TeamSection.tsx",
+    "previewSource": "components/site/previews/TeamSectionPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/team-section-demo.mp4",
+      "poster": "/great-ui/media/team-section-demo-poster.jpg",
+      "width": 1920,
+      "height": 684,
+      "mobile": {
+        "video": "/great-ui/media/team-section-mobile.mp4",
+        "poster": "/great-ui/media/team-section-mobile-poster.jpg",
+        "width": 716,
+        "height": 1536,
+        "duration": 6.033333
+      },
+      "card": {
+        "video": "/great-ui/media/team-section-card.mp4",
+        "poster": "/great-ui/media/team-section-card-poster.jpg",
+        "width": 480,
+        "height": 172,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "people-list",
+      "roles": ["showcase"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        },
+        {
+          "key": "input",
+          "value": "pointer",
+          "reason": "原作依赖鼠标悬停或位置。",
+          "adaptation": "为触摸与键盘增加可发现的等价入口，并保留静态信息。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "桌面行只监听鼠标进入，没有等价键盘选择；social 链接只在窄屏卡片出现。桌面上需要同时补齐可聚焦入口和每位人物的实际链接。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}
