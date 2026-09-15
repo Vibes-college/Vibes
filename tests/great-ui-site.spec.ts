@@ -29,7 +29,14 @@ test('one collection leads to searchable learning pages with honest language and
   );
   await page.getByRole('link', { name: '返回合集' }).click();
   await expect(page).toHaveURL(new RegExp(collection));
-  await expect(page.locator('.section-content a[href*="/works/great-ui-"]')).toHaveCount(48);
+  const linkedWorks = await page
+    .locator('.section-content a[href*="/works/"]')
+    .evaluateAll((links) => [...new Set(links.map((link) => link.getAttribute('href')))].sort());
+  expect(linkedWorks).toEqual(
+    learningMaterials()
+      .entries.map((entry) => `/zh/works/${entry.id}/`)
+      .sort(),
+  );
   await page.goto('/zh/');
   await expect(page.locator('[data-browse-grid]')).toHaveCount(1);
   expect(
@@ -37,7 +44,7 @@ test('one collection leads to searchable learning pages with honest language and
   ).toBeLessThanOrEqual(1);
 });
 
-test('all 48 site previews decode under the real content policy and load only the selected clip', async ({
+test('all 51 site previews decode under the real content policy and load only the selected clip', async ({
   page,
   isMobile,
 }) => {
@@ -160,3 +167,55 @@ test('the learning page supplies the actual work to the native assistant without
     await expect(page.locator('#root textarea:visible')).toHaveValue('');
   });
 });
+
+for (const id of ['beui-combobox', 'rare-ui-duration-picker', 'microkit-sliding-content-tabs']) {
+  test(`cross-source ${id}: owned playback, reachable task, attribution and navigation`, async ({
+    page,
+    isMobile,
+  }) => {
+    if (!isMobile) await page.setViewportSize({ width: 1280, height: 720 });
+    const entry = learningMaterials().entries.find((entry) => entry.id === id)!;
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.goto('/zh/works/' + id + '/');
+    await expect(page.locator('.great-ui h1')).toHaveText(entry.title);
+    const video = page.locator('.recording-stage video');
+    await expect
+      .poll(() =>
+        video.evaluate((node: HTMLVideoElement) => ({
+          decoded: node.videoWidth > 0 && node.readyState >= 2,
+          playing: node.currentTime > 0.2 && !node.paused,
+          error: node.error?.code || null,
+        })),
+      )
+      .toEqual({ decoded: true, playing: true, error: null });
+    expect(
+      new URL(await video.evaluate((node: HTMLVideoElement) => node.currentSrc)).pathname,
+    ).toBe(isMobile ? entry.recordingMedia.mobile!.video : entry.previewRecording);
+    await page.getByRole('button', { name: '暂停录屏', exact: true }).click();
+    await expect.poll(() => video.evaluate((node: HTMLVideoElement) => node.paused)).toBe(true);
+    await page.getByRole('button', { name: '放大录屏', exact: true }).click();
+    await expect(page.getByRole('dialog', { name: '放大录屏', exact: true })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: /用这个效果/ }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await page.getByText('查看同一任务的 JSON', { exact: true }).click();
+    const task = JSON.parse(await page.getByLabel('结构化任务', { exact: true }).inputValue());
+    const text = await page.getByLabel('完整 Prompt', { exact: true }).inputValue();
+    expect(task.selected.source).toBe(entry.source);
+    expect(task.selected.reference).toBe(entry.reference);
+    expect(task.license.url).toBe(entry.license);
+    expect(text).toContain(entry.source);
+    expect(task.media.url).toBe(new URL(entry.previewRecording!, page.url()).href);
+    expect(task.media.localPath).toBeNull();
+    await page.getByRole('button', { name: '关闭复制材料' }).click();
+    await page.getByRole('button', { name: /浏览作品/ }).click();
+    await page.getByLabel('搜索作品').fill('Combobox');
+    await page.locator('.case-card').filter({ hasText: '能搜索，也能确认的选择框' }).click();
+    await expect(page).toHaveURL(/\/zh\/works\/beui-combobox\/$/);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
+      true,
+    );
+    expect(errors).toEqual([]);
+  });
+}

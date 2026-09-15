@@ -7,12 +7,13 @@ import { validateCatalog, validateDetail } from '../../src/features/great-ui/cat
 import { validateCapabilities } from '../../src/features/great-ui/composition/validate.ts';
 import { createTask, taskText } from '../../src/features/great-ui/task.mjs';
 import { demoPlan } from '../../src/features/great-ui/composition/demos.ts';
+import crossReviews from '../../src/features/great-ui/data/cross-source-review.json' with { type: 'json' };
 import reviews from '../../src/features/great-ui/data/source-review.json' with { type: 'json' };
 import upstream from '../../src/features/great-ui/data/upstream-catalog.json' with { type: 'json' };
 import recordings from '../../src/features/great-ui/data/local-recordings.json' with { type: 'json' };
 
 test('all owned recordings match their provenance and never request the unavailable author host', async () => {
-  assert.equal(Object.keys(recordings).length, 48);
+  assert.equal(Object.keys(recordings).length, 51);
   for (const [slug, recording] of Object.entries(recordings)) {
     const entry = entries.find((item: { slug: string }) => item.slug === slug)!;
     assert.equal(entry.reference, recording.source);
@@ -38,29 +39,36 @@ test('all owned recordings match their provenance and never request the unavaila
   );
 });
 
-test('all 48 published works have distinct Chinese learning material, fixed source review and resolvable relations', () => {
-  assert.equal(validateCatalog(index).length, 48);
-  assert.equal(validateCapabilities(capabilities).length, 48);
+test('all 51 published works have distinct Chinese learning material, fixed source review and resolvable relations', () => {
+  assert.equal(validateCatalog(index).length, 51);
+  assert.equal(validateCapabilities(capabilities).length, 51);
   assert.ok(
     validateCapabilities(capabilities).every((work) => work.sourceReviewed && work.browserObserved),
   );
   assert.deepEqual(
-    new Set(index.map((x: { slug: string }) => x.slug)),
+    new Set(
+      index
+        .filter((x: { id: string }) => x.id.startsWith('great-ui-'))
+        .map((x: { slug: string }) => x.slug),
+    ),
     new Set(upstream.entries.map((x) => x.slug)),
   );
-  assert.equal(new Set(entries.map((x: { summary: string }) => x.summary)).size, 48);
+  assert.equal(new Set(entries.map((x: { summary: string }) => x.summary)).size, 51);
   assert.equal(
     new Set(entries.map((x: { sections: { text: string }[] }) => x.sections[1].text)).size,
-    48,
+    51,
   );
   for (const entry of entries) {
     validateDetail(entry, entry);
     assert.match(entry.title, /[\u4e00-\u9fff]/);
     assert.ok(entry.principles.length, `${entry.slug} has no mechanism mapping`);
-    const review = reviews.entries.find((x: { slug: string }) => x.slug === entry.slug)!;
+    const review = [
+      ...reviews.entries.map((review) => ({ ...review, revision: reviews.revision })),
+      ...crossReviews.entries,
+    ].find((x) => x.slug === entry.slug)!;
     assert.ok(review, entry.slug);
     assert.equal(review.id, entry.id);
-    assert.equal(entry.revision, reviews.revision);
+    assert.equal(entry.revision, review.revision);
     for (const file of [review.implementation, review.preview]) {
       assert.equal(file.reviewed, true);
       assert.match(file.sha256, /^[a-f0-9]{64}$/);
@@ -168,5 +176,30 @@ test('recorded hover previews and task formats preserve the same user choices an
         assert.ok(text.includes(value));
       assert.ok(!text.includes('undefined'), entry.slug);
     }
+  }
+});
+
+test('cross-source detail and capability validation reject mismatched repositories and source IDs', () => {
+  for (const sourceId of ['beui', 'rare-ui', 'microkit']) {
+    const entry = entries.find((entry: { sourceId: string }) => entry.sourceId === sourceId)!;
+    for (const change of [
+      { sourceId: 'unregistered' },
+      {
+        source: entry.source.replace(/github.com\/[^/]+\/[^/]+/, 'github.com/Saurabh-2607/GreatUI'),
+      },
+      { reference: entry.reference + '?redirect=other' },
+      { previewSource: entry.previewSource.replace(entry.revision, '0'.repeat(40)) },
+      { sourceRaw: entry.sourceRaw.replace('raw.githubusercontent.com', 'evil.test') },
+      { author: 'Saurabh Sharma · Great UI' },
+    ])
+      assert.throws(() => validateDetail({ ...entry, ...change }, entry));
+    const capability = capabilities.find((work) => work.id === entry.id)!;
+    for (const change of [
+      { sourceId: 'unregistered' },
+      { reference: 'https://evil.test/' },
+      { source: capability.source + '/../other.tsx' },
+      { sourceRevision: 'main' },
+    ])
+      assert.throws(() => validateCapabilities([{ ...capability, ...change }]));
   }
 });

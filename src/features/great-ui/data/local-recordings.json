@@ -10674,5 +10674,560 @@
         }
       }
     }
+  },
+  "beui-combobox": {
+    "source": "https://beui.dev/components/motion/combobox",
+    "method": "Independent CDP screencast of observed public interaction, JPEG quality 95, 2x pixels; timestamp-preserving H.264; rendition encoding settings are recorded below.",
+    "durationSeconds": 12.066667,
+    "video": {
+      "path": "public/great-ui/media/beui-combobox-demo.mp4",
+      "bytes": 100308,
+      "sha256": "fcff18dabc79d33a56f3af83de8c6cc00493fef8805d186d944f00a0fc442d3e"
+    },
+    "poster": {
+      "path": "public/great-ui/media/beui-combobox-demo-poster.jpg",
+      "bytes": 16541,
+      "sha256": "9f73068d2cd567abd581ef39a8a8257350f7b8d311a8b7fc61a582b23b9be196"
+    },
+    "limitation": "录制公开演示，页面部署SHA未知；窄屏为浏览器模拟，不包含真机软键盘。保留原作组件行为，取景准备详见capture。",
+    "recordedAt": "2026-09-15T13:27:32.318Z",
+    "sourceFrames": 243,
+    "renditions": {
+      "desktop": {
+        "video": {
+          "path": "public/great-ui/media/beui-combobox-demo.mp4",
+          "bytes": 100308,
+          "sha256": "fcff18dabc79d33a56f3af83de8c6cc00493fef8805d186d944f00a0fc442d3e"
+        },
+        "poster": {
+          "path": "public/great-ui/media/beui-combobox-demo-poster.jpg",
+          "bytes": 16541,
+          "sha256": "9f73068d2cd567abd581ef39a8a8257350f7b8d311a8b7fc61a582b23b9be196"
+        },
+        "width": 700,
+        "height": 760,
+        "duration": 12.066667,
+        "encoding": {
+          "codec": "H.264",
+          "crf": 18,
+          "fps": 30,
+          "pixelFormat": "yuv420p",
+          "audio": false,
+          "faststart": true
+        },
+        "capture": {
+          "timeline": {
+            "path": "resources/evidence/018-great-ui-scale/cross-source-samples/beui-combobox/desktop-clean/capture.json",
+            "bytes": 77135,
+            "sha256": "e273f8a74b74cfeecf413129f137d61919d2176ef0519a2962cbefbddf369bea"
+          },
+          "frames": 243,
+          "crop": "700:760:850:770",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "dpr": 2
+          },
+          "actions": [
+            {
+              "at": 1.328,
+              "description": "打开候选列表"
+            },
+            {
+              "at": 3.021,
+              "description": "搜索product"
+            },
+            {
+              "at": 4.851,
+              "description": "点击Product team"
+            },
+            {
+              "at": 6.275,
+              "description": "重新打开"
+            },
+            {
+              "at": 7.014,
+              "description": "zzzz空结果"
+            },
+            {
+              "at": 9.014,
+              "description": "清空查询"
+            },
+            {
+              "at": 10.539,
+              "description": "关闭保留选中值"
+            }
+          ],
+          "recordedAt": "2026-09-15T13:27:32.318Z",
+          "preparation": "Temporarily set only the unrelated #install section to visibility:hidden, keeping layout and component unchanged; restored after recording.",
+          "source": "https://beui.dev/components/motion/combobox"
+        }
+      },
+      "mobile": {
+        "video": {
+          "path": "public/great-ui/media/beui-combobox-mobile.mp4",
+          "bytes": 100827,
+          "sha256": "09cba8a23809086f1b84664c786da3cf4fe8bc69fcbd6b0b10306dea9df3ed84"
+        },
+        "poster": {
+          "path": "public/great-ui/media/beui-combobox-mobile-poster.jpg",
+          "bytes": 16406,
+          "sha256": "d8754d82593ca4e0974ec056efd0d9607ac9d71f7f6be7e3b1a95873f403d84d"
+        },
+        "width": 660,
+        "height": 710,
+        "duration": 12.033333,
+        "encoding": {
+          "codec": "H.264",
+          "crf": 18,
+          "fps": 30,
+          "pixelFormat": "yuv420p",
+          "audio": false,
+          "faststart": true
+        },
+        "capture": {
+          "timeline": {
+            "path": "resources/evidence/018-great-ui-scale/cross-source-samples/beui-combobox/mobile-clean/capture.json",
+            "bytes": 89380,
+            "sha256": "57217812a45a535aa6cf15f0c2f9fa8f0db02c9bae32594bd6e44ffa19e79972"
+          },
+          "frames": 283,
+          "crop": "660:710:60:740",
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "actions": [
+            {
+              "at": 1.299,
+              "description": "打开候选列表"
+            },
+            {
+              "at": 3.078,
+              "description": "搜索product"
+            },
+            {
+              "at": 4.779,
+              "description": "点击Product team"
+            },
+            {
+              "at": 6.34,
+              "description": "重新打开"
+            },
+            {
+              "at": 7.095,
+              "description": "zzzz空结果"
+            },
+            {
+              "at": 9.034,
+              "description": "清空查询"
+            },
+            {
+              "at": 10.516,
+              "description": "关闭保留选中值"
+            }
+          ],
+          "recordedAt": "2026-09-15T13:27:09.791Z",
+          "preparation": "Temporarily set only the unrelated #install section to visibility:hidden, keeping layout and component unchanged; restored after recording.",
+          "source": "https://beui.dev/components/motion/combobox"
+        }
+      },
+      "card": {
+        "video": {
+          "path": "public/great-ui/media/beui-combobox-card.mp4",
+          "bytes": 42032,
+          "sha256": "bb8d89cadf6471cad5b53dd43d1f9abddff2f8bddf7c3c2bdc36b133117cd202"
+        },
+        "poster": {
+          "path": "public/great-ui/media/beui-combobox-card-poster.jpg",
+          "bytes": 9291,
+          "sha256": "3bae1faa1c7a4af9deaffe511df3dfef788b89f9286071926af43299bd0333c0"
+        },
+        "width": 480,
+        "height": 522,
+        "duration": 10.0,
+        "encoding": {
+          "crf": 26,
+          "fps": 24,
+          "maxWidth": 480,
+          "source": "desktop",
+          "sourceSha256": "fcff18dabc79d33a56f3af83de8c6cc00493fef8805d186d944f00a0fc442d3e",
+          "startSeconds": 0.5,
+          "durationLimit": 10,
+          "crop": null
+        }
+      }
+    }
+  },
+  "rare-ui-duration-picker": {
+    "source": "https://www.rareui.com/components/durationpicker",
+    "method": "Independent CDP screencast of observed public interaction, JPEG quality 95, 2x pixels; timestamp-preserving H.264; rendition encoding settings are recorded below.",
+    "durationSeconds": 12.066667,
+    "video": {
+      "path": "public/great-ui/media/rare-ui-duration-picker-demo.mp4",
+      "bytes": 52704,
+      "sha256": "ecf5c207325ada2496c13f102d3da8398932301cfef345a0a2731aa51599df2d"
+    },
+    "poster": {
+      "path": "public/great-ui/media/rare-ui-duration-picker-demo-poster.jpg",
+      "bytes": 4695,
+      "sha256": "39d13c4f1144cee529276a8e8775fc681d1ad39d0a409e4e894f040f6eadd739"
+    },
+    "limitation": "录制公开演示，页面部署SHA未知；窄屏为浏览器模拟，不包含真机软键盘。保留原作组件行为，取景准备详见capture。",
+    "recordedAt": "2026-09-15T13:35:23.666Z",
+    "sourceFrames": 123,
+    "renditions": {
+      "desktop": {
+        "video": {
+          "path": "public/great-ui/media/rare-ui-duration-picker-demo.mp4",
+          "bytes": 52704,
+          "sha256": "ecf5c207325ada2496c13f102d3da8398932301cfef345a0a2731aa51599df2d"
+        },
+        "poster": {
+          "path": "public/great-ui/media/rare-ui-duration-picker-demo-poster.jpg",
+          "bytes": 4695,
+          "sha256": "39d13c4f1144cee529276a8e8775fc681d1ad39d0a409e4e894f040f6eadd739"
+        },
+        "width": 640,
+        "height": 260,
+        "duration": 12.066667,
+        "encoding": {
+          "codec": "H.264",
+          "crf": 18,
+          "fps": 30,
+          "pixelFormat": "yuv420p",
+          "audio": false,
+          "faststart": true
+        },
+        "capture": {
+          "timeline": {
+            "path": "resources/evidence/018-great-ui-scale/cross-source-samples/rare-ui-duration-picker/desktop/capture.json",
+            "bytes": 39412,
+            "sha256": "ce8d67ed77124dcd754b7f9fc3cbd3da27624cc8389ad70b0a6a80c3cc131665"
+          },
+          "frames": 123,
+          "crop": "640:260:1280:770",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "dpr": 2
+          },
+          "actions": [
+            {
+              "at": 1.269,
+              "description": "打开编辑，小时字段获焦"
+            },
+            {
+              "at": 2.524,
+              "description": "输入1小时"
+            },
+            {
+              "at": 3.544,
+              "description": "输入30分钟"
+            },
+            {
+              "at": 5.268,
+              "description": "确认并合并"
+            },
+            {
+              "at": 6.785,
+              "description": "重新编辑"
+            },
+            {
+              "at": 7.533,
+              "description": "输入25小时，被限制为24并抖动"
+            },
+            {
+              "at": 9.016,
+              "description": "改为2小时"
+            },
+            {
+              "at": 10.865,
+              "description": "再次确认并合并"
+            }
+          ],
+          "recordedAt": "2026-09-15T13:35:23.666Z",
+          "preparation": "Unmodified public component and surrounding page; crop chosen from observed bounds.",
+          "source": "https://www.rareui.com/components/durationpicker"
+        }
+      },
+      "mobile": {
+        "video": {
+          "path": "public/great-ui/media/rare-ui-duration-picker-mobile.mp4",
+          "bytes": 56151,
+          "sha256": "4c8a5783daecb1f19d8ad6c77308d5fd8e41016b11e6a85fc8883da29bbc17ad"
+        },
+        "poster": {
+          "path": "public/great-ui/media/rare-ui-duration-picker-mobile-poster.jpg",
+          "bytes": 4568,
+          "sha256": "9aedc89c22a05c9d1ee54a0b1181df3ed906b637c0eec7bde11ba3c7771d706a"
+        },
+        "width": 640,
+        "height": 260,
+        "duration": 12.066016,
+        "encoding": {
+          "codec": "H.264",
+          "crf": 18,
+          "fps": 30,
+          "pixelFormat": "yuv420p",
+          "audio": false,
+          "faststart": true
+        },
+        "capture": {
+          "timeline": {
+            "path": "resources/evidence/018-great-ui-scale/cross-source-samples/rare-ui-duration-picker/mobile/capture.json",
+            "bytes": 41925,
+            "sha256": "e89eafb5432b261afbb5092744b34ec6e1a5c3d1c4f6cdeff663429f018528ab"
+          },
+          "frames": 131,
+          "crop": "640:260:70:630",
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "actions": [
+            {
+              "at": 1.284,
+              "description": "打开编辑，小时字段获焦"
+            },
+            {
+              "at": 2.534,
+              "description": "输入1小时"
+            },
+            {
+              "at": 3.532,
+              "description": "输入30分钟"
+            },
+            {
+              "at": 5.294,
+              "description": "确认并合并"
+            },
+            {
+              "at": 6.794,
+              "description": "重新编辑"
+            },
+            {
+              "at": 7.52,
+              "description": "输入25小时，被限制为24并抖动"
+            },
+            {
+              "at": 9.023,
+              "description": "改为2小时"
+            },
+            {
+              "at": 10.786,
+              "description": "再次确认并合并"
+            }
+          ],
+          "recordedAt": "2026-09-15T13:36:15.630Z",
+          "preparation": "Unmodified public component and surrounding page; crop chosen from observed bounds.",
+          "source": "https://www.rareui.com/components/durationpicker"
+        }
+      },
+      "card": {
+        "video": {
+          "path": "public/great-ui/media/rare-ui-duration-picker-card.mp4",
+          "bytes": 18928,
+          "sha256": "d19ec91412919fa8481e6486a9784788a5317e9d453679e75e7e9faeacff4529"
+        },
+        "poster": {
+          "path": "public/great-ui/media/rare-ui-duration-picker-card-poster.jpg",
+          "bytes": 2542,
+          "sha256": "7ae9ab5655d6de7a4d74e3b6a78772185af938acc8c1588282aa63a16effba30"
+        },
+        "width": 480,
+        "height": 196,
+        "duration": 10.0,
+        "encoding": {
+          "crf": 26,
+          "fps": 24,
+          "maxWidth": 480,
+          "source": "desktop",
+          "sourceSha256": "ecf5c207325ada2496c13f102d3da8398932301cfef345a0a2731aa51599df2d",
+          "startSeconds": 0.5,
+          "durationLimit": 10,
+          "crop": null
+        }
+      }
+    }
+  },
+  "microkit-sliding-content-tabs": {
+    "source": "https://microkit.co/components/sliding-content-tabs",
+    "method": "Independent CDP screencast of observed public interaction, JPEG quality 95, 2x pixels; timestamp-preserving H.264; rendition encoding settings are recorded below.",
+    "durationSeconds": 11.033333,
+    "video": {
+      "path": "public/great-ui/media/microkit-sliding-content-tabs-demo.mp4",
+      "bytes": 114491,
+      "sha256": "7cf49e98ca120dc3ae4413049ac1c7b13330612b54955577c9dd6b9e3506d1b6"
+    },
+    "poster": {
+      "path": "public/great-ui/media/microkit-sliding-content-tabs-demo-poster.jpg",
+      "bytes": 11560,
+      "sha256": "ce59ccd5aab8b0e4b8a794a9fb39154a2add2e0cf70f8e5144286e049c56702c"
+    },
+    "limitation": "录制公开演示，页面部署SHA未知；窄屏为浏览器模拟，不包含真机软键盘。保留原作组件行为，取景准备详见capture。",
+    "recordedAt": "2026-09-15T13:43:10.943Z",
+    "sourceFrames": 79,
+    "renditions": {
+      "desktop": {
+        "video": {
+          "path": "public/great-ui/media/microkit-sliding-content-tabs-demo.mp4",
+          "bytes": 114491,
+          "sha256": "7cf49e98ca120dc3ae4413049ac1c7b13330612b54955577c9dd6b9e3506d1b6"
+        },
+        "poster": {
+          "path": "public/great-ui/media/microkit-sliding-content-tabs-demo-poster.jpg",
+          "bytes": 11560,
+          "sha256": "ce59ccd5aab8b0e4b8a794a9fb39154a2add2e0cf70f8e5144286e049c56702c"
+        },
+        "width": 700,
+        "height": 320,
+        "duration": 11.033333,
+        "encoding": {
+          "codec": "H.264",
+          "crf": 18,
+          "fps": 30,
+          "pixelFormat": "yuv420p",
+          "audio": false,
+          "faststart": true
+        },
+        "capture": {
+          "timeline": {
+            "path": "resources/evidence/018-great-ui-scale/cross-source-samples/microkit-sliding-content-tabs/desktop/capture.json",
+            "bytes": 25603,
+            "sha256": "43bf31577857a1e8adb3f6d40a145aa8b7b6dca4a5f66795566e0e36ee181725"
+          },
+          "frames": 79,
+          "crop": "700:320:1148:780",
+          "viewport": {
+            "width": 1280,
+            "height": 900,
+            "dpr": 2
+          },
+          "actions": [
+            {
+              "at": 1.277,
+              "description": "选择Reactions，指示与内容一起变化"
+            },
+            {
+              "at": 3.275,
+              "description": "选择Saved"
+            },
+            {
+              "at": 5.274,
+              "description": "返回Audience"
+            },
+            {
+              "at": 7.258,
+              "description": "再次选择Reactions"
+            },
+            {
+              "at": 7.783,
+              "description": "快速改选Saved，检查最终内容"
+            },
+            {
+              "at": 9.267,
+              "description": "返回Audience"
+            }
+          ],
+          "recordedAt": "2026-09-15T13:43:10.943Z",
+          "preparation": "使用公开Preview内真实标签，无页面内容或组件行为修改。",
+          "source": "https://microkit.co/components/sliding-content-tabs"
+        }
+      },
+      "mobile": {
+        "video": {
+          "path": "public/great-ui/media/microkit-sliding-content-tabs-mobile.mp4",
+          "bytes": 111104,
+          "sha256": "77bb874172cf1fb3b94ee9f91811c803d0efffb47874db3b8f0e7bd2a5b986d0"
+        },
+        "poster": {
+          "path": "public/great-ui/media/microkit-sliding-content-tabs-mobile-poster.jpg",
+          "bytes": 11946,
+          "sha256": "3c5eb40d96740d1ec5d0a3642452c266837e5ae07c2ff56ab73f8a62b22b7c70"
+        },
+        "width": 700,
+        "height": 320,
+        "duration": 11.066667,
+        "encoding": {
+          "codec": "H.264",
+          "crf": 18,
+          "fps": 30,
+          "pixelFormat": "yuv420p",
+          "audio": false,
+          "faststart": true
+        },
+        "capture": {
+          "timeline": {
+            "path": "resources/evidence/018-great-ui-scale/cross-source-samples/microkit-sliding-content-tabs/mobile-stable/capture.json",
+            "bytes": 24843,
+            "sha256": "a165411f449dcb5317ec8ce299eace96577db6123875e41329b0e550713f1290"
+          },
+          "frames": 76,
+          "crop": "700:320:40:720",
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 2
+          },
+          "actions": [
+            {
+              "at": 1.29,
+              "description": "选择Reactions，指示与内容一起变化"
+            },
+            {
+              "at": 3.265,
+              "description": "选择Saved"
+            },
+            {
+              "at": 5.273,
+              "description": "返回Audience"
+            },
+            {
+              "at": 7.274,
+              "description": "再次选择Reactions"
+            },
+            {
+              "at": 7.776,
+              "description": "快速改选Saved，检查最终内容"
+            },
+            {
+              "at": 9.289,
+              "description": "返回Audience"
+            }
+          ],
+          "recordedAt": "2026-09-15T13:44:39.543Z",
+          "preparation": "先通过实际点击稳定页面滚动位置，再开始录制；无页面内容或组件行为修改。",
+          "source": "https://microkit.co/components/sliding-content-tabs"
+        }
+      },
+      "card": {
+        "video": {
+          "path": "public/great-ui/media/microkit-sliding-content-tabs-card.mp4",
+          "bytes": 37833,
+          "sha256": "cda946e4c49bcf6c76daef608765d0b501168a07a44a822589b507f49553cb3a"
+        },
+        "poster": {
+          "path": "public/great-ui/media/microkit-sliding-content-tabs-card-poster.jpg",
+          "bytes": 6931,
+          "sha256": "6ec90083f1d1d1c6820b62137fb1b82555597198bddc0a7148cd6e4669813e8d"
+        },
+        "width": 480,
+        "height": 220,
+        "duration": 10.0,
+        "encoding": {
+          "crf": 26,
+          "fps": 24,
+          "maxWidth": 480,
+          "source": "desktop",
+          "sourceSha256": "7cf49e98ca120dc3ae4413049ac1c7b13330612b54955577c9dd6b9e3506d1b6",
+          "startSeconds": 0.5,
+          "durationLimit": 10,
+          "crop": null
+        }
+      }
+    }
   }
 }

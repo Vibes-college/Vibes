@@ -14,7 +14,7 @@ code-sources:
     'tests/content-lifecycle.spec.ts',
     'tests/unit/glossary.test.ts',
   ]
-code-revision: '45a2ae4da9097cb6f656ca2786d88c8636df153d4428e4e0e31251a0e50404a1'
+code-revision: '2b8725ba953a2ea0603bd2a8bc2379c808e7d7d2869723178f01feb86e1a4ff6'
 ---
 
 # 功能名：维护作品内容
@@ -43,6 +43,16 @@ code-revision: '45a2ae4da9097cb6f656ca2786d88c8636df153d4428e4e0e31251a0e50404a1
 从学习页顶部编辑图标进入该语言的GitHub编辑页，修改一份Markdown的三个正文面板及文件头learning中的目标、检查和术语引用，提出PR并查看检查及阶段预览。共享源码、组合能力与素材路径在同目录work.json；媒体文件放public/great-ui/media，来源及各版本摘要登记在local-recordings.json；高清、手机构图与合集轻量封面按[录制与维护交互演示](recording-previews.md)分别检查。页面与复制任务共同读取这些字段，不在组件里另写一份文案。先运行content:validate，再构建核对面板、术语、任务与搜索；编辑源码或共享模板时升级为verify/budget。完整操作和示例见[学习交互作品](great-ui-learning.md#维护同一份材料)，格式见[交互学习材料](../system/content-model.md#交互学习材料)。
 
 合集正文维护八站路线、十类入口及每件的学习目标；案例的learning.category与previewText.eyebrow同步教学分类。work.json中的learning.sequence是合集内唯一正整数，维护学习顺序，缺省沿用work.order；不要为重排课程修改Explore顺序或素材。正文说明用户的设计判断、给Agent的具体练习和观察依据，保留原作事实及接入限制，练习要求不能写成已经验证的能力。来源网站及其原始分类继续保留用于溯源。
+
+### 制作一个跨来源学习案例
+
+1. 从学习者要完成的动作选择案例，核对公开原作、固定提交的实现/预览及引用依赖和LICENSE；把源码事实与改造目标分开。来源登记只接入明确审核的仓库，不接受文章提供任意运行时主机。
+2. 在src/content/works/<id>创建work.json与zh.md，按[内容模型](../system/content-model.md#交互学习材料)填写sourceId/sourceSlug、固定版本、合集与教学顺序。中文讲解覆盖触发、状态、结果、原理、适用与不用、练习；三个目标各有Agent动作和可观察判断。
+3. 桌面和窄屏分别操作，记录键盘、空值/空结果、关闭或快速切换的实际结果；按[录制流程](recording-previews.md)生成本站高清、独立手机素材与轻量封面，检查完整构图、海报和真实播放。没有观察的输入法、真机与服务数据明确留作目标项目验收。
+4. 固定文件与许可摘要写入src/features/great-ui/data/cross-source-review.json，原作操作范围写入observations.json，素材摘要写入local-recordings.json；原始帧与时间线留resources/evidence。现有Great UI的固定目录与source-review.json保留各自含义。
+5. 将案例加入合集已有分类，核对搜索、稳定URL、前后切换、作者许可和任务文本/JSON。检查来源/路径拒绝、素材摘要及两套构建预算；共享模块按实际影响检查，筛选测试不生成完整验收回执。案例、说明和来源随同一批实现交付。
+
+可参考[搜索选择](../../src/content/works/beui-combobox/zh.md)、[就地编辑](../../src/content/works/rare-ui-duration-picker/zh.md)与[内容标签](../../src/content/works/microkit-sliding-content-tabs/zh.md)。它们分别示范原作已有键盘路径、需要补取消/保存，以及需要补方向键的不同边界，不能把同一套能力描述套到所有来源。
 
 ### 收录与引用UI/UX术语
 

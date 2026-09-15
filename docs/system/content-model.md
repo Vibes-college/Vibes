@@ -15,7 +15,7 @@ code-sources:
     'scripts/validate-content.ts',
     'scripts/migrate-content.ts',
   ]
-code-revision: '4f650791cf2af60df82e9e744cba4dbcb86d1dd4f241227cdd3c961c5a36f349'
+code-revision: 'd0143a845d0286510f983b965e24dc6e60486c9695b0744789bcc98f91052abf'
 ---
 
 # 数据和内容结构
@@ -73,13 +73,13 @@ src/content/works/<id>/
 
 ## 交互学习材料
 
-Great UI学习页沿用work.json加每语言一份Markdown，ID为great-ui-<slug>。普通目录只列合集，所有已发布子项仍生成页面和全文索引。学习页使用共享交互模板，不能把正文换成MDX。
+交互学习页沿用work.json加每语言一份Markdown。旧Great UI的ID为great-ui-<slug>；新增来源使用带来源前缀的稳定ID，learning.slug与ID一致，sourceSlug另存原站路径名称。普通目录只列合集，所有已发布子项仍生成页面和全文索引。学习页使用共享交互模板，不能把正文换成MDX。
 
 | 位置                   | 内容与校验                                                                                                                                                                                                                                                      |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| work.json的learning    | slug、collectionId、sequence、english、revision、implementation、previewSource、media、capability                                                                                                                                                               |
+| work.json的learning    | slug、collectionId、sequence、english、sourceId、sourceSlug、revision、implementation、previewSource、media、capability                                                                                                                                         |
 | sequence               | 可选正整数，同一collectionId内不得重复；学习列表按sequence排序，缺省使用work.order；不改变普通目录及合集封面顺序                                                                                                                                                |
-| 固定来源               | revision是40位提交摘要；implementation和previewSource分别为components/ui与components/site/previews中的TSX路径                                                                                                                                                   |
+| 固定来源               | revision是40位提交摘要；sourceId缺省great-ui，另允许beui/rare-ui/microkit；sourceSlug在新来源必填。learning-sources.ts逐源登记仓库、官网、实现/预览路径模式、作者与许可，拒绝未知来源、越界路径和不匹配sourceUrl                                                |
 | media                  | video或image二选一，加必填poster；仅/great-ui/media下的MP4、PNG、JPG、WebP或AVIF，校验文件存在、非空、符号链接边界；高清视频最大2MiB，图片最大200KiB；mobile/card可选，含video/poster/width/height/duration，card最大150KiB且≤12秒，高清≤60秒；尺寸为1–3840整数 |
 | capability             | family、roles、provides、requires、resources、adaptations、reducedMotion、decorativeTransition，供组合规则判定                                                                                                                                                  |
 | 语言文件头learning     | category为教学分类，与previewText.eyebrow同步；另有classification、placementHint、changesHint、preserve、checks、goals、adjustments、glossary；上游原始分类独立保留                                                                                             |
@@ -89,7 +89,7 @@ Great UI学习页沿用work.json加每语言一份Markdown，ID为great-ui-<slug
 
 正文编译为可供React安全渲染的结构树，支持段落、强调、列表、链接、代码和术语按钮；拒绝原始HTML、未知术语及不支持的元素。原始文字同时进入任务文本/JSON与全文索引。文件头、正文及引用词条的完整内容都纳入原文摘要。写作示例与修改步骤见[维护同一份材料](../features/great-ui-learning.md#维护同一份材料)。录制依据见[录制演示](../features/recording-previews.md)，素材路径以public/great-ui/media和来源登记为准。
 
-合集封面由同语言已发布成员的media.card投影生成，保存ID、标题及轻量素材索引，HTML只渲染当前一件。搜索输出使用同一结构并校验成员唯一性、来源和禁止嵌套合集；gzip上限6KiB由当前48件的单元测试约束。任务的media.url为桌面绝对地址，只有手机素材不同才另提供mobileUrl，页面预览与Agent引用保持同一来源。
+合集封面由同语言已发布成员的media.card投影生成，保存ID、标题及轻量素材索引，HTML只渲染当前一件。搜索输出使用同一结构并校验成员唯一性、来源和禁止嵌套合集；gzip上限6KiB由当前51件的单元测试约束。任务的media.url为桌面绝对地址，只有手机素材不同才另提供mobileUrl，页面预览与Agent引用保持同一来源。
 
 ### 共享术语文件
 

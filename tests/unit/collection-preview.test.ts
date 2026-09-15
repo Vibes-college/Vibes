@@ -16,8 +16,8 @@ const collection = publishedWorks(catalog, 'zh').find((work) => work.slug === 'g
 
 test('collection projection contains only light previews and renders one media element', () => {
   const card = collection.mediaCard!;
-  assert.equal(card.collection!.count, 48);
-  assert.equal(card.collection!.items.length, 48);
+  assert.equal(card.collection!.count, 51);
+  assert.equal(card.collection!.items.length, 51);
   assert.ok(gzipSync(JSON.stringify(card.collection)).length < 6 * 1024);
   for (const item of card.collection!.items) {
     assert.ok(item.card.sources.every((source) => source.src.endsWith('-card.mp4')));

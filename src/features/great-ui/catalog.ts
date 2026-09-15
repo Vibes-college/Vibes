@@ -1,3 +1,9 @@
+import {
+  learningSource,
+  learningReference,
+  validLearningPath,
+} from '../../lib/content/learning-sources.ts';
+
 export interface CatalogItem {
   id: string;
   slug: string;
@@ -96,6 +102,19 @@ export function validateDetail(value: unknown, item: CatalogItem) {
   )
     return fail();
   const detail = value as unknown as Record<string, unknown>;
+  const source = learningSource(detail.sourceId);
+  const sourceReview =
+    object(detail.verification) && object(detail.verification.source)
+      ? detail.verification.source
+      : null;
+  if (
+    !source ||
+    !sourceReview ||
+    !validLearningPath(detail.sourceId, sourceReview.implementation) ||
+    !validLearningPath(detail.sourceId, sourceReview.preview, true)
+  )
+    return fail();
+  const repo = `https://github.com/${source.repository}/blob/${detail.revision}`;
   if (
     !fields(detail, [
       'suitable',
@@ -114,17 +133,17 @@ export function validateDetail(value: unknown, item: CatalogItem) {
       'recordingCredit',
     ]) ||
     !/^[a-f0-9]{40}$/.test(detail.revision) ||
-    detail.reference !== `https://www.great-ui.com/components/${item.slug}` ||
-    !detail.source.startsWith(
-      `https://github.com/Saurabh-2607/GreatUI/blob/${detail.revision}/components/ui/`,
-    ) ||
-    !detail.sourceRaw.startsWith(
-      `https://raw.githubusercontent.com/Saurabh-2607/GreatUI/${detail.revision}/components/ui/`,
-    ) ||
-    !detail.previewSource.startsWith(
-      `https://github.com/Saurabh-2607/GreatUI/blob/${detail.revision}/components/site/previews/`,
-    ) ||
-    detail.license !== `https://github.com/Saurabh-2607/GreatUI/blob/${detail.revision}/LICENSE` ||
+    detail.reference !== learningReference(detail.sourceId, detail.sourceSlug ?? item.slug) ||
+    detail.source !== `${repo}/${sourceReview.implementation}` ||
+    detail.sourceRaw !==
+      `https://raw.githubusercontent.com/${source.repository}/${detail.revision}/${sourceReview.implementation}` ||
+    detail.previewSource !== `${repo}/${sourceReview.preview}` ||
+    detail.license !== `${repo}/LICENSE` ||
+    detail.author !== source.author ||
+    detail.sourceLabel !== source.label ||
+    detail.licenseNote !== source.licenseNote ||
+    detail.licenseLabel !== source.licenseLabel ||
+    sourceReview.revision !== detail.revision ||
     !media(detail.recording) ||
     !media(detail.previewRecording) ||
     !media(detail.previewImage) ||

@@ -50,7 +50,7 @@ test('first-time browsing follows the learning order and ends without wrapping',
   assert.equal(currentBrowseId(restartBrowse(state, index)), index[0].id);
 });
 
-test('selected random rounds cover all 48 works once and prefer another available category', () => {
+test('selected random rounds cover all 51 works once and prefer another available category', () => {
   const before = structuredClone(index);
   for (let seed = 1; seed <= 30; seed++) {
     let state = createBrowse(index, index[seed].id, { scope: 'all', shuffle: true }, random(seed));
@@ -67,12 +67,12 @@ test('selected random rounds cover all 48 works once and prefer another availabl
       viewed.add(id);
       assert.ok(restoreBrowse(state, index));
     }
-    assert.equal(viewed.size, 48);
+    assert.equal(viewed.size, 51);
     assert.deepEqual(moveBrowse(state, index, 1), state);
     const next = restartBrowse(state, index, random(seed + 1));
     assert.notEqual(currentBrowseId(next), currentBrowseId(state));
     assert.equal(next.seen.length, 1);
-    assert.equal(next.remaining.length, 47);
+    assert.equal(next.remaining.length, 50);
   }
   assert.deepEqual(index, before);
 });

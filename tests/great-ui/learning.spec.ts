@@ -89,7 +89,7 @@ test('the original three examples retain glossary controls inside their explanat
   }
 });
 
-test('all 48 details, glossary and modification goals render without loading other videos', async ({
+test('all 51 details, glossary and modification goals render without loading other videos', async ({
   page,
 }) => {
   test.setTimeout(120_000);

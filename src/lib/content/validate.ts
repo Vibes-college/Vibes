@@ -4,6 +4,7 @@ import { locales, type Catalog } from './schema.ts';
 import { parseLearningBody } from './learning.ts';
 import { validateLearningFiles } from './learning-files.ts';
 import { resolveGlossary } from './glossary.ts';
+import { learningReference } from './learning-sources.ts';
 
 // 校验跨文件身份、引用和发布关系，拒绝重复或静默修复坏数据。
 export function validateCatalog(catalog: Catalog): void {
@@ -54,7 +55,15 @@ export function validateCatalog(catalog: Catalog): void {
       if (Boolean(meta.learning) !== Boolean(version.data.learning))
         throw new Error(`${version.file}: learning metadata and text must appear together`);
       if (meta.learning) {
-        if (meta.id !== `great-ui-${meta.learning.slug}` || !ids.has(meta.learning.collectionId))
+        const sourceId = meta.learning.sourceId ?? 'great-ui';
+        if (
+          meta.sourceUrl !==
+          learningReference(sourceId, meta.learning.sourceSlug ?? meta.learning.slug)
+        )
+          throw new Error(`${file}: source URL does not match its registered source`);
+        const expectedId =
+          sourceId === 'great-ui' ? `great-ui-${meta.learning.slug}` : meta.learning.slug;
+        if (meta.id !== expectedId || !ids.has(meta.learning.collectionId))
           throw new Error(`${file}: learning identity or collection is invalid`);
         if (version.file.endsWith('.mdx'))
           throw new Error(`${version.file}: learning uses Markdown`);

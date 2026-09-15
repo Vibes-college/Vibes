@@ -56,6 +56,8 @@ export function learningMaterials(
         slug: entry.slug,
         title: entry.title,
         source: entry.source,
+        sourceId: entry.sourceId,
+        sourceSlug: entry.sourceSlug,
         reference: entry.reference,
         sourceReviewed: true,
         browserObserved:

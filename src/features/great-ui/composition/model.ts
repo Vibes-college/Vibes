@@ -21,6 +21,8 @@ export interface WorkCapability {
   slug: string;
   title: string;
   source?: string;
+  sourceId?: string;
+  sourceSlug?: string;
   reference?: string;
   family: string;
   roles: Role[];

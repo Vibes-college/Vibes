@@ -24,19 +24,19 @@ code-sources:
     'tests/unit/great-ui-content.test.ts',
     'tests/unit/great-ui-browsing.test.ts',
   ]
-code-revision: '4babe19c103c1403d140612797033fef7aa4e9bc5b8125548dc5037c1a44cd08'
+code-revision: '0dcc68960c16ebf6e8bd82a2d8d1fea11f9a404ff82a876a932f910015348eb3'
 ---
 
 # 功能名：学习交互作品并带入自己的项目
 
 ## 一句话说明
 
-从Explore的《Vibe Coding 网页动效与交互》进入八站入门路线或十类目录，观看原作、理解设计并生成给Agent的改造任务。合集保留48件独立页面，16件主讲围绕真实内容、设计判断与可观察的练习组织；需要完整流程时可比较组合及三个可操作示例。
+从Explore的《Vibe Coding 网页动效与交互》进入八站入门路线或十类目录，观看原作、理解设计并生成给Agent的改造任务。合集包含51件独立页面，19件主讲围绕真实内容、设计判断与可观察的练习组织；需要完整流程时可比较组合及三个可操作示例。
 
 ## 用户操作路径
 
-1. 在Explore点合集标题，按“按钮→图片卡→折叠问答→浮动导航→分步状态清单→滚动文字揭示→错峰页面转场→扩散主题切换”入门，或从十类目录选学习目标。首屏左右箭头切换48件轻量封面，下方名称进入当前作品；封面与学习路线分别排序，同一标签页保留所选封面。普通目录只列一次合集，全文搜索仍覆盖全部作品、目标和术语。
-2. 进入`/zh/works/great-ui-<slug>/`后，只加载当前作品适合窗口宽度的一份高清MP4并静音循环播放，不预载其他作品。48件都有轻量封面和完整素材，其中30件另有窄屏录屏；其余复用完整桌面构图。离屏和后台暂停，减少动态或省流量时由用户手动播放。可以暂停、拖动进度或放大；失败时保留原作入口。
+1. 在Explore点合集标题，按“按钮→图片卡→折叠问答→浮动导航→分步状态清单→滚动文字揭示→错峰页面转场→扩散主题切换”入门，或从十类目录选学习目标。首屏左右箭头切换51件轻量封面，下方名称进入当前作品；封面与学习路线分别排序，同一标签页保留所选封面。普通目录只列一次合集，全文搜索仍覆盖全部作品、目标和术语。
+2. 进入`/zh/works/<id>/`后，只加载当前作品适合窗口宽度的一份高清MP4并静音循环播放，不预载其他作品。51件都有轻量封面和完整素材，其中33件另有窄屏录屏；其余复用完整桌面构图。离屏和后台暂停，减少动态或省流量时由用户手动播放。可以暂停、拖动进度或放大；失败时保留原作入口。
 3. “拆解设计”说明原作顺序、形成原理和接入限制；点击术语看共享词库的中文解释及本例应用，可打开完整词条查看变体、提示词和出处。点击“相似作品”或“相同原理”整行入口切换案例。作品列表还可搜索中文、英文或行为词并按分类筛选。
 4. “改造设计”选择目标，用自己的页面、内容和受众说明需求，由Agent实施，自己观察结果并作出设计判断；无需亲自阅读或改写源码。再点“生成修改任务”或“用这个效果”，填写接入位置和要求，查看文本或JSON后复制；素材使用当前站点绝对地址，复制失败时可手动选择全文。原作相关检查要求与改造要求分开，例如多项比较按同时展开检查，单项规则只作原作对照；要求不表示改造已经实现。
 5. “串联设计”选择作品集、产品介绍或任务工具，再选框架、输入方式、外部数据、使用频率和动态偏好。默认保留当前作品；不适合时解释原因，不硬凑方案。允许必要改造时可用普通文字、表单或链接补齐。
@@ -56,6 +56,8 @@ code-revision: '4babe19c103c1403d140612797033fef7aa4e9bc5b8125548dc5037c1a44cd08
 5. 范围和模式会在同一浏览器的下次访问保留，已有有效随机选择不被改成顺序；同一页刷新保留本轮记录，浏览器前进后退恢复各页当时的范围与顺序。当前作品的“分类”标签显示教学分类。已删除的旧分类或范围外直达回到全部分类；存储损坏会重新开始，浏览器禁止存储时仅在当前访问中保留。
 
 导航历史最多保留最近1,000次操作。浏览记录与作品填写草稿分开：刷新保留前者，但不保留草稿；详细存储位置见[配置说明](../system/configuration.md#great-ui浏览偏好与记录)。
+
+低高度桌面视口（高度不超过900px）不固定左侧录屏栏，便于纵向滚动到长录屏下方的任务按钮。
 
 ### 放大与查看细节
 
@@ -79,9 +81,11 @@ flowchart TD
 
 ## 维护同一份材料
 
-每件作品只维护`src/content/works/great-ui-<slug>/zh.md`。正文必须依次包含`## 拆解设计`、`## 改造设计`和`## 串联设计`；第一节还须保留“适合用在哪里”“什么时候不用”“试一次，就会更懂”三级标题。正文支持段落、强调、列表、链接、代码和`[[术语ID|显示词]]`；HTML、任意组件和未登记术语会被拒绝。
+每件作品只维护`src/content/works/<id>/zh.md`。正文必须依次包含`## 拆解设计`、`## 改造设计`和`## 串联设计`；第一节还须保留“适合用在哪里”“什么时候不用”“试一次，就会更懂”三级标题。正文支持段落、强调、列表、链接、代码和`[[术语ID|显示词]]`；HTML、任意组件和未登记术语会被拒绝。
 
 文件头learning保存教学分类、改造目标、判断方法、可调整项、检查与术语引用，previewText.eyebrow同步分类。work.json的learning保存固定源码、合集身份、媒体和组合能力；sequence为合集内唯一正整数，控制学习列表顺序，缺省沿用work.order，不改变Explore排序及默认封面。上游目录分类仍用于溯源。改写说明或目标后，页面与文本/JSON任务从同一来源生成；写法见[内容结构](../system/content-model.md#交互学习材料)，示例是[折叠问答](../../src/content/works/great-ui-accordion/zh.md)。
+
+来源登记在src/lib/content/learning-sources.ts：旧Great UI数据缺省sourceId仍可读取，新案例显式填写beui、rare-ui或microkit及sourceSlug，分别生成作者、官网、固定仓库路径与许可；未知来源、越界路径及不匹配官网会失败。新增三件使用beui-combobox、rare-ui-duration-picker、microkit-sliding-content-tabs作为稳定ID和slug，旧48件网址不变。它们进入现有分类和导航，八站入门顺序不变。
 
 合集标题、十类入口、主讲目标和延伸链接维护在great-ui-learning/zh.md；选题判断与候选取舍见[合集策划](../topics/ui-ux-motion-interaction.md)。案例正文讲清原作事实、学习者需要决定什么、Agent应改什么，以及怎样观察结果；原作参数保留给Agent使用，不把模拟执行或待补交互写成已有能力。
 
@@ -93,12 +97,14 @@ flowchart TD
 
 - 页面与内容：src/components/GreatUiDetail.astro、src/features/great-ui/LearningPage.jsx、markdown-content.ts、compile-prose.ts和site-content.ts。
 - 浏览与播放器：CaseView.jsx、CaseNavigation.jsx、Recording.jsx、useRecordingView.js、Terms.jsx；browsing.ts维护范围/顺序，browse-storage.ts与useCaseBrowser.jsx负责本地记录与导航，Taxonomy.jsx展示实际分类；样式限制在great-ui区域。
-- 来源依据：data/upstream-catalog.json、observations.json、source-review.json和local-recordings.json；relations.mjs维护经源码核对的原理关系。
+- 来源依据：data/upstream-catalog.json、observations.json、source-review.json、cross-source-review.json和local-recordings.json；relations.mjs维护经源码核对的原理关系。
 - 任务与组合：task.mjs、PromptDialog.jsx、composition/；同一结构生成文本和JSON。
 - 示例：JourneyLoader.jsx处理脚本加载与失败，journey/实现三条路径，sources.json和LICENSE.txt说明来源及改造；本站/great-ui/content与/great-ui/journeys生成对应JSON。
 - 辅助本地入口：scripts/great-ui.ts从同一Markdown生成.scratch/great-ui-dist；运行great-ui:build后用great-ui:preview打开127.0.0.1:4325，先确认服务归属与端口。
 
 ## 验收标准
+
+- [x] 2026-09-15三项跨来源案例完成固定源码/许可核对、桌面与390px窄屏独立录屏和中文任务；39项内容/来源/媒体/浏览/组合单元及三浏览器9项页面专项及3项搜索/合集入口通过，覆盖真实播放、暂停/放大、720px高桌面按钮、同源任务和稳定ID导航。两套构建预算通过；未重复旧媒体/组合全量回归或CI，不作为当前完整回执。证据在resources/evidence/018-great-ui-scale/cross-source-samples。
 
 - [x] 48件固定源码与原作操作均有记录；2026-09-15的高清重录保存连续帧、动作、裁切与来源，手机原作的布局限制逐件注明。
 - [x] 2026-09-15高清修复阶段182项单元通过，覆盖共享词库、组合规则、素材摘要等；教学内容及默认顺序的变动由下列专项覆盖，不沿用旧结论。
@@ -115,12 +121,12 @@ flowchart TD
 
 - tests/unit/learning-content.test.ts：Markdown到页面与任务的单一来源、结构/术语/素材拒绝、合集与语言边界、八站顺序/十类、重复序号拒绝与Explore封面保持。
 - tests/unit/glossary.test.ts：共享词条编辑同步两件作品与两种任务、相关修订失效、重复与别名冲突、缺失引用和禁止本地重复定义。
-- tests/unit/great-ui-content.test.ts：48件来源、说明、关系、各版本素材摘要与目标任务。
+- tests/unit/great-ui-content.test.ts：51件来源、说明、关系、各版本素材摘要与目标任务，跨来源仓库/URL/作者混用拒绝。
 - tests/unit/collection-preview.test.ts与tests/great-ui-previews.spec.ts：轻量索引/安全边界、双端素材与任务引用、按需请求、旋转、有效放大、触摸和延迟模块保留用户操作。
-- tests/unit/great-ui-browsing.test.ts：真实48件随机去重与跨类、范围联动、顺序切换、前后重放、单件/结束重开、刷新及历史快照、偏好保存和损坏/受限存储。
+- tests/unit/great-ui-browsing.test.ts：真实51件随机去重与跨类、范围联动、顺序切换、前后重放、单件/结束重开、刷新及历史快照、偏好保存和损坏/受限存储。
 - tests/unit/great-ui-composition.test.ts：能力、条件、全局资源冲突、缺口、有界搜索及版本失效。
 - tests/fixtures/great-ui/journey.ts：同一组正常、慢请求、失败、取消、历史及动态偏好测试；由站内great-ui-site.spec.ts和独立journey.spec.ts复用。
-- tests/great-ui-site.spec.ts另覆盖搜索、48段本站播放、无JS、草稿、放大焦点与Paseo作品引用，包含在verify中。
+- tests/great-ui-site.spec.ts另覆盖搜索、51段本站播放、无JS、草稿、放大焦点与Paseo作品引用，包含在verify中。
 - great-ui:verify检查独立入口；great-ui:evaluate保存结构化样本和合成负载，great-ui:budget检查入口、详情与媒体。正式站另按verify与budget验收。
 
 ## 依赖的其他功能
@@ -129,6 +135,6 @@ flowchart TD
 
 ## 已知问题 / 待办
 
-- 原作线上页面不能证明部署SHA；源码结论固定于eda1b85ed81ab45d0f0cbc27dc0206560d11c801，浏览器记录说明访问时的操作范围。README与LICENSE描述不一致，许可说明依据实际自定义LICENSE；未打包分发原作组件库。
+- 原作线上页面不能证明部署SHA；Great UI源码结论固定于eda1b85ed81ab45d0f0cbc27dc0206560d11c801；其他三项版本逐件记在work.json与cross-source-review.json，浏览器记录说明访问时的操作范围。Great UI的README与LICENSE描述不一致，其许可说明依据实际自定义LICENSE；未打包分发原作组件库。
 - 固定示例只有匹配当前版本的完整验收回执才显示已验证。完整test:e2e写入site-verification.json，独立great-ui:test写入standalone-verification.json；两者不互相代替，筛选重跑不签发回执。main可信复用完全相同文件树的PR回归时，重建site回执并明确引用原验收run/attempt，不声称本次重新测试。源码、Markdown、共享词库、能力、规则、条件、适配器或测试变化使旧记录失效。
 - 示例通过不等于已接入用户项目。自由文本推荐质量、全部原作变体和真机操作未被结构化样本代替。

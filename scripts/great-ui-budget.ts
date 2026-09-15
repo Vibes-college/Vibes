@@ -42,7 +42,7 @@ for (const name of await readdir(path.join(root, 'great-ui/media'))) {
     actual.largestPoster = Math.max(actual.largestPoster, size);
 }
 // Measured baseline is ~80/5/51 KiB JS/CSS/lazy JS. Leave bounded room without changing production budgets.
-// The 48 clear recordings, 30 distinct phone crops and 48 light previews total ~37 MiB.
+// The owned desktop, phone and light preview renditions share a bounded media budget.
 // This is stored media, not an initial-page payload: only one selected rendition loads.
 const limits = {
   initialJs: 100 * 1024,
@@ -68,7 +68,7 @@ const report = {
   actual,
   limits,
   scope:
-    'Standalone build of the shared site learning UI. All 48 previews use owned assets; only the selected clip loads. The normal site budget is checked separately.',
+    'Standalone build of the shared site learning UI. All previews use owned assets; only the selected clip loads. The normal site budget is checked separately.',
 };
 await mkdir('resources/evidence/018-great-ui-scale', { recursive: true });
 await writeFile(

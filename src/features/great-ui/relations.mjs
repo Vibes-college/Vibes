@@ -25,6 +25,9 @@ const families = {
   'timeline-display': ['状态反馈', '变换映射'],
   'image-card': ['操作层级', '布局保持'],
   disclosure: ['状态反馈', '布局变化'],
+  'search-choice': ['状态反馈', '布局变化'],
+  'inline-editor': ['布局变化', '输入方式适配'],
+  'content-tabs': ['状态反馈', '变换映射'],
 };
 const special = {
   'cross-blur-page-transition': ['背景滤镜', '状态反馈'],

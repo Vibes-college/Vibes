@@ -735,5 +735,48 @@
         "bytes": 19360
       }
     }
+  },
+  "beui-combobox": {
+    "status": "observed-with-limit",
+    "date": "2026-09-15",
+    "summary": "桌面及390px窄屏完成打开、product筛选、选择Product team、zzzz空结果、清空恢复与Escape保留已选值。桌面核对方向键、Enter与输入框焦点；中文查询设计未匹配英文示例。",
+    "scope": [
+      "desktop 1280x900",
+      "mobile simulation 390x844",
+      "keyboard selection",
+      "independent continuous capture"
+    ],
+    "limitations": [
+      "未核对真机软键盘或读屏器",
+      "示例为四项本地数组，不是远程数据",
+      "拼音与业务别名需要目标项目提供"
+    ],
+    "evidence": "resources/evidence/018-great-ui-scale/cross-source-samples/beui-combobox"
+  },
+  "rare-ui-duration-picker": {
+    "status": "observed-with-limit",
+    "date": "2026-09-15",
+    "environment": "Codex内置浏览器，桌面1280x900与390x844窄屏，DPR 2",
+    "summary": "桌面与390px窄屏打开编辑，输入1小时30分钟并确认；小时25钳制到24，分钟61钳制到60。桌面Escape保持编辑，输入缺少aria-label或关联label；零值可确认。",
+    "scope": [
+      "public original interaction",
+      "desktop keyboard boundary",
+      "independent desktop and narrow recordings"
+    ],
+    "limitations": ["线上部署SHA未知，固定源码单独核对", "未测试真机软键盘、读屏器与服务保存"],
+    "evidence": "resources/evidence/018-great-ui-scale/cross-source-samples/rare-ui-duration-picker"
+  },
+  "microkit-sliding-content-tabs": {
+    "status": "observed-with-limit",
+    "date": "2026-09-15",
+    "environment": "Codex内置浏览器，桌面1280x900与390x844窄屏，DPR 2",
+    "summary": "桌面与390px窄屏逐项点击Audience、Reactions、Saved并快速改选，最终内容与高亮一致。桌面ArrowRight不切换，Tab与Enter可操作；原作每个标签tabIndex为0。",
+    "scope": [
+      "public original interaction",
+      "desktop keyboard boundary",
+      "independent desktop and narrow recordings"
+    ],
+    "limitations": ["线上部署SHA未知，固定源码单独核对", "未测试真机软键盘、读屏器与服务保存"],
+    "evidence": "resources/evidence/018-great-ui-scale/cross-source-samples/microkit-sliding-content-tabs"
   }
 }

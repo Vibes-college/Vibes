@@ -1,4 +1,9 @@
 import type { WorkCapability } from './model.ts';
+import {
+  learningSource,
+  learningReference,
+  learningSourceUrl,
+} from '../../../lib/content/learning-sources.ts';
 
 const roles = new Set([
   'navigate',
@@ -27,8 +32,14 @@ export function validateCapabilities(value: unknown): WorkCapability[] {
   const ids = new Set<string>();
   const slugs = new Set<string>();
   for (const work of value) {
+    const source = record(work) ? learningSource(work.sourceId) : null;
+    const prefix =
+      source && record(work)
+        ? `https://github.com/${source.repository}/blob/${work.sourceRevision}/`
+        : '';
     if (
       !record(work) ||
+      !source ||
       !string(work.id) ||
       ids.has(work.id) ||
       !string(work.slug) ||
@@ -67,11 +78,18 @@ export function validateCapabilities(value: unknown): WorkCapability[] {
           string(resource.phase),
       ) ||
       (work.source !== undefined &&
-        (!string(work.source) ||
-          !work.source.startsWith('https://github.com/Saurabh-2607/GreatUI/blob/'))) ||
+        (!source ||
+          !string(work.source) ||
+          !work.source.startsWith(prefix) ||
+          work.source !==
+            learningSourceUrl(
+              work.sourceId,
+              work.sourceRevision,
+              work.source.slice(prefix.length),
+            ))) ||
       (work.reference !== undefined &&
         (!string(work.reference) ||
-          work.reference !== `https://www.great-ui.com/components/${work.slug}`))
+          work.reference !== learningReference(work.sourceId, work.sourceSlug ?? work.slug)))
     )
       throw new Error('组合材料字段缺失、值无效或标识重复。');
     ids.add(work.id);

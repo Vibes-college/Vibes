@@ -7,7 +7,7 @@ shaped-by: []
 
 # 《Vibe Coding 网页动效与交互》目录与候选清单
 
-**合集名称、十类目录、八站入门路线和16件主讲内容已落实到当前开发版本；48件旧案例链接保留。以下候选取舍仍是编辑判断，后续可继续替换和打磨；实现不代表已合并或正式发布。** 上层能力地图见[UI/UX学习主题](ui-ux.md)，实际操作见[学习交互作品](../features/great-ui-learning.md)。
+**合集名称、十类目录、八站入门路线和19件主讲内容已落实到当前开发版本；48件旧案例链接保留，另已接入beUI Combobox、Rare UI Duration Picker与MicroKit Sliding Content Tabs。以下候选取舍仍是编辑判断，后续可继续替换和打磨；实现不代表已合并或正式发布。** 上层能力地图见[UI/UX学习主题](ui-ux.md)，实际操作见[学习交互作品](../features/great-ui-learning.md)。
 
 合集围绕一项广泛、可识别的技能组织，容纳数百件精品案例。Great UI、Rare UI、beUI等是素材来源；每件案例说明本例值得学习的设计决定、组件行为和Agent协作方法。来源库不会各自变成一套重复课程。
 
@@ -166,7 +166,7 @@ shaped-by: []
 | [starc007/ui-components · a40df679](https://github.com/starc007/ui-components/tree/a40df6794375bb7269c7317fb5e22762ecee79fe) | LICENSE为MIT；组件会引用同库工具与样式，不能把展示页上的单个文件视为完整依赖。现有站内十个演示继续作为比较材料。           |
 | [swamimalode07/rare-ui · d146c352](https://github.com/swamimalode07/rare-ui/tree/d146c35264c5905b995903d2d96cd6d188af114a)   | 当前LICENSE为MIT，网页另有组件套件转售限制及复现说明；源码复用前核对适用范围，并保留原始参考关系。                         |
 
-固定源码快照用于复核本轮判断，不证明线上页面部署了相同提交。以下“优先”表示值得继续制作教学样板，不表示已经上线、已获得素材发布许可或已通过完整接入验收。
+固定源码快照用于复核本轮判断，不证明线上页面部署了相同提交。以下“优先”是筛选时的编辑判断。Combobox、Duration Picker和Sliding Content Tabs已制作独立两端录屏、中文讲解与三组练习，进入同一合集；其余仍是候选。原作可见行为与需要补齐的业务/键盘要求分别说明，实现不代表已合并或正式发布。
 
 ### 优先深入的7件
 

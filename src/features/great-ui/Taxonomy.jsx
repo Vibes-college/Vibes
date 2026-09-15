@@ -37,14 +37,11 @@ export function Taxonomy({ entry }) {
       <details className="license-detail">
         <summary>
           <span>License</span>
-          <strong>可商用</strong>
+          <strong>{entry.licenseLabel.split(' · ')[0]}</strong>
         </summary>
         <div className="tag-panel">
-          <h2>可商用 · 自定义许可</h2>
-          <p>
-            LICENSE 允许个人与商业项目使用，限制作为 UI 套件、模板或组件库再分发。README 的 MIT
-            标注与许可正文不一致，暂以正文展示。
-          </p>
+          <h2>{entry.licenseLabel}</h2>
+          <p>{entry.licenseNote}</p>
           <a href={entry.license} target="_blank" rel="noreferrer">
             查看许可原文 <ArrowUpRight size={12} />
           </a>

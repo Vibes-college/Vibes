@@ -2,7 +2,11 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readCatalog } from '../../src/lib/content/catalog.ts';
 import { validateCatalog } from '../../src/lib/content/validate.ts';
-import { parseLearningBody, learningLanguageSchema } from '../../src/lib/content/learning.ts';
+import {
+  parseLearningBody,
+  learningLanguageSchema,
+  learningMetadataSchema,
+} from '../../src/lib/content/learning.ts';
 import { sourceRevision } from '../../src/lib/content/revision.ts';
 import { publishedWorks, browsePages } from '../../src/lib/content/views.ts';
 import { learningEntry } from '../../src/features/great-ui/markdown-content.ts';
@@ -50,7 +54,7 @@ test('learning order follows the introductory route without changing Explore ord
       'circular-theme-provider',
     ],
   );
-  assert.equal(index.length, 48);
+  assert.equal(index.length, 51);
   assert.equal(new Set(index.map((entry) => entry.category)).size, 10);
   assert.deepEqual(catalog, before);
   assert.equal(
@@ -123,4 +127,66 @@ test('orphaned collections, mismatched language data and unknown term references
     change(copy.works.find((work) => work.meta.id === original.meta.id)!);
     assert.throws(() => validateCatalog(copy));
   }
+});
+
+test('registered cross-source works preserve authors, canonical URLs and task provenance', () => {
+  const { entries } = learningMaterials(catalog, 'zh', 'https://preview.example');
+  const sources = [
+    ['beui-combobox', 'beui', 'starc007/ui-components'],
+    ['rare-ui-duration-picker', 'rare-ui', 'swamimalode07/rare-ui'],
+    ['microkit-sliding-content-tabs', 'microkit', 'henriquegpb/microkit'],
+  ];
+  for (const [id, sourceId, repository] of sources) {
+    const entry = entries.find((entry) => entry.id === id)!;
+    assert.equal(entry.slug, id);
+    assert.equal(entry.sourceId, sourceId);
+    assert.ok(entry.source.startsWith(`https://github.com/${repository}/blob/${entry.revision}/`));
+    assert.match(entry.licenseLabel, /MIT/);
+    for (const goal of entry.learning.goals) {
+      const task = createTask(entry, {
+        placement: '真实任务',
+        changes: '保留中文名称',
+        goalId: goal.id,
+      });
+      const text = taskText(task);
+      assert.equal(task.selected.id, id);
+      assert.equal(task.selected.reference, entry.reference);
+      assert.equal(task.license.url, entry.license);
+      assert.equal(task.media.url, `https://preview.example/great-ui/media/${id}-demo.mp4`);
+      assert.ok(text.includes(entry.source) && text.includes(goal.action));
+      assert.doesNotMatch(text, /本机素材：|\/Users\//);
+    }
+  }
+  const picker = entries.find((entry) => entry.id === 'rare-ui-duration-picker')!;
+  assert.match(picker.sections.map((section) => section.text).join('\n'), /Escape也不会取消/);
+  const cancel = createTask(picker, { placement: '', changes: '', goalId: 'cancel-restore' });
+  assert.match(cancel.goal.action, /增加编辑草稿/);
+});
+
+test('cross-source identity cannot borrow another source URL or escape its registered paths', () => {
+  const id = 'beui-combobox';
+  const work = catalog.works.find((work) => work.meta.id === id)!;
+  for (const url of [
+    'https://evil.test/combobox',
+    'https://www.great-ui.com/components/combobox',
+    work.meta.sourceUrl + '?redirect=other',
+  ]) {
+    const copy = structuredClone(catalog);
+    copy.works.find((work) => work.meta.id === id)!.meta.sourceUrl = url;
+    assert.throws(() => validateCatalog(copy), /registered source/);
+  }
+});
+
+test('source metadata rejects unregistered hosts, traversal and another library path', () => {
+  const meta = catalog.works.find((work) => work.meta.id === 'beui-combobox')!.meta.learning!;
+  for (const change of [
+    { sourceId: 'unknown' },
+    { sourceSlug: undefined },
+    { implementation: 'components/motion/../secret.tsx' },
+    { implementation: 'components/motion//combobox.tsx' },
+    { implementation: 'components/ui/combobox.tsx' },
+    { previewSource: 'https://evil.test/preview.tsx' },
+    { revision: 'main' },
+  ])
+    assert.equal(learningMetadataSchema.safeParse({ ...meta, ...change }).success, false);
 });

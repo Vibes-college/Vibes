@@ -1,0 +1,163 @@
+{
+  "entries": [
+    {
+      "id": "beui-combobox",
+      "slug": "beui-combobox",
+      "sourceId": "beui",
+      "revision": "a40df6794375bb7269c7317fb5e22762ecee79fe",
+      "reviewedAt": "2026-09-15",
+      "implementation": {
+        "path": "components/motion/combobox.tsx",
+        "bytes": 673,
+        "sha256": "91fa03416be024fcf1584fe865fe6a85e11986d463a1e8e78cc9e0baaaf09c8c",
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/previews/motion/combobox.preview.tsx",
+        "bytes": 3642,
+        "sha256": "2ba1ee92fba5139ca004590985ebd753f043883a09b373230c0e15abda4fb3a8",
+        "reviewed": true
+      },
+      "files": [
+        {
+          "path": "LICENSE",
+          "bytes": 1072,
+          "sha256": "9e27b491d5691a1bd95708e79de23beb2962f33fe6c1ee31ab639f43009a0b20",
+          "reviewed": true
+        },
+        {
+          "path": "components/motion/combobox.tsx",
+          "bytes": 673,
+          "sha256": "91fa03416be024fcf1584fe865fe6a85e11986d463a1e8e78cc9e0baaaf09c8c",
+          "reviewed": true
+        },
+        {
+          "path": "components/motion/combobox/content.tsx",
+          "bytes": 4810,
+          "sha256": "ac0ae67f1c1eea7bc88ca429529294bdca2bce24aab7f935d9945b69480ba94c",
+          "reviewed": true
+        },
+        {
+          "path": "components/motion/combobox/use-active-option.ts",
+          "bytes": 5666,
+          "sha256": "7e5f6de0842a5eacc359539c44b0884c8c9735d36495107142c1c114dc3b0cc1",
+          "reviewed": true
+        },
+        {
+          "path": "components/motion/combobox/list.tsx",
+          "bytes": 5702,
+          "sha256": "dbe273defac8b4f91a5895f6b0cae2445b9321fc2ac7a0c5a65b2fa5fbe0b0e7",
+          "reviewed": true
+        },
+        {
+          "path": "components/motion/combobox/trigger.tsx",
+          "bytes": 5797,
+          "sha256": "01f30783c177de04df650b29a2f1cf0ea30ed22bc496a93f06b59ed78ae22421",
+          "reviewed": true
+        },
+        {
+          "path": "components/motion/combobox/context.tsx",
+          "bytes": 10864,
+          "sha256": "49889a69468b589a6c83a39f26cff0a1a50b746cbf5fc6d4a9628c329b1e3a1b",
+          "reviewed": true
+        },
+        {
+          "path": "components/previews/motion/combobox.preview.tsx",
+          "bytes": 3642,
+          "sha256": "2ba1ee92fba5139ca004590985ebd753f043883a09b373230c0e15abda4fb3a8",
+          "reviewed": true
+        },
+        {
+          "path": "lib/ease.ts",
+          "bytes": 1670,
+          "sha256": "bdfa2814cffaa4d974a5fc8614868ddb89e0310a0ead9e7105f2e8132b219ff3",
+          "reviewed": true
+        }
+      ]
+    },
+    {
+      "id": "rare-ui-duration-picker",
+      "slug": "rare-ui-duration-picker",
+      "sourceId": "rare-ui",
+      "revision": "d146c35264c5905b995903d2d96cd6d188af114a",
+      "reviewedAt": "2026-09-15",
+      "implementation": {
+        "path": "components/ui/duration-picker.tsx",
+        "bytes": 12290,
+        "sha256": "5ec0078704c6dc11824a1b9e06d97bd7723a6c8984090b6c5c82aa3fc24ce808",
+        "reviewed": true
+      },
+      "preview": {
+        "path": "app/components/(docs)/durationpicker/demo.tsx",
+        "bytes": 294,
+        "sha256": "228b4740cfd6f70829f097a0ddeda3924480127dda5083015ebfffdee2297038",
+        "reviewed": true
+      },
+      "files": [
+        {
+          "path": "LICENSE",
+          "bytes": 1069,
+          "sha256": "462930f8d54c9e96b4de326336f499dc7da70e3e5f5d9b28adedbb0080ff9ea9",
+          "reviewed": true
+        },
+        {
+          "path": "components/ui/duration-picker.tsx",
+          "bytes": 12290,
+          "sha256": "5ec0078704c6dc11824a1b9e06d97bd7723a6c8984090b6c5c82aa3fc24ce808",
+          "reviewed": true
+        },
+        {
+          "path": "app/components/(docs)/durationpicker/demo.tsx",
+          "bytes": 294,
+          "sha256": "228b4740cfd6f70829f097a0ddeda3924480127dda5083015ebfffdee2297038",
+          "reviewed": true
+        }
+      ]
+    },
+    {
+      "id": "microkit-sliding-content-tabs",
+      "slug": "microkit-sliding-content-tabs",
+      "sourceId": "microkit",
+      "revision": "2d065977a1bc1f5d32e4f491df282a32c80d24ff",
+      "reviewedAt": "2026-09-15",
+      "implementation": {
+        "path": "components/interactions/sliding-content-tabs/component.tsx",
+        "bytes": 1401,
+        "sha256": "fb6b3ee23c597fc918c03b94010a4c243b9a32347fee02f3600da70723e855f8",
+        "reviewed": true
+      },
+      "preview": {
+        "path": "components/interactions/sliding-content-tabs/source.ts",
+        "bytes": 5084,
+        "sha256": "fc2592c6d844ccea341ece394d41e48e6647b1c5a89c28e270a9a0a78f4eea3e",
+        "reviewed": true
+      },
+      "files": [
+        {
+          "path": "LICENSE",
+          "bytes": 1072,
+          "sha256": "788f172717e164de5e458fae02e22d91de84b796976023157ebd4780b317f939",
+          "reviewed": true
+        },
+        {
+          "path": "components/interactions/sliding-content-tabs/component.tsx",
+          "bytes": 1401,
+          "sha256": "fb6b3ee23c597fc918c03b94010a4c243b9a32347fee02f3600da70723e855f8",
+          "reviewed": true
+        },
+        {
+          "path": "components/interactions/sliding-content-tabs/source.ts",
+          "bytes": 5084,
+          "sha256": "fc2592c6d844ccea341ece394d41e48e6647b1c5a89c28e270a9a0a78f4eea3e",
+          "reviewed": true
+        },
+        {
+          "path": "components/interactions/sliding-content-tabs/styles.css",
+          "bytes": 1632,
+          "sha256": "1e178c14708fb4ed768b1c1923554249bc5c59c1e14baec53a8c8415e86f5d40",
+          "reviewed": true
+        }
+      ]
+    }
+  ]
+}

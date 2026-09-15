@@ -35,7 +35,7 @@ export function CaseView({ entry, entries, state, onChange, onSelect, onStartJou
               <a href={entry.source} target="_blank" rel="noreferrer">
                 源码 <ArrowUpRight size={12} />
               </a>
-              <span>by Great UI</span>
+              <span>by {entry.sourceLabel}</span>
             </div>
           </div>
           <Taxonomy entry={entry} />

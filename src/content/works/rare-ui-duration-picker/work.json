@@ -1,0 +1,73 @@
+{
+  "id": "rare-ui-duration-picker",
+  "originalLocale": "zh",
+  "order": 11050,
+  "sourceUrl": "https://www.rareui.com/components/durationpicker",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Swami Malode · Rare UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "rare-ui-duration-picker",
+    "collectionId": "great-ui-learning",
+    "english": "Duration Picker",
+    "sourceId": "rare-ui",
+    "sourceSlug": "durationpicker",
+    "revision": "d146c35264c5905b995903d2d96cd6d188af114a",
+    "implementation": "components/ui/duration-picker.tsx",
+    "previewSource": "app/components/(docs)/durationpicker/demo.tsx",
+    "sequence": 50,
+    "media": {
+      "video": "/great-ui/media/rare-ui-duration-picker-demo.mp4",
+      "poster": "/great-ui/media/rare-ui-duration-picker-demo-poster.jpg",
+      "width": 640,
+      "height": 260,
+      "mobile": {
+        "video": "/great-ui/media/rare-ui-duration-picker-mobile.mp4",
+        "poster": "/great-ui/media/rare-ui-duration-picker-mobile-poster.jpg",
+        "width": 640,
+        "height": 260,
+        "duration": 12.066016
+      },
+      "card": {
+        "video": "/great-ui/media/rare-ui-duration-picker-card.mp4",
+        "poster": "/great-ui/media/rare-ui-duration-picker-card-poster.jpg",
+        "width": 480,
+        "height": 196,
+        "duration": 10.0
+      }
+    },
+    "capability": {
+      "family": "inline-editor",
+      "roles": ["act"],
+      "provides": ["input-collect"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现使用React与Motion及形状工具。",
+          "adaptation": "按目标项目现有框架移植交互，保留语义与焦点行为。"
+        }
+      ],
+      "resources": [],
+      "adaptations": ["为小时和分钟补上可读名称；按业务约定上限、取消恢复与真实保存结果。"],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    }
+  }
+}

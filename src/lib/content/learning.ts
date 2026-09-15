@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { learningSourceIds, validLearningPath } from './learning-sources.ts';
 
 const text = z.string().trim().min(1);
 const strings = z.array(text).min(1);
@@ -13,9 +14,6 @@ const rendition = z
     duration: z.number().positive().max(60),
   })
   .strict();
-const sourcePath = text.refine((value) =>
-  /^components\/(ui|site\/previews)\/[A-Za-z0-9_-]+\.tsx$/.test(value),
-);
 
 export const learningMetadataSchema = z
   .object({
@@ -23,9 +21,11 @@ export const learningMetadataSchema = z
     collectionId: slug,
     sequence: z.number().int().positive().optional(),
     english: text,
+    sourceId: z.enum(learningSourceIds).optional(),
+    sourceSlug: slug.optional(),
     revision: z.string().regex(/^[a-f0-9]{40}$/),
-    implementation: sourcePath,
-    previewSource: sourcePath,
+    implementation: text,
+    previewSource: text,
     media: z
       .object({
         video: asset.refine((value) => value.endsWith('.mp4')).optional(),
@@ -68,7 +68,16 @@ export const learningMetadataSchema = z
       })
       .strict(),
   })
-  .strict();
+  .strict()
+  .superRefine((value, context) => {
+    const sourceId = value.sourceId ?? 'great-ui';
+    for (const field of ['implementation', 'previewSource'] as const) {
+      if (!validLearningPath(sourceId, value[field], field === 'previewSource'))
+        context.addIssue({ code: 'custom', path: [field], message: 'Invalid source path' });
+    }
+    if (sourceId !== 'great-ui' && !value.sourceSlug)
+      context.addIssue({ code: 'custom', path: ['sourceSlug'], message: 'Source slug required' });
+  });
 
 export const learningLanguageSchema = z
   .object({

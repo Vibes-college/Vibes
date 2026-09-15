@@ -125,7 +125,7 @@ ESLint仅对public/media/2048/game.js这一份带MIT署名的上游压缩分发�
 
 ## 本地交互学习工作台
 
-Great UI工作台复用已锁定的React、Motion和Lucide依赖，站内Astro学习页与scripts/great-ui.ts辅助Vite入口读取同一份Markdown。默认预览4325，专用Playwright测试服务4336，均绑定127.0.0.1且端口冲突直接失败。JSX与浏览器查看器hook在ESLint专用范围检查，工具TypeScript允许读取构建期MJS。命令、媒体与验收范围见[学习操作路径](../features/great-ui-learning.md)。
+Great UI工作台复用已锁定的React、Motion和Lucide依赖，站内Astro学习页与scripts/great-ui.ts辅助Vite入口读取同一份Markdown。案例来源在src/lib/content/learning-sources.ts显式登记，修改文章不能增加远程运行时代码或媒体主机。默认预览4325，专用Playwright测试服务4336，均绑定127.0.0.1且端口冲突直接失败。JSX与浏览器查看器hook在ESLint专用范围检查，工具TypeScript允许读取构建期MJS。命令、媒体与验收范围见[学习操作路径](../features/great-ui-learning.md)。
 
 Great UI学习页的GitHub编辑链接和完整词条链接读取VIBES_CONTENT_EDIT_REF或GITHUB_HEAD_REF以指向PR分支；发布预览命令从已核对的PR设置前者，正式main构建默认main。开发回退当前Git分支。astro.config.mjs仅允许当前根目录与实际node_modules目录被开发服务读取，支持隔离检出复用已安装依赖，不扩大到父仓库。
 
