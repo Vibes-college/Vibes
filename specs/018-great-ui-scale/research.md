@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '规模化串联与原作接入的具体取舍'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 

@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Great UI全量内容、候选编排和真实路径的实施安排'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
