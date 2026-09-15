@@ -5,11 +5,11 @@ title: LinkedIn 职业资料卡
 summary: 把职业简介放在LinkedIn链接上方，悬停时补充头像、职位、地点与人脉数。
 description: 把职业简介放在LinkedIn链接上方，悬停时补充头像、职位、地点与人脉数。
 previewText:
-  eyebrow: 社交卡片
+  eyebrow: 卡片、悬浮预览与人物展示
   display: LinkedIn Card
   note: Great UI · 交互学习
 learning:
-  category: 社交卡片
+  category: 卡片、悬浮预览与人物展示
   classification:
     type: 组件
     purpose:

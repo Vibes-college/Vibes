@@ -5,11 +5,11 @@ title: 扰动字形的命令切换
 summary: 切换安装方式时，让命令中的字符短暂变化再还原，用局部动态强调文字已经更新。
 description: 切换安装方式时，让命令中的字符短暂变化再还原，用局部动态强调文字已经更新。
 previewText:
-  eyebrow: 文字效果
+  eyebrow: 文字、图形与内容动效
   display: Scrambled Install Command
   note: Great UI · 交互学习
 learning:
-  category: 文字效果
+  category: 文字、图形与内容动效
   classification:
     type: 组件
     purpose:

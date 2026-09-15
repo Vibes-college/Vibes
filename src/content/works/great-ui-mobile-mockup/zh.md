@@ -5,11 +5,11 @@ title: 手机里的对话演示
 summary: 把一段预设对话放进手机外壳，按节奏显示消息和正在输入的提示，帮助访客理解产品场景。
 description: 把一段预设对话放进手机外壳，按节奏显示消息和正在输入的提示，帮助访客理解产品场景。
 previewText:
-  eyebrow: 视觉交互
+  eyebrow: 卡片、悬浮预览与人物展示
   display: Mobile Mockup
   note: Great UI · 交互学习
 learning:
-  category: 视觉交互
+  category: 卡片、悬浮预览与人物展示
   classification:
     type: 组件
     purpose:

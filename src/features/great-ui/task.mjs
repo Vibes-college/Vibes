@@ -130,7 +130,7 @@ ${task.license.note}
 ${referenceDesign.note}
 ${referenceDesign.explanation.map((section) => `${section.title}：${section.text}`).join('\n')}
 原作核心关系：${referenceDesign.preserve.join('；')}。
-原作检查记录：${referenceDesign.checks.join('；')}
+原作相关检查要求：${referenceDesign.checks.join('；')}
 
 修改目标：${goal.title}
 让 Agent 这样改：${goal.action}

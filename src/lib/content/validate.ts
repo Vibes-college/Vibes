@@ -26,8 +26,14 @@ export function validateCatalog(catalog: Catalog): void {
   if (ids.size !== catalog.works.length) throw new Error('content/works: duplicate work id');
   if (orders.size !== catalog.works.length) throw new Error('content/works: duplicate order');
   const pairs = new Set<string>();
+  const learningSequences = new Set<string>();
   for (const { meta, versions, glossary } of catalog.works) {
     const file = `content/works/${meta.id}/work.json`;
+    if (meta.learning?.sequence !== undefined) {
+      const key = `${meta.learning.collectionId}:${meta.learning.sequence}`;
+      if (learningSequences.has(key)) throw new Error(`${file}: duplicate learning sequence`);
+      learningSequences.add(key);
+    }
     try {
       validateMedia(meta.media || [], meta.presentation);
       validateMediaFiles(meta.media || []);

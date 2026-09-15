@@ -16,7 +16,7 @@ export interface BrowseState extends BrowsePreferences {
   remaining: string[];
 }
 
-export const defaultBrowsePreferences: BrowsePreferences = { scope: 'all', shuffle: true };
+export const defaultBrowsePreferences: BrowsePreferences = { scope: 'all', shuffle: false };
 export const currentBrowseId = (state: BrowseState) => state.trail[state.cursor];
 export const browseMembers = (entries: BrowseEntry[], scope: string) =>
   entries.filter((entry) => scope === 'all' || entry.category === scope);

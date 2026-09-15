@@ -5,11 +5,11 @@ title: 多语言引语切换
 summary: 在同一位置切换不同语言的短句，用轻微模糊和位移连接文本变化，同时保留作者信息。
 description: 在同一位置切换不同语言的短句，用轻微模糊和位移连接文本变化，同时保留作者信息。
 previewText:
-  eyebrow: 文字效果
+  eyebrow: 文字、图形与内容动效
   display: Multilingual Quote
   note: Great UI · 交互学习
 learning:
-  category: 文字效果
+  category: 文字、图形与内容动效
   classification:
     type: 组件
     purpose:

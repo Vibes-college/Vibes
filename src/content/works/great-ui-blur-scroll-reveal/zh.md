@@ -5,11 +5,11 @@ title: 滚动文字由模糊到清晰
 summary: 把段落拆成词或行，随滚动依次提高可见度、减少模糊，让文字逐段进入阅读状态。
 description: 把段落拆成词或行，随滚动依次提高可见度、减少模糊，让文字逐段进入阅读状态。
 previewText:
-  eyebrow: 文字效果
+  eyebrow: 滚动与连续叙事
   display: Blur Scroll Reveal
   note: Great UI · 交互学习
 learning:
-  category: 文字效果
+  category: 滚动与连续叙事
   classification:
     type: 组件
     purpose:

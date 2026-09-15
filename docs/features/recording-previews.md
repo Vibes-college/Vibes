@@ -12,14 +12,14 @@ code-sources:
     'tests/unit/great-ui-content.test.ts',
     'tests/great-ui/learning.spec.ts',
   ]
-code-revision: '8c7008e0bf36d9484dc42373bb3ec571bd7f63e11a7027060eb4d8d819c1aa38'
+code-revision: 'f0c11680bc8af040244998d6cca27c680e8fe8d4ee4b87a4a729c8fedaa042a5'
 ---
 
 # 功能名：录制与维护交互演示
 
 ## 一句话说明
 
-维护者打开原作、实际操作、录下关键过程，再把短片和来源记录交给页面使用。这个流程已用于[Great UI学习工作台](great-ui-learning.md)；它保存实际画面，不靠下载原作者的视频来生成录屏。
+维护者打开原作、实际操作、录下关键过程，再把短片和来源记录交给页面使用。这个流程已用于[网页动效与交互学习](great-ui-learning.md)的48件Great UI案例；它保存实际画面，不靠下载原作者的视频来生成录屏。
 
 ## 用户操作路径
 

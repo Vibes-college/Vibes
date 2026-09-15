@@ -5,11 +5,11 @@ title: Instagram 账号资料卡
 summary: 在Instagram链接旁补充头像、简介和三组账号数量，让外链有简明的视觉预览。
 description: 在Instagram链接旁补充头像、简介和三组账号数量，让外链有简明的视觉预览。
 previewText:
-  eyebrow: 社交卡片
+  eyebrow: 卡片、悬浮预览与人物展示
   display: Instagram Card
   note: Great UI · 交互学习
 learning:
-  category: 社交卡片
+  category: 卡片、悬浮预览与人物展示
   classification:
     type: 组件
     purpose:

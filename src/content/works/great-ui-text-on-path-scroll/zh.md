@@ -5,11 +5,11 @@ title: 沿曲线滚动的文字
 summary: 让文字贴着一条曲线移动，用滚动推动文字经过画面，形成一段有空间感的排版。
 description: 让文字贴着一条曲线移动，用滚动推动文字经过画面，形成一段有空间感的排版。
 previewText:
-  eyebrow: 文字效果
+  eyebrow: 滚动与连续叙事
   display: Text On Path Scroll
   note: Great UI · 交互学习
 learning:
-  category: 文字效果
+  category: 滚动与连续叙事
   classification:
     type: 组件
     purpose:

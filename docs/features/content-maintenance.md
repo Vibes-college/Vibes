@@ -14,7 +14,7 @@ code-sources:
     'tests/content-lifecycle.spec.ts',
     'tests/unit/glossary.test.ts',
   ]
-code-revision: '9c3990ae2ecf9b59386816c778ba134d4e1efccb9b5ef4d7f5d0c3bb58d07084'
+code-revision: '45a2ae4da9097cb6f656ca2786d88c8636df153d4428e4e0e31251a0e50404a1'
 ---
 
 # 功能名：维护作品内容
@@ -38,9 +38,11 @@ code-revision: '9c3990ae2ecf9b59386816c778ba134d4e1efccb9b5ef4d7f5d0c3bb58d07084
 
 首次准备维护环境时，网站构建还需按[检查与发布网站](project-commands.md)准备固定Paseo产物；内容校验本身不需要连接电脑或模型账号。
 
-### 维护Great UI学习材料
+### 维护网页动效与交互学习材料
 
 从学习页顶部编辑图标进入该语言的GitHub编辑页，修改一份Markdown的三个正文面板及文件头learning中的目标、检查和术语引用，提出PR并查看检查及阶段预览。共享源码、组合能力与素材路径在同目录work.json；媒体文件放public/great-ui/media，来源及各版本摘要登记在local-recordings.json；高清、手机构图与合集轻量封面按[录制与维护交互演示](recording-previews.md)分别检查。页面与复制任务共同读取这些字段，不在组件里另写一份文案。先运行content:validate，再构建核对面板、术语、任务与搜索；编辑源码或共享模板时升级为verify/budget。完整操作和示例见[学习交互作品](great-ui-learning.md#维护同一份材料)，格式见[交互学习材料](../system/content-model.md#交互学习材料)。
+
+合集正文维护八站路线、十类入口及每件的学习目标；案例的learning.category与previewText.eyebrow同步教学分类。work.json中的learning.sequence是合集内唯一正整数，维护学习顺序，缺省沿用work.order；不要为重排课程修改Explore顺序或素材。正文说明用户的设计判断、给Agent的具体练习和观察依据，保留原作事实及接入限制，练习要求不能写成已经验证的能力。来源网站及其原始分类继续保留用于溯源。
 
 ### 收录与引用UI/UX术语
 

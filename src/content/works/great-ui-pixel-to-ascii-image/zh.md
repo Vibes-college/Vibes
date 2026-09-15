@@ -5,11 +5,11 @@ title: 从图像变成字符画
 summary: 悬停图片时，画面先变为色块，再由亮度对应的字符重组，离开时恢复原图。
 description: 悬停图片时，画面先变为色块，再由亮度对应的字符重组，离开时恢复原图。
 previewText:
-  eyebrow: 视觉交互
+  eyebrow: 图片、画廊与循环展示
   display: Pixel To Ascii Image
   note: Great UI · 交互学习
 learning:
-  category: 视觉交互
+  category: 图片、画廊与循环展示
   classification:
     type: 组件
     purpose:

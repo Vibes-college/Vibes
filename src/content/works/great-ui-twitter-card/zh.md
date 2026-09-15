@@ -5,11 +5,11 @@ title: X 账号悬浮资料卡
 summary: 鼠标停在X链接上方时展示资料卡，也能改成常驻卡片，给作者链接补充背景。
 description: 鼠标停在X链接上方时展示资料卡，也能改成常驻卡片，给作者链接补充背景。
 previewText:
-  eyebrow: 社交卡片
+  eyebrow: 卡片、悬浮预览与人物展示
   display: Twitter(X) Card
   note: Great UI · 交互学习
 learning:
-  category: 社交卡片
+  category: 卡片、悬浮预览与人物展示
   classification:
     type: 组件
     purpose:

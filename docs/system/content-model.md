@@ -15,7 +15,7 @@ code-sources:
     'scripts/validate-content.ts',
     'scripts/migrate-content.ts',
   ]
-code-revision: '59964ae81b35a963f0175a29f1b9a4b3a6c1280477bb40bc0646d9175fc0fcb9'
+code-revision: '4f650791cf2af60df82e9e744cba4dbcb86d1dd4f241227cdd3c961c5a36f349'
 ---
 
 # 数据和内容结构
@@ -77,11 +77,12 @@ Great UI学习页沿用work.json加每语言一份Markdown，ID为great-ui-<slug
 
 | 位置                   | 内容与校验                                                                                                                                                                                                                                                      |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| work.json的learning    | slug、collectionId、english、revision、implementation、previewSource、media、capability                                                                                                                                                                         |
+| work.json的learning    | slug、collectionId、sequence、english、revision、implementation、previewSource、media、capability                                                                                                                                                               |
+| sequence               | 可选正整数，同一collectionId内不得重复；学习列表按sequence排序，缺省使用work.order；不改变普通目录及合集封面顺序                                                                                                                                                |
 | 固定来源               | revision是40位提交摘要；implementation和previewSource分别为components/ui与components/site/previews中的TSX路径                                                                                                                                                   |
 | media                  | video或image二选一，加必填poster；仅/great-ui/media下的MP4、PNG、JPG、WebP或AVIF，校验文件存在、非空、符号链接边界；高清视频最大2MiB，图片最大200KiB；mobile/card可选，含video/poster/width/height/duration，card最大150KiB且≤12秒，高清≤60秒；尺寸为1–3840整数 |
 | capability             | family、roles、provides、requires、resources、adaptations、reducedMotion、decorativeTransition，供组合规则判定                                                                                                                                                  |
-| 语言文件头learning     | category、classification、placementHint、changesHint、preserve、checks、goals、adjustments、glossary                                                                                                                                                            |
+| 语言文件头learning     | category为教学分类，与previewText.eyebrow同步；另有classification、placementHint、changesHint、preserve、checks、goals、adjustments、glossary；上游原始分类独立保留                                                                                             |
 | goals                  | 非空列表，每项id、title、action、judge，ID不得重复；三个面板与任务引用同一组目标                                                                                                                                                                                |
 | adjustments / glossary | 三列调整表；术语以局部ID映射term（共享词条ID）、context、parameter、judgment；不接受本地重复definition                                                                                                                                                          |
 | 正文                   | 按顺序保留拆解设计、改造设计、串联设计三个二级标题；第一节保留适合用在哪里、什么时候不用、试一次，就会更懂三级标题                                                                                                                                              |

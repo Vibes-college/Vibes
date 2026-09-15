@@ -51,7 +51,7 @@ Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物
 
 中英文路由、原文先发布、译文复核状态和全文搜索均已实现；英文内容量取决于实际发布文件，不代表全部译文完成。当前数量以`npm run content:validate`输出为准，不在多篇文档手抄同一组易过期数字。几千条内容与日更是规模目标，文章可通过GitHub PR贡献，维护者审阅合并后发布；[内容贡献流程](system/content-contributions.md)说明独立检查与预览。
 
-Explore中的[Great UI交互学习](features/great-ui-learning.md)以一个合集连接48件独立详情，可看本站录屏、改造目标和任务，并体验三条组合。说明以Markdown维护，通用解释引用[共享术语库](../src/content/glossary/README.md)；站内页面与辅助本地工作台读取同一来源。
+Explore中的[网页动效与交互学习](features/great-ui-learning.md)以一个合集连接48件独立详情，可看本站录屏、改造目标和任务，并体验三条组合。说明以Markdown维护，通用解释引用[共享术语库](../src/content/glossary/README.md)；站内页面与辅助本地工作台读取同一来源。
 
 ## 从内容到页面的链路
 

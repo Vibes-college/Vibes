@@ -5,11 +5,11 @@ title: 笔记本里的对话演示
 summary: 用笔记本外壳和左右分栏呈现一段预设对话，帮助访客想象桌面产品的使用场景。
 description: 用笔记本外壳和左右分栏呈现一段预设对话，帮助访客想象桌面产品的使用场景。
 previewText:
-  eyebrow: 视觉交互
+  eyebrow: 卡片、悬浮预览与人物展示
   display: Macbook Mockup
   note: Great UI · 交互学习
 learning:
-  category: 视觉交互
+  category: 卡片、悬浮预览与人物展示
   classification:
     type: 组件
     purpose:

@@ -5,11 +5,11 @@ title: 滑出唱片的专辑卡
 summary: 鼠标经过专辑封面时，唱片向右滑出并旋转，封面轻微倾斜，把平面图片变成可感知的物件。
 description: 鼠标经过专辑封面时，唱片向右滑出并旋转，封面轻微倾斜，把平面图片变成可感知的物件。
 previewText:
-  eyebrow: 布局与卡片
+  eyebrow: 卡片、悬浮预览与人物展示
   display: Vinyl Album Card
   note: Great UI · 交互学习
 learning:
-  category: 布局与卡片
+  category: 卡片、悬浮预览与人物展示
   classification:
     type: 组件
     purpose:

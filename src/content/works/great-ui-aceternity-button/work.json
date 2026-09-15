@@ -65,6 +65,7 @@
       "adaptations": ["修复href与disabled语义、焦点和type，适配现有路由并绑定真实执行状态。"],
       "reducedMotion": "adaptation",
       "decorativeTransition": false
-    }
+    },
+    "sequence": 18
   }
 }

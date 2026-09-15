@@ -5,11 +5,11 @@ title: Facebook 人物资料卡
 summary: 悬停Facebook链接时展开封面、头像和简介，让外部个人链接更容易辨认。
 description: 悬停Facebook链接时展开封面、头像和简介，让外部个人链接更容易辨认。
 previewText:
-  eyebrow: 社交卡片
+  eyebrow: 卡片、悬浮预览与人物展示
   display: Facebook Card
   note: Great UI · 交互学习
 learning:
-  category: 社交卡片
+  category: 卡片、悬浮预览与人物展示
   classification:
     type: 组件
     purpose:

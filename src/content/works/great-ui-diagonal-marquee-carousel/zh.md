@@ -5,11 +5,11 @@ title: 斜向循环图片墙
 summary: 多排图片沿斜向持续流动，相邻排可以反向，让静态封面形成有层次的背景。
 description: 多排图片沿斜向持续流动，相邻排可以反向，让静态封面形成有层次的背景。
 previewText:
-  eyebrow: 布局与卡片
+  eyebrow: 图片、画廊与循环展示
   display: Diagonal Marquee Carousel
   note: Great UI · 交互学习
 learning:
-  category: 布局与卡片
+  category: 图片、画廊与循环展示
   classification:
     type: 组件
     purpose:

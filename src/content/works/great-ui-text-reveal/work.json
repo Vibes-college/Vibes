@@ -65,6 +65,7 @@
       "adaptations": ["按实际语言分字词，重要正文保持可读；需要启停时添加适配。"],
       "reducedMotion": "adaptation",
       "decorativeTransition": false
-    }
+    },
+    "sequence": 6
   }
 }

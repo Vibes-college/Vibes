@@ -5,11 +5,11 @@ title: 路径描画标志
 summary: 让标志的线条依次出现，再逐渐填色，把静态图形变成一段可读的形成过程。
 description: 让标志的线条依次出现，再逐渐填色，把静态图形变成一段可读的形成过程。
 previewText:
-  eyebrow: 视觉交互
+  eyebrow: 文字、图形与内容动效
   display: Animated Path
   note: Great UI · 交互学习
 learning:
-  category: 视觉交互
+  category: 文字、图形与内容动效
   classification:
     type: 组件
     purpose:

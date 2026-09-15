@@ -5,11 +5,11 @@ title: 字符轨迹等待动画
 summary: 一块色条在等宽字符间来回移动，尾部留下逐渐变淡的字符，营造终端风格的等待感。
 description: 一块色条在等宽字符间来回移动，尾部留下逐渐变淡的字符，营造终端风格的等待感。
 previewText:
-  eyebrow: 视觉交互
+  eyebrow: 加载、进度与状态反馈
   display: Terminal Loader
   note: Great UI · 交互学习
 learning:
-  category: 视觉交互
+  category: 加载、进度与状态反馈
   classification:
     type: 组件
     purpose:

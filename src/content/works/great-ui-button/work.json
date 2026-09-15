@@ -65,6 +65,7 @@
       "adaptations": ["绑定实际动作、加载结束与失败结果；明确按钮type与可读名称。"],
       "reducedMotion": "adaptation",
       "decorativeTransition": false
-    }
+    },
+    "sequence": 1
   }
 }

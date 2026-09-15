@@ -5,11 +5,11 @@ title: 展开设置的浮动工具条
 summary: 一排分类按钮按需向上展开设置，切换分类时容器跟随内容变化，让常用配置集中在手边。
 description: 一排分类按钮按需向上展开设置，切换分类时容器跟随内容变化，让常用配置集中在手边。
 previewText:
-  eyebrow: 视觉交互
+  eyebrow: 菜单、导航与定位
   display: Floating Dock Menu
   note: Great UI · 交互学习
 learning:
-  category: 视觉交互
+  category: 菜单、导航与定位
   classification:
     type: 组件
     purpose:

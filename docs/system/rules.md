@@ -23,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '6973b19ea2b3e51b8d824223d89048730acc811e77b1aad1916877e661eedc81'
+code-revision: '346af8bedcac22ddaf13f6006d27e55755fc99772bb9487e1ecb939a8193d9a5'
 ---
 
 # 常量、规则表与正则
@@ -157,4 +157,4 @@ MDX格式整篇关闭左右拖动及长按拖动换篇，作品概览页顶部�
 
 内容发布范围新增content：正文与受限MDX通过AST分类后执行内容构建、预算和页面冒烟；新增执行逻辑回退full。Paseo静态缓存及凭据隔离规则集中于[内容贡献](content-contributions.md)，不免除生产SHA与资源门槛。
 
-Great UI学习条目以work.json的learning选择专用模板，正文仍是Markdown；只在普通目录列合集，子项保留搜索和独立网址。学习模板使用共享React并局限样式作用域，不安装普通文章的整屏手势；三节正文与结构字段校验见[内容结构](content-model.md#交互学习材料)。媒体均为/great-ui/media下的本站文件，单高清2MiB、单图200KiB、单封面短片150KiB、封面短片合计4MiB、整个集合48MiB；合集只加载当前轻量短片，详情按800px断点选择一份高清素材。正式站脚本预算保持原上限，学习页按交互页计入完整额外模块预算。
+《Vibe Coding 网页动效与交互》的案例以work.json的learning选择专用模板，正文仍是Markdown；只在普通目录列合集，子项保留搜索和原有独立网址。教学分类与上游来源分类分开，学习列表按可选learning.sequence（合集内唯一正整数）排序，缺省使用work.order；不改变Explore及合集封面顺序。首次全部分类顺序浏览，沿用有效的已保存随机偏好。学习模板使用共享React并局限样式作用域，不安装普通文章的整屏手势；三节正文与结构字段校验见[内容结构](content-model.md#交互学习材料)。媒体均为/great-ui/media下的本站文件，单高清2MiB、单图200KiB、单封面短片150KiB、封面短片合计4MiB、整个集合48MiB；合集只加载当前轻量短片，详情按800px断点选择一份高清素材。正式站脚本预算保持原上限，学习页按交互页计入完整额外模块预算。

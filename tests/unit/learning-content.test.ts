@@ -8,6 +8,7 @@ import { publishedWorks, browsePages } from '../../src/lib/content/views.ts';
 import { learningEntry } from '../../src/features/great-ui/markdown-content.ts';
 import { createTask, taskText } from '../../src/features/great-ui/task.mjs';
 import { compileProse } from '../../src/features/great-ui/compile-prose.ts';
+import { learningMaterials } from '../../src/features/great-ui/site-content.ts';
 
 const catalog = readCatalog();
 const original = catalog.works.find((work) => work.meta.id === 'great-ui-accordion')!;
@@ -15,7 +16,7 @@ const original = catalog.works.find((work) => work.meta.id === 'great-ui-accordi
 test('one Markdown edit changes visible explanation and both task formats', () => {
   const work = structuredClone(original);
   const version = work.versions.zh!;
-  const sentence = '问题标题始终可见，点击后才显示答案。';
+  const sentence = parseLearningBody(version.body, version.file).sections[0].text;
   version.body = version.body.replace(sentence, '先阅读问题，按需打开完整答案。');
   version.data.learning!.goals[0].action = '先验证关键答案支持键盘展开，再加入动效。';
   const entry = learningEntry(work, 'zh', 'https://vibes.college');
@@ -28,6 +29,39 @@ test('one Markdown edit changes visible explanation and both task formats', () =
   assert.equal(task.media.localPath, null);
   assert.doesNotMatch(text, /本机素材：|localhost|127\.0\.0\.1|\/Users\//);
   assert.notEqual(sourceRevision(work), sourceRevision(original));
+});
+
+test('learning order follows the introductory route without changing Explore order or its cover', () => {
+  const before = structuredClone(catalog);
+  const cover = publishedWorks(catalog, 'zh').find((work) => work.slug === 'great-ui-learning')!
+    .mediaCard?.collection?.items[0].id;
+  assert.ok(cover);
+  const { index } = learningMaterials(catalog);
+  assert.deepEqual(
+    index.slice(0, 8).map((entry) => entry.slug),
+    [
+      'button',
+      'card',
+      'accordion',
+      'floating-menu',
+      'deployment-checklist',
+      'text-reveal',
+      'staggered-page-transition',
+      'circular-theme-provider',
+    ],
+  );
+  assert.equal(index.length, 48);
+  assert.equal(new Set(index.map((entry) => entry.category)).size, 10);
+  assert.deepEqual(catalog, before);
+  assert.equal(
+    publishedWorks(catalog, 'zh').find((work) => work.slug === 'great-ui-learning')!.mediaCard
+      ?.collection?.items[0].id,
+    cover,
+  );
+  const duplicate = structuredClone(catalog);
+  const members = duplicate.works.filter((work) => work.meta.learning);
+  members[1].meta.learning!.sequence = members[0].meta.learning!.sequence;
+  assert.throws(() => validateCatalog(duplicate), /duplicate learning sequence/);
 });
 
 test('broken Markdown structure and missing or duplicate structured goals are rejected', () => {

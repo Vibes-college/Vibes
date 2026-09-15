@@ -35,10 +35,25 @@ function random(seed: number) {
   };
 }
 
-test('default random rounds cover all 48 works once and prefer another available category', () => {
+test('first-time browsing follows the learning order and ends without wrapping', () => {
+  let state = createBrowse(index, index[0].id);
+  assert.equal(state.shuffle, false);
+  for (const entry of index.slice(1)) {
+    assert.equal(nextBrowseId(state, index), entry.id);
+    state = moveBrowse(state, index, 1);
+  }
+  assert.equal(nextBrowseId(state, index), undefined);
+  assert.deepEqual(
+    state.trail,
+    index.map((entry) => entry.id),
+  );
+  assert.equal(currentBrowseId(restartBrowse(state, index)), index[0].id);
+});
+
+test('selected random rounds cover all 48 works once and prefer another available category', () => {
   const before = structuredClone(index);
   for (let seed = 1; seed <= 30; seed++) {
-    let state = createBrowse(index, index[seed].id, undefined, random(seed));
+    let state = createBrowse(index, index[seed].id, { scope: 'all', shuffle: true }, random(seed));
     assert.equal(state.scope, 'all');
     assert.equal(state.shuffle, true);
     const viewed = new Set([currentBrowseId(state)]);
@@ -121,7 +136,7 @@ test('one-work scopes terminate safely and sequential restart uses catalog order
 });
 
 test('restoration rejects corrupt or stale catalog state without trusting stored IDs', () => {
-  const state = createBrowse(entries, 'a1', undefined, random(1));
+  const state = createBrowse(entries, 'a1', { scope: 'all', shuffle: true }, random(1));
   const mutations: Partial<BrowseState>[] = [
     { scope: 'deleted' },
     { cursor: -1 },
@@ -190,9 +205,15 @@ test('preferences survive a new session; invalid or inaccessible storage has saf
   assert.equal(readBrowse(entries, 'a2', nextVisit).scope, 'A');
   assert.equal(readBrowse(entries, 'a2', nextVisit).shuffle, false);
   assert.equal(readBrowse(entries, 'b1', nextVisit).scope, 'all');
+  nextVisit.local.setItem(
+    browsePreferencesKey,
+    JSON.stringify({ scope: 'old-category', shuffle: true }),
+  );
+  assert.equal(readBrowse(entries, 'a1', nextVisit).shuffle, true);
+  assert.equal(readBrowse(entries, 'a1', nextVisit).scope, 'all');
   nextVisit.local.setItem(browsePreferencesKey, '{broken');
   nextVisit.session.setItem(browseSessionKey, 'null');
-  assert.equal(readBrowse(entries, 'a1', nextVisit).shuffle, true);
+  assert.equal(readBrowse(entries, 'a1', nextVisit).shuffle, false);
   const blocked = {
     getItem() {
       throw new Error('storage denied');
@@ -208,6 +229,6 @@ test('preferences survive a new session; invalid or inaccessible storage has saf
   };
   const state = readBrowse(entries, 'a1', restricted, random(1));
   assert.equal(state.scope, 'all');
-  assert.equal(state.shuffle, true);
+  assert.equal(state.shuffle, false);
   assert.doesNotThrow(() => saveBrowse(state, restricted));
 });

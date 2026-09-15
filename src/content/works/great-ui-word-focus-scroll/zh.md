@@ -5,11 +5,11 @@ title: 词语逐个聚焦
 summary: 词语随滚动从较小、模糊和透明变为正常大小，用连续的聚焦过程强调阅读顺序。
 description: 词语随滚动从较小、模糊和透明变为正常大小，用连续的聚焦过程强调阅读顺序。
 previewText:
-  eyebrow: 文字效果
+  eyebrow: 滚动与连续叙事
   display: Word Focus Scroll
   note: Great UI · 交互学习
 learning:
-  category: 文字效果
+  category: 滚动与连续叙事
   classification:
     type: 组件
     purpose:

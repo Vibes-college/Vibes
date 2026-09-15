@@ -65,6 +65,7 @@
       "adaptations": ["补齐展开状态与语义；需要比较答案时改为多项状态。"],
       "reducedMotion": "adaptation",
       "decorativeTransition": false
-    }
+    },
+    "sequence": 3
   }
 }

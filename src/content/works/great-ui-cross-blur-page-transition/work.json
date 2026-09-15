@@ -75,6 +75,7 @@
       ],
       "reducedMotion": "adaptation",
       "decorativeTransition": true
-    }
+    },
+    "sequence": 32
   }
 }

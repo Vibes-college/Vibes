@@ -21,6 +21,7 @@ export const learningMetadataSchema = z
   .object({
     slug,
     collectionId: slug,
+    sequence: z.number().int().positive().optional(),
     english: text,
     revision: z.string().regex(/^[a-f0-9]{40}$/),
     implementation: sourcePath,

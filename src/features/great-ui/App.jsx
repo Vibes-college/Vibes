@@ -6,7 +6,7 @@ const readLocation = () => {
   const params = new URLSearchParams(location.search);
   const kind = params.get('journey');
   return {
-    slug: params.get('case') || 'staggered-page-transition',
+    slug: params.get('case') || 'button',
     journey: ['portfolio', 'product', 'tool'].includes(kind) ? kind : null,
   };
 };
@@ -59,7 +59,7 @@ export function App() {
   }, [route, catalog, retry]);
   useEffect(() => {
     document.title =
-      (route.journey ? '组合体验' : entry?.title || '作品学习') + ' · Great UI 工作台 — VIBES';
+      (route.journey ? '组合体验' : entry?.title || '作品学习') + ' · 网页动效与交互 — VIBES';
   }, [entry, route.journey]);
   useEffect(() => {
     const url = new URL(location.href);
@@ -99,9 +99,7 @@ export function App() {
         <div className="load-state" role="alert">
           <p>{error}</p>
           <button onClick={() => setRetry((value) => value + 1)}>重新加载</button>
-          <button onClick={() => navigate({ slug: 'staggered-page-transition' })}>
-            回到首个作品
-          </button>
+          <button onClick={() => navigate({ slug: 'button' })}>回到首个作品</button>
         </div>
       ) : !entry ? (
         <p role="status">正在加载作品材料…</p>

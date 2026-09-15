@@ -78,6 +78,7 @@
       "adaptations": ["与现有主题状态和根视图调度整合；后续步骤等待真正的结束信号。"],
       "reducedMotion": "native",
       "decorativeTransition": false
-    }
+    },
+    "sequence": 34
   }
 }

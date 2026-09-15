@@ -133,6 +133,6 @@ Great UI学习页的GitHub编辑链接和完整词条链接读取VIBES_CONTENT_E
 
 合集封面选择另存sessionStorage的`vibes:collection:<语言>:<合集ID>`，值仅为当前作品ID；关闭标签页后结束。读取时只接受当前已发布成员，存储不可用时在本次页面维持切换。它与学习页的浏览轮次、范围和草稿互不影响。
 
-作品页的范围和随机开关保存在localStorage的`vibes:great-ui:browse-preferences:v1`，用于同源下次访问；同一标签页的轮次、已看作品及前后记录保存在sessionStorage的`vibes:great-ui:browse-session:v1`。每个页面的history.state另存`vibesGreatUiBrowse`快照，浏览器返回优先恢复对应页，写入时保留Astro的字段。记录只含作品ID、分类与模式，不包含改造草稿或账号数据，不提交服务器。
+作品页首次默认为全部分类和顺序浏览，有效的既存随机选择继续保留，已失效分类回退全部分类。范围和随机开关保存在localStorage的`vibes:great-ui:browse-preferences:v1`，用于同源下次访问；同一标签页的轮次、已看作品及前后记录保存在sessionStorage的`vibes:great-ui:browse-session:v1`。每个页面的history.state另存`vibesGreatUiBrowse`快照，浏览器返回优先恢复对应页，写入时保留Astro的字段。记录只含作品ID、分类与模式，不包含改造草稿或账号数据，不提交服务器。
 
 导航前先暂存目标会话，成功进入目标页后保存其快照；导航失败恢复原记录。读取时校验版本、作品范围、唯一性和索引，随机目录增删导致旧轮次不完整时重新开始；范围外直达回到全部分类。历史最多保留最近1,000次操作；存储被禁用或写满时以内存维持当前访问，无法保证关闭后或刷新继续保留。清除这两个存储键及当前history快照会恢复首次默认。源码为browse-storage.ts、useCaseBrowser.jsx，纯规则在browsing.ts；用户操作见[选择浏览范围与顺序](../features/great-ui-learning.md#选择浏览范围与顺序)。

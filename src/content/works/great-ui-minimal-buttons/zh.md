@@ -5,11 +5,11 @@ title: 轻量立体按钮
 summary: 用细边框和内阴影形成轻微厚度，五种视觉层级共用同一组尺寸。
 description: 用细边框和内阴影形成轻微厚度，五种视觉层级共用同一组尺寸。
 previewText:
-  eyebrow: 按钮
+  eyebrow: 按钮、链接与选择输入
   display: Minimal Buttons
   note: Great UI · 交互学习
 learning:
-  category: 按钮
+  category: 按钮、链接与选择输入
   classification:
     type: 组件
     purpose:

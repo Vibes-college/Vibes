@@ -20,9 +20,13 @@ export function learningMaterials(
   locale: Locale = 'zh',
   origin?: string,
 ) {
-  const works = catalog.works.filter(
-    (item) => item.meta.learning && item.versions[locale]?.data.status === 'published',
-  );
+  const works = catalog.works
+    .filter((item) => item.meta.learning && item.versions[locale]?.data.status === 'published')
+    // Learning order is independent from Explore order and the collection's cover.
+    .sort(
+      (a, b) =>
+        (a.meta.learning!.sequence ?? a.meta.order) - (b.meta.learning!.sequence ?? b.meta.order),
+    );
   const entries: LearningMaterial[] = connectWorks(
     works.map((item) => learningEntry(item, locale, origin)),
     (entry: ReturnType<typeof learningEntry>) =>

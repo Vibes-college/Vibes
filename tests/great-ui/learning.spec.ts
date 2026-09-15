@@ -61,7 +61,7 @@ test('script-disabled and failed startup retain explanation and an original sour
   const page = await context.newPage();
   await page.goto('http://127.0.0.1:4336/');
   await expect(
-    page.getByText('Great UI 学习工作台正在加载，浏览与生成任务需要 JavaScript。'),
+    page.getByText('网页动效与交互正在加载，浏览与生成任务需要 JavaScript。'),
   ).toBeVisible();
   await expect(page.getByRole('link', { name: '查看 Great UI 原作' })).toHaveAttribute(
     'href',
@@ -72,7 +72,7 @@ test('script-disabled and failed startup retain explanation and an original sour
   await enabledPage.goto('/');
   await expect(enabledPage.getByRole('link', { name: '查看 Great UI 原作' })).toBeVisible();
   await expect(
-    enabledPage.getByText('Great UI 学习工作台正在加载，浏览与生成任务需要 JavaScript。'),
+    enabledPage.getByText('网页动效与交互正在加载，浏览与生成任务需要 JavaScript。'),
   ).toBeVisible();
 });
 
@@ -179,11 +179,10 @@ test('bad details are retryable, and leaving a delayed response cannot replace t
   const gate = new Promise<void>((resolve) => {
     release = resolve;
   });
-  await page.route('**/content/github-card.json', async (route) => {
+  await page.route('**/content/card.json', async (route) => {
     await gate;
     await route.continue().catch(() => {});
   });
-  await page.getByRole('button', { name: '切换为顺序浏览', exact: true }).click();
   await expect(page.getByRole('button', { name: '切换为随机浏览', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '下一个作品' }).click();
   await expect(page.getByText('正在加载作品材料…')).toBeVisible();

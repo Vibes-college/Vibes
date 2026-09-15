@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import {
   browseMembers,
+  defaultBrowsePreferences,
   moveBrowse,
   nextBrowseId,
   restartBrowse,
@@ -26,7 +27,7 @@ export function CaseNavigation({ entries, current, onSelect }) {
   const [limit, setLimit] = useState(60);
   const { state, busy, error, apply } = useCaseBrowser(entries, current, onSelect);
   const scope = state?.scope || 'all';
-  const shuffle = state?.shuffle ?? true;
+  const shuffle = state?.shuffle ?? defaultBrowsePreferences.shuffle;
   const members = browseMembers(entries, scope);
   const scopeLabel = scope === 'all' ? '全部分类' : scope;
   const categories = [...new Set(entries.map((item) => item.category))];

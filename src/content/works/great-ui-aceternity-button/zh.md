@@ -5,11 +5,11 @@ title: 带内发光的按钮
 summary: 用渐变、内阴影和环线形成较明显的按钮层次，按下时轻微缩小。
 description: 用渐变、内阴影和环线形成较明显的按钮层次，按下时轻微缩小。
 previewText:
-  eyebrow: 按钮
+  eyebrow: 按钮、链接与选择输入
   display: Aceternity Button
   note: Great UI · 交互学习
 learning:
-  category: 按钮
+  category: 按钮、链接与选择输入
   classification:
     type: 组件
     purpose:

@@ -5,11 +5,11 @@ title: 黏连展开的圆形菜单
 summary: 点击中心按钮，几个图标向四周散开；圆之间的黏连效果让展开过程显得连续。
 description: 点击中心按钮，几个图标向四周散开；圆之间的黏连效果让展开过程显得连续。
 previewText:
-  eyebrow: 视觉交互
+  eyebrow: 菜单、导航与定位
   display: Radial Gooey Menu
   note: Great UI · 交互学习
 learning:
-  category: 视觉交互
+  category: 菜单、导航与定位
   classification:
     type: 组件
     purpose:
