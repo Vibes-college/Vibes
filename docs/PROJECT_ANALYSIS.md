@@ -15,7 +15,7 @@ code-sources:
     'scripts/build.ts',
     'src/features/paseo-webui/host.ts',
   ]
-code-revision: '9da563cc63195abd1f03ca19bdbc6bb11860628f2ab2f6e9fbf20b652df285a5'
+code-revision: '09de70777f7297976c5eed791b8040d5762ffc9533233a6d5b06f0519b87fc28'
 ---
 
 # VIBES项目总览

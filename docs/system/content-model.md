@@ -15,7 +15,7 @@ code-sources:
     'scripts/validate-content.ts',
     'scripts/migrate-content.ts',
   ]
-code-revision: '62cc5b8949a34665443e87974e3b3132fe0011ae9a044828dcfe20b50518a902'
+code-revision: '59964ae81b35a963f0175a29f1b9a4b3a6c1280477bb40bc0646d9175fc0fcb9'
 ---
 
 # 数据和内容结构

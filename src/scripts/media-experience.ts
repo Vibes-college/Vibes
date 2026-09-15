@@ -100,7 +100,7 @@ export function installExperiences(pageSignal: AbortSignal) {
               signal: active.signal,
             })
               .then(async (response) => {
-                const html = new TextDecoder().decode(await readLimited(response, 65536));
+                const html = await (await readLimited(response, 65536)).text();
                 if (!ready()) return;
                 // Production bundles exact-hash inline assets for the inherited CSP.
                 // Astro dev still serves the original template and external assets.

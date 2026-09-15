@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Play, Pause, Maximize2, Minimize2, ArrowUpRight, Plus, Minus } from 'lucide-react';
 import { useRecordingView } from './useRecordingView';
+import { recordingSeek } from './recording-seek';
 export function Recording({ entry }) {
   const [imageFailed, setImageFailed] = useState(false);
   const image = useRef(null);
@@ -38,6 +39,7 @@ function RecordedPlayer({ entry }) {
   const manuallyPaused = useRef(false);
   const manuallyPlaying = useRef(false);
   const inView = useRef(false);
+  const seeker = useRef(null);
   const stage = useRef(null);
   const media = entry.recordingMedia;
   const { large, setLarge, view, changeZoom, reset, stageEvents } = useRecordingView(
@@ -56,6 +58,13 @@ function RecordedPlayer({ entry }) {
   };
   useEffect(() => {
     const video = ref.current;
+    // Effect replay can reuse the element cleared by the previous lifetime.
+    if (video.getAttribute('src') === '') {
+      video.removeAttribute('src');
+      video.load();
+      setFailed(false);
+      setLoaded(false);
+    }
     // SSR can finish loading media before React attaches its event handlers.
     if (video.readyState >= 1) setDuration(video.duration);
     if (video.readyState >= 2) setLoaded(true);
@@ -63,22 +72,16 @@ function RecordedPlayer({ entry }) {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const narrow = matchMedia('(max-width: 800px)');
     const connection = navigator.connection;
-    let restore;
     const changeSource = () => {
       if (!media?.mobile) return;
       const wasPlaying = !video.paused;
-      const fraction = Number.isFinite(video.duration) ? video.currentTime / video.duration : 0;
+      const fraction = seeker.current.fraction;
       video.pause();
       setPlaying(false);
       setLoaded(false);
       setFailed(false);
       reset();
-      if (restore) video.removeEventListener('loadedmetadata', restore);
-      restore = () => {
-        video.currentTime = Math.min(video.duration, fraction * video.duration);
-        if (wasPlaying) sync();
-      };
-      video.addEventListener('loadedmetadata', restore, { once: true });
+      seeker.current.reset(fraction);
       // Reevaluate <source media> on rotation; only the selected rendition is requested.
       video.load();
       if (wasPlaying) sync();
@@ -93,6 +96,13 @@ function RecordedPlayer({ entry }) {
         video.pause();
       else play();
     };
+    seeker.current = recordingSeek(video, sync, () => {
+      manuallyPaused.current = true;
+      manuallyPlaying.current = false;
+      setFailed(true);
+      setPlaying(false);
+      video.pause();
+    });
     const observer = new IntersectionObserver(([item]) => {
       inView.current = item.isIntersecting;
       sync();
@@ -110,7 +120,7 @@ function RecordedPlayer({ entry }) {
       reduced.removeEventListener('change', sync);
       narrow.removeEventListener('change', changeSource);
       connection?.removeEventListener('change', sync);
-      if (restore) video.removeEventListener('loadedmetadata', restore);
+      seeker.current.dispose();
     };
   }, []);
   return (
@@ -166,7 +176,13 @@ function RecordedPlayer({ entry }) {
           aria-label={entry.title + '原作录屏'}
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
-          onTimeUpdate={() => setTime(ref.current.currentTime)}
+          onTimeUpdate={() => {
+            if (manuallyPaused.current) ref.current.pause();
+            if (!seeker.current?.pending) setTime(ref.current.currentTime);
+          }}
+          onSeeked={() => {
+            if (manuallyPaused.current) ref.current.pause();
+          }}
           onLoadedMetadata={() => setDuration(ref.current.duration)}
           onLoadedData={() => setLoaded(true)}
           onError={(event) => {
@@ -230,7 +246,7 @@ function RecordedPlayer({ entry }) {
             manuallyPlaying.current = false;
             ref.current.pause();
             const next = Number(event.target.value);
-            ref.current.currentTime = next;
+            seeker.current.seek(next / duration);
             setTime(next);
           }}
         />

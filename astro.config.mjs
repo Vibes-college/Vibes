@@ -63,6 +63,13 @@ export default defineConfig({
                   codeSplitting: {
                     groups: [
                       {
+                        // Small shared media helpers compress together; their callers
+                        // remain lazy, so ordinary page startup does not load this group.
+                        name: 'media-shared',
+                        includeDependenciesRecursively: false,
+                        test: /\/src\/(?:config\/media|lib\/media\/read)\.ts$/,
+                      },
+                      {
                         name: 'site-boot',
                         includeDependenciesRecursively: false,
                         test: /(?:\/src\/scripts\/(?:reading-prefetch|media-boot|paseo-boot|page-lifecycle)\.ts$|\/src\/lib\/(?:escape|i18n\/routes)\.ts$|\/node_modules\/astro\/(?:dist\/(?:transitions\/|prefetch\/|virtual-modules\/(?:transitions|prefetch))|components\/ClientRouter\.astro)|vite\/preload-helper)/,

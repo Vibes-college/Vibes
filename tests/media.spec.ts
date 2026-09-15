@@ -510,10 +510,17 @@ test('registered game and real dataset only start on demand and exit cleans up',
   // Keep opaque srcdoc independent of browser-specific subresource permissions.
   await expect(game.locator('script[src], link[rel="stylesheet"]')).toHaveCount(0);
   expect(requested.some((url) => /\/media\/2048\/game\.(js|css)$/.test(url))).toBe(false);
+  const total = () =>
+    game
+      .locator('.tile-inner')
+      .evaluateAll((tiles) => tiles.reduce((sum, tile) => sum + Number(tile.textContent), 0));
+  const initial = await total();
   await game.locator('.game-container').click();
-  await page.keyboard.press('ArrowLeft');
-  await page.keyboard.press('ArrowUp');
-  await expect.poll(() => game.locator('.tile').count()).toBeGreaterThan(2);
+  // A merge can keep the tile count at two. Four directions guarantee a legal
+  // move from any initial board; a spawned tile increases the total value.
+  for (const key of ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'])
+    await page.keyboard.press(key);
+  await expect.poll(total).toBeGreaterThan(initial);
   await page.locator('[data-media-exit]').click();
   await expect(page.locator('iframe')).toHaveCount(0);
   await page.locator('[data-media-launch]').click();

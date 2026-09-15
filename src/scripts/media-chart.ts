@@ -13,9 +13,9 @@ export async function mountChart(
 ) {
   if (!isMediaDatasetUrl(item.dataset)) throw new Error('Invalid dataset source');
   const response = await fetch(item.dataset, { signal });
-  const all = await readLimited(response, mediaLimits.dataBytes);
+  const blob = await readLimited(response, mediaLimits.dataBytes);
   const rows = parseChartData(
-    new TextDecoder().decode(all),
+    await blob.text(),
     item.columns.map((column) => column.key),
   );
   if (signal.aborted) return;

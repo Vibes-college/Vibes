@@ -29,7 +29,7 @@ code-sources:
     'src/features/great-ui/useCaseBrowser.jsx',
     'src/scripts/media-collection.ts',
   ]
-code-revision: '445b7bd674d08527df4e771b32e9c89f7dd18c3b2d5e8c456e906af044179d66'
+code-revision: 'a328695a760c8bc8afd72d67a3fa6c1197679c4cde6c54dec09acd286dc0a68d'
 ---
 
 # 配置和环境变量
@@ -116,6 +116,8 @@ Astro在公共布局启用ClientRouter，`prefetchAll:false`关闭全站自动�
 ## 作品媒体
 
 媒体和平台登记见src/config/media.ts及[媒体规则](rules.md#媒体加载与体积)。浏览器只在点击后创建YouTube、Spotify、B站或已核对原站的iframe；媒体下载、账号和地区限制由平台决定，无平台API密钥。音视频文件只从同源或指定来源加载，图表数据经有界GET读取；完整来源不提前挂到元素。2048仅在点击后读取本站MIT源码模板，以不允许同源访问的sandbox运行。构建时scripts/sandbox-game.ts将固定游戏的CSS/JS内嵌到64KiB以内的game-bundled.txt，保留旧game.txt，脚本按精确SHA256加入所有页面共用的CSP；沙盒不再发起样式或脚本子请求，避免部分浏览器网络环境阻止不透明来源的资源访问。开发服务器仍读取原始素材。游戏脚本继续计入媒体预算一次，不访问父页面DOM或持久存储；仅向父页面报告初始化，父页面核对消息确实来自当前沙盒。5秒没有初始化信号会停止并提供完整刷新入口，恢复旧页面继承CSP不含新摘要的情况。
+
+astro.config.mjs将媒体登记与有界读取两个小工具合入同一共享资源，按调用处延迟加载；不把播放器或图表加入普通页面启动脚本。src/lib/media/read.ts按实际响应流累计字节，错误状态、超限响应头或流式超限均取消读取；结果直接作为Blob供视频使用或解码为文字，避免重复拼接副本。
 
 ESLint仅对public/media/2048/game.js这一份带MIT署名的上游压缩分发文件豁免本项目风格规则；自有媒体代码仍完整检查，原始来源版本见同目录SOURCE.txt，实际游戏操作与总脚本预算仍有测试。
 

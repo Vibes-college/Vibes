@@ -2,6 +2,7 @@ import { test, expect } from './browser-test.ts';
 import { readCatalog } from '../src/lib/content/catalog.ts';
 import { browsePages } from '../src/lib/content/views.ts';
 import { learningMaterials } from '../src/features/great-ui/site-content.ts';
+import { readFile } from 'node:fs/promises';
 
 const parent = '/zh/works/great-ui-learning/';
 const feed = browsePages(readCatalog(), 'zh').find(
@@ -207,14 +208,17 @@ for (const preference of ['reduce', 'saveData'] as const)
     await expect
       .poll(() =>
         video.evaluate(
-          (node: HTMLVideoElement) =>
+          (node: HTMLVideoElement, expected) =>
             node.readyState >= 2 &&
             !node.paused &&
             node.currentTime > 0.2 &&
-            new URL(node.currentSrc).pathname,
+            node.videoWidth === expected.width &&
+            node.videoHeight === expected.height,
+          rendition,
         ),
       )
-      .toBe(rendition.video);
+      .toBe(true);
+    expect(requests.some((url) => mediaPath(url) === rendition.video)).toBe(true);
     await page.getByRole('button', { name: '暂停录屏', exact: true }).click();
     const fraction = await video.evaluate(
       (node: HTMLVideoElement) => node.currentTime / node.duration,
@@ -343,3 +347,158 @@ for (const paused of [false, true])
       release();
     }
   });
+
+for (const scenario of ['latest seek', 'rotation', 'oversize'] as const)
+  test(`a server without byte ranges handles ${scenario} and releases its seek copy`, async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(browserName !== 'chromium', 'Chromium exposes the no-range native seek failure.');
+    await page.addInitScript(() => {
+      const state = { created: [] as string[], revoked: [] as string[] };
+      Object.assign(window, { recordingCopies: state });
+      const create = URL.createObjectURL.bind(URL);
+      const revoke = URL.revokeObjectURL.bind(URL);
+      URL.createObjectURL = (value) => {
+        const url = create(value);
+        state.created.push(url);
+        return url;
+      };
+      URL.revokeObjectURL = (url) => {
+        state.revoked.push(url);
+        revoke(url);
+      };
+    });
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const fetched: string[] = [];
+    await page.route('**/great-ui/media/*.mp4', async (route) => {
+      const path = mediaPath(route.request().url());
+      if (route.request().resourceType() === 'fetch') {
+        fetched.push(path);
+        if (fetched.length === 1) await gate;
+        if (scenario === 'oversize') {
+          await route.fulfill({ status: 200, headers: { 'content-length': '2097153' }, body: '' });
+          return;
+        }
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'video/mp4',
+        body: await readFile(new URL('../public' + path, import.meta.url)),
+      });
+    });
+    try {
+      await page.goto('/zh/works/great-ui-text-reveal/');
+      const video = page.locator('.recording-stage video');
+      await expect
+        .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime > 0.2))
+        .toBe(true);
+      expect(fetched).toEqual([]);
+      const progress = page.getByRole('slider', { name: '录屏进度', exact: true });
+      await progress.press('Home');
+      for (let index = 0; index < 4; index++) await progress.press('PageUp');
+      await expect.poll(() => fetched.length).toBe(1);
+      const target = Number(await progress.inputValue());
+      const duration = await video.evaluate((node: HTMLVideoElement) => node.duration);
+      const fraction = target / duration;
+      expect(fraction).toBeGreaterThan(0.35);
+      if (scenario === 'rotation') {
+        const narrow = page.viewportSize()!.width > 800;
+        await page.setViewportSize(
+          narrow ? { width: 390, height: 844 } : { width: 844, height: 390 },
+        );
+        await page.getByRole('button', { name: '播放录屏', exact: true }).click();
+        const entry = pilots.find((item) => item.slug === 'text-reveal')!;
+        const selected = narrow ? entry.recordingMedia.mobile! : entry.recordingMedia;
+        await expect.poll(() => fetched.length).toBe(2);
+        expect(fetched[1]).toBe(selected.video);
+        await expect(video).toHaveJSProperty('videoWidth', selected.width);
+        await expect
+          .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime / node.duration))
+          .toBeGreaterThanOrEqual(fraction - 0.03);
+        await page.getByRole('button', { name: '暂停录屏', exact: true }).click();
+      }
+      release();
+      if (scenario === 'oversize') {
+        await expect(page.getByText('录屏无法加载', { exact: true })).toBeVisible();
+        await expect(page.getByRole('link', { name: '查看原作', exact: true })).toBeVisible();
+      } else {
+        if (scenario === 'latest seek')
+          await expect
+            .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime))
+            .toBeCloseTo(target, 1);
+        await expect(video).toHaveJSProperty('paused', true);
+        expect(await video.evaluate((node: HTMLVideoElement) => node.currentSrc)).toMatch(/^blob:/);
+      }
+      const old = (await video.elementHandle())!;
+      await page.getByRole('link', { name: '返回合集', exact: true }).click();
+      await expect(page).toHaveURL(new RegExp(parent));
+      await expect.poll(() => old.evaluate((node) => node.isConnected)).toBe(false);
+      await expect
+        .poll(() =>
+          page.evaluate(() => {
+            const state = (
+              window as unknown as {
+                recordingCopies: { created: string[]; revoked: string[] };
+              }
+            ).recordingCopies;
+            return [
+              state.created.length,
+              state.created.every((url) => state.revoked.includes(url)),
+            ];
+          }),
+        )
+        .toEqual([scenario === 'oversize' ? 0 : 1, true]);
+    } finally {
+      release();
+    }
+  });
+
+test('a rejected rotation restore stays paused when motion preferences change', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== 'chromium', 'Chromium exposes the no-range native seek failure.');
+  let fetched = 0;
+  await page.route('**/great-ui/media/*.mp4', async (route) => {
+    if (route.request().resourceType() === 'fetch') {
+      fetched++;
+      await route.fulfill({ status: 503, body: 'Unavailable' });
+    } else
+      await route.fulfill({
+        status: 200,
+        contentType: 'video/mp4',
+        body: await readFile(
+          new URL('../public' + mediaPath(route.request().url()), import.meta.url),
+        ),
+      });
+  });
+  await page.goto('/zh/works/great-ui-text-reveal/');
+  const video = page.locator('.recording-stage video');
+  await expect
+    .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime > 0.2 && !node.paused))
+    .toBe(true);
+  await page.setViewportSize(
+    page.viewportSize()!.width > 800 ? { width: 390, height: 844 } : { width: 844, height: 390 },
+  );
+  await expect(page.getByText('录屏无法加载', { exact: true })).toBeVisible();
+  // A queued readiness event must not retry the rejected restore.
+  await video.dispatchEvent('canplay');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
+  await expect(video).toHaveJSProperty('paused', true);
+  await expect(page.getByRole('button', { name: '播放录屏', exact: true })).toBeDisabled();
+  expect(fetched).toBe(1);
+  // Paused native video may retain its request; leaving the player ends that lifetime.
+  await page.getByRole('link', { name: '返回合集', exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(parent));
+});

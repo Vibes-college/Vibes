@@ -1,9 +1,11 @@
 /** Enforce the same byte limit even when a response omits Content-Length. */
-export async function readLimited(response: Response, limit: number) {
-  if (!response.ok || Number(response.headers.get('content-length')) > limit)
+export async function readLimited(response: Response, limit: number, type = '') {
+  if (!response.ok || Number(response.headers.get('content-length')) > limit) {
+    await response.body?.cancel();
     throw new Error('Media unavailable or too large');
+  }
   const reader = response.body!.getReader();
-  const chunks: Uint8Array[] = [];
+  const chunks: Uint8Array<ArrayBuffer>[] = [];
   let size = 0;
   try {
     while (true) {
@@ -18,11 +20,5 @@ export async function readLimited(response: Response, limit: number) {
   } finally {
     reader.releaseLock();
   }
-  const bytes = new Uint8Array(size);
-  let offset = 0;
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset);
-    offset += chunk.length;
-  }
-  return bytes;
+  return new Blob(chunks, { type });
 }

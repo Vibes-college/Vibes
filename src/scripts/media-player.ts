@@ -325,9 +325,9 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
         }
         try {
           const response = await fetch(source.src, { signal: active.signal });
-          const bytes = await readLimited(response, mediaLimits.localFileBytes);
+          const blob = await readLimited(response, mediaLimits.localFileBytes, source.type);
           if (active.signal.aborted || !alive()) return;
-          objectUrl = URL.createObjectURL(new Blob([bytes], { type: source.type }));
+          objectUrl = URL.createObjectURL(blob);
           seekRequest = undefined;
           const ticket = ++generation;
           controller.pending = true;

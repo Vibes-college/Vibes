@@ -83,10 +83,22 @@ test('responsive media is validated and exported as available desktop and phone 
 
 test('bounded media reads accept exact limits and cancel streamed overflow without trusting headers', async () => {
   assert.deepEqual(
-    await readLimited(new Response(new Uint8Array([1, 2, 3])), 3),
+    new Uint8Array(
+      await (await readLimited(new Response(new Uint8Array([1, 2, 3])), 3)).arrayBuffer(),
+    ),
     new Uint8Array([1, 2, 3]),
   );
   await assert.rejects(readLimited(new Response('bad', { status: 500 }), 10));
+  for (const init of [{ status: 500 }, { headers: { 'Content-Length': '4' } }]) {
+    let cancelled = false;
+    const stream = new ReadableStream({
+      cancel() {
+        cancelled = true;
+      },
+    });
+    await assert.rejects(readLimited(new Response(stream, init), 3));
+    assert.equal(cancelled, true);
+  }
   let cancelled = false;
   const stream = new ReadableStream({
     start(controller) {
