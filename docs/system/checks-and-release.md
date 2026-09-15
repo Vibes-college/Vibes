@@ -14,7 +14,7 @@ code-sources:
     'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '4e0f0e5a263aef4ef7deca427fa76c9e7d7bf820e8336fb51a18283d47a2ac3e'
+code-revision: 'b33228c5d1df6719b9df77a042d156df415a7590af4b367302d6e29106d29b85'
 ---
 
 # 检查与发布
@@ -207,4 +207,4 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 48件高清、30件独立手机版本、轻量封面及海报按原始大小另计总量48MiB、单高清2MiB、单封面短片150KiB且封面短片合计4MiB、单海报200KiB。只加载当前选中素材；整套存储量不等于首页下载量，普通页面脚本预算不变。本地素材的来源、录制操作及文件摘要由data/local-recordings.json记录，单元检查拒绝缺失或摘要不符。稳定交互回归中的远端视频替身不证明外部可用性；实际媒体另检查解码与播放时间推进，并注明检查日期、原始地址及未重试的失败结果。
 
-tests/great-ui-previews.spec.ts覆盖三类两端素材、有效放大、键盘和鼠标移动、退出焦点、合集离屏无下载及旧视频释放、减少动态/省流量手动播放、连续旋转与失败入口。手机Chromium另通过CDP发送双指缩放和单指移动；WebKit验证控件与鼠标/键盘移动，不将其等同于真机触摸。tests/great-ui-site.spec.ts逐件检查48段当前设备素材的解码、播放及无外部视频请求。
+tests/great-ui-previews.spec.ts覆盖三类两端素材、有效放大、键盘和鼠标移动、退出焦点、合集离屏无下载及旧视频释放、减少动态/省流量手动播放、连续旋转与失败入口。三个浏览器配置均检查回到开头时建立有界副本、后续跳转复用、无分段读取、超限拒绝及失败后不自动重播；首次正常播放不能额外fetch副本。手机Chromium另通过CDP发送双指缩放和单指移动；WebKit验证控件与鼠标/键盘移动，不将其等同于真机触摸。tests/great-ui-site.spec.ts逐件检查48段当前设备素材的解码、播放及无外部视频请求。

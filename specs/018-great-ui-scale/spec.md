@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: '把Great UI全量作品整理为可理解、可改造、可验证串联并接入Vibes的学习工作台'
-status: 'complete'
+status: 'in-progress'
 feature-ids:
   [
     'great-ui-learning',

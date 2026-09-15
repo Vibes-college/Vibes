@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Great UI全量学习与组合规格质量检查'
-status: 'complete'
+status: 'in-progress'
 amended-by: []
 ---
 

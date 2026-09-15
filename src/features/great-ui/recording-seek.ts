@@ -10,13 +10,10 @@ export function recordingSeek(video: HTMLVideoElement, ready: () => void, failed
   async function apply() {
     if (disposed || pending === undefined || video.readyState < 1 || request) return;
     const target = pending * video.duration;
-    // Some static hosts expose a duration but no byte ranges; native seeks then
-    // silently clamp to zero. Ordinary playback does not need this extra fetch.
-    if (
-      !objectUrl &&
-      target > 0 &&
-      (!video.seekable.length || video.seekable.end(video.seekable.length - 1) < target)
-    ) {
+    // A seekable range does not guarantee that the host accepts native Range
+    // requests. Even seeking to zero can fail in WebKit; use one bounded copy
+    // for explicit seeks and restored positions, leaving initial playback alone.
+    if (!objectUrl) {
       const active = new AbortController();
       request = active;
       try {

@@ -19,9 +19,12 @@ for (const entry of pilots)
     isMobile,
   }) => {
     const requested: string[] = [];
+    const fetched: string[] = [];
     page.on('request', (request) => {
-      if (/\/great-ui\/media\/.*\.mp4$/.test(request.url()))
+      if (/\/great-ui\/media\/.*\.mp4$/.test(request.url())) {
         requested.push(mediaPath(request.url()));
+        if (request.resourceType() === 'fetch') fetched.push(mediaPath(request.url()));
+      }
     });
     await page.goto('/zh/works/' + entry.id + '/');
     const video = page.locator('.recording-stage video');
@@ -41,15 +44,22 @@ for (const entry of pilots)
       await video.evaluate((node: HTMLVideoElement) => [node.videoWidth, node.videoHeight]),
     ).toEqual([rendition.width, rendition.height]);
     expect(new Set(requested)).toEqual(new Set([rendition.video]));
+    expect(fetched).toEqual([]);
     await page.getByRole('button', { name: '暂停录屏', exact: true }).click();
     const progress = page.getByRole('slider', { name: '录屏进度', exact: true });
     await progress.press('Home');
+    await expect
+      .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentSrc))
+      .toMatch(/^blob:/);
+    await expect(video).toHaveJSProperty('currentTime', 0);
+    await expect(page.getByText('录屏无法加载', { exact: true })).toHaveCount(0);
     await progress.press('PageUp');
     await progress.press('PageUp');
     await expect
       .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime))
       .toBeGreaterThan(1);
     await expect(video).toHaveJSProperty('paused', true);
+    expect(fetched).toEqual([rendition.video]);
     const contentWidth = () =>
       video.evaluate((node: HTMLVideoElement) => {
         const box = node.parentElement!.getBoundingClientRect();
@@ -351,9 +361,7 @@ for (const paused of [false, true])
 for (const scenario of ['latest seek', 'rotation', 'oversize'] as const)
   test(`a server without byte ranges handles ${scenario} and releases its seek copy`, async ({
     page,
-    browserName,
   }) => {
-    test.skip(browserName !== 'chromium', 'Chromium exposes the no-range native seek failure.');
     await page.addInitScript(() => {
       const state = { created: [] as string[], revoked: [] as string[] };
       Object.assign(window, { recordingCopies: state });
@@ -459,9 +467,7 @@ for (const scenario of ['latest seek', 'rotation', 'oversize'] as const)
 
 test('a rejected rotation restore stays paused when motion preferences change', async ({
   page,
-  browserName,
 }) => {
-  test.skip(browserName !== 'chromium', 'Chromium exposes the no-range native seek failure.');
   let fetched = 0;
   await page.route('**/great-ui/media/*.mp4', async (route) => {
     if (route.request().resourceType() === 'fetch') {
