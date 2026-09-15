@@ -23,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: 'a728bd962e153637780c4f43485a7df568db4f743963b56ba8aef0026657c54f'
+code-revision: '01b06f668359e33aa1ebece79a2f14b4e449511fb45a2263d6d4385f39a21dd6'
 ---
 
 # 常量、规则表与正则
@@ -157,4 +157,4 @@ MDX格式整篇关闭左右拖动及长按拖动换篇，作品概览页顶部�
 
 内容发布范围新增content：正文与受限MDX通过AST分类后执行内容构建、预算和页面冒烟；新增执行逻辑回退full。Paseo静态缓存及凭据隔离规则集中于[内容贡献](content-contributions.md)，不免除生产SHA与资源门槛。
 
-Great UI学习条目以work.json的learning选择专用模板，正文仍是Markdown；只在普通目录列合集，子项保留搜索和独立网址。学习模板使用共享React并局限样式作用域，不安装普通文章的整屏手势；三节正文与结构字段校验见[内容结构](content-model.md#交互学习材料)。媒体均为/great-ui/media下的本站文件，单视频550KiB、单图200KiB、整个集合5MiB，播放器只加载当前案例。正式站脚本预算保持原上限，学习页按交互页计入完整额外模块预算。
+Great UI学习条目以work.json的learning选择专用模板，正文仍是Markdown；只在普通目录列合集，子项保留搜索和独立网址。学习模板使用共享React并局限样式作用域，不安装普通文章的整屏手势；三节正文与结构字段校验见[内容结构](content-model.md#交互学习材料)。媒体均为/great-ui/media下的本站文件，单高清2MiB、单图200KiB、单封面短片150KiB、封面短片合计4MiB、整个集合48MiB；合集只加载当前轻量短片，详情按800px断点选择一份高清素材。正式站脚本预算保持原上限，学习页按交互页计入完整额外模块预算。

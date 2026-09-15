@@ -1,3 +1,4 @@
+import { readLimited } from '../lib/media/read';
 import { embedUrl } from '../config/media';
 import { mediaMessages } from '../lib/media/messages';
 import type { Media, MediaText } from '../lib/media/schema';
@@ -99,10 +100,7 @@ export function installExperiences(pageSignal: AbortSignal) {
               signal: active.signal,
             })
               .then(async (response) => {
-                if (!response.ok) throw new Error('Game unavailable');
-                const html = await response.text();
-                if (new TextEncoder().encode(html).byteLength > 65536)
-                  throw new Error('Game template too large');
+                const html = new TextDecoder().decode(await readLimited(response, 65536));
                 if (!ready()) return;
                 // Production bundles exact-hash inline assets for the inherited CSP.
                 // Astro dev still serves the original template and external assets.

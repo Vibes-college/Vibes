@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/TextOnPathScrollPreview.tsx",
     "media": {
       "video": "/great-ui/media/text-on-path-scroll-demo.mp4",
-      "poster": "/great-ui/media/text-on-path-scroll-demo-poster.jpg"
+      "poster": "/great-ui/media/text-on-path-scroll-demo-poster.jpg",
+      "width": 1600,
+      "height": 960,
+      "mobile": {
+        "video": "/great-ui/media/text-on-path-scroll-demo.mp4",
+        "poster": "/great-ui/media/text-on-path-scroll-demo-poster.jpg",
+        "width": 1600,
+        "height": 960,
+        "duration": 11.066667
+      },
+      "card": {
+        "video": "/great-ui/media/text-on-path-scroll-card.mp4",
+        "poster": "/great-ui/media/text-on-path-scroll-card-poster.jpg",
+        "width": 480,
+        "height": 288,
+        "duration": 3.0
+      }
     },
     "capability": {
       "family": "path-text",

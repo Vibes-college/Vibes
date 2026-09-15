@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import * as motion from 'motion/react-m';
 
 // Application adaptation of Great UI/StaggeredPageTransition.tsx at eda1b85e.
 // The host owns data readiness; actual last-panel completion owns both handoffs.

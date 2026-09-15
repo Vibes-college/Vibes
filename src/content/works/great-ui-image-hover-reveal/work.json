@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/ImageHoverRevealPreview.tsx",
     "media": {
       "video": "/great-ui/media/image-hover-reveal-demo.mp4",
-      "poster": "/great-ui/media/image-hover-reveal-demo-poster.jpg"
+      "poster": "/great-ui/media/image-hover-reveal-demo-poster.jpg",
+      "width": 1056,
+      "height": 592,
+      "mobile": {
+        "video": "/great-ui/media/image-hover-reveal-mobile.mp4",
+        "poster": "/great-ui/media/image-hover-reveal-mobile-poster.jpg",
+        "width": 524,
+        "height": 1168,
+        "duration": 9.066667
+      },
+      "card": {
+        "video": "/great-ui/media/image-hover-reveal-card.mp4",
+        "poster": "/great-ui/media/image-hover-reveal-card-poster.jpg",
+        "width": 480,
+        "height": 270,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "image-reveal",

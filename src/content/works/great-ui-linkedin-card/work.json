@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/LinkedinCardPreview.tsx",
     "media": {
       "video": "/great-ui/media/linkedin-card-demo.mp4",
-      "poster": "/great-ui/media/linkedin-card-demo-poster.jpg"
+      "poster": "/great-ui/media/linkedin-card-demo-poster.jpg",
+      "width": 760,
+      "height": 660,
+      "mobile": {
+        "video": "/great-ui/media/linkedin-card-demo.mp4",
+        "poster": "/great-ui/media/linkedin-card-demo-poster.jpg",
+        "width": 760,
+        "height": 660,
+        "duration": 7.033333
+      },
+      "card": {
+        "video": "/great-ui/media/linkedin-card-card.mp4",
+        "poster": "/great-ui/media/linkedin-card-card-poster.jpg",
+        "width": 480,
+        "height": 416,
+        "duration": 7.083333
+      }
     },
     "capability": {
       "family": "social-hover",

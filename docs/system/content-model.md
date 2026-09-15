@@ -15,7 +15,7 @@ code-sources:
     'scripts/validate-content.ts',
     'scripts/migrate-content.ts',
   ]
-code-revision: 'b8faadc61f1a622629e84ab706597443ed0fd2fbfc8ee175fcc7169776ffa675'
+code-revision: '62cc5b8949a34665443e87974e3b3132fe0011ae9a044828dcfe20b50518a902'
 ---
 
 # 数据和内容结构
@@ -75,18 +75,20 @@ src/content/works/<id>/
 
 Great UI学习页沿用work.json加每语言一份Markdown，ID为great-ui-<slug>。普通目录只列合集，所有已发布子项仍生成页面和全文索引。学习页使用共享交互模板，不能把正文换成MDX。
 
-| 位置                   | 内容与校验                                                                                                                                         |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| work.json的learning    | slug、collectionId、english、revision、implementation、previewSource、media、capability                                                            |
-| 固定来源               | revision是40位提交摘要；implementation和previewSource分别为components/ui与components/site/previews中的TSX路径                                      |
-| media                  | video或image二选一，加必填poster；仅/great-ui/media下的MP4、PNG、JPG、WebP或AVIF，校验文件存在、非空、符号链接边界；视频最大550KiB，图片最大200KiB |
-| capability             | family、roles、provides、requires、resources、adaptations、reducedMotion、decorativeTransition，供组合规则判定                                     |
-| 语言文件头learning     | category、classification、placementHint、changesHint、preserve、checks、goals、adjustments、glossary                                               |
-| goals                  | 非空列表，每项id、title、action、judge，ID不得重复；三个面板与任务引用同一组目标                                                                   |
-| adjustments / glossary | 三列调整表；术语以局部ID映射term（共享词条ID）、context、parameter、judgment；不接受本地重复definition                                             |
-| 正文                   | 按顺序保留拆解设计、改造设计、串联设计三个二级标题；第一节保留适合用在哪里、什么时候不用、试一次，就会更懂三级标题                                 |
+| 位置                   | 内容与校验                                                                                                                                                                                                                                                      |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| work.json的learning    | slug、collectionId、english、revision、implementation、previewSource、media、capability                                                                                                                                                                         |
+| 固定来源               | revision是40位提交摘要；implementation和previewSource分别为components/ui与components/site/previews中的TSX路径                                                                                                                                                   |
+| media                  | video或image二选一，加必填poster；仅/great-ui/media下的MP4、PNG、JPG、WebP或AVIF，校验文件存在、非空、符号链接边界；高清视频最大2MiB，图片最大200KiB；mobile/card可选，含video/poster/width/height/duration，card最大150KiB且≤12秒，高清≤60秒；尺寸为1–3840整数 |
+| capability             | family、roles、provides、requires、resources、adaptations、reducedMotion、decorativeTransition，供组合规则判定                                                                                                                                                  |
+| 语言文件头learning     | category、classification、placementHint、changesHint、preserve、checks、goals、adjustments、glossary                                                                                                                                                            |
+| goals                  | 非空列表，每项id、title、action、judge，ID不得重复；三个面板与任务引用同一组目标                                                                                                                                                                                |
+| adjustments / glossary | 三列调整表；术语以局部ID映射term（共享词条ID）、context、parameter、judgment；不接受本地重复definition                                                                                                                                                          |
+| 正文                   | 按顺序保留拆解设计、改造设计、串联设计三个二级标题；第一节保留适合用在哪里、什么时候不用、试一次，就会更懂三级标题                                                                                                                                              |
 
 正文编译为可供React安全渲染的结构树，支持段落、强调、列表、链接、代码和术语按钮；拒绝原始HTML、未知术语及不支持的元素。原始文字同时进入任务文本/JSON与全文索引。文件头、正文及引用词条的完整内容都纳入原文摘要。写作示例与修改步骤见[维护同一份材料](../features/great-ui-learning.md#维护同一份材料)。录制依据见[录制演示](../features/recording-previews.md)，素材路径以public/great-ui/media和来源登记为准。
+
+合集封面由同语言已发布成员的media.card投影生成，保存ID、标题及轻量素材索引，HTML只渲染当前一件。搜索输出使用同一结构并校验成员唯一性、来源和禁止嵌套合集；gzip上限6KiB由当前48件的单元测试约束。任务的media.url为桌面绝对地址，只有手机素材不同才另提供mobileUrl，页面预览与Agent引用保持同一来源。
 
 ### 共享术语文件
 

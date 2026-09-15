@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/BlurFadeThemeTransitionPreview.tsx",
     "media": {
       "video": "/great-ui/media/blur-fade-theme-transition-demo.mp4",
-      "poster": "/great-ui/media/blur-fade-theme-transition-demo-poster.jpg"
+      "poster": "/great-ui/media/blur-fade-theme-transition-demo-poster.jpg",
+      "width": 1568,
+      "height": 1032,
+      "mobile": {
+        "video": "/great-ui/media/blur-fade-theme-transition-mobile.mp4",
+        "poster": "/great-ui/media/blur-fade-theme-transition-mobile-poster.jpg",
+        "width": 604,
+        "height": 1032,
+        "duration": 7.033333
+      },
+      "card": {
+        "video": "/great-ui/media/blur-fade-theme-transition-card.mp4",
+        "poster": "/great-ui/media/blur-fade-theme-transition-card-poster.jpg",
+        "width": 480,
+        "height": 316,
+        "duration": 7.083333
+      }
     },
     "capability": {
       "family": "theme-transition",

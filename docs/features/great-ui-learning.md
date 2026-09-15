@@ -15,13 +15,15 @@ code-sources:
     'tests/great-ui/',
     'tests/fixtures/great-ui/',
     'tests/great-ui-site.spec.ts',
+    'tests/great-ui-previews.spec.ts',
+    'tests/unit/collection-preview.test.ts',
     'tests/unit/learning-content.test.ts',
     'src/components/GreatUiDetail.astro',
     'tests/unit/great-ui-composition.test.ts',
     'tests/unit/great-ui-content.test.ts',
     'tests/unit/great-ui-browsing.test.ts',
   ]
-code-revision: '4faac9113b86f727d7307db3c5409cfca52cd60e9e7d2ea0f9e9b5b41f707cc0'
+code-revision: '6ccf8851c3dbcb24c81ad1e0bd3a724ba53d01edded9b7a3c648557b54f42dc1'
 ---
 
 # 功能名：学习交互作品并带入自己的项目
@@ -32,8 +34,8 @@ code-revision: '4faac9113b86f727d7307db3c5409cfca52cd60e9e7d2ea0f9e9b5b41f707cc0
 
 ## 用户操作路径
 
-1. 在Explore打开“Great UI交互学习”合集，选择一件作品，进入`/zh/works/great-ui-<slug>/`。普通目录只列一次合集；全文搜索可以直接找到每件作品的标题、说明、改造目标和术语。
-2. 打开页面即加载当前MP4并静音循环播放；不会预载其他作品视频。48件都使用随本站提供的短片与封面，离屏、进入后台或开启减少动态效果时暂停。可以手动播放、暂停、拖动进度或放大；放大时其余页面不可操作，Escape关闭后恢复焦点。失败时保留原作入口。
+1. 在Explore或合集首屏用左右箭头切换48件作品的轻量封面；下方作品名称进入当前作品，合集标题进入合集。同一标签页返回会保留所选封面。普通目录只列一次合集；全文搜索可以直接找到每件作品的标题、说明、改造目标和术语。
+2. 进入`/zh/works/great-ui-<slug>/`后，只加载当前作品适合窗口宽度的一份高清MP4并静音循环播放，不预载其他作品。48件都有轻量封面和完整素材，其中30件另有窄屏录屏；其余复用完整桌面构图。离屏和后台暂停，减少动态或省流量时由用户手动播放。可以暂停、拖动进度或放大；失败时保留原作入口。
 3. “拆解设计”说明原作顺序、形成原理和接入限制；点击术语看共享词库的中文解释及本例应用，可打开完整词条查看变体、提示词和出处。点击“相似作品”或“相同原理”整行入口切换案例。作品列表还可搜索中文、英文或行为词并按分类筛选。
 4. “改造设计”选择目标，核对Agent应改的行为与检查结果，再点“生成修改任务”或“用这个效果”。填写接入位置和要求，查看文本或JSON后复制；学习页与素材使用当前站点的绝对地址，PR预览复制后也能访问对应预览素材；复制失败时可手动选择全文。原作记录与目标要求分开，例如多项比较按同时展开验收，单项规则只作原作对照。
 5. “串联设计”选择作品集、产品介绍或任务工具，再选框架、输入方式、外部数据、使用频率和动态偏好。默认保留当前作品；不适合时解释原因，不硬凑方案。允许必要改造时可用普通文字、表单或链接补齐。
@@ -53,6 +55,12 @@ code-revision: '4faac9113b86f727d7307db3c5409cfca52cd60e9e7d2ea0f9e9b5b41f707cc0
 5. 范围和模式会在同一浏览器的下次访问保留；同一页刷新保留本轮记录，浏览器前进后退恢复各页当时的范围与顺序。当前作品的“分类”标签独立显示其实际类别。主动从关联入口或直接链接进入范围外作品时，范围回到全部分类；存储损坏会重新开始，浏览器禁止存储时仅在当前访问中保留。
 
 导航历史最多保留最近1,000次操作。浏览记录与作品填写草稿分开：刷新保留前者，但不保留草稿；详细存储位置见[配置说明](../system/configuration.md#great-ui浏览偏好与记录)。
+
+### 放大与查看细节
+
+点击“放大录屏”进入占满页面视口的查看器，画面按自身比例适配；用加减按钮或双指手势在100%–300%间缩放，拖动或用方向键移动，点击百分比重置。手机横向素材默认放大到150%，便于看清文字；重置为100%可看到完整构图。原作手机布局本身裁切的固定卡片使用完整桌面录屏，不把原作裁切当成本站响应式效果。
+
+放大保留播放位置和暂停状态，窗口跨过800px时选用对应素材并按进度比例继续；手动播放不因旋转或减少动态偏好重新暂停。查看器打开时锁定背景，Tab留在内部；按Escape或“缩小录屏”退出后恢复焦点。这里使用页面内全屏，浏览器地址栏仍可能存在；不要求原生Fullscreen API。
 
 ### 示例中的页面切换
 
@@ -81,7 +89,7 @@ flowchart TD
 ## 涉及的文件
 
 - 页面与内容：src/components/GreatUiDetail.astro、src/features/great-ui/LearningPage.jsx、markdown-content.ts、compile-prose.ts和site-content.ts。
-- 浏览与播放器：CaseView.jsx、CaseNavigation.jsx、Recording.jsx、Terms.jsx；browsing.ts维护范围/顺序，browse-storage.ts与useCaseBrowser.jsx负责本地记录与导航，Taxonomy.jsx展示实际分类；样式限制在great-ui区域。
+- 浏览与播放器：CaseView.jsx、CaseNavigation.jsx、Recording.jsx、useRecordingView.js、Terms.jsx；browsing.ts维护范围/顺序，browse-storage.ts与useCaseBrowser.jsx负责本地记录与导航，Taxonomy.jsx展示实际分类；样式限制在great-ui区域。
 - 来源依据：data/upstream-catalog.json、observations.json、source-review.json和local-recordings.json；relations.mjs维护经源码核对的原理关系。
 - 任务与组合：task.mjs、PromptDialog.jsx、composition/；同一结构生成文本和JSON。
 - 示例：JourneyLoader.jsx处理脚本加载与失败，journey/实现三条路径，sources.json和LICENSE.txt说明来源及改造；本站/great-ui/content与/great-ui/journeys生成对应JSON。
@@ -89,23 +97,22 @@ flowchart TD
 
 ## 验收标准
 
-- [x] 48件固定源码均有实际原作操作记录；2026-09-14原三例与其余45件的内置浏览器证据仍有效，未覆盖变体明确保留。
-- [x] 48份Markdown材料、来源映射、任务一致性、拒绝坏结构与素材摘要通过2026-09-14单元检查。
-- [x] 2026-09-14浏览范围增量的8项规则/存储测试、全体178项单元、check、正式站与独立入口构建/预算、静态48页和产物预检通过。覆盖30轮真实目录去重、跨类、返回、范围、模式、重开与存储边界；当前本机入口HTTP检查通过。该增量的规则证据在resources/evidence/018-great-ui-scale/browsing；最新界面与发布验收见下项。
-- [x] 2026-09-14阶段预览完成整个PR的verify/budget：178项单元及三环境304项浏览器检查通过，5项按设备跳过，生成匹配源码的site回执。Cloudflare预览的版本/页面核验通过；内置浏览器实际走通首页→文章→合集→作品，查看录屏、小底色图标，切换顺序/随机及分类，并验证下一件/上一件。截图为557px应用面板，手机环境来自自动化，未冒充真机；原始证据在resources/evidence/018-great-ui-scale/preview-73a6c61，预览入口与发布版本见PR。
-- [x] 2026-09-14共享词库3项契约测试及全体170项单元通过；静态产物逐件核对48页与任务JSON一致，60处案例说明/参数/判断保留，原文章节完整且字节一致，网站与独立入口预算通过。该增量按用户要求未重复浏览器或独立审查。
-- [x] 2026-09-14站内桌面Chromium逐件验证48段本站MP4解码、自动播放、无外部媒体请求和横向溢出；同轮通过搜索、无JS正文和跨作品草稿恢复。
-- [x] 2026-09-14站内三浏览器的48段播放、三条示例、任务与原生助手作品引用通过；脚本失败恢复与当前站点素材链接另通过6项专项，预算及产物预检通过。header与图标按用户要求只做静态/类型检查，没有重跑浏览器。
-      最终验收以当前源码匹配的site回执和预览记录为准。早期整站298项通过、5项按设备跳过，3项旧模板静态断言失败，模板分支已修复；这些历史结果不作为新版本的完整通过证据。进入阶段预览时，由release:preview执行整个PR的验收后生成记录，结果保存在resources/evidence/releases并同步PR。
-- [x] 2026-09-14独立工作台66项三浏览器回归、20个评估样本与预算通过；后续脚本恢复修复另通过3项三浏览器专项。新增回执守卫单元通过，完整新版本回执仍待统一验收。
+- [x] 48件固定源码与原作操作均有记录；2026-09-15的高清重录保存连续帧、动作、裁切与来源，手机原作的布局限制逐件注明。
+- [x] 2026-09-15全体182项单元通过，覆盖Markdown/共享词库、页面与任务一致性、浏览范围与记录、组合规则、素材摘要及拒绝边界。
+- [x] 独立工作台69项三浏览器检查通过，逐件验证48段素材解码与播放、三条示例和失败/少动态路径；20个评估样本通过。独立回执只用于该入口，不能代替正式站回执。
+- [x] 2026-09-15媒体专项28项通过、2项按设备跳过：三类两端选源、实际尺寸、放大/移动/焦点、旋转、按需请求、旧视频释放、延迟模块保留手动播放/暂停。手机Chromium含CDP双指缩放；WebKit测试控件、鼠标与键盘，不冒充真机触摸。
+- [x] 126个独立MP4全部完整解码；48桌面、30独立手机、48轻量封面的文件摘要、宽高、时长及单文件预算通过。两套构建与预算通过，普通公共/媒体/MDX脚本上限保持不变。
+- [ ] 当前正式站完整verify、版本匹配的site回执与Cloudflare预览；正在按整个PR验收。
+- [ ] 整个PR最终SHA独立复核与交付；已报告的旋转/延迟初始化问题修复并复测，最终收口尚待提交与完整检查。
 
-既有2026-09-14组合引擎的11项单元规则、20个结构化需求与原作审查记录保留；迁移后完整页面验收以上述范围为准。原始证据在resources/evidence/018-great-ui-scale/integration，模拟手机宽度不等于真机验收。
+原始证据在resources/evidence/018-great-ui-scale/clear-recordings及同级验收记录。内置浏览器已实际核对手机任务填写、高清查看和初始三类样板；浏览器自动化与390px视口均不是实际iPhone验收。既有固定源码和20个组合目标的原作审查证据仍保留，最终预览版本及合并状态以PR为准。
 
 ## 对应的自动化测试
 
 - tests/unit/learning-content.test.ts：Markdown到页面与任务的单一来源、结构/术语/素材拒绝、合集与语言边界。
 - tests/unit/glossary.test.ts：共享词条编辑同步两件作品与两种任务、相关修订失效、重复与别名冲突、缺失引用和禁止本地重复定义。
-- tests/unit/great-ui-content.test.ts：48件来源、说明、关系、视频摘要与目标任务。
+- tests/unit/great-ui-content.test.ts：48件来源、说明、关系、各版本素材摘要与目标任务。
+- tests/unit/collection-preview.test.ts与tests/great-ui-previews.spec.ts：轻量索引/安全边界、双端素材与任务引用、按需请求、旋转、有效放大、触摸和延迟模块保留用户操作。
 - tests/unit/great-ui-browsing.test.ts：真实48件随机去重与跨类、范围联动、顺序切换、前后重放、单件/结束重开、刷新及历史快照、偏好保存和损坏/受限存储。
 - tests/unit/great-ui-composition.test.ts：能力、条件、全局资源冲突、缺口、有界搜索及版本失效。
 - tests/fixtures/great-ui/journey.ts：同一组正常、慢请求、失败、取消、历史及动态偏好测试；由站内great-ui-site.spec.ts和独立journey.spec.ts复用。

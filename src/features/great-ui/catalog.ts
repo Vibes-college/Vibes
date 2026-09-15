@@ -28,6 +28,36 @@ const media = (v: unknown) => {
     /^https:\/\/www\.great-ui\.com\/(previews|components)\/[a-zA-Z0-9._-]+$/.test(v)
   );
 };
+const dimension = (v: unknown) =>
+  typeof v === 'number' && Number.isInteger(v) && v > 0 && v <= 3840;
+const recordingMedia = (v: unknown) => {
+  if (v === undefined) return true;
+  if (!object(v) || !media(v.video) || !media(v.image) || !media(v.poster)) return false;
+  if (Boolean(v.video) === Boolean(v.image) || !string(v.poster)) return false;
+  if (v.width !== undefined || v.height !== undefined) {
+    if (!dimension(v.width) || !dimension(v.height)) return false;
+  }
+  for (const key of ['mobile', 'card']) {
+    const variant = v[key];
+    if (variant === undefined) continue;
+    if (
+      !object(variant) ||
+      !string(variant.video) ||
+      !variant.video.endsWith('.mp4') ||
+      !media(variant.video) ||
+      !string(variant.poster) ||
+      !media(variant.poster) ||
+      !dimension(variant.width) ||
+      !dimension(variant.height) ||
+      typeof variant.duration !== 'number' ||
+      !Number.isFinite(variant.duration) ||
+      variant.duration <= 0 ||
+      variant.duration > (key === 'card' ? 12 : 60)
+    )
+      return false;
+  }
+  return true;
+};
 function catalogItem(value: unknown): value is CatalogItem {
   return (
     fields(value, ['id', 'title', 'english', 'category', 'summary']) &&
@@ -98,6 +128,7 @@ export function validateDetail(value: unknown, item: CatalogItem) {
     !media(detail.recording) ||
     !media(detail.previewRecording) ||
     !media(detail.previewImage) ||
+    !recordingMedia(detail.recordingMedia) ||
     !strings(detail.preserve) ||
     !strings(detail.checks) ||
     !strings(detail.terms) ||

@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/TeamSectionPreview.tsx",
     "media": {
       "video": "/great-ui/media/team-section-demo.mp4",
-      "poster": "/great-ui/media/team-section-demo-poster.jpg"
+      "poster": "/great-ui/media/team-section-demo-poster.jpg",
+      "width": 1920,
+      "height": 684,
+      "mobile": {
+        "video": "/great-ui/media/team-section-mobile.mp4",
+        "poster": "/great-ui/media/team-section-mobile-poster.jpg",
+        "width": 716,
+        "height": 1536,
+        "duration": 6.033333
+      },
+      "card": {
+        "video": "/great-ui/media/team-section-card.mp4",
+        "poster": "/great-ui/media/team-section-card-poster.jpg",
+        "width": 480,
+        "height": 172,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "people-list",

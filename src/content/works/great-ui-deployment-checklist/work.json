@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/DeploymentChecklistPreview.tsx",
     "media": {
       "video": "/great-ui/media/deployment-checklist-demo.mp4",
-      "poster": "/great-ui/media/deployment-checklist-demo-poster.jpg"
+      "poster": "/great-ui/media/deployment-checklist-demo-poster.jpg",
+      "width": 892,
+      "height": 1176,
+      "mobile": {
+        "video": "/great-ui/media/deployment-checklist-mobile.mp4",
+        "poster": "/great-ui/media/deployment-checklist-mobile-poster.jpg",
+        "width": 588,
+        "height": 1300,
+        "duration": 19.066667
+      },
+      "card": {
+        "video": "/great-ui/media/deployment-checklist-card.mp4",
+        "poster": "/great-ui/media/deployment-checklist-card-poster.jpg",
+        "width": 480,
+        "height": 632,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "step-feedback",

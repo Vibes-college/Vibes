@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/FloatingMenuPreview.tsx",
     "media": {
       "video": "/great-ui/media/floating-menu-demo.mp4",
-      "poster": "/great-ui/media/floating-menu-demo-poster.jpg"
+      "poster": "/great-ui/media/floating-menu-demo-poster.jpg",
+      "width": 840,
+      "height": 1472,
+      "mobile": {
+        "video": "/great-ui/media/floating-menu-demo.mp4",
+        "poster": "/great-ui/media/floating-menu-demo-poster.jpg",
+        "width": 840,
+        "height": 1472,
+        "duration": 10.033333
+      },
+      "card": {
+        "video": "/great-ui/media/floating-menu-card.mp4",
+        "poster": "/great-ui/media/floating-menu-card-poster.jpg",
+        "width": 480,
+        "height": 480,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "navigation-menu",

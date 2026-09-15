@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/TextRevealPreview.tsx",
     "media": {
       "video": "/great-ui/media/text-reveal-source-capture.mp4",
-      "poster": "/great-ui/media/text-reveal-source-poster.png"
+      "poster": "/great-ui/media/text-reveal-source-poster.jpg",
+      "width": 1920,
+      "height": 904,
+      "mobile": {
+        "video": "/great-ui/media/text-reveal-mobile.mp4",
+        "poster": "/great-ui/media/text-reveal-mobile-poster.jpg",
+        "width": 716,
+        "height": 1480,
+        "duration": 9.033333
+      },
+      "card": {
+        "video": "/great-ui/media/text-reveal-card.mp4",
+        "poster": "/great-ui/media/text-reveal-card-poster.jpg",
+        "width": 480,
+        "height": 226,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "scroll-text",

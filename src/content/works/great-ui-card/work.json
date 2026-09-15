@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/CardPreview.tsx",
     "media": {
       "video": "/great-ui/media/card-demo.mp4",
-      "poster": "/great-ui/media/card-demo-poster.jpg"
+      "poster": "/great-ui/media/card-demo-poster.jpg",
+      "width": 1088,
+      "height": 740,
+      "mobile": {
+        "video": "/great-ui/media/card-demo.mp4",
+        "poster": "/great-ui/media/card-demo-poster.jpg",
+        "width": 1088,
+        "height": 740,
+        "duration": 8.033333
+      },
+      "card": {
+        "video": "/great-ui/media/card-card.mp4",
+        "poster": "/great-ui/media/card-card-poster.jpg",
+        "width": 480,
+        "height": 326,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "image-card",

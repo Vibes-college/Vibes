@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/InstagramCardPreview.tsx",
     "media": {
       "video": "/great-ui/media/instagram-card-demo.mp4",
-      "poster": "/great-ui/media/instagram-card-demo-poster.jpg"
+      "poster": "/great-ui/media/instagram-card-demo-poster.jpg",
+      "width": 720,
+      "height": 524,
+      "mobile": {
+        "video": "/great-ui/media/instagram-card-demo.mp4",
+        "poster": "/great-ui/media/instagram-card-demo-poster.jpg",
+        "width": 720,
+        "height": 524,
+        "duration": 7.033333
+      },
+      "card": {
+        "video": "/great-ui/media/instagram-card-card.mp4",
+        "poster": "/great-ui/media/instagram-card-card-poster.jpg",
+        "width": 480,
+        "height": 350,
+        "duration": 7.083333
+      }
     },
     "capability": {
       "family": "social-hover",

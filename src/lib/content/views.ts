@@ -3,6 +3,7 @@ import { projectCard, type CardMedia } from '../media/card.ts';
 import { needsReview } from './revision.ts';
 import type { Catalog, CatalogWork, Locale, WorkMetadata } from './schema.ts';
 import { workPath, browsePath, pageSize } from '../i18n/routes.ts';
+import { attachCollections } from './collections.ts';
 
 export interface WorkView {
   slug: string;
@@ -52,10 +53,14 @@ export function viewWork(work: CatalogWork, locale: Locale): WorkView | undefine
   };
 }
 export function publishedWorks(catalog: Catalog, locale: Locale, tag?: string): WorkView[] {
-  return catalog.works
-    .filter((work) => !tag || work.meta.typeId === tag || work.meta.tagIds.includes(tag))
-    .map((work) => viewWork(work, locale))
-    .filter((work): work is WorkView => Boolean(work));
+  return attachCollections(
+    catalog,
+    catalog.works
+      .filter((work) => !tag || work.meta.typeId === tag || work.meta.tagIds.includes(tag))
+      .map((work) => viewWork(work, locale))
+      .filter((work): work is WorkView => Boolean(work)),
+    locale,
+  );
 }
 export function adjacentWorks(works: WorkView[], id: string) {
   const index = works.findIndex((work) => work.slug === id);

@@ -74,6 +74,11 @@ export function createTask(entry, form, plan = null) {
         : entry.previewRecording || entry.recording,
       note: entry.recordingNote,
       localPath: entry.publicUrl ? null : entry.localRecordingPath || null,
+      mobileUrl: entry.recordingMedia?.mobile
+        ? learningUrl
+          ? new URL(entry.recordingMedia.mobile.video, learningUrl).href
+          : entry.recordingMedia.mobile.video
+        : null,
     },
     license: { url: entry.license, note: entry.licenseNote },
     plan: plan
@@ -116,7 +121,7 @@ ${selected.learningUrl ? `学习说明：${selected.learningUrl}\n` : ''}原作�
 原作者示例：${selected.previewSource}
 版本：${selected.revision}
 原作媒体：${task.media.url || '在原作页面实际操作'}
-素材说明：${task.media.note}
+${task.media.mobileUrl && task.media.mobileUrl !== task.media.url ? `手机录屏：${task.media.mobileUrl}\n` : ''}素材说明：${task.media.note}
 ${task.media.localPath ? `本机素材：${task.media.localPath}\n无法访问本机素材时明确说明，请用户提供附件；不要声称已经读取。` : ''}
 许可：${task.license.url}
 ${task.license.note}

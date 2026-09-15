@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/MobileMockupPreview.tsx",
     "media": {
       "video": "/great-ui/media/mobile-mockup-demo.mp4",
-      "poster": "/great-ui/media/mobile-mockup-demo-poster.jpg"
+      "poster": "/great-ui/media/mobile-mockup-demo-poster.jpg",
+      "width": 656,
+      "height": 1180,
+      "mobile": {
+        "video": "/great-ui/media/mobile-mockup-demo.mp4",
+        "poster": "/great-ui/media/mobile-mockup-demo-poster.jpg",
+        "width": 656,
+        "height": 1180,
+        "duration": 11.066016
+      },
+      "card": {
+        "video": "/great-ui/media/mobile-mockup-card.mp4",
+        "poster": "/great-ui/media/mobile-mockup-card-poster.jpg",
+        "width": 480,
+        "height": 864,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "device-demo",

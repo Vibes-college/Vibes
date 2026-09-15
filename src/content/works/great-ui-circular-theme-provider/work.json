@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/CircularThemeProviderPreview.tsx",
     "media": {
       "video": "/great-ui/media/circular-theme-provider-demo.mp4",
-      "poster": "/great-ui/media/circular-theme-provider-demo-poster.jpg"
+      "poster": "/great-ui/media/circular-theme-provider-demo-poster.jpg",
+      "width": 1568,
+      "height": 1032,
+      "mobile": {
+        "video": "/great-ui/media/circular-theme-provider-mobile.mp4",
+        "poster": "/great-ui/media/circular-theme-provider-mobile-poster.jpg",
+        "width": 604,
+        "height": 1032,
+        "duration": 8.066667
+      },
+      "card": {
+        "video": "/great-ui/media/circular-theme-provider-card.mp4",
+        "poster": "/great-ui/media/circular-theme-provider-card-poster.jpg",
+        "width": 480,
+        "height": 316,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "theme-transition",

@@ -397,7 +397,8 @@
   }
   .recording-stage {
     width: 100%;
-    aspect-ratio: 1.8;
+    aspect-ratio: var(--recording-ratio, 1.8);
+    max-height: 520px;
     background: #101010;
     border-radius: 9px;
     overflow: hidden;
@@ -408,6 +409,16 @@
     height: 100%;
     object-fit: contain;
     display: block;
+  }
+  .recording-poster {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .recording-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
   .media-state {
     position: absolute;
@@ -425,6 +436,12 @@
     align-items: center;
     gap: 6px;
     text-decoration: underline;
+  }
+  .media-state.media-loading {
+    inset: auto 0 0;
+    padding: 8px;
+    background: #101010c9;
+    pointer-events: none;
   }
   .scrubber {
     display: flex;
@@ -449,16 +466,45 @@
     position: fixed;
     inset: 0;
     z-index: 100;
-    padding: clamp(16px, 4vw, 60px);
+    padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
     display: flex;
     flex-direction: column;
     justify-content: center;
     background: #fff;
   }
+  /* A sticky showcase forms a stacking context; lift it while its player is modal. */
+  .showcase:has(.video-expanded) {
+    z-index: 1001;
+  }
   .video-expanded .recording-stage {
-    max-height: calc(100dvh - 120px);
-    max-width: 1400px;
+    aspect-ratio: auto;
+    max-height: none;
+    min-height: 0;
+    flex: 1;
     align-self: center;
+    touch-action: none;
+    cursor: grab;
+  }
+  .video-expanded .recording-stage:active {
+    cursor: grabbing;
+  }
+  .recording-zoom {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    min-height: 40px;
+    font-size: 12px;
+  }
+  .recording-zoom span {
+    margin-right: auto;
+    color: #65715a;
+  }
+  .zoom-reset {
+    padding: 6px;
+    font-variant-numeric: tabular-nums;
+    min-width: 48px;
   }
   .video-expanded .scrubber {
     width: min(100%, 1400px);
@@ -939,7 +985,8 @@
       font-size: 23px;
     }
     .recording-stage {
-      aspect-ratio: 1.8;
+      aspect-ratio: var(--recording-mobile-ratio, 1.8);
+      max-height: 60dvh;
     }
     .recording-stage,
     .video-player {

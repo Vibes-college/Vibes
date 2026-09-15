@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/RadialGooeyMenuPreview.tsx",
     "media": {
       "video": "/great-ui/media/radial-gooey-menu-demo.mp4",
-      "poster": "/great-ui/media/radial-gooey-menu-demo-poster.jpg"
+      "poster": "/great-ui/media/radial-gooey-menu-demo-poster.jpg",
+      "width": 528,
+      "height": 496,
+      "mobile": {
+        "video": "/great-ui/media/radial-gooey-menu-demo.mp4",
+        "poster": "/great-ui/media/radial-gooey-menu-demo-poster.jpg",
+        "width": 528,
+        "height": 496,
+        "duration": 8.033333
+      },
+      "card": {
+        "video": "/great-ui/media/radial-gooey-menu-card.mp4",
+        "poster": "/great-ui/media/radial-gooey-menu-card-poster.jpg",
+        "width": 480,
+        "height": 450,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "compact-menu",

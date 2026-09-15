@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/ScrollFlyingCardsPreview.tsx",
     "media": {
       "video": "/great-ui/media/scroll-flying-cards-demo.mp4",
-      "poster": "/great-ui/media/scroll-flying-cards-demo-poster.jpg"
+      "poster": "/great-ui/media/scroll-flying-cards-demo-poster.jpg",
+      "width": 1920,
+      "height": 904,
+      "mobile": {
+        "video": "/great-ui/media/scroll-flying-cards-mobile.mp4",
+        "poster": "/great-ui/media/scroll-flying-cards-mobile-poster.jpg",
+        "width": 716,
+        "height": 1480,
+        "duration": 11.033333
+      },
+      "card": {
+        "video": "/great-ui/media/scroll-flying-cards-card.mp4",
+        "poster": "/great-ui/media/scroll-flying-cards-card-poster.jpg",
+        "width": 480,
+        "height": 518,
+        "duration": 3.5
+      }
     },
     "capability": {
       "family": "scroll-card",

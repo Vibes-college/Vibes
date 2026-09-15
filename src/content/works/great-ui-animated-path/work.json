@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/AnimatedPathPreview.tsx",
     "media": {
       "video": "/great-ui/media/animated-path-demo.mp4",
-      "poster": "/great-ui/media/animated-path-demo-poster.jpg"
+      "poster": "/great-ui/media/animated-path-demo-poster.jpg",
+      "width": 904,
+      "height": 616,
+      "mobile": {
+        "video": "/great-ui/media/animated-path-demo.mp4",
+        "poster": "/great-ui/media/animated-path-demo-poster.jpg",
+        "width": 904,
+        "height": 616,
+        "duration": 7.066667
+      },
+      "card": {
+        "video": "/great-ui/media/animated-path-card.mp4",
+        "poster": "/great-ui/media/animated-path-card-poster.jpg",
+        "width": 480,
+        "height": 328,
+        "duration": 7.125
+      }
     },
     "capability": {
       "family": "path-drawing",

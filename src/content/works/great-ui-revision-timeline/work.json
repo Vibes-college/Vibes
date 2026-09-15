@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/RevisionTimelinePreview.tsx",
     "media": {
       "video": "/great-ui/media/revision-timeline-demo.mp4",
-      "poster": "/great-ui/media/revision-timeline-demo-poster.jpg"
+      "poster": "/great-ui/media/revision-timeline-demo-poster.jpg",
+      "width": 1104,
+      "height": 1304,
+      "mobile": {
+        "video": "/great-ui/media/revision-timeline-mobile.mp4",
+        "poster": "/great-ui/media/revision-timeline-mobile-poster.jpg",
+        "width": 636,
+        "height": 1312,
+        "duration": 11.066667
+      },
+      "card": {
+        "video": "/great-ui/media/revision-timeline-card.mp4",
+        "poster": "/great-ui/media/revision-timeline-card-poster.jpg",
+        "width": 480,
+        "height": 566,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "timeline-display",

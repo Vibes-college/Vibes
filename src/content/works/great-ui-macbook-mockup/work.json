@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/MacbookMockupPreview.tsx",
     "media": {
       "video": "/great-ui/media/macbook-mockup-demo.mp4",
-      "poster": "/great-ui/media/macbook-mockup-demo-poster.jpg"
+      "poster": "/great-ui/media/macbook-mockup-demo-poster.jpg",
+      "width": 1608,
+      "height": 960,
+      "mobile": {
+        "video": "/great-ui/media/macbook-mockup-demo.mp4",
+        "poster": "/great-ui/media/macbook-mockup-demo-poster.jpg",
+        "width": 1608,
+        "height": 960,
+        "duration": 10.033333
+      },
+      "card": {
+        "video": "/great-ui/media/macbook-mockup-card.mp4",
+        "poster": "/great-ui/media/macbook-mockup-card-poster.jpg",
+        "width": 480,
+        "height": 286,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "device-demo",

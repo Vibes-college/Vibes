@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Play, Pause, Maximize2, Minimize2, ArrowUpRight } from 'lucide-react';
+import { Play, Pause, Maximize2, Minimize2, ArrowUpRight, Plus, Minus } from 'lucide-react';
+import { useRecordingView } from './useRecordingView';
 export function Recording({ entry }) {
   const [imageFailed, setImageFailed] = useState(false);
   const image = useRef(null);
@@ -35,13 +36,20 @@ function RecordedPlayer({ entry }) {
   const ref = useRef(null);
   const player = useRef(null);
   const manuallyPaused = useRef(false);
-  const inView = useRef(true);
+  const manuallyPlaying = useRef(false);
+  const inView = useRef(false);
+  const stage = useRef(null);
+  const media = entry.recordingMedia;
+  const { large, setLarge, view, changeZoom, reset, stageEvents } = useRecordingView(
+    player,
+    stage,
+    ref,
+  );
   const [playing, setPlaying] = useState(false);
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [duration, setDuration] = useState(0);
   const [time, setTime] = useState(0);
-  const [large, setLarge] = useState(false);
   const play = () => {
     if (ref.current.ended) ref.current.currentTime = 0;
     ref.current.play().catch(() => setPlaying(false));
@@ -52,9 +60,36 @@ function RecordedPlayer({ entry }) {
     if (video.readyState >= 1) setDuration(video.duration);
     if (video.readyState >= 2) setLoaded(true);
     if (video.error) setFailed(true);
-    const media = matchMedia('(prefers-reduced-motion: reduce)');
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const narrow = matchMedia('(max-width: 800px)');
+    const connection = navigator.connection;
+    let restore;
+    const changeSource = () => {
+      if (!media?.mobile) return;
+      const wasPlaying = !video.paused;
+      const fraction = Number.isFinite(video.duration) ? video.currentTime / video.duration : 0;
+      video.pause();
+      setPlaying(false);
+      setLoaded(false);
+      setFailed(false);
+      reset();
+      if (restore) video.removeEventListener('loadedmetadata', restore);
+      restore = () => {
+        video.currentTime = Math.min(video.duration, fraction * video.duration);
+        if (wasPlaying) sync();
+      };
+      video.addEventListener('loadedmetadata', restore, { once: true });
+      // Reevaluate <source media> on rotation; only the selected rendition is requested.
+      video.load();
+      if (wasPlaying) sync();
+    };
     const sync = () => {
-      if (document.hidden || !inView.current || media.matches || manuallyPaused.current)
+      if (
+        document.hidden ||
+        !inView.current ||
+        ((reduced.matches || connection?.saveData) && !manuallyPlaying.current) ||
+        manuallyPaused.current
+      )
         video.pause();
       else play();
     };
@@ -64,57 +99,20 @@ function RecordedPlayer({ entry }) {
     });
     observer.observe(video);
     document.addEventListener('visibilitychange', sync);
-    media.addEventListener('change', sync);
+    reduced.addEventListener('change', sync);
+    narrow.addEventListener('change', changeSource);
+    connection?.addEventListener('change', sync);
     sync();
     return () => {
       video.pause();
       observer.disconnect();
       document.removeEventListener('visibilitychange', sync);
-      media.removeEventListener('change', sync);
+      reduced.removeEventListener('change', sync);
+      narrow.removeEventListener('change', changeSource);
+      connection?.removeEventListener('change', sync);
+      if (restore) video.removeEventListener('loadedmetadata', restore);
     };
   }, []);
-  useEffect(() => {
-    if (!large) return;
-    const previous = document.activeElement;
-    const close = (event) => {
-      if (event.key === 'Escape') setLarge(false);
-      if (event.key === 'Tab') {
-        const controls = [
-          ...player.current.querySelectorAll('button:not(:disabled), input:not(:disabled)'),
-        ];
-        const first = controls[0];
-        const last = controls.at(-1);
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    };
-    // The player can live inside the site layout or the standalone workbench.
-    // Preserve every ancestor sibling's prior state, including the site header.
-    const outside = new Map();
-    for (let current = player.current; current?.parentElement; current = current.parentElement) {
-      for (const sibling of current.parentElement.children) {
-        if (sibling !== current && sibling instanceof HTMLElement) {
-          outside.set(sibling, sibling.inert);
-          sibling.inert = true;
-        }
-      }
-      if (current.parentElement === document.body) break;
-    }
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', close);
-    return () => {
-      for (const [node, inert] of outside) node.inert = inert;
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener('keydown', close);
-      previous?.focus({ preventScroll: true });
-    };
-  }, [large]);
   return (
     <div
       ref={player}
@@ -122,29 +120,75 @@ function RecordedPlayer({ entry }) {
       role={large ? 'dialog' : undefined}
       aria-modal={large ? true : undefined}
       aria-label={large ? '放大录屏' : undefined}
+      style={{
+        '--recording-ratio': media?.width && media?.height ? media.width / media.height : 1.8,
+        '--recording-mobile-ratio': media?.mobile ? media.mobile.width / media.mobile.height : 1.8,
+      }}
     >
-      <div className="recording-stage">
+      {large && (
+        <div className="recording-zoom">
+          <span>缩放后可拖动画面</span>
+          <button
+            className="icon-button"
+            aria-label="缩小画面"
+            disabled={view.zoom <= 1}
+            onClick={() => changeZoom(view.zoom - 0.5)}
+          >
+            <Minus size={16} />
+          </button>
+          <button className="zoom-reset" aria-label="重置画面缩放" onClick={reset}>
+            {Math.round(view.zoom * 100)}%
+          </button>
+          <button
+            className="icon-button"
+            aria-label="放大画面"
+            disabled={view.zoom >= 3}
+            onClick={() => changeZoom(view.zoom + 0.5)}
+          >
+            <Plus size={16} />
+          </button>
+        </div>
+      )}
+      <div
+        ref={stage}
+        className="recording-stage"
+        tabIndex={large ? 0 : undefined}
+        aria-label={large ? '录屏画面，可拖动或用方向键移动' : undefined}
+        {...stageEvents}
+      >
         <video
           ref={ref}
-          src={entry.previewRecording}
-          poster={entry.poster}
           muted
           playsInline
           loop
-          preload="auto"
+          preload="none"
+          style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom})` }}
           aria-label={entry.title + '原作录屏'}
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
           onTimeUpdate={() => setTime(ref.current.currentTime)}
           onLoadedMetadata={() => setDuration(ref.current.duration)}
           onLoadedData={() => setLoaded(true)}
-          onError={() => {
+          onError={(event) => {
+            // A skipped responsive <source> can error while the selected video succeeds.
+            if (event.target !== event.currentTarget) return;
             setFailed(true);
             setPlaying(false);
           }}
-        />
+        >
+          {media?.mobile && (
+            <source media="(max-width: 800px)" src={media.mobile.video} type="video/mp4" />
+          )}
+          <source src={entry.previewRecording} type="video/mp4" onError={() => setFailed(true)} />
+        </video>
+        {!loaded && !failed && (
+          <picture className="recording-poster">
+            {media?.mobile && <source media="(max-width: 800px)" srcSet={media.mobile.poster} />}
+            <img src={entry.poster} alt="" />
+          </picture>
+        )}
         {(!loaded || failed) && (
-          <div className="media-state">
+          <div className={'media-state' + (!failed ? ' media-loading' : '')}>
             {failed ? (
               <>
                 <p>录屏无法加载</p>
@@ -153,7 +197,7 @@ function RecordedPlayer({ entry }) {
                 </a>
               </>
             ) : (
-              <p>加载中…</p>
+              <p>{playing ? '加载中…' : '点击播放录屏'}</p>
             )}
           </div>
         )}
@@ -165,6 +209,7 @@ function RecordedPlayer({ entry }) {
           disabled={failed}
           onClick={() => {
             manuallyPaused.current = playing;
+            manuallyPlaying.current = !playing;
             if (playing) ref.current.pause();
             else play();
           }}
@@ -182,6 +227,7 @@ function RecordedPlayer({ entry }) {
           aria-valuetext={time.toFixed(1) + ' 秒，共 ' + duration.toFixed(1) + ' 秒'}
           onChange={(event) => {
             manuallyPaused.current = true;
+            manuallyPlaying.current = false;
             ref.current.pause();
             const next = Number(event.target.value);
             ref.current.currentTime = next;
@@ -195,6 +241,7 @@ function RecordedPlayer({ entry }) {
           className="icon-button"
           aria-label={large ? '缩小录屏' : '放大录屏'}
           aria-pressed={large}
+          data-close-recording
           onClick={() => setLarge(!large)}
         >
           {large ? <Minimize2 size={16} /> : <Maximize2 size={16} />}

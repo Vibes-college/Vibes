@@ -19,10 +19,12 @@ test('all owned recordings match their provenance and never request the unavaila
     assert.equal(entry.previewRecording, recording.video.path.replace(/^public/, ''));
     assert.equal(entry.poster, recording.poster.path.replace(/^public/, ''));
     assert.match(entry.recordingCredit, /本地录制/);
-    assert.ok(
-      ('sourceFrames' in recording ? recording.sourceFrames : recording.encodedFrames) > 10,
-    );
-    for (const asset of [recording.video, recording.poster]) {
+    assert.ok(recording.sourceFrames > 10);
+    for (const asset of [
+      recording.video,
+      recording.poster,
+      ...Object.values(recording.renditions).flatMap((variant) => [variant.video, variant.poster]),
+    ]) {
       const bytes = await readFile(new URL('../../' + asset.path, import.meta.url));
       assert.equal(bytes.length, asset.bytes, asset.path);
       assert.equal(createHash('sha256').update(bytes).digest('hex'), asset.sha256, asset.path);

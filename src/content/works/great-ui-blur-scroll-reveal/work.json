@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/BlurScrollRevealPreview.tsx",
     "media": {
       "video": "/great-ui/media/blur-scroll-reveal-demo.mp4",
-      "poster": "/great-ui/media/blur-scroll-reveal-demo-poster.jpg"
+      "poster": "/great-ui/media/blur-scroll-reveal-demo-poster.jpg",
+      "width": 1920,
+      "height": 904,
+      "mobile": {
+        "video": "/great-ui/media/blur-scroll-reveal-mobile.mp4",
+        "poster": "/great-ui/media/blur-scroll-reveal-mobile-poster.jpg",
+        "width": 716,
+        "height": 1480,
+        "duration": 9.166667
+      },
+      "card": {
+        "video": "/great-ui/media/blur-scroll-reveal-card.mp4",
+        "poster": "/great-ui/media/blur-scroll-reveal-card-poster.jpg",
+        "width": 480,
+        "height": 226,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "scroll-text",

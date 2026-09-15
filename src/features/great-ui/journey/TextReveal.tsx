@@ -1,5 +1,6 @@
+import * as motion from 'motion/react-m';
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, type MotionValue } from 'motion/react';
+import { useScroll, useTransform, type MotionValue } from 'motion/react';
 
 // Adapted from Great UI/TextReveal.tsx, eda1b85e: same scroll/range relationship,
 // readable base text, grapheme-safe Chinese/emoji, and a static reduced-motion path.

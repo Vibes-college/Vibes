@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/VinylAlbumCardPreview.tsx",
     "media": {
       "video": "/great-ui/media/vinyl-album-card-demo.mp4",
-      "poster": "/great-ui/media/vinyl-album-card-demo-poster.jpg"
+      "poster": "/great-ui/media/vinyl-album-card-demo-poster.jpg",
+      "width": 1000,
+      "height": 840,
+      "mobile": {
+        "video": "/great-ui/media/vinyl-album-card-demo.mp4",
+        "poster": "/great-ui/media/vinyl-album-card-demo-poster.jpg",
+        "width": 1000,
+        "height": 840,
+        "duration": 8.066667
+      },
+      "card": {
+        "video": "/great-ui/media/vinyl-album-card-card.mp4",
+        "poster": "/great-ui/media/vinyl-album-card-card-poster.jpg",
+        "width": 480,
+        "height": 404,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "album-display",

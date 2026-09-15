@@ -1,5 +1,6 @@
+import * as motion from 'motion/react-m';
 import { useId, useState, type ReactNode } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
 
 // Adapted from Great UI/Accordion.tsx, eda1b85e: preserve height/opacity reveal,
 // add labelled regions, deterministic initial state and intentional multi-open mode.

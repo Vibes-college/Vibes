@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/CurtainPageTransitionPreview.tsx",
     "media": {
       "video": "/great-ui/media/curtain-page-transition-demo.mp4",
-      "poster": "/great-ui/media/curtain-page-transition-demo-poster.jpg"
+      "poster": "/great-ui/media/curtain-page-transition-demo-poster.jpg",
+      "width": 1568,
+      "height": 1032,
+      "mobile": {
+        "video": "/great-ui/media/curtain-page-transition-mobile.mp4",
+        "poster": "/great-ui/media/curtain-page-transition-mobile-poster.jpg",
+        "width": 604,
+        "height": 1032,
+        "duration": 10.033333
+      },
+      "card": {
+        "video": "/great-ui/media/curtain-page-transition-card.mp4",
+        "poster": "/great-ui/media/curtain-page-transition-card-poster.jpg",
+        "width": 480,
+        "height": 316,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "page-transition",

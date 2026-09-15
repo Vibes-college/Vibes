@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/WordFocusScrollPreview.tsx",
     "media": {
       "video": "/great-ui/media/word-focus-scroll-demo.mp4",
-      "poster": "/great-ui/media/word-focus-scroll-demo-poster.jpg"
+      "poster": "/great-ui/media/word-focus-scroll-demo-poster.jpg",
+      "width": 1920,
+      "height": 904,
+      "mobile": {
+        "video": "/great-ui/media/word-focus-scroll-mobile.mp4",
+        "poster": "/great-ui/media/word-focus-scroll-mobile-poster.jpg",
+        "width": 716,
+        "height": 1480,
+        "duration": 13.033333
+      },
+      "card": {
+        "video": "/great-ui/media/word-focus-scroll-card.mp4",
+        "poster": "/great-ui/media/word-focus-scroll-card-poster.jpg",
+        "width": 480,
+        "height": 226,
+        "duration": 6.0
+      }
     },
     "capability": {
       "family": "scroll-text",

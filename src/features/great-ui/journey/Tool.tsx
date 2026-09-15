@@ -1,6 +1,6 @@
 import { useAssetBase } from '../AssetContext';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { motion } from 'motion/react';
+import * as motion from 'motion/react-m';
 import { isProjectData } from './data';
 
 interface CheckRow {

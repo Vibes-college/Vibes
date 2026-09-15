@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/FloatingDockMenuPreview.tsx",
     "media": {
       "video": "/great-ui/media/floating-dock-menu-demo.mp4",
-      "poster": "/great-ui/media/floating-dock-menu-demo-poster.jpg"
+      "poster": "/great-ui/media/floating-dock-menu-demo-poster.jpg",
+      "width": 720,
+      "height": 684,
+      "mobile": {
+        "video": "/great-ui/media/floating-dock-menu-demo.mp4",
+        "poster": "/great-ui/media/floating-dock-menu-demo-poster.jpg",
+        "width": 720,
+        "height": 684,
+        "duration": 9.033333
+      },
+      "card": {
+        "video": "/great-ui/media/floating-dock-menu-card.mp4",
+        "poster": "/great-ui/media/floating-dock-menu-card-poster.jpg",
+        "width": 480,
+        "height": 456,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "settings-dock",

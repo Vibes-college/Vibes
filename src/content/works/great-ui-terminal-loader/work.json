@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/TerminalLoaderPreview.tsx",
     "media": {
       "video": "/great-ui/media/terminal-loader-demo.mp4",
-      "poster": "/great-ui/media/terminal-loader-demo-poster.jpg"
+      "poster": "/great-ui/media/terminal-loader-demo-poster.jpg",
+      "width": 1104,
+      "height": 240,
+      "mobile": {
+        "video": "/great-ui/media/terminal-loader-demo.mp4",
+        "poster": "/great-ui/media/terminal-loader-demo-poster.jpg",
+        "width": 1104,
+        "height": 240,
+        "duration": 7.033008
+      },
+      "card": {
+        "video": "/great-ui/media/terminal-loader-card.mp4",
+        "poster": "/great-ui/media/terminal-loader-card-poster.jpg",
+        "width": 480,
+        "height": 104,
+        "duration": 7.083008
+      }
     },
     "capability": {
       "family": "waiting-indicator",

@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/AceternityButtonPreview.tsx",
     "media": {
       "video": "/great-ui/media/aceternity-button-demo.mp4",
-      "poster": "/great-ui/media/aceternity-button-demo-poster.jpg"
+      "poster": "/great-ui/media/aceternity-button-demo-poster.jpg",
+      "width": 1472,
+      "height": 248,
+      "mobile": {
+        "video": "/great-ui/media/aceternity-button-mobile.mp4",
+        "poster": "/great-ui/media/aceternity-button-mobile-poster.jpg",
+        "width": 508,
+        "height": 560,
+        "duration": 7.033333
+      },
+      "card": {
+        "video": "/great-ui/media/aceternity-button-card.mp4",
+        "poster": "/great-ui/media/aceternity-button-card-poster.jpg",
+        "width": 480,
+        "height": 530,
+        "duration": 7.083333
+      }
     },
     "capability": {
       "family": "action-button",

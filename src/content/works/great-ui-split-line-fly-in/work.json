@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/SplitLineFlyInPreview.tsx",
     "media": {
       "video": "/great-ui/media/split-line-fly-in-demo.mp4",
-      "poster": "/great-ui/media/split-line-fly-in-demo-poster.jpg"
+      "poster": "/great-ui/media/split-line-fly-in-demo-poster.jpg",
+      "width": 1920,
+      "height": 830,
+      "mobile": {
+        "video": "/great-ui/media/split-line-fly-in-mobile.mp4",
+        "poster": "/great-ui/media/split-line-fly-in-mobile-poster.jpg",
+        "width": 716,
+        "height": 1480,
+        "duration": 9.033333
+      },
+      "card": {
+        "video": "/great-ui/media/split-line-fly-in-card.mp4",
+        "poster": "/great-ui/media/split-line-fly-in-card-poster.jpg",
+        "width": 480,
+        "height": 208,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "scroll-text",

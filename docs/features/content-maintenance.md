@@ -14,7 +14,7 @@ code-sources:
     'tests/content-lifecycle.spec.ts',
     'tests/unit/glossary.test.ts',
   ]
-code-revision: 'd0e0a0da83c600609b649155aa1b31622ec264a2323de914080cab5a7b54193c'
+code-revision: '9c3990ae2ecf9b59386816c778ba134d4e1efccb9b5ef4d7f5d0c3bb58d07084'
 ---
 
 # 功能名：维护作品内容
@@ -40,7 +40,7 @@ code-revision: 'd0e0a0da83c600609b649155aa1b31622ec264a2323de914080cab5a7b54193c
 
 ### 维护Great UI学习材料
 
-从学习页顶部编辑图标进入该语言的GitHub编辑页，修改一份Markdown的三个正文面板及文件头learning中的目标、检查和术语引用，提出PR并查看检查及阶段预览。共享源码、组合能力与素材路径在同目录work.json；媒体文件放public/great-ui/media，来源及摘要登记在local-recordings.json。页面与复制任务共同读取这些字段，不在组件里另写一份文案。先运行content:validate，再构建核对面板、术语、任务与搜索；编辑源码或共享模板时升级为verify/budget。完整操作和示例见[学习交互作品](great-ui-learning.md#维护同一份材料)，格式见[交互学习材料](../system/content-model.md#交互学习材料)。
+从学习页顶部编辑图标进入该语言的GitHub编辑页，修改一份Markdown的三个正文面板及文件头learning中的目标、检查和术语引用，提出PR并查看检查及阶段预览。共享源码、组合能力与素材路径在同目录work.json；媒体文件放public/great-ui/media，来源及各版本摘要登记在local-recordings.json；高清、手机构图与合集轻量封面按[录制与维护交互演示](recording-previews.md)分别检查。页面与复制任务共同读取这些字段，不在组件里另写一份文案。先运行content:validate，再构建核对面板、术语、任务与搜索；编辑源码或共享模板时升级为verify/budget。完整操作和示例见[学习交互作品](great-ui-learning.md#维护同一份材料)，格式见[交互学习材料](../system/content-model.md#交互学习材料)。
 
 ### 收录与引用UI/UX术语
 

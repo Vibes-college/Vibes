@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/AvatarStackPreview.tsx",
     "media": {
       "video": "/great-ui/media/avatar-stack-demo.mp4",
-      "poster": "/great-ui/media/avatar-stack-demo-poster.jpg"
+      "poster": "/great-ui/media/avatar-stack-demo-poster.jpg",
+      "width": 1288,
+      "height": 1196,
+      "mobile": {
+        "video": "/great-ui/media/avatar-stack-demo.mp4",
+        "poster": "/great-ui/media/avatar-stack-demo-poster.jpg",
+        "width": 1288,
+        "height": 1196,
+        "duration": 9.033333
+      },
+      "card": {
+        "video": "/great-ui/media/avatar-stack-card.mp4",
+        "poster": "/great-ui/media/avatar-stack-card-poster.jpg",
+        "width": 480,
+        "height": 446,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "people-list",

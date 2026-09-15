@@ -21,7 +21,7 @@ export default [
   ...tseslint.configs.recommended,
   ...astro.configs.recommended,
   {
-    files: ['src/features/great-ui/**/*.jsx'],
+    files: ['src/features/great-ui/**/*.jsx', 'src/features/great-ui/useRecordingView.js'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: { ecmaFeatures: { jsx: true } },

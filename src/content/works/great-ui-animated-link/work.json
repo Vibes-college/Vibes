@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/AnimatedLinkPreview.tsx",
     "media": {
       "video": "/great-ui/media/animated-link-demo.mp4",
-      "poster": "/great-ui/media/animated-link-demo-poster.jpg"
+      "poster": "/great-ui/media/animated-link-demo-poster.jpg",
+      "width": 1752,
+      "height": 648,
+      "mobile": {
+        "video": "/great-ui/media/animated-link-mobile.mp4",
+        "poster": "/great-ui/media/animated-link-mobile-poster.jpg",
+        "width": 604,
+        "height": 1164,
+        "duration": 8.033333
+      },
+      "card": {
+        "video": "/great-ui/media/animated-link-card.mp4",
+        "poster": "/great-ui/media/animated-link-card-poster.jpg",
+        "width": 480,
+        "height": 480,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "link-feedback",

@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/PixelToAsciiImagePreview.tsx",
     "media": {
       "video": "/great-ui/media/pixel-to-ascii-image-demo.mp4",
-      "poster": "/great-ui/media/pixel-to-ascii-image-demo-poster.jpg"
+      "poster": "/great-ui/media/pixel-to-ascii-image-demo-poster.jpg",
+      "width": 1232,
+      "height": 1232,
+      "mobile": {
+        "video": "/great-ui/media/pixel-to-ascii-image-demo.mp4",
+        "poster": "/great-ui/media/pixel-to-ascii-image-demo-poster.jpg",
+        "width": 1232,
+        "height": 1232,
+        "duration": 8.033333
+      },
+      "card": {
+        "video": "/great-ui/media/pixel-to-ascii-image-card.mp4",
+        "poster": "/great-ui/media/pixel-to-ascii-image-card-poster.jpg",
+        "width": 420,
+        "height": 420,
+        "duration": 5.5
+      }
     },
     "capability": {
       "family": "ascii-image",

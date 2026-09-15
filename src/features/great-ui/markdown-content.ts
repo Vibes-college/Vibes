@@ -41,6 +41,7 @@ export function learningEntry(work: CatalogWork, locale: Locale, origin?: string
     previewRecording: media(meta.media.video),
     previewImage: media(meta.media.image),
     poster: meta.media.poster,
+    recordingMedia: meta.media,
     recordingCredit: '本地录制 Great UI 原作交互',
     recordingNote:
       '在原作公开页面实际操作并捕获画面，由 Vibes 维护预览。页面录制时间与源码版本分别记录，录屏不代表目标项目已完成接入。',

@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/MinimalButtonsPreview.tsx",
     "media": {
       "video": "/great-ui/media/minimal-buttons-demo.mp4",
-      "poster": "/great-ui/media/minimal-buttons-demo-poster.jpg"
+      "poster": "/great-ui/media/minimal-buttons-demo-poster.jpg",
+      "width": 1424,
+      "height": 248,
+      "mobile": {
+        "video": "/great-ui/media/minimal-buttons-mobile.mp4",
+        "poster": "/great-ui/media/minimal-buttons-mobile-poster.jpg",
+        "width": 572,
+        "height": 448,
+        "duration": 7.066667
+      },
+      "card": {
+        "video": "/great-ui/media/minimal-buttons-card.mp4",
+        "poster": "/great-ui/media/minimal-buttons-card-poster.jpg",
+        "width": 480,
+        "height": 376,
+        "duration": 7.125
+      }
     },
     "capability": {
       "family": "action-button",

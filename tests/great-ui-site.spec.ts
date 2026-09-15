@@ -31,18 +31,22 @@ test('one collection leads to searchable learning pages with honest language and
   await expect(page).toHaveURL(new RegExp(collection));
   await expect(page.locator('.section-content a[href*="/works/great-ui-"]')).toHaveCount(48);
   await page.goto('/zh/');
-  expect(await page.locator('[data-grid] a[href*="great-ui-"]').count()).toBeLessThanOrEqual(1);
+  await expect(page.locator('[data-browse-grid]')).toHaveCount(1);
+  expect(
+    await page.locator('[data-browse-grid] .work-card--collection').count(),
+  ).toBeLessThanOrEqual(1);
 });
 
 test('all 48 site previews decode under the real content policy and load only the selected clip', async ({
   page,
+  isMobile,
 }) => {
   test.setTimeout(180_000);
   const errors: string[] = [];
   const media: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('request', (request) => {
-    if (request.resourceType() === 'media') media.push(request.url());
+    if (/\/great-ui\/media\/.*\.mp4$/.test(request.url())) media.push(request.url());
   });
   for (const entry of learningMaterials().entries) {
     media.length = 0;
@@ -59,7 +63,13 @@ test('all 48 site previews decode under the real content policy and load only th
       )
       .toBe(true);
     expect(
-      media.every((url) => new URL(url).pathname === entry.previewRecording),
+      media.every(
+        (url) =>
+          new URL(url).pathname ===
+          (isMobile
+            ? entry.recordingMedia.mobile?.video || entry.previewRecording
+            : entry.previewRecording),
+      ),
       entry.slug,
     ).toBe(true);
     expect(

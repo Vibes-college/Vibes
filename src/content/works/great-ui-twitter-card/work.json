@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/TwitterCardPreview.tsx",
     "media": {
       "video": "/great-ui/media/twitter-card-demo.mp4",
-      "poster": "/great-ui/media/twitter-card-demo-poster.jpg"
+      "poster": "/great-ui/media/twitter-card-demo-poster.jpg",
+      "width": 720,
+      "height": 812,
+      "mobile": {
+        "video": "/great-ui/media/twitter-card-demo.mp4",
+        "poster": "/great-ui/media/twitter-card-demo-poster.jpg",
+        "width": 720,
+        "height": 812,
+        "duration": 7.033333
+      },
+      "card": {
+        "video": "/great-ui/media/twitter-card-card.mp4",
+        "poster": "/great-ui/media/twitter-card-card-poster.jpg",
+        "width": 480,
+        "height": 542,
+        "duration": 7.083333
+      }
     },
     "capability": {
       "family": "social-hover",

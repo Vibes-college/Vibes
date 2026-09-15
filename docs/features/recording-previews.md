@@ -7,10 +7,12 @@ code-sources:
   [
     'src/features/great-ui/data/local-recordings.json',
     'src/features/great-ui/Recording.jsx',
+    'src/features/great-ui/useRecordingView.js',
+    'tests/great-ui-previews.spec.ts',
     'tests/unit/great-ui-content.test.ts',
     'tests/great-ui/learning.spec.ts',
   ]
-code-revision: '1dc8bf47c63d860c24a5e56800c7c289313844d30017e7b0e1f33ffa9ec7da4f'
+code-revision: 'a3aecb7ca1eb870195fcd4fd655c33f13f8a12e34afe410a21195413ca6b15ed'
 ---
 
 # 功能名：录制与维护交互演示
@@ -37,26 +39,26 @@ flowchart LR
 
 ## 已实测的捕获参数
 
-2026-09-14的45段Great UI录屏使用下表。多数约7秒，消息序列为12–13秒，模拟部署流程为19秒；录制仍按真实时间进行。较快是因为各段只展示关键动作，并复用同一套捕获、编码和检查过程。
+48件Great UI均保留连续原始帧和时间线。桌面与手机先分别观察；30件另录手机构图，其余使用完整桌面构图，来源记录说明复用理由。消息、滚动与模拟部署按实际动作延长，不能为统一时长裁断过程。
 
-| 项目     | 使用值与含义                                                           |
-| -------- | ---------------------------------------------------------------------- |
-| 浏览器   | Codex内置浏览器，原作公开交互页面                                      |
-| 布局视口 | 1280×720；截图流限制最大1280×720，实际像素需另核对                     |
-| 捕获     | JPEG，quality=82，everyNthFrame=1                                      |
-| 帧取样   | 接收实际帧，以时间戳间隔至少1/24秒取样；不是承诺每秒捕获到24个不同画面 |
-| 输出     | 24fps、H.264、yuv420p、无音轨、faststart                               |
-| 时长     | 约7秒，按动作需要调整；不能截掉结果或留下长时间空白                    |
-| 证据     | 原作地址、时间、动作、原始帧与时间戳、输出文件大小及SHA-256            |
+| 项目     | 使用值与含义                                                               |
+| -------- | -------------------------------------------------------------------------- |
+| 浏览器   | Codex内置浏览器，原作公开交互页面                                          |
+| 布局视口 | 桌面1280×720或900高；手机390×844，长列表可用1000高；DPR 2                  |
+| 捕获     | JPEG，quality=95，everyNthFrame=1，最大3000像素                            |
+| 帧取样   | 接收实际帧，以时间戳间隔至少1/30秒取样；不是承诺每秒捕获到30个不同画面     |
+| 输出     | 高清30fps、H.264、4:2:0（可含全范围yuvj420p）、方形像素、无音轨、faststart |
+| 时长     | 高清按动作保留完整过程（上限60秒）；封面至多12秒                           |
+| 证据     | 原作地址、时间、动作、原始帧与时间戳、输出文件大小及SHA-256                |
 
 先按当前浏览器工具文档取得当前标签页和CDP能力，不保存或复用旧的标签页ID。关键调用如下：
 
 ```javascript
 await cdp.send('Page.startScreencast', {
   format: 'jpeg',
-  quality: 82,
-  maxWidth: 1280,
-  maxHeight: 720,
+  quality: 95,
+  maxWidth: 3000,
+  maxHeight: 3000,
   everyNthFrame: 1,
 });
 // 循环读取Page.screencastFrame，保存选中的帧和metadata.timestamp。
@@ -66,7 +68,7 @@ await cdp.send('Page.screencastFrameAck', { sessionId: frame.sessionId });
 await cdp.send('Page.stopScreencast');
 ```
 
-本次循环通过CDP能力的`readEvents`读取`Page.screencastFrame`，记录并推进事件游标，每批最多100条、等待上限80ms。帧的`data`为base64 JPEG；保存为连续编号文件，并保留原始时间戳。动作在同一个循环中按已观察的控件执行，例如第1秒点击一次、第3.5秒点击另一个方向。不能只保存首尾两帧后声称录下了过渡过程。
+捕获循环通过CDP能力的`readEvents`读取`Page.screencastFrame`，记录并推进事件游标，每批最多100条、等待上限30ms。帧的`data`为base64 JPEG；保存为连续编号文件，并保留原始时间戳。动作在同一个循环中按已观察的控件执行，例如第1秒点击一次、第3.5秒点击另一个方向。不能只保存首尾两帧后声称录下了过渡过程。
 
 页面不持续重绘时，帧数可能很少。编码时必须保留相邻帧的真实时间差，不能直接把文件序列按固定帧率拼起来，否则会改变原作速度。`Page.startScreencast`并非带音频的系统录屏；需要讲解或原声音轨时另选录音流程。
 
@@ -85,12 +87,12 @@ duration 0.500
 file '00002.jpg'
 ```
 
-下面是本次实测的编码参数。`capture/frames.ffconcat`和`output/demo.mp4`是示例路径，先创建输出目录并换成当前案例路径；已有输出保留，使用新文件名。
+下面是高清素材的编码示例。`capture/frames.ffconcat`和`output/demo.mp4`是示例路径，先创建输出目录并换成当前案例路径；已有输出保留，使用新文件名。
 
 ```sh
 ffmpeg -n -safe 0 -i capture/frames.ffconcat \
-  -vf 'crop=1248:560:16:84,scale=960:-2' \
-  -r 24 -fps_mode cfr -c:v libx264 -preset medium -crf 27 \
+  -vf 'crop=2304:1084:128:196,scale=1920:-2,setsar=1' \
+  -r 30 -fps_mode cfr -c:v libx264 -preset medium -crf 18 \
   -pix_fmt yuv420p -an -movflags +faststart output/demo.mp4
 
 ffmpeg -n -ss 3.5 -i output/demo.mp4 \
@@ -100,13 +102,13 @@ ffprobe -v error -show_entries stream=codec_name,width,height,pix_fmt \
   -show_entries format=duration,size -of json output/demo.mp4
 ```
 
-裁切值只适用于本次原作布局，不能作为所有页面的固定值。先检查帧尺寸、效果覆盖范围和按钮位置；滚动文字与页面级主题过渡尤其不能裁掉关键部分。宽高需适合yuv420p；`scale=960:-2`自动计算偶数高度。`faststart`将播放所需索引放在文件前部，便于尽早播放。海报时间选择实际有内容的一帧，不能统一取开头的空白。
+裁切值只适用于本次原作布局，不能作为所有页面的固定值。先检查帧尺寸、效果覆盖范围和按钮位置；滚动文字与页面级主题过渡尤其不能裁掉关键部分。宽高需适合yuv420p；`scale=1920:-2`自动计算偶数高度，最后的`setsar=1`保证浏览器显示尺寸与记录一致。`faststart`将播放所需索引放在文件前部，便于尽早播放。海报时间选择实际有内容的一帧，不能统一取开头的空白。
 
-本机FFmpeg没有可用的WebP编码器，本次海报使用JPEG。使用什么格式以已安装工具和实际画质为准，不为了沿用文件后缀假造格式。Great UI全部短片与海报的预算为总计5MiB、单视频550KiB；站内学习内容另校验单图200KiB。这是48件学习材料的预算，不是以后所有视频的通用上限。正式站已有素材可用`npm run media:prepare`处理，命令见[内容维护](content-maintenance.md)；不要把它和浏览器录制当作同一步。
+高清素材默认CRF 18，复杂画面按清晰度与体积调整并逐件登记。轻量封面从已编码高清素材裁切片段，宽度不超过480像素，按实际内容调整帧率与质量。海报使用JPEG，选已展示关键内容的帧，避免空白或整屏遮罩。Great UI全套素材预算48MiB，单高清视频2MiB、单封面短片150KiB、封面短片总计4MiB、单海报200KiB。这是48件素材的存储约束；合集只取当前轻量短片，详情只取一份对应高清素材，普通首页脚本预算保持原上限。正式站已有素材可用`npm run media:prepare`处理，命令见[内容维护](content-maintenance.md)；不要把它和浏览器录制当作同一步。
 
 ## 来源记录与播放检查
 
-Great UI素材位于public/great-ui/media/；data/local-recordings.json记录48件的原作地址、日期、录制方式、时长，以及视频和海报的path、bytes、sha256。45段连续捕获另有recordedAt、actions与sourceFrames；沿用的初版三段只保留当日记录和编码帧数，没有逐帧时间表，不补造捕获数据。work.json中的learning.media指向本站路径，Markdown读取模块让站内与独立页面使用同一素材，单元测试核对摘要。其他内容接入正式站时按[媒体数据结构](../system/content-model.md#多媒体资料与展示)登记，不再建立第二份没有来源的文件表。
+Great UI素材位于public/great-ui/media/；data/local-recordings.json记录48件的原作地址、日期、录制方式、时长，以及视频和海报的path、bytes、sha256。renditions中的desktop、可选mobile与card分别保存实际宽高、时长、文件摘要和编码设置；捕获项另存原始时间线路径及摘要、视口像素、裁切、取景理由与实际动作。card来源指向对应高清素材及起点/时长。手机复用桌面时不伪造独立手机捕获。work.json中的learning.media指向本站路径，Markdown读取模块让站内与独立页面使用同一素材，单元测试核对摘要。其他内容接入正式站时按[媒体数据结构](../system/content-model.md#多媒体资料与展示)登记，不再建立第二份没有来源的文件表。
 
 - 原作线上页面不能证明其部署的源码版本。源码核对版本与页面录制日期分别保存；注明这是“本地录制原作交互”，不能标为作者原有MP4。
 - 检查实际尺寸、总时长和关键过程的连续画面，再在真实页面中确认`videoWidth > 0`、`readyState >= 2`、无媒体错误、`currentTime`推进且确实播放。还要检查暂停、离屏暂停和减少动态效果。
@@ -114,7 +116,7 @@ Great UI素材位于public/great-ui/media/；data/local-recordings.json记录48�
 - 原始帧、录制时间线和验收截图放resources/evidence中的当前任务目录；临时转码文件放.scratch。录制时不要带入账号秘密、聊天或无关窗口。
 - 遇到403、429、登录或访问限制，不通过换参数、账号、代理或连续重试获取受限素材。原作公开交互仍可正常访问时，可以在许可范围内操作并独立录制；没有可用原作时保留缺口。
 
-2026-09-14的来源与捕获回执在resources/evidence/018-great-ui-scale及其integration目录：48段本站视频与海报的摘要已核对，站内桌面Chromium逐件解码并播放通过。社交卡片、顶部菜单与设备模型分别检查取景，模拟部署录到原作预设的失败结果；不把该动画描述为真实部署。图片揭示与头像组虽然原作者目录仅提供静态图，原作有实际悬停交互，本站使用独立录制的视频。
+当前48件高清与封面来源在resources/evidence/018-great-ui-scale/clear-recordings，包含逐件原始帧、时间线及参数；素材摘要已核对，完整播放验收见下方。社交卡片、顶部菜单与设备模型分别检查取景，模拟部署录到原作预设的失败结果；不把该动画描述为真实部署。图片揭示与头像组虽然原作者目录仅提供静态图，原作有实际悬停交互，本站使用独立录制的视频。
 
 ## 已知问题 / 待办
 
@@ -135,9 +137,10 @@ Great UI素材位于public/great-ui/media/；data/local-recordings.json记录48�
 
 ## 验收标准
 
-- [x] 2026-09-14完成48件本站短片及海报，其中45件保留连续帧记录，初版三件沿用有效素材；全部文件摘要检查通过。
-- [x] 同日站内桌面Chromium逐件验证48段MP4解码、播放和本站来源。
-- [ ] 迁移后手机Chromium/WebKit、暂停、放大及异常的最终回归；进行中。
+- [x] 2026-09-15完成48件高清与轻量短片、30件独立窄屏版本和海报；全部保留连续帧及参数，逐件来源与文件摘要检查通过。
+- [x] 2026-09-14三类样板桌面Chromium、手机Chromium/WebKit共21项通过，包含播放、有效放大、拖动、焦点及按需请求；这不替代批量素材后的整体验收。
+- [x] 2026-09-15独立入口69项通过，覆盖三浏览器48件真实播放；126个独立MP4完整解码通过。媒体专项28项通过、2项设备跳过，覆盖暂停、有效放大、旋转、按需请求及异常。
+- [ ] 当前正式站完整回归与线上阶段预览；不能用独立入口通过代替。
 - [x] 其余32段视频与两件图片案例均已独立录制并接到本站；没有下载或代理受限作者视频。
 
 ## 对应的自动化测试

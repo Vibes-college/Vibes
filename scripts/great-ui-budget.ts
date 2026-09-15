@@ -20,6 +20,9 @@ const actual = {
   largestDetail: 0,
   localMedia: 0,
   largestLocalMedia: 0,
+  cardPreviews: 0,
+  largestCardPreview: 0,
+  largestPoster: 0,
 };
 for (const name of await readdir(path.join(root, 'content')))
   if (name.endsWith('.json') && !['catalog.json', 'capabilities.json'].includes(name))
@@ -31,10 +34,16 @@ for (const name of await readdir(path.join(root, 'great-ui/media'))) {
   const size = (await stat(path.join(root, 'great-ui/media', name))).size;
   actual.localMedia += size;
   actual.largestLocalMedia = Math.max(actual.largestLocalMedia, size);
+  if (name.endsWith('-card.mp4')) {
+    actual.cardPreviews += size;
+    actual.largestCardPreview = Math.max(actual.largestCardPreview, size);
+  }
+  if (/\.(jpg|png|webp|avif)$/.test(name))
+    actual.largestPoster = Math.max(actual.largestPoster, size);
 }
 // Measured baseline is ~80/5/51 KiB JS/CSS/lazy JS. Leave bounded room without changing production budgets.
-// Forty-eight owned clips and posters total about 4.5 MiB; a selected page loads one clip.
-// Only the selected clip loads; cap both individual files and the complete local media set.
+// The 48 clear recordings, 30 distinct phone crops and 48 light previews total ~37 MiB.
+// This is stored media, not an initial-page payload: only one selected rendition loads.
 const limits = {
   initialJs: 100 * 1024,
   initialCss: 8 * 1024,
@@ -42,8 +51,11 @@ const limits = {
   catalog: 20 * 1024,
   capabilities: 24 * 1024,
   largestDetail: 16 * 1024,
-  localMedia: 5 * 1024 * 1024,
-  largestLocalMedia: 550 * 1024,
+  localMedia: 48 * 1024 * 1024,
+  largestLocalMedia: 2 * 1024 * 1024,
+  cardPreviews: 4 * 1024 * 1024,
+  largestCardPreview: 150 * 1024,
+  largestPoster: 200 * 1024,
 };
 for (const key of Object.keys(limits) as (keyof typeof limits)[]) {
   assert.ok(actual[key] > 0, key + ' is missing');
@@ -51,7 +63,8 @@ for (const key of Object.keys(limits) as (keyof typeof limits)[]) {
 }
 const report = {
   generatedAt: new Date().toISOString(),
-  units: 'gzip bytes except localMedia and largestLocalMedia (original file bytes)',
+  units:
+    'gzip bytes for JS/CSS/JSON; original file bytes for local media, card previews and posters',
   actual,
   limits,
   scope:

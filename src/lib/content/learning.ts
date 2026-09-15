@@ -4,6 +4,15 @@ const text = z.string().trim().min(1);
 const strings = z.array(text).min(1);
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 const asset = text.refine((value) => /^\/great-ui\/media\/[a-z0-9._-]+$/.test(value));
+const rendition = z
+  .object({
+    video: asset.refine((value) => value.endsWith('.mp4')),
+    poster: asset.refine((value) => /\.(png|jpg|webp|avif)$/.test(value)),
+    width: z.number().int().min(1).max(3840),
+    height: z.number().int().min(1).max(3840),
+    duration: z.number().positive().max(60),
+  })
+  .strict();
 const sourcePath = text.refine((value) =>
   /^components\/(ui|site\/previews)\/[A-Za-z0-9_-]+\.tsx$/.test(value),
 );
@@ -21,9 +30,19 @@ export const learningMetadataSchema = z
         video: asset.refine((value) => value.endsWith('.mp4')).optional(),
         image: asset.refine((value) => /\.(png|jpg|webp|avif)$/.test(value)).optional(),
         poster: asset.refine((value) => /\.(png|jpg|webp|avif)$/.test(value)),
+        width: z.number().int().min(1).max(3840).optional(),
+        height: z.number().int().min(1).max(3840).optional(),
+        mobile: rendition.optional(),
+        card: rendition.extend({ duration: z.number().positive().max(12) }).optional(),
       })
       .strict()
-      .refine((value) => Boolean(value.video) !== Boolean(value.image), 'Use one video or image'),
+      .refine((value) => Boolean(value.video) !== Boolean(value.image), 'Use one video or image')
+      .refine((value) => Boolean(value.width) === Boolean(value.height), 'Use both dimensions')
+      .refine(
+        (value) =>
+          !(value.mobile || value.card) || Boolean(value.video && value.width && value.height),
+        'Renditions require a sized video',
+      ),
     capability: z
       .object({
         family: slug,

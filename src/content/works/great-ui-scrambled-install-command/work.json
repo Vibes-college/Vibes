@@ -31,7 +31,23 @@
     "previewSource": "components/site/previews/ScrambledInstallCommandPreview.tsx",
     "media": {
       "video": "/great-ui/media/scrambled-install-command-demo.mp4",
-      "poster": "/great-ui/media/scrambled-install-command-demo-poster.jpg"
+      "poster": "/great-ui/media/scrambled-install-command-demo-poster.jpg",
+      "width": 1424,
+      "height": 312,
+      "mobile": {
+        "video": "/great-ui/media/scrambled-install-command-demo.mp4",
+        "poster": "/great-ui/media/scrambled-install-command-demo-poster.jpg",
+        "width": 1424,
+        "height": 312,
+        "duration": 10.066667
+      },
+      "card": {
+        "video": "/great-ui/media/scrambled-install-command-card.mp4",
+        "poster": "/great-ui/media/scrambled-install-command-card-poster.jpg",
+        "width": 480,
+        "height": 192,
+        "duration": 8.0
+      }
     },
     "capability": {
       "family": "command-display",
