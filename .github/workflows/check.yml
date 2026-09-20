@@ -122,6 +122,7 @@ jobs:
           SITE_URL: https://vibes.college
           VIBES_DEPLOY: '1'
           DOCS_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
+          WRANGLER_LOG_PATH: .scratch/ci-wrangler
       - name: Prepare verified production source
         if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance == 'reuse'
         run: npm run paseo:production && npm run check
@@ -198,7 +199,10 @@ jobs:
         if: failure() && (needs.scope.outputs.scope == 'full' || needs.scope.outputs.scope == 'content')
         with:
           name: playwright-failures
-          path: test-results/
+          path: |
+            test-results/
+            .scratch/ci-wrangler/
+          include-hidden-files: true
           retention-days: 7
           if-no-files-found: ignore
   budget:

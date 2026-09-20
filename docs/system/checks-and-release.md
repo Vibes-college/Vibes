@@ -14,7 +14,7 @@ code-sources:
     'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'cf6143216f42d890a463088d8a6acacc5a37d916c4cb53bb29d4697d5d710c16'
+code-revision: 'dff372e050dfa586ecc87333c89da3856f15fd814eed1315a7ad31f6936af48b'
 ---
 
 # 检查与发布
@@ -50,7 +50,7 @@ verify与预算构建共享一个runner，budget仍是同名必需检查，以al
 
 PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA累计比较到当前源码，无法读取/非法/非当前历史时完整检查，防止旧网页提交被后续文档提交挤掉而漏发；checkout获取完整历史。冻结检查仍以事件比较提交和main共同祖先为准。DOCS_BASE_REF提供比较提交；冻结检查取它与origin/main的共同祖先，仅冻结已进入main的历史，不把未合并分支的complete稿提前冻结。无远端main的本地测试仓库可使用本地main，找不到有效基线仍失败。CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
 
-每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。整套浏览器用例串行执行，降低单个本地Worker的并发连接压力；全部设备与用例仍执行，不自动重试。浏览器测试关闭普通页面及独立缓存profile前，使用Playwright原生networkidle等待当前文档进入网络空闲，10秒超时仍失败，以降低本地代理在响应中断时退出的风险。筛选/刷新用例将YouTube缩略图替换为本地测试图片，避免外站可用性阻塞该用例；不代表原站可达，不改导航断言、原生音频或HTTP缓存专项。
+每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；完整回归将本地Wrangler诊断写入.scratch/ci-wrangler，失败时一并归档，供检查空白错误背后的代理原因。该verify步骤不持有生产发布凭据；日志可能包含仓库Worker源码，公开转贴前仍需复核。CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。整套浏览器用例串行执行，降低单个本地Worker的并发连接压力；全部设备与用例仍执行，不自动重试。浏览器测试关闭普通页面及独立缓存profile前，使用Playwright原生networkidle等待当前文档进入网络空闲，10秒超时仍失败，以降低本地代理在响应中断时退出的风险。筛选/刷新用例将YouTube缩略图替换为本地测试图片，避免外站可用性阻塞该用例；不代表原站可达，不改导航断言、原生音频或HTTP缓存专项。
 
 功能文档可按操作路径归并；旧编号通过legacy-feature-ids追溯，缺失对应、重复编号或来源缺失仍失败。历史规格正文与现有冻结检查不变。
 

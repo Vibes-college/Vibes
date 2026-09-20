@@ -25,9 +25,9 @@ shaped-by: ['004']
   原因：异步结果短暂令页面变矮，换页后的scrollend可能先覆盖目标history滚动值，page-load才读取已太迟。
   转化：[explore.ts](../src/scripts/explore.ts)在before-preparation保存目标位置，结果恢复后再对齐｜验证：[navigation.spec.ts](../tests/navigation.spec.ts)覆盖，WebKit连续5次专项通过｜转化日期：2026-09-06｜状态：已转化
 
-- [2026-09-06] 现象：完整E2E多次因本地Wrangler代理中途退出失败｜证据：resources/evidence/008-prose-markdown/verify-repeated-service-failure.log
+- [2026-09-20] 现象：完整E2E自2026-09-06多次因本地Wrangler代理中途退出失败；Linux CI的空白错误缺少随runner销毁的内部日志｜证据：resources/evidence/008-prose-markdown/verify-repeated-service-failure.log及[018 CI追踪](https://github.com/Vibes-college/Vibes/actions/runs/35495637388)
   原因：代理报告Network connection lost；与上游workers-sdk#15317症状一致，不能据此确定全部内部根因。
-  转化：[browser-test.ts](../tests/browser-test.ts)及[navigation.spec.ts](../tests/navigation.spec.ts)在普通页面和独立缓存profile关闭前等待有限资源完成，超时仍失败｜验证：008完整verify两轮111通过；后续封面回归补齐独立profile清理仍复现；改为单worker串行以降低并发压力，验证见006的cover-proximity证据目录｜转化日期：2026-09-06｜状态：已转化
+  转化：[browser-test.ts](../tests/browser-test.ts)及[navigation.spec.ts](../tests/navigation.spec.ts)在普通页面和独立缓存profile关闭前等待有限资源完成，超时仍失败；[CI](../.github/workflows/check.yml)另保留完整回归的Wrangler失败日志以便诊断｜验证：008两轮111通过及006单worker证据仍有效；018的首次导航CSS 500后服务退出，原样Linux专项20次通过，未确认内部根因，不把排空或串行视为彻底修复｜转化日期：2026-09-20｜状态：已转化
 
 - [2026-09-07] 现象：iOS 26 Safari反复报告正文回第一节或封面｜证据：resources/evidence/006-detail-reading/bounce-investigation/findings.md
   原因：旧实现同时使用CSS吸附与脚本滚动；模拟浏览器未完整复现真机回跳，不能把模拟通过当作真机修复确认。
