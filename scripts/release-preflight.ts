@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, realpathSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parsePaseoAssetConfig } from '../src/features/paseo-webui/asset-contract.ts';
@@ -102,6 +102,7 @@ function parentPolicy(html: string, headers: Record<string, string>): void {
 
 export function preflightRelease(directory = 'dist'): ReleaseExpectations {
   const root = realpathSync(directory);
+  if (existsSync(join(root, '__test'))) throw new Error('Test fixture output cannot be published.');
   requirePages(root);
   const read = (path: string) => {
     const file = join(root, path.replace(/^\//, ''), path.endsWith('/') ? 'index.html' : '');

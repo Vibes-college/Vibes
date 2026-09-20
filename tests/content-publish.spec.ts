@@ -39,7 +39,8 @@ for (const work of catalog.works.filter((work) => all || ids.has(work.meta.id)))
         `https://github.com/Vibes-college/Vibes/edit/main/src/content/works/${work.meta.id}/${locale}.${version.file.endsWith('.mdx') ? 'mdx' : 'md'}`,
       );
       expect(await localResourceFailures(page, request)).toEqual([]);
-      for (const image of await page.locator('#reading img').all()) {
+      // Local comparison placeholders have no source until the reader selects a file.
+      for (const image of await page.locator('#reading img[src]').all()) {
         const local = await image.evaluate(
           (element) => new URL((element as HTMLImageElement).src).origin === location.origin,
         );

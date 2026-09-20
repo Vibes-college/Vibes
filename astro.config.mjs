@@ -9,7 +9,25 @@ import { proseProcessor, proseHighlight } from './src/lib/markdown/config.ts';
 import { buildSite } from './src/config/site.ts';
 export default defineConfig({
   site: buildSite().origin,
-  integrations: [mdx(), react()],
+  integrations: [
+    mdx(),
+    react(),
+    {
+      name: 'test-only-beui-fixture',
+      hooks: {
+        'astro:config:setup': ({ injectRoute }) => {
+          if (process.env.VIBES_TEST_FIXTURES !== 'true') return;
+          if (process.env.VIBES_DEPLOY === '1')
+            throw new Error('Test fixtures cannot be deployed.');
+          injectRoute({
+            pattern: '/__test/beui/',
+            entrypoint: fileURLToPath(new URL('./tests/fixtures/beui.astro', import.meta.url)),
+            prerender: true,
+          });
+        },
+      },
+    },
+  ],
   markdown: { processor: proseProcessor, shikiConfig: proseHighlight },
   output: 'static',
   prefetch: { prefetchAll: false },

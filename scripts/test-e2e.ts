@@ -4,5 +4,7 @@ requireAction(['e2e', ...process.argv.slice(2)], ['e2e']);
 // Article references identify the published site, never a local test address.
 // Pass the same origin through build and Playwright's metadata expectations.
 process.env.SITE_URL ??= 'https://vibes.college';
+// Keep upstream regression components out of the public catalog and production output.
+process.env.VIBES_TEST_FIXTURES = 'true';
 run('npm', ['run', 'build']);
 run(process.execPath, ['node_modules/@playwright/test/cli.js', 'test']);

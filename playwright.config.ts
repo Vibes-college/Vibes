@@ -9,6 +9,7 @@ export default defineConfig({
     'prose.spec.ts',
     'mdx.spec.ts',
     'beui.spec.ts',
+    'ui-topic.spec.ts',
     'media.spec.ts',
     'paseo-loading.spec.ts',
     'paseo-chat.spec.ts',

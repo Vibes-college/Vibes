@@ -1,0 +1,24 @@
+<!--
+MIT License
+
+Copyright (c) Mark Mead
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<header class="sticky top-0 z-40 border-b border-gray-100 bg-white/90 backdrop-blur"><div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6"><a href="#" class="text-sm font-semibold tracking-tight text-gray-900">Guillermo de la Cruz</a><nav aria-label="Global" class="hidden md:block"><ul class="flex items-center gap-8 text-sm text-gray-600"><li><a href="#work" class="transition hover:text-gray-900">Work</a></li><li><a href="#about" class="transition hover:text-gray-900">About</a></li><li><a href="#contact" class="transition hover:text-gray-900">Contact</a></li></ul></nav><a href="#contact" class="hidden rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700 sm:block">Book a call</a></div></header><main><section class="mx-auto max-w-5xl px-4 pt-16 pb-20 sm:px-6 sm:pt-20"><span class="inline-flex items-center gap-2 rounded-full border border-gray-200 py-1 pr-3 pl-2 text-xs font-medium text-gray-600"><span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span></span>Available for one new project in Q3</span><h1 class="mt-6 max-w-2xl text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">I help funded product teams ship decisions they can still defend a year later.</h1><p class="mt-5 max-w-xl text-lg text-pretty text-gray-600">Contract product designer working end-to-end &mdash; research, flows, UI, and the handoff that keeps engineering from guessing. Based in Lisbon, working with teams everywhere.</p><div class="mt-8 flex flex-wrap items-center gap-4"><a href="#contact" class="rounded-md bg-violet-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-violet-700">Start a project</a><a href="#work" class="inline-flex items-center gap-1 text-sm font-medium text-gray-700 transition hover:text-gray-900">See the work<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 rtl:rotate-180"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg></a></div></section></main>

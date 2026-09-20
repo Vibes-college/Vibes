@@ -1,0 +1,24 @@
+<!--
+MIT License
+
+Copyright (c) Mark Mead
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<section class="overflow-hidden bg-gray-50 sm:grid sm:grid-cols-2"><div class="p-8 md:p-12 lg:px-16 lg:py-24"><div class="mx-auto max-w-xl text-center ltr:sm:text-left rtl:sm:text-right"><h1 class="text-2xl font-bold text-gray-900 md:text-3xl">Run your whole team from one dashboard</h1><p class="hidden text-gray-500 md:mt-4 md:block">Orbitly brings your tasks, docs, and conversations into a single workspace, so your team spends less time switching tools and more time shipping work.</p><div class="mt-4 md:mt-8"><a href="#" class="inline-block rounded-sm bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:ring-2 focus:ring-yellow-400 focus:outline-hidden">Start Free Trial</a></div></div></div><img alt="" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1160" class="h-56 w-full object-cover sm:h-full" /></section>
