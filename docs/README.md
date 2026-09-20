@@ -11,19 +11,20 @@ Markdown是给你看的代码说明，不是另一套可以晚些更新的报告
 
 ## 从哪里读
 
-| 想知道什么                                 | 唯一维护入口                                         |
-| ------------------------------------------ | ---------------------------------------------------- |
-| 项目是什么、已经实现什么、明确不做什么     | [项目总览](PROJECT_ANALYSIS.md)                      |
-| UI/UX学习的大主题、精品收录与Agent协作方向 | [UI/UX学习主题](topics/ui-ux.md)                     |
-| 网页动效与交互合集怎样分类、先选哪些案例   | [目录与候选清单](topics/ui-ux-motion-interaction.md) |
-| 用户与维护者怎样完成一件事                 | [功能索引](features/README.md)                       |
-| 作品资料、译文、关系与本地测试表怎么保存   | [数据结构](system/content-model.md)                  |
-| 框架、域名、环境变量和工具配置在哪里       | [运行配置](system/configuration.md)                  |
-| 页面提供什么资源、调用了哪些外部服务       | [接口与服务](system/interfaces.md)                   |
-| 数值限制、样式约束和校验规则是什么         | [系统规则](system/rules.md)                          |
-| 怎样检查、审阅、发布与恢复                 | [检查与发布](system/checks-and-release.md)           |
-| Agent规则与Skills怎样使用、更新及恢复      | [Agent规则维护](system/agent-guidance.md)            |
-| 原生助手怎样连接电脑、重建与维护           | [Paseo接入](system/local-assistant.md)               |
+| 想知道什么                                 | 唯一维护入口                                                 |
+| ------------------------------------------ | ------------------------------------------------------------ |
+| 项目是什么、已经实现什么、明确不做什么     | [项目总览](PROJECT_ANALYSIS.md)                              |
+| 学习专题的正文、案例、关系与路线怎样组织   | [专题制作规范](features/content-maintenance.md#组织学习专题) |
+| UI/UX学习的大主题、精品收录与Agent协作方向 | [UI/UX学习主题](topics/ui-ux.md)                             |
+| 网页动效与交互合集怎样分类、先选哪些案例   | [目录与候选清单](topics/ui-ux-motion-interaction.md)         |
+| 用户与维护者怎样完成一件事                 | [功能索引](features/README.md)                               |
+| 作品资料、译文、关系与本地测试表怎么保存   | [数据结构](system/content-model.md)                          |
+| 框架、域名、环境变量和工具配置在哪里       | [运行配置](system/configuration.md)                          |
+| 页面提供什么资源、调用了哪些外部服务       | [接口与服务](system/interfaces.md)                           |
+| 数值限制、样式约束和校验规则是什么         | [系统规则](system/rules.md)                                  |
+| 怎样检查、审阅、发布与恢复                 | [检查与发布](system/checks-and-release.md)                   |
+| Agent规则与Skills怎样使用、更新及恢复      | [Agent规则维护](system/agent-guidance.md)                    |
+| 原生助手怎样连接电脑、重建与维护           | [Paseo接入](system/local-assistant.md)                       |
 
 正文组件与扩展语法见[Markdown排版](system/markdown.md)。
 

@@ -87,7 +87,7 @@ flowchart TD
 
 来源登记在src/lib/content/learning-sources.ts：旧Great UI数据缺省sourceId仍可读取，新案例显式填写beui、rare-ui或microkit及sourceSlug，分别生成作者、官网、固定仓库路径与许可；未知来源、越界路径及不匹配官网会失败。新增三件使用beui-combobox、rare-ui-duration-picker、microkit-sliding-content-tabs作为稳定ID和slug，旧48件网址不变。它们进入现有分类和导航，八站入门顺序不变。
 
-合集正文、八站路线与十类索引维护在great-ui-learning/zh.md；正文用一个任务串起问题、解释、案例、练习与检查，51件链接留在文末供查找。选题判断见[合集策划](../topics/ui-ux-motion-interaction.md)，结构与参考依据见[教程写作说明](../topics/ui-ux-motion-interaction.md#教程写作与参考依据)。案例正文讲清原作事实、学习者需要决定什么、Agent应改什么，以及怎样观察结果；原作参数保留给Agent使用，不把模拟执行或待补交互写成已有能力。
+合集正文、八站路线与十类索引维护在great-ui-learning/zh.md；正文用一个任务串起问题、解释、案例、练习与检查，51件链接留在文末供查找。正文与案例的职责、六个拆解问题、关系理由及扩充流程见[专题制作规范](content-maintenance.md#组织学习专题)，选题判断见[合集策划](../topics/ui-ux-motion-interaction.md)，行文参考见[教程写作说明](../topics/ui-ux-motion-interaction.md#教程写作与参考依据)。原作参数保留给Agent使用，不把模拟执行或待补交互写成已有能力。
 
 通用术语在[共享词库](../../src/content/glossary/README.md)按工具、触发、动效及UX规则维护。作品glossary仅写term和本例context、parameter、judgment，正文局部ID保持不变。来源文章完整保存，词条标明摘录、概述整理或案例整理；别名合并到同一规范ID。修改词条后，引用作品的页面与任务同步解释及出处，相关翻译和组合内容摘要改变。收录步骤见[维护术语](content-maintenance.md#收录与引用uiux术语)。
 
