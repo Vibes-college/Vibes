@@ -265,11 +265,11 @@ shaped-by: []
 | [Split to Edit · Sanyam](https://sanyam.sh/lab/split-to-edit)                          | 暂缓独立成篇：与Duration Picker的拆分编辑重叠；若要专讲自由文本、取消与编辑状态，再组成比较。                | 页面与固定源码已读，未操作；使用contentEditable，输入边界不能沿用数值编辑器；复用条件待确认。               |
 | [Focus Field · MicroKit](https://microkit.co/components/focus-input)                   | 暂缓独立成篇：当前主要是焦点边框和光晕，适合作为输入反馈的简短基线，尚不足以支撑一篇同深度拆解。             | 页面与固定源码已读，未操作；不能从名称推断它已有错误、成功或提交状态。                                      |
 
-### 从候选进入制作
+### 跨来源样板与后续候选
 
-先把Combobox、Duration Picker和Sliding Content Tabs做成跨来源教学样板，分别覆盖搜索选择、就地编辑和内容切换；并核对Sanyam的复用条件，随后制作具象数量与空间运动样板。保留原作视觉优点，说明需要新增的行为；不因原作存在缺口而自动提高选材优先级。
+Combobox、Duration Picker和Sliding Content Tabs已完成双端独立录屏、中文教学与任务接入，分别覆盖搜索选择、就地编辑和内容切换。其余候选先核对Sanyam的复用条件，再选择具象数量与空间运动样板。保留原作视觉优点，说明需要新增的行为；不因原作存在缺口而自动提高选材优先级。
 
-制作前为每件写一句独立教学主张，列出与已有案例的区别，并确定它承担主讲、比较还是练习。选定后才录制和接入；原始操作摘要、四个仓库快照及本轮读取的源码保存在resources/evidence/018-great-ui-scale/four-source-selection。当前证据是选材研究，未安装依赖、发布新案例、录制发布素材、改造跨库基础设施或重复CI。
+后续候选制作前为每件写一句独立教学主张，列出与已有案例的区别，并确定它承担主讲、比较还是练习，选定后才录制和接入。resources/evidence/018-great-ui-scale/four-source-selection仅保存首轮选材研究的操作摘要、四个仓库快照与源码，不代表后续制作或发布验收。三件已接入样板的制作证据在同级cross-source-samples；当前能力、完整验收与范围限制见[学习功能说明](../features/great-ui-learning.md)。
 
 ## 四、第一次学，先走这条路线
 
