@@ -1,7 +1,7 @@
 ---
 tense: 'frozen'
 describes: 'Great UI全量学习与组合的执行任务'
-status: 'in-progress'
+status: 'complete'
 amended-by: []
 ---
 
@@ -41,8 +41,8 @@ amended-by: []
 - [x] T021 [US4] 将剩余47件迁为work.json与zh.md，移除重复文字来源；添加合集和成员检索，保留源代码与观察证据。
 - [x] T022 [US1] 完成剩余32段视频及两件图片案例的独立录制预览，登记来源、许可范围与文件摘要；48件真实解码/播放检查并消除作者媒体依赖。
 - [x] T023 [US2] 站内单件与组合任务输出绝对在线素材地址；迁入三条可操作示例与版本绑定验证，覆盖页面历史、草稿、失败和少动态偏好。
-- [ ] T024 完成正式站check、verify、budget与产物检查；内置浏览器核对桌面/手机布局、GitHub编辑、媒体、任务、搜索和真实页面上下文。2026-09-15本机完整回归340项通过、11项设备跳过；Linux CI随后发现WebKit跳转/旋转错误及目录动画超时，修复后的完整验收待重跑；当前Cloudflare预览完成桌面/390px手机实际操作。该浏览器未配对Paseo，仅核对连接引导；页面上下文由原生协议测试环境覆盖，不代表真实Agent对话或真机验收。
-- [ ] T025 同步great-ui-learning、recording-previews、content-maintenance、article-read、explore-browse、受影响system文档与索引，保留仍有效证据；独立审查整个PR并复核最终SHA后转Ready，交付用户合并。
+- [x] T024 完成正式站check、verify、budget与产物检查；2026-09-19最终本机验收188项单元与365项浏览器通过、7项设备条件跳过，三路径六份site记录与当前源码一致。Cloudflare阶段预览的桌面/390px手机布局、GitHub编辑、媒体、任务与搜索证据保留；Paseo未配对，仅核对连接引导，页面上下文由原生协议测试环境覆盖，不代表真实Agent对话或真机验收。最终Linux CI与上线核验记录在PR。
+- [x] T025 同步great-ui-learning、recording-previews、content-maintenance、article-read、explore-browse、受影响system文档与索引，保留仍有效证据；独立审查整个PR并复核修复与最终SHA。Ready、必要CI、经用户授权的合并及发布遵循检查与发布规则，具体状态和证据在PR维护。
 
 ## 共享术语
 
@@ -64,7 +64,7 @@ amended-by: []
 - [x] T035 [US1] 改善学习播放器的素材选择与有效放大，覆盖缩放/移动、页面内全屏、退出焦点、暂停进度、旋转和失败。
 - [x] T036 验证三类样板的完整两端路径、实际内容尺寸、可读性及首页按需请求；通过后再批量处理其余45件。 2026-09-14：桌面Chromium、手机Chromium/WebKit共21项通过，类型检查与9项针对性单元测试通过；录屏实际尺寸、放大/拖动及焦点恢复已核对，原始证据在clear-recordings/pilot-ui。
 - [x] T037 [US4] 逐件改善剩余素材，保存实际捕获/重编码证据，核对48件的两端画面、关键动作和播放；不将未核对样本算完成。
-- [ ] T038 完成范围内单元与浏览器回归、check/verify/budget、媒体预算和产物检查；同步完整操作文档、源码摘要、PR和可体验预览，必要审查按T025完成。
+- [x] T038 完成范围内单元与浏览器回归、check/verify/budget、媒体预算和产物检查；同步完整操作文档、源码摘要、PR和可体验预览，必要审查按T025完成。2026-09-19最终完整记录在resources/evidence/018-great-ui-scale/release-2026-09-19。
 
 ## 技能合集与教学内容
 

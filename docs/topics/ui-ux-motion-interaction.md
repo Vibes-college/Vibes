@@ -7,7 +7,7 @@ shaped-by: []
 
 # 《Vibe Coding 网页动效与交互》目录与候选清单
 
-**合集名称、十类目录、八站入门路线和19件主讲内容已落实到当前开发版本；48件旧案例链接保留，另已接入beUI Combobox、Rare UI Duration Picker与MicroKit Sliding Content Tabs。以下候选取舍仍是编辑判断，后续可继续替换和打磨；实现不代表已合并或正式发布。** 上层能力地图见[UI/UX学习主题](ui-ux.md)，实际操作见[学习交互作品](../features/great-ui-learning.md)。
+**学习合集提供十类目录、八站入门路线和19件主讲内容；48件旧案例链接保留，另有beUI Combobox、Rare UI Duration Picker与MicroKit Sliding Content Tabs三件跨来源样本。以下候选取舍仍是编辑判断，后续可继续替换和打磨。** 上层能力地图见[UI/UX学习主题](ui-ux.md)，实际操作见[学习交互作品](../features/great-ui-learning.md)。
 
 合集围绕一项广泛、可识别的技能组织，容纳数百件精品案例。Great UI、Rare UI、beUI等是素材来源；每件案例说明本例值得学习的设计决定、组件行为和Agent协作方法。来源库不会各自变成一套重复课程。
 
