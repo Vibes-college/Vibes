@@ -12,7 +12,7 @@ code-sources:
     'tests/unit/great-ui-content.test.ts',
     'tests/great-ui/learning.spec.ts',
   ]
-code-revision: '7c5005c746e16e5a3b9a716dcceaed61299c733f493384d8ce80eef03c078dd1'
+code-revision: '4b41692ec86195801da7f7b2cf434dab0292cff96aa9cdb50d4289a4616e5f3a'
 ---
 
 # 功能名：录制与维护交互演示
@@ -128,7 +128,7 @@ ffprobe -v error -show_entries stream=codec_name,width,height,pix_fmt \
 
 当前Great UI的48件核心预览均使用本站文件，原作者直链仅保留在历史来源目录，不再作为页面播放地址。外部平台的嵌入也不等于永久可用：X官方说明，帖子被删除、转为受保护或账号被停用后，嵌入中的媒体不会继续加载，见[X嵌入说明](https://help.x.com/en/using-x/how-to-embed-a-post)。不能仅因平台较大就把它作为核心演示的唯一来源。
 
-当前短片随本站静态产物交付，浏览器和Agent任务都使用本站地址；规模增加后再评估独立媒体存储。若选Cloudflare R2，生产访问使用自定义域名并配置缓存；官方明确r2.dev开发地址有限流且不用于生产，见[R2公开访问](https://developers.cloudflare.com/r2/buckets/public-buckets/)。当前不需要独立存储服务。
+当前短片随本站静态产物交付，浏览器和Agent任务都使用本站地址。既有Worker对学习MP4提供单区间分段响应，每次范围读取最多2MiB，支持浏览器原生起播与循环；具体响应和执行范围见[媒体接口](../system/interfaces.md#great-ui学习静态资料)。验收同时检查真实分段字节、原响应策略和实际起播、暂停、循环，不能仅检查HTTP成功。规模增加后再评估独立媒体存储。若选Cloudflare R2，生产访问使用自定义域名并配置缓存；官方明确r2.dev开发地址有限流且不用于生产，见[R2公开访问](https://developers.cloudflare.com/r2/buckets/public-buckets/)。当前不需要独立存储服务。
 
 ## 涉及的文件
 

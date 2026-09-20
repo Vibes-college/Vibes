@@ -13,6 +13,97 @@ const pilots = learningMaterials().entries.filter((entry) =>
 );
 const mediaPath = (url: string) => new URL(url).pathname;
 
+test('static MP4 byte ranges preserve exact bytes and response policies', async ({ request }) => {
+  const path = '/great-ui/media/scroll-flying-cards-mobile.mp4';
+  const expected = await readFile(new URL('../public' + path, import.meta.url));
+  const full = await request.get(path);
+  expect(full.status()).toBe(200);
+  expect(full.headers()['accept-ranges']).toBe('bytes');
+  expect(await full.body()).toEqual(expected);
+  for (const [range, start, end] of [
+    ['bytes=0-1', 0, 1],
+    ['bytes=4848-', 4848, expected.length - 1],
+    ['bytes=-16', expected.length - 16, expected.length - 1],
+  ] as const) {
+    const response = await request.get(path, { headers: { range } });
+    expect(response.status()).toBe(206);
+    expect(response.headers()['content-range']).toBe(`bytes ${start}-${end}/${expected.length}`);
+    expect(response.headers()['content-length']).toBe(String(end - start + 1));
+    for (const name of [
+      'content-type',
+      'content-security-policy',
+      'x-content-type-options',
+      'cache-control',
+      'etag',
+    ]) {
+      expect(full.headers()[name], name).toBeTruthy();
+      expect(response.headers()[name], name).toBe(full.headers()[name]);
+    }
+    expect(await response.body()).toEqual(expected.subarray(start, end + 1));
+  }
+  const invalid = await request.get(path, { headers: { range: `bytes=${expected.length}-` } });
+  expect(invalid.status()).toBe(416);
+  expect(invalid.headers()['content-range']).toBe(`bytes */${expected.length}`);
+  expect(await invalid.body()).toHaveLength(0);
+  const stale = await request.get(path, {
+    headers: { range: 'bytes=0-1', 'if-range': '"stale-recording"' },
+  });
+  expect(stale.status()).toBe(200);
+  expect(await stale.body()).toEqual(expected);
+});
+
+for (const surface of ['recording', 'collection'] as const)
+  test(`${surface} serves byte ranges and loops without a seek copy`, async ({ page }) => {
+    const fetched: string[] = [];
+    page.on('request', (request) => {
+      if (request.resourceType() === 'fetch' && /\/great-ui\/media\/.*\.mp4$/.test(request.url()))
+        fetched.push(request.url());
+    });
+    const response = page.waitForResponse(
+      (response) =>
+        /\/great-ui\/media\/.*\.mp4$/.test(response.url()) &&
+        [200, 206].includes(response.status()),
+    );
+    await page.goto(surface === 'recording' ? '/zh/works/great-ui-scroll-flying-cards/' : parent);
+    const root = page.locator(surface === 'recording' ? '.video-player' : '[data-collection]');
+    await root.scrollIntoViewIfNeeded();
+    expect((await response).headers()['accept-ranges']).toBe('bytes');
+    const video = root.locator('video');
+    const toggle = root
+      .locator(surface === 'recording' ? '.scrubber > button' : '[data-media-toggle]')
+      .first();
+    await expect
+      .poll(() =>
+        video.evaluate(
+          (node: HTMLVideoElement) =>
+            node.videoWidth > 0 && node.currentTime > 0.2 && !node.paused && !node.error,
+        ),
+      )
+      .toBe(true);
+    await toggle.click();
+    await expect(video).toHaveJSProperty('paused', true);
+    await video.evaluate((node: HTMLVideoElement) => {
+      let previous = node.currentTime;
+      const duration = node.duration;
+      node.addEventListener('timeupdate', () => {
+        if (previous > duration / 2 && node.currentTime < previous - duration / 2)
+          node.dataset.looped = 'true';
+        previous = node.currentTime;
+      });
+    });
+    await toggle.click();
+    await expect(video).toHaveAttribute('data-looped', 'true', { timeout: 15_000 });
+    await expect
+      .poll(() =>
+        video.evaluate(
+          (node: HTMLVideoElement) => node.currentTime > 0.2 && !node.paused && !node.error,
+        ),
+      )
+      .toBe(true);
+    expect(await video.evaluate((node: HTMLVideoElement) => node.currentSrc)).toMatch(/^http:/);
+    expect(fetched).toEqual([]);
+  });
+
 for (const entry of pilots)
   test(`clear pilot ${entry.slug} selects one rendition, enlarges, pans and restores focus`, async ({
     page,
@@ -101,6 +192,52 @@ for (const entry of pilots)
     await expect(expand).toBeFocused();
     await expect(video).toHaveJSProperty('paused', true);
   });
+
+test('a seek copy replays locally and can still be paused', async ({ page }) => {
+  const fetched: string[] = [];
+  page.on('request', (request) => {
+    if (request.resourceType() === 'fetch' && /\/great-ui\/media\/.*\.mp4$/.test(request.url()))
+      fetched.push(request.url());
+  });
+  await page.goto('/zh/works/great-ui-text-reveal/');
+  const video = page.locator('.recording-stage video');
+  await expect
+    .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime > 0.2 && !node.error))
+    .toBe(true);
+  await page.getByRole('button', { name: '暂停录屏', exact: true }).click();
+  const progress = page.getByRole('slider', { name: '录屏进度', exact: true });
+  await progress.press('End');
+  await expect
+    .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentSrc))
+    .toMatch(/^data:video\/mp4;base64,/);
+  await progress.press('PageDown');
+  await expect
+    .poll(() =>
+      video.evaluate(
+        (node: HTMLVideoElement) =>
+          !node.seeking && node.paused && node.currentTime > node.duration / 2,
+      ),
+    )
+    .toBe(true);
+  await page.getByRole('button', { name: '播放录屏', exact: true }).click();
+  await expect
+    .poll(() =>
+      video.evaluate(
+        (node: HTMLVideoElement) =>
+          !node.paused &&
+          !node.error &&
+          node.currentTime > 0.2 &&
+          node.currentTime < node.duration / 2,
+      ),
+    )
+    .toBe(true);
+  expect(fetched).toHaveLength(1);
+  expect(await video.evaluate((node: HTMLVideoElement) => node.currentSrc)).toMatch(
+    /^data:video\/mp4;base64,/,
+  );
+  await page.getByRole('button', { name: '暂停录屏', exact: true }).click();
+  await expect(video).toHaveJSProperty('paused', true);
+});
 
 test('offscreen collection downloads no video; switching releases the old clip and keeps only the current one', async ({
   page,

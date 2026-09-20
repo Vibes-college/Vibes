@@ -14,7 +14,7 @@ code-sources:
     'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'ba02ab4d6c14482016bbdad59324f2d662fe96a1800fbe9624cd1c4fc0450aa7'
+code-revision: '9a7b8564e4aac58fa95f2a1b291248cd21141a1274e3cf895668f5b1dc0aa527'
 ---
 
 # 检查与发布
@@ -163,6 +163,8 @@ UI开发实践文章的beUI回归会先展开原生details再操作其中控件�
 助手用例覆盖单工具栏、当前会话与文件标签保留、新建工作区点击、窄屏原生全屏文件面板、全屏背景锁定、真实浏览器前进后退及受控visualViewport变化；原生构建另执行新草稿默认模型与偏好保护、窄屏文件入口、按文字切换按钮、听写取消/失败重试及主题边界测试。受控视口不是实际软件键盘，模型测试音频的真实dictation协议也不是浏览器麦克风或Agent提交证据；真实iPhone Safari与完整听写操作路径需要分别验收。
 
 WebKit图片附件用例单独使用本任务创建的空持久profile，按普通窗口验证Blob附件；同版WebKit临时/私密上下文的IndexedDB无法保存Blob/File。该profile只初始化一次配对状态，成功或失败后均关闭并删除；其他原生mock用例继续使用临时上下文。真实Safari私密模式仍需真机验证。
+
+学习视频的Range处理与静态文件由同一Wrangler服务验收；tests/great-ui-previews.spec.ts核对实际206的片段字节、Content-Range、长度、ETag/缓存/安全头及416/If-Range回退，同时检查详情和合集的真实自然循环。生产上线后还须核对实际学习MP4的206响应与播放器时间推进，不能用本地模拟代替边缘部署。
 
 媒体测试完成播放、暂停和历史断言后，先通过正常页面导航退出播放器，释放可能仍保持连接的原生下载。测试页面关闭前等待静态资源传输结束，10秒内仍未空闲即失败；这是对Wrangler本地代理中断响应会退出问题的防护，不重试测试或吞掉错误。公共fixture见tests/browser-test.ts。
 

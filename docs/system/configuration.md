@@ -29,7 +29,7 @@ code-sources:
     'src/features/great-ui/useCaseBrowser.jsx',
     'src/scripts/media-collection.ts',
   ]
-code-revision: '9d7ebb0f846000cb05bbee4f265766f7a06e1d9f25f6dcf39d3f5d68327c6ad4'
+code-revision: '97749240cbd00c019bf44a4d1f675223a59529614cf0b0b16a70482fa273f0c1'
 ---
 
 # 配置和环境变量
@@ -49,7 +49,7 @@ code-revision: '9d7ebb0f846000cb05bbee4f265766f7a06e1d9f25f6dcf39d3f5d68327c6ad4
 | Cloudflare 本地预览 | 本机 4322                                                       | `npm run preview`、`wrangler.local.jsonc`                           |
 | 本地数据库          | `DB` / `vibes-explore-local`                                    | `wrangler.local.jsonc`；标识只供本地模拟使用                        |
 | 本地数据目录        | `.wrangler/project-local/`                                      | `scripts/local-tools.ts`；不提交 Git                                |
-| 直接 Worker 部署    | `vibes-explore`，静态资源 `dist`                                | `wrangler.jsonc`；静态资源配置；生产自动部署与PR版本预览            |
+| 直接 Worker 部署    | `vibes-explore`，静态资源 `dist`及学习MP4范围响应               | `wrangler.jsonc`；静态资源配置；生产自动部署与PR版本预览            |
 | 既有 Sites 绑定     | 已有托管项目                                                    | `.openai/hosting.json`；保留，不写入凭据                            |
 | 页面标准域名        | `SITE_URL`，本地默认127.0.0.1:4322                              | `src/config/site.ts`统一供Astro、布局、sitemap和robots使用          |
 | 正式域名            | `vibes.college`，用户已于2026-09-06授权                         | wrangler.jsonc的Custom Domain；已转接上线；发布与恢复结果见交付说明 |
@@ -106,6 +106,8 @@ eslint.config.mjs与.prettierignore排除.scratch合成内容和产物；它们�
 ## 发布身份与权限
 
 CLOUDFLARE_API_TOKEN只授予部署所需Worker脚本编辑及vibes.college域名相关权限；仅发布job注入，不传给PR检查。身份配置由AI完成，缺少登录/授权时给用户具体步骤；不把短期本机OAuth复制为长期CI secret。GitHub production环境已于2026-09-06通过API建立，限制部署分支为main；环境secret已配置并验证令牌有效、域名和目标Worker可读取，权限为指定账户Workers Scripts编辑、vibes.college的Workers Routes编辑与Zone读取；首次自动部署已由[main运行34029233677](https://github.com/Vibes-college/Vibes/actions/runs/34029233677)及[线上验收](https://github.com/Vibes-college/Vibes/pull/3#issuecomment-5558821204)确认成功。后续仍按每次实际发布记录判断状态。
+
+wrangler.jsonc与wrangler.local.jsonc使用同一src/worker.ts入口和ASSETS绑定，run_worker_first仅匹配`/great-ui/media/*.mp4`。已存在的普通页面、海报和其他资源继续静态直出；未命中资源可能进入Worker，随后透传ASSETS的404或重定向。学习视频请求计入Worker执行路径，费用按账户现有Workers套餐计算；没有新增Worker服务、桶或依赖。范围读取上限为2MiB，协议见[接口与服务](interfaces.md#great-ui学习静态资料)。
 
 wrangler.jsonc使用workers_dev:false、preview_urls:true和唯一vibes.college custom_domain。预览使用版本URL而非独立测试Worker，生产构建SITE_URL=https://vibes.college，PR预览同canonical并加noindex。发布元数据/__release.json仅公开源码SHA和产物摘要，不包含秘密。
 
