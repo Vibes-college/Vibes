@@ -4,6 +4,28 @@ import { gzipSync } from 'node:zlib';
 import { scriptBudget } from '../../scripts/script-budget.ts';
 const size = (source: string) => gzipSync(source).length;
 
+test('Astro-enhanced MDX counts its full graph while shared code remains common', () => {
+  const scripts = new Map([
+    ['/_astro/site.js', 'export const site = 1;'],
+    ['/_astro/topic.js', 'import "./site.js"; import("./details.js");'],
+    ['/_astro/details.js', 'export const detail = true;'],
+  ]);
+  const ordinary = '<script src="/_astro/site.js"></script>';
+  const article =
+    ordinary + '<main data-article-format="mdx"><script src="/_astro/topic.js"></script></main>';
+  const result = scriptBudget(scripts, [ordinary, article]);
+  assert.equal(result.javascriptGzip, size(scripts.get('/_astro/site.js')!));
+  assert.equal(
+    result.mdxJavascriptGzip,
+    size(scripts.get('/_astro/topic.js')!) + size(scripts.get('/_astro/details.js')!),
+  );
+  assert.equal(
+    scriptBudget(scripts, [article, ordinary + '<script src="/_astro/topic.js"></script>'])
+      .mdxJavascriptGzip,
+    0,
+  );
+});
+
 test('island dependencies are counted once, shared and orphan chunks stay in the common budget', () => {
   const scripts = new Map([
     ['/_astro/page.js', 'import "./shared.js"; import("./lazy.js");'],
