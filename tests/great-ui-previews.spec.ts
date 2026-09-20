@@ -50,7 +50,7 @@ for (const entry of pilots)
     await progress.press('Home');
     await expect
       .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentSrc))
-      .toMatch(/^blob:/);
+      .toMatch(/^data:video\/mp4;base64,/);
     await expect(video).toHaveJSProperty('currentTime', 0);
     await expect(page.getByText('录屏无法加载', { exact: true })).toHaveCount(0);
     await progress.press('PageUp');
@@ -234,12 +234,40 @@ for (const preference of ['reduce', 'saveData'] as const)
       (node: HTMLVideoElement) => node.currentTime / node.duration,
     );
     await page.setViewportSize(originalViewport);
+    const restored =
+      originalViewport.width <= 800 ? entry.recordingMedia.mobile! : entry.recordingMedia;
+    await expect
+      .poll(() =>
+        video.evaluate(
+          (node: HTMLVideoElement, expected) =>
+            node.readyState >= 2 &&
+            node.paused &&
+            node.videoWidth === expected.width &&
+            node.videoHeight === expected.height,
+          restored,
+        ),
+      )
+      .toBe(true);
     await expect(video).toHaveJSProperty('paused', true);
     await page.getByRole('button', { name: '播放录屏', exact: true }).click();
     await expect
       .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime / node.duration))
       .toBeGreaterThanOrEqual(fraction - 0.03);
   });
+
+test('a stale source error leaves a playing recording usable', async ({ page }) => {
+  await page.goto('/zh/works/great-ui-text-reveal/');
+  const video = page.locator('.recording-stage video');
+  await expect
+    .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime > 0.2 && !node.paused))
+    .toBe(true);
+  await video.locator('source').last().dispatchEvent('error');
+  await expect(page.getByText('录屏无法加载', { exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: '暂停录屏', exact: true }).click();
+  await expect(video).toHaveJSProperty('paused', true);
+  await page.getByRole('button', { name: '播放录屏', exact: true }).click();
+  await expect(video).toHaveJSProperty('paused', false);
+});
 
 test('a failed recording retains an original-source link', async ({ page }) => {
   await page.route('**/great-ui/media/*.mp4', (route) => route.abort());
@@ -363,18 +391,12 @@ for (const scenario of ['latest seek', 'rotation', 'oversize'] as const)
     page,
   }) => {
     await page.addInitScript(() => {
-      const state = { created: [] as string[], revoked: [] as string[] };
-      Object.assign(window, { recordingCopies: state });
-      const create = URL.createObjectURL.bind(URL);
-      const revoke = URL.revokeObjectURL.bind(URL);
-      URL.createObjectURL = (value) => {
-        const url = create(value);
-        state.created.push(url);
-        return url;
-      };
-      URL.revokeObjectURL = (url) => {
-        state.revoked.push(url);
-        revoke(url);
+      const sizes: number[] = [];
+      Object.assign(window, { recordingCopies: sizes });
+      const read = FileReader.prototype.readAsDataURL;
+      FileReader.prototype.readAsDataURL = function (blob) {
+        sizes.push(blob.size);
+        read.call(this, blob);
       };
     });
     let release!: () => void;
@@ -439,7 +461,9 @@ for (const scenario of ['latest seek', 'rotation', 'oversize'] as const)
             .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime))
             .toBeCloseTo(target, 1);
         await expect(video).toHaveJSProperty('paused', true);
-        expect(await video.evaluate((node: HTMLVideoElement) => node.currentSrc)).toMatch(/^blob:/);
+        expect(await video.evaluate((node: HTMLVideoElement) => node.currentSrc)).toMatch(
+          /^data:video\/mp4;base64,/,
+        );
       }
       const old = (await video.elementHandle())!;
       await page.getByRole('link', { name: '返回合集', exact: true }).click();
@@ -447,16 +471,18 @@ for (const scenario of ['latest seek', 'rotation', 'oversize'] as const)
       await expect.poll(() => old.evaluate((node) => node.isConnected)).toBe(false);
       await expect
         .poll(() =>
+          old.evaluate((node: HTMLVideoElement) => [
+            node.getAttribute('src'),
+            node.readyState,
+            node.paused,
+          ]),
+        )
+        .toEqual(['', 0, true]);
+      await expect
+        .poll(() =>
           page.evaluate(() => {
-            const state = (
-              window as unknown as {
-                recordingCopies: { created: string[]; revoked: string[] };
-              }
-            ).recordingCopies;
-            return [
-              state.created.length,
-              state.created.every((url) => state.revoked.includes(url)),
-            ];
+            const sizes = (window as unknown as { recordingCopies: number[] }).recordingCopies;
+            return [sizes.length, sizes.every((size) => size <= 2 * 1024 * 1024)];
           }),
         )
         .toEqual([scenario === 'oversize' ? 0 : 1, true]);
@@ -464,6 +490,85 @@ for (const scenario of ['latest seek', 'rotation', 'oversize'] as const)
       release();
     }
   });
+
+test('a late media conversion cannot replace the current rendition', async ({ page }) => {
+  await page.addInitScript(() => {
+    const state = { waiting: false, aborted: 0, release: () => {} };
+    Object.assign(window, { delayedConversion: state });
+    const read = FileReader.prototype.readAsDataURL;
+    const abort = FileReader.prototype.abort;
+    let first = true;
+    FileReader.prototype.readAsDataURL = function (blob) {
+      if (first) {
+        first = false;
+        // Hold native completion while the user changes rendition.
+        const loaded = this.onload;
+        const ended = this.onloadend;
+        let finish = () => {};
+        this.onload = (event) => {
+          state.waiting = true;
+          state.release = () => {
+            loaded?.call(this, event);
+            finish();
+          };
+        };
+        this.onloadend = (event) => {
+          finish = () => ended?.call(this, event);
+        };
+      }
+      read.call(this, blob);
+    };
+    FileReader.prototype.abort = function () {
+      state.aborted++;
+      abort.call(this);
+    };
+  });
+  await page.goto('/zh/works/great-ui-text-reveal/');
+  const video = page.locator('.recording-stage video');
+  await expect
+    .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentTime > 0.2))
+    .toBe(true);
+  await page.getByRole('slider', { name: '录屏进度', exact: true }).press('Home');
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as unknown as { delayedConversion: { waiting: boolean } }).delayedConversion
+            .waiting,
+      ),
+    )
+    .toBe(true);
+  const narrow = page.viewportSize()!.width > 800;
+  await page.setViewportSize(narrow ? { width: 390, height: 844 } : { width: 844, height: 390 });
+  await page.getByRole('button', { name: '播放录屏', exact: true }).click();
+  const entry = pilots.find((item) => item.slug === 'text-reveal')!;
+  await expect(video).toHaveJSProperty(
+    'videoWidth',
+    (narrow ? entry.recordingMedia.mobile! : entry.recordingMedia).width,
+  );
+  await expect
+    .poll(() => video.evaluate((node: HTMLVideoElement) => node.currentSrc))
+    .toMatch(/^data:video\/mp4;base64,/);
+  const current = await video.evaluate((node: HTMLVideoElement) => node.currentSrc);
+  expect(
+    await page.evaluate(async () => {
+      const state = (
+        window as unknown as {
+          delayedConversion: { aborted: number; release: () => void };
+        }
+      ).delayedConversion;
+      state.release();
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+      return state.aborted;
+    }),
+  ).toBe(1);
+  await expect(video).toHaveJSProperty('currentSrc', current);
+  await expect(page.getByText('录屏无法加载', { exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: '暂停录屏', exact: true }).click();
+  await expect(video).toHaveJSProperty('paused', true);
+});
 
 test('a rejected rotation restore stays paused when motion preferences change', async ({
   page,
@@ -493,6 +598,7 @@ test('a rejected rotation restore stays paused when motion preferences change', 
   await expect(page.getByText('录屏无法加载', { exact: true })).toBeVisible();
   // A queued readiness event must not retry the rejected restore.
   await video.dispatchEvent('canplay');
+  await video.dispatchEvent('loadeddata');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.evaluate(

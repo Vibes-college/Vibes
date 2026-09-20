@@ -24,7 +24,7 @@ code-sources:
     'scripts/paseo-webui-preview.ts',
     'public/_headers',
   ]
-code-revision: '99c89145421ac8c8a5dea69f8447cbbc05b66b1076bc9786f249f0e6f71cc347'
+code-revision: '3e607239d25c8afe190dc571c55fd0d6111f8667854d052a84bf9e0d4c4a4e3d'
 ---
 
 # 接口与外部服务
@@ -68,7 +68,7 @@ code-revision: '99c89145421ac8c8a5dea69f8447cbbc05b66b1076bc9786f249f0e6f71cc347
 
 预览文件为`/great-ui/media/*`，任务使用以学习页公开地址解析的绝对URL；不要求访问维护者本机文件。普通目录只列合集，子项拥有独立作品网址并进入搜索和站点地图。对应src/pages/great-ui与GreatUiDetail.astro。
 
-合集轻量索引直接随其有限分页HTML或Pagefind卡片数据交付，没有独立合集接口；浏览器只下载当前成员的短片。详情的recordingMedia提供桌面及可选手机素材，任务media.url为桌面绝对地址，手机素材不同则带mobileUrl。学习页以800px为断点选一份高清录屏，不同时预载两份。遇到无分段读取的静态服务，进度调整或旋转恢复会为当前MP4创建不超过2MiB的可定位副本；普通播放不触发该请求，换源及卸载会取消请求并释放副本。
+合集轻量索引直接随其有限分页HTML或Pagefind卡片数据交付，没有独立合集接口；浏览器只下载当前成员的短片。详情的recordingMedia提供桌面及可选手机素材，任务media.url为桌面绝对地址，手机素材不同则带mobileUrl。学习页以800px为断点选一份高清录屏，不同时预载两份。遇到无分段读取的静态服务，进度调整或旋转恢复会读取当前MP4，原始下载最多2MiB，运行时转换为可定位的data URL（base64约为原始文件的4/3，另有解码内存）；普通播放不触发该请求。只保留当前副本，换源及卸载会取消下载/转换并清除旧引用；迟到的转换不能覆盖新素材。
 
 ## 3 浏览器内部的搜索接口（不是本项目的 HTTP API）
 

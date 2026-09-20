@@ -195,7 +195,14 @@ function RecordedPlayer({ entry }) {
           {media?.mobile && (
             <source media="(max-width: 800px)" src={media.mobile.video} type="video/mp4" />
           )}
-          <source src={entry.previewRecording} type="video/mp4" onError={() => setFailed(true)} />
+          <source
+            src={entry.previewRecording}
+            type="video/mp4"
+            onError={() => {
+              // Old source errors can arrive after a new rendition has started.
+              if (ref.current.networkState === ref.current.NETWORK_NO_SOURCE) setFailed(true);
+            }}
+          />
         </video>
         {!loaded && !failed && (
           <picture className="recording-poster">

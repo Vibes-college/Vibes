@@ -23,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '1ecd07200974f840ad7d95820a535b2c862bae8b9d74ba09189e17d83e241cd6'
+code-revision: '3cebe87357890c6f6796fe97381b90e6771ebc0c46638724e83905e2a67bd47e'
 ---
 
 # 常量、规则表与正则
@@ -135,7 +135,7 @@ Paseo的轻量入口仍计普通公共脚本，首次点击后才加载的宿主
 
 可见阈值50%、停留200ms，≤800px最多1个自动动态卡片、桌面最多2个；减少动态、省流量关闭自动。手动音视频/外站体验互斥，失焦后台、离屏、搜索替换、详情翻页和历史切换清理。音视频使用preload=none且启动时才挂source；本地服务没有Range时，明确请求章节跳转才有界读取Blob补足seek，暂停会取消读取，销毁会释放URL；原生暂停与页面暂停共用取消路径；play/playing先忽略已暂停元素的迟到事件，正常原生继续播放恢复手动意图并参与互斥，seeked、canplay及timeupdate仍核对播放意图，拦住跳转结束后只恢复原生进度的异步播放，取消进行中的章节跳转后，保护持续到暂停且不再seeking的状态连续稳定250毫秒；期间迟到play会再次暂停并重新计时，显式页面播放、失败、结束和销毁会清理计时器，旧代次不能覆盖新的播放。原生控件不提供可区分的用户输入信号，因此保护窗口内原生播放可能需再点一次；超出静稳窗口的异常恢复不作保证。下载失败保留原作入口，外站平台限制不能靠iframe load事件判断。
 
-public/_headers提供已登记播放器/原站frame来源、指定视频源和本地blob；启用Paseo的构建加入原生手工host所需连接协议、blob图片/脚本和同源预览载体，worker-src仍显式限定self。主页面脚本仍不允许外站脚本地址、unsafe-inline或unsafe-eval；连接继续受浏览器与daemon校验限制。注册新来源须同步策略并做实际嵌入验收；完整连接与预览边界见[接口与服务](interfaces.md#paseo本地助手)。
+public/_headers提供已登记播放器/原站frame来源、指定视频源、本地blob，以及学习录屏定位所需的有界运行时data媒体；启用Paseo的构建加入原生手工host所需连接协议、blob图片/脚本和同源预览载体，worker-src仍显式限定self。主页面脚本仍不允许外站脚本地址、unsafe-inline或unsafe-eval；连接继续受浏览器与daemon校验限制。注册新来源须同步策略并做实际嵌入验收；完整连接与预览边界见[接口与服务](interfaces.md#paseo本地助手)。
 
 ## 可读代码说明的对应规则
 

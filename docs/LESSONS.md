@@ -17,6 +17,10 @@ shaped-by: ['004']
 
 ## 已转化
 
+- [2026-09-20] 现象：暂停录屏后二次转屏使Linux WebKit卡死，本机macOS完整回归未复现｜证据：resources/evidence/018-great-ui-scale/release-2026-09-19/linux-native-stack.log及Linux重复媒体用例
+  原因：暂停Blob换源阻塞原生GStreamer管线；延后换源、调整回收顺序或直接赋src仍复现，偶然通过不能证明已修复。
+  转化：[recording-seek.ts](../src/features/great-ui/recording-seek.ts)使用有界data副本，取消下载及转换并拒绝旧结果回写；[媒体回归](../tests/great-ui-previews.spec.ts)确认新尺寸和暂停后才继续播放，覆盖超限、503、取消与清理｜验证：修正后本机46项通过/2项设备跳过、Linux15项通过/1项跳过，实际代码Linux转屏另连续20项通过；完整CI凭据在PR维护｜转化日期：2026-09-20｜状态：已转化
+
 - [2026-09-14] 现象：对未接入正式站的本地工作台启动整站回归，用户连续指出范围错误｜证据：018任务对话及resources/evidence/018-great-ui-scale/verify.log中的中止运行
   原因：将组件路径和CI的保守分类直接套成本地验证，未先核对实际构建、引用和发布边界。
   转化：[检查与发布](system/checks-and-release.md)及[执行入口](../AGENTS.md)要求独立本地入口只运行自身检查；[great-ui:verify](../package.json)提供独立命令｜验证：018本地16项单元、66项浏览器、独立预算通过｜转化日期：2026-09-14｜状态：已转化

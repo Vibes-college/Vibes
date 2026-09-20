@@ -12,7 +12,7 @@ code-sources:
     'tests/unit/great-ui-content.test.ts',
     'tests/great-ui/learning.spec.ts',
   ]
-code-revision: '3b1fb8e674428c16eb3aa573d861d6b4fb5ec96fcc1b7a3644dda6de3abd7cdf'
+code-revision: '7c5005c746e16e5a3b9a716dcceaed61299c733f493384d8ce80eef03c078dd1'
 ---
 
 # 功能名：录制与维护交互演示
@@ -144,7 +144,7 @@ ffprobe -v error -show_entries stream=codec_name,width,height,pix_fmt \
 - [x] 2026-09-15完成48件高清与轻量短片、30件独立窄屏版本和海报；全部保留连续帧及参数，逐件来源与文件摘要检查通过。
 - [x] 2026-09-14三类样板桌面Chromium、手机Chromium/WebKit共21项通过，包含播放、有效放大、拖动、焦点及按需请求；这不替代批量素材后的整体验收。
 - [x] 2026-09-15独立入口69项通过，覆盖三浏览器48件真实播放；126个独立MP4完整解码通过。定位与旋转修复后，本机媒体专项40项通过、2项设备跳过，Linux WebKit另有9项媒体专项通过；该专项不替代完整回归。
-- [x] 2026-09-19正式站完整verify通过：365项浏览器通过、7项设备条件跳过，含三浏览器51件实际播放与媒体交互，六份site记录与当前源码一致；生产预算和产物检查通过。证据在resources/evidence/018-great-ui-scale/release-2026-09-19；Cloudflare阶段预览的桌面/390px操作证据保留，非真机验收。最终Linux CI和上线凭据在PR维护。
+- [ ] 2026-09-20定位副本兼容修正后的完整verify、预算与产物核验待完成；2026-09-19的365项浏览器通过及7项设备跳过保留为原版本证据。媒体专项本机46项通过、2项设备跳过，Linux15项通过、1项触摸注入条件跳过。证据在resources/evidence/018-great-ui-scale/release-2026-09-19；Cloudflare阶段预览的桌面/390px操作证据保留，非真机验收。最终Linux CI和上线凭据在PR维护。
 - [x] 其余32段视频与两件图片案例均已独立录制并接到本站；没有下载或代理受限作者视频。
 
 ## 对应的自动化测试
