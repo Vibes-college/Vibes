@@ -64,7 +64,7 @@ export default function LearningPage({ entry, entries }) {
               onSelect={(item) => {
                 // Related works and composition steps carry slugs; the catalog owns each source's ID.
                 const target = entries.find((candidate) => candidate.slug === item.slug);
-                if (target) navigate(`/zh/works/${target.id}/`);
+                if (target) return navigate(`/zh/works/${target.id}/`);
               }}
               onStartJourney={showJourney}
             />

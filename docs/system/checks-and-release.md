@@ -14,7 +14,7 @@ code-sources:
     'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '23c22b7ee32a48e24f93d27df305e8afa47e163293469b6e06cf3e42d9286d8e'
+code-revision: 'fd6765d624f22966ab8e0748efc074badf04139945dc80b346313fbf5084b55e'
 ---
 
 # 检查与发布
@@ -209,4 +209,4 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 tests/great-ui-previews.spec.ts覆盖三类两端素材、有效放大、键盘和鼠标移动、退出焦点、合集离屏无下载及旧视频释放、减少动态/省流量手动播放、连续旋转与失败入口。三个浏览器配置均检查回到开头时建立有界副本、后续跳转复用、无分段读取、超限拒绝及失败后不自动重播；首次正常播放不能额外fetch副本。手机Chromium另通过CDP发送双指缩放和单指移动；WebKit验证控件与鼠标/键盘移动，不将其等同于真机触摸。tests/great-ui-site.spec.ts逐件检查51段当前设备素材的解码、播放及无外部视频请求。
 
-教学顺序与内容同源由tests/unit/learning-content.test.ts、great-ui-browsing.test.ts和great-ui-content.test.ts覆盖，包括八站路线、十类目录、合集内重复序号拒绝、Explore封面保持，以及首次顺序与已有随机偏好恢复。独立入口的learning.spec.ts按同一默认顺序检查延迟响应和失败恢复。跨来源专项同时检查原48件兼容、显式来源及路径拒绝、作者/仓库/固定版本一致性；great-ui-site.spec.ts的cross-source用例覆盖三件真实媒体、低高度桌面任务按钮、窄屏、任务与稳定ID导航。仅运行专项不签发完整回执。
+教学顺序与内容同源由tests/unit/learning-content.test.ts、great-ui-browsing.test.ts和great-ui-content.test.ts覆盖，包括八站路线、十类目录、合集内重复序号拒绝、Explore封面保持，以及首次顺序与已有随机偏好恢复。独立入口的learning.spec.ts按同一默认顺序检查延迟响应和失败恢复。跨来源专项同时检查原48件兼容、显式来源及路径拒绝、作者/仓库/固定版本一致性；great-ui-site.spec.ts覆盖三件真实媒体、低高度桌面任务按钮、窄屏、任务、相关作品与组合步骤的稳定ID导航，以及下一页慢加载期间的切换锁定。仅运行专项不签发完整回执。

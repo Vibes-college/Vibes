@@ -125,6 +125,32 @@ test('Astro navigation preserves the task draft, media modal focus and site retu
   expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
 });
 
+test('case navigation remains locked while the next page is loading', async ({ page }) => {
+  await page.goto('/zh/works/great-ui-button/');
+  let release: () => void = () => {};
+  let requested = false;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route('**/zh/works/great-ui-card/', async (route) => {
+    requested = true;
+    await gate;
+    await route.continue().catch(() => {});
+  });
+  try {
+    await page.getByRole('button', { name: '下一个作品', exact: true }).click();
+    await expect.poll(() => requested).toBe(true);
+    await expect(page.getByRole('button', { name: '下一个作品', exact: true })).toBeDisabled();
+    await expect(page.getByRole('button', { name: '浏览作品：全部分类' })).toBeDisabled();
+    await expect(page).toHaveURL(/\/zh\/works\/great-ui-button\/$/);
+  } finally {
+    release();
+  }
+  await expect(page).toHaveURL(/\/zh\/works\/great-ui-card\/$/);
+  await expect(page.locator('.great-ui h1')).toHaveText('有分隔线反馈的图片卡');
+  await expect(page.getByRole('button', { name: '下一个作品', exact: true })).toBeEnabled();
+});
+
 for (const relation of [
   {
     source: 'great-ui-button',

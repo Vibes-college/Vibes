@@ -143,4 +143,4 @@ flowchart TD
 
 ## Great UI本地工作台
 
-`npm run great-ui:build`构建48件学习材料与三条固定示例；`npm run great-ui:preview`在127.0.0.1:4325预览，`npm run great-ui:dev`用于开发，`npm run great-ui:test`运行独立Playwright用例。先复用已确认归属的健康服务，详情见[学习操作路径](great-ui-learning.md)。great-ui:evaluate运行20个结构化需求样本和合成负载；great-ui:budget构建后检查独立资源上限，great-ui:verify串联本地专项，不进入整站verify，也不准备Paseo或重置数据库。这些辅助命令不会发布。正式站已从同一Markdown生成学习详情；修改其路由、模板或共享逻辑须另运行verify与budget。test:e2e在完整站内三浏览器通过且测试前后源码一致时保存site验收记录，独立great-ui:test只保存standalone记录。
+`npm run great-ui:build`构建51件学习材料与三条固定示例；`npm run great-ui:preview`在127.0.0.1:4325预览，`npm run great-ui:dev`用于开发，`npm run great-ui:test`运行独立Playwright用例。先复用已确认归属的健康服务，详情见[学习操作路径](great-ui-learning.md)。great-ui:evaluate运行20个结构化需求样本和合成负载；great-ui:budget构建后检查独立资源上限，great-ui:verify串联本地专项，不进入整站verify，也不准备Paseo或重置数据库。这些辅助命令不会发布。正式站已从同一Markdown生成学习详情；修改其路由、模板或共享逻辑须另运行verify与budget。test:e2e在完整站内三浏览器通过且测试前后源码一致时保存site验收记录，独立great-ui:test只保存standalone记录。
