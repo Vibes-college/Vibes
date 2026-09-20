@@ -1,0 +1,16 @@
+---
+import { renderTopic, type TopicSection } from '../../features/ui-topic/render';
+import '../../styles/ui-topic.css';
+interface Props {
+  section: TopicSection;
+}
+const { section } = Astro.props;
+---
+
+<div
+  class:list={['ui-topic', 'not-prose', { 'ut-wide': section !== 'intro' }]}
+  data-ui-topic={section}
+  data-article-interactive
+  set:html={renderTopic(section)}
+/>
+<script src="../../features/ui-topic/client.ts"></script>

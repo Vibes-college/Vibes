@@ -18,6 +18,12 @@ code-revision: '4535b90af05487aa5d019a378b243c6c241f773a8eafab6f170e5efdc1726e6d
 
 # 检查与发布
 
+## 本地检查的影响边界
+
+先核对真实接入与依赖边界，不因文件叫组件、页面或测试就运行整站回归。未被正式站引用、打包或发布，且构建、资源与测试入口独立的本地页面、样板或实验，只运行自身必要的检查和预算；不启动整站、Paseo或数据库回归，也不自动并入整站verify。仅放在同一仓库、复用已安装依赖或新增独立命令不构成整站影响。实际改动站点路由、共用组件、全局样式、依赖解析或构建/发布链时，按受影响范围升级；运行整站回归前说明具体依赖与理由。未知先查引用和构建入口，不能把“不确定”直接作为全量理由。
+
+独立入口的构建、单元、交互、异常和资源预算仍须按实际风险验证；共享检查器的修改验证检查器本身，不因此启动无关网站浏览器。改动真正接入网站时再补对应接入验证。当前本地改动与整个PR累计差异分开判断，不能机械把CI的保守路径分类套成本地开发命令。
+
 ## 检查入口
 
 工作流.github/workflows/check.yml只监听PR活动与main push，保留手动检查和每周文档体检。PR活动为opened/synchronize/reopened/ready_for_review/converted_to_draft；描述/评论编辑不触发。分支push不再重复运行。scope通过scripts/check-scope.ts与ci-policy.ts输出范围与模式，失败或非法输出使正式检查失败。
@@ -135,7 +141,7 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 | `npm run release:preview -- <PR号>` | 本地按范围验收后上传PR预览版本，不提升生产                                       |
 | `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                        |
 
-按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；受限内容修改运行verify:content；页面组件和测试基础设施修改运行verify与budget。
+按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；受限内容修改运行verify:content；影响正式网站的页面组件或共用测试基础设施修改运行verify与budget；独立本地入口执行自己的检查。
 
 ## 媒体处理
 

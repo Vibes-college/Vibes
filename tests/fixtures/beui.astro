@@ -1,0 +1,42 @@
+---
+import Layout from '../../src/layouts/Layout.astro';
+import WorkDetail from '../../src/components/WorkDetail.astro';
+import { getWorks } from '../../src/data/works';
+import 'virtual:prose-ui.css';
+import '../../src/styles/prose.css';
+import TiltDemo from '../../src/components/demos/beui/TiltDemo';
+import ButtonDemo from '../../src/components/demos/beui/ButtonDemo';
+import TabsDemo from '../../src/components/demos/beui/TabsDemo';
+import SwitchDemo from '../../src/components/demos/beui/SwitchDemo';
+import CheckboxDemo from '../../src/components/demos/beui/CheckboxDemo';
+import RadioDemo from '../../src/components/demos/beui/RadioDemo';
+import RangeDemo from '../../src/components/demos/beui/RangeDemo';
+import AccordionDemo from '../../src/components/demos/beui/AccordionDemo';
+import BadgeDemo from '../../src/components/demos/beui/BadgeDemo';
+import MarqueeDemo from '../../src/components/demos/beui/MarqueeDemo';
+const work = getWorks('zh').find((entry) => entry.slug === 'beui-motion-lab')!;
+if (!work) throw new Error('The beUI fixture requires the existing work identity.');
+---
+
+<Layout detail locale="zh" title="beUI regression fixture" noindex>
+  <main
+    id="main"
+    class="detail-page"
+    data-locale="zh"
+    data-article-format="mdx"
+    data-pagefind-ignore
+  >
+    <WorkDetail work={work}>
+      <section class="reading-section"><h2>Tilt</h2><TiltDemo client:visible /></section>
+      <section class="reading-section"><h2>Buttons</h2><ButtonDemo client:visible /></section>
+      <section class="reading-section"><h2>Tabs</h2><TabsDemo client:visible /></section>
+      <section class="reading-section"><h2>Switch</h2><SwitchDemo client:visible /></section>
+      <section class="reading-section"><h2>Checkbox</h2><CheckboxDemo client:visible /></section>
+      <section class="reading-section"><h2>Radio</h2><RadioDemo client:visible /></section>
+      <section class="reading-section"><h2>Range</h2><RangeDemo client:visible /></section>
+      <section class="reading-section"><h2>Accordion</h2><AccordionDemo client:visible /></section>
+      <section class="reading-section"><h2>Badge</h2><BadgeDemo client:visible /></section>
+      <section class="reading-section"><h2>Marquee</h2><MarqueeDemo client:visible /></section>
+    </WorkDetail>
+  </main>
+</Layout>

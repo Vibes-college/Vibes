@@ -1,6 +1,6 @@
 import { test, expect } from './browser-test.ts';
 
-const url = '/zh/works/beui-motion-lab/';
+const url = '/__test/beui/';
 test('ten source-faithful beUI previews hydrate on visibility and keep their interactions', async ({
   page,
 }, testInfo) => {

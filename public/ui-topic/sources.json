@@ -1,0 +1,617 @@
+[
+  {
+    "id": "hyperui-portfolio",
+    "title": "作品集首页",
+    "author": "HyperUI · Mark Mead",
+    "repo": "markmead/hyperui",
+    "path": "public/examples/templates/portfolio/1.html",
+    "upstreamBlobSha": "1702ca7c1c6c77414ff8599787107603aae1f9cb",
+    "groups": [
+      "inspiration",
+      "pages"
+    ],
+    "tag": "作品集",
+    "description": "个人主张、接单状态和作品入口放在首屏。",
+    "behavior": "本页展示模板首屏节选；完整模板在固定源码中，后续作品区未复制到预览。",
+    "check": "取完整模板后再检查菜单、锚点、作品图与联系表单。",
+    "scope": "模板首屏节选",
+    "notes": [
+      "保留原版首屏排版与文案；只取桌面导航与首屏，未收录移动菜单和后续作品区。",
+      "链接在预览中不跳转；完整模板须从原始文件取得。"
+    ],
+    "borrow": "布局",
+    "view": 1100,
+    "source": "https://github.com/markmead/hyperui/blob/main/public/examples/templates/portfolio/1.html",
+    "blobUrl": "https://api.github.com/repos/markmead/hyperui/git/blobs/1702ca7c1c6c77414ff8599787107603aae1f9cb",
+    "license": "MIT",
+    "excerptSha256": "5f3c520a25efb0f0e4cc9b486e7952dfcd352ad03bc094494df8774f49087df7",
+    "sourceFile": "/ui-topic/source/hyperui-portfolio.html.txt",
+    "previewSrc": "/ui-topic/previews/hyperui-portfolio/",
+    "image": "/media/ui-topic/hyperui-portfolio.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "HyperUI · Mark Mead · MIT。模板首屏节选。保留原版首屏排版与文案；只取桌面导航与首屏，未收录移动菜单和后续作品区。 链接在预览中不跳转；完整模板须从原始文件取得。",
+    "terms": [
+      "Portfolio template",
+      "header + Hero",
+      "首屏节选；完整源码见原文件"
+    ]
+  },
+  {
+    "id": "props-bloom",
+    "title": "从模糊到清晰",
+    "author": "Open Props · Adam Argyle",
+    "repo": "argyleink/open-props",
+    "path": "src/props.animations.js",
+    "upstreamBlobSha": "778e48077dd2769a55e6afc3e3899d296b59fbf2",
+    "groups": [
+      "inspiration",
+      "components",
+      "primitives"
+    ],
+    "tag": "动效",
+    "description": "先模糊并提亮，再变清楚。",
+    "behavior": "重播时从模糊过渡到清晰；亮度和 blur 一起变化。",
+    "check": "减少动态效果时保留静态内容；退出预览停止；检查快点和遮挡。",
+    "scope": "上游动画 + 演示外壳",
+    "notes": [
+      "动画关键帧与参数来自 Open Props；卡片、重播和参数控制是 Vibes 的演示外壳。",
+      "不把示例计数、假内容当成真实业务；尊重减少动态效果。"
+    ],
+    "borrow": "动效",
+    "view": 560,
+    "source": "https://github.com/argyleink/open-props/blob/main/src/props.animations.js",
+    "blobUrl": "https://api.github.com/repos/argyleink/open-props/git/blobs/778e48077dd2769a55e6afc3e3899d296b59fbf2",
+    "license": "MIT",
+    "excerptSha256": "a9a28d463250b8db2f85947112f642b3fbe9f89f1574e0f11df89be189270e70",
+    "sourceFile": "/ui-topic/source/props-bloom.css.txt",
+    "previewSrc": "/ui-topic/previews/props-bloom/",
+    "image": "/media/ui-topic/props-bloom.webp",
+    "relatedSources": [
+      {
+        "path": "src/props.easing.js",
+        "url": "https://api.github.com/repos/argyleink/open-props/git/blobs/f863c151d39c851e8d8ca315c92f33cd1826fdde",
+        "blobSha": "f863c151d39c851e8d8ca315c92f33cd1826fdde"
+      }
+    ],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "Open Props · Adam Argyle · MIT。上游动画 + 演示外壳。动画关键帧与参数来自 Open Props；卡片、重播和参数控制是 Vibes 的演示外壳。 不把示例计数、假内容当成真实业务；尊重减少动态效果。",
+    "video": "/media/ui-topic/props-bloom.mp4",
+    "terms": [
+      "Bloom",
+      "--animation-fade-in-bloom",
+      "2s；亮度 + 模糊"
+    ]
+  },
+  {
+    "id": "hyperui-pricing",
+    "title": "双方案定价",
+    "author": "HyperUI · Mark Mead",
+    "repo": "markmead/hyperui",
+    "path": "public/examples/marketing/pricing/1.html",
+    "upstreamBlobSha": "46e904d35dae90d460632b8f54b43f6ac307d101",
+    "groups": [
+      "inspiration",
+      "blocks"
+    ],
+    "tag": "定价",
+    "description": "突出推荐方案，其他方案仍能直接比较。",
+    "behavior": "两列在窄屏变成一列；按钮是模板入口，不执行购买。",
+    "check": "替换价格和长中文；核对手机顺序、套餐内容和真实购买入口。",
+    "scope": "组件全文",
+    "notes": [
+      "移除上游站点外壳；预览隔离运行；代码排版已规整。",
+      "使用 Tailwind CSS 4.1.10 编译样式，未声称与上游网站逐像素一致。"
+    ],
+    "borrow": "布局",
+    "view": 960,
+    "source": "https://github.com/markmead/hyperui/blob/main/public/examples/marketing/pricing/1.html",
+    "blobUrl": "https://api.github.com/repos/markmead/hyperui/git/blobs/46e904d35dae90d460632b8f54b43f6ac307d101",
+    "license": "MIT",
+    "excerptSha256": "ac5af468fca1b85bdff91596410edc83cd4280c1f58ab9ddb57f9d8b29f2ac59",
+    "sourceFile": "/ui-topic/source/hyperui-pricing.html.txt",
+    "previewSrc": "/ui-topic/previews/hyperui-pricing/",
+    "image": "/media/ui-topic/hyperui-pricing.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "HyperUI · Mark Mead · MIT。组件全文。移除上游站点外壳；预览隔离运行；代码排版已规整。 使用 Tailwind CSS 4.1.10 编译样式，未声称与上游网站逐像素一致。",
+    "terms": [
+      "Pricing block",
+      "grid-cols-1 → sm:grid-cols-2",
+      "Pro 高亮；窄屏纵向"
+    ]
+  },
+  {
+    "id": "props-float",
+    "title": "轻轻浮动",
+    "author": "Open Props · Adam Argyle",
+    "repo": "argyleink/open-props",
+    "path": "src/props.animations.js",
+    "upstreamBlobSha": "778e48077dd2769a55e6afc3e3899d296b59fbf2",
+    "groups": [
+      "inspiration",
+      "components",
+      "primitives"
+    ],
+    "tag": "动效",
+    "description": "上下轻浮，不改变排版。",
+    "behavior": "垂直移动自身高度的 25%，三秒循环；预览可暂停。",
+    "check": "减少动态效果时保留静态内容；退出预览停止；检查快点和遮挡。",
+    "scope": "上游动画 + 演示外壳",
+    "notes": [
+      "动画关键帧与参数来自 Open Props；卡片、重播和参数控制是 Vibes 的演示外壳。",
+      "不把示例计数、假内容当成真实业务；尊重减少动态效果。"
+    ],
+    "borrow": "动效",
+    "view": 560,
+    "source": "https://github.com/argyleink/open-props/blob/main/src/props.animations.js",
+    "blobUrl": "https://api.github.com/repos/argyleink/open-props/git/blobs/778e48077dd2769a55e6afc3e3899d296b59fbf2",
+    "license": "MIT",
+    "excerptSha256": "e39674544031b4d7381547dba772c19a52409c68ef96e3fb5dbe1bac0c818225",
+    "sourceFile": "/ui-topic/source/props-float.css.txt",
+    "previewSrc": "/ui-topic/previews/props-float/",
+    "image": "/media/ui-topic/props-float.webp",
+    "relatedSources": [
+      {
+        "path": "src/props.easing.js",
+        "url": "https://api.github.com/repos/argyleink/open-props/git/blobs/f863c151d39c851e8d8ca315c92f33cd1826fdde",
+        "blobSha": "f863c151d39c851e8d8ca315c92f33cd1826fdde"
+      }
+    ],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "Open Props · Adam Argyle · MIT。上游动画 + 演示外壳。动画关键帧与参数来自 Open Props；卡片、重播和参数控制是 Vibes 的演示外壳。 不把示例计数、假内容当成真实业务；尊重减少动态效果。",
+    "video": "/media/ui-topic/props-float.mp4",
+    "terms": [
+      "Float",
+      "--animation-float",
+      "3s；垂直 -25%"
+    ]
+  },
+  {
+    "id": "hyperui-saas",
+    "title": "产品落地页",
+    "author": "HyperUI · Mark Mead",
+    "repo": "markmead/hyperui",
+    "path": "public/examples/templates/saas-landing-page/1.html",
+    "upstreamBlobSha": "3c8f27509bc4296e04b1b458d951d942c0ca4eb7",
+    "groups": [
+      "inspiration",
+      "pages"
+    ],
+    "tag": "产品页",
+    "description": "左边讲价值，右边放产品视觉。",
+    "behavior": "这里只预览原模板 Hero 片段，非完整落地页；照片未打包。",
+    "check": "取得完整模板，再替换有权使用的产品图，检查手机菜单和真实 CTA。",
+    "scope": "模板 Hero 节选",
+    "notes": [
+      "只提取 Hero；原 Unsplash 图片未复制，预览以文字占位明确标记。",
+      "不包含完整模板、原菜单或后端；完整文件从上游取得。"
+    ],
+    "borrow": "布局",
+    "view": 1000,
+    "source": "https://github.com/markmead/hyperui/blob/main/public/examples/templates/saas-landing-page/1.html",
+    "blobUrl": "https://api.github.com/repos/markmead/hyperui/git/blobs/3c8f27509bc4296e04b1b458d951d942c0ca4eb7",
+    "license": "MIT",
+    "excerptSha256": "90f4238c51a2389e4dd21014355bc460533d67fcf1b967a3ec52b6d0da48b420",
+    "sourceFile": "/ui-topic/source/hyperui-saas.html.txt",
+    "previewSrc": "/ui-topic/previews/hyperui-saas/",
+    "image": "/media/ui-topic/hyperui-saas.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "HyperUI · Mark Mead · MIT。模板 Hero 节选。只提取 Hero；原 Unsplash 图片未复制，预览以文字占位明确标记。 不包含完整模板、原菜单或后端；完整文件从上游取得。",
+    "terms": [
+      "Landing page template",
+      "Hero / sm:grid-cols-2",
+      "Hero 节选；照片未打包"
+    ]
+  },
+  {
+    "id": "hyperui-signup",
+    "title": "就地订阅",
+    "author": "HyperUI · Mark Mead",
+    "repo": "markmead/hyperui",
+    "path": "public/examples/marketing/ctas/2.html",
+    "upstreamBlobSha": "35ad7acf2306e0b8c4a31483a8ce27323964342d",
+    "groups": [
+      "inspiration",
+      "blocks"
+    ],
+    "tag": "表单",
+    "description": "一句主张、一个邮箱框、一个提交入口。",
+    "behavior": "预览可填写邮箱，不连接订阅服务，不上传内容。",
+    "check": "补上 input 的 id 与 label 对应；接入成功、失败与重复提交状态。",
+    "scope": "组件全文",
+    "notes": [
+      "保留上游布局和英文样例；预览补齐邮箱标签关联。",
+      "移除上游外壳；表单提交被预览层拦截，不发送任何数据。"
+    ],
+    "borrow": "布局",
+    "view": 900,
+    "source": "https://github.com/markmead/hyperui/blob/main/public/examples/marketing/ctas/2.html",
+    "blobUrl": "https://api.github.com/repos/markmead/hyperui/git/blobs/35ad7acf2306e0b8c4a31483a8ce27323964342d",
+    "license": "MIT",
+    "excerptSha256": "4b04acea09da88f4f7ded004bacf0fca04d72dd1cec8c106345f4cebe362d3de",
+    "sourceFile": "/ui-topic/source/hyperui-signup.html.txt",
+    "previewSrc": "/ui-topic/previews/hyperui-signup/",
+    "image": "/media/ui-topic/hyperui-signup.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "HyperUI · Mark Mead · MIT。组件全文。保留上游布局和英文样例；预览补齐邮箱标签关联。 移除上游外壳；表单提交被预览层拦截，不发送任何数据。",
+    "terms": [
+      "CTA + Form",
+      "sm:flex / input type=\"email\"",
+      "窄屏纵向；宽屏横向"
+    ]
+  },
+  {
+    "id": "hyperui-toggle",
+    "title": "轻推开关",
+    "author": "HyperUI · Mark Mead",
+    "repo": "markmead/hyperui",
+    "path": "public/examples/application/toggles/1.html",
+    "upstreamBlobSha": "9c2f586aed62b644246fc68e1759544982066ef0",
+    "groups": [
+      "inspiration",
+      "components",
+      "primitives"
+    ],
+    "tag": "开关",
+    "description": "圆点移动，底色同时改变。",
+    "behavior": "原生 checkbox 保存选中状态；CSS 根据 checked 移动圆点。预览只改变本页开关。",
+    "check": "补可访问名称与键盘焦点；外观和真实选中状态一致。",
+    "scope": "组件全文",
+    "notes": [
+      "保留上游 checkbox 和 CSS 交互；Vibes 补充可访问名称、焦点轮廓和演示舞台。",
+      "这是 CSS + 浏览器原语，不是 Radix 或 Base UI 的移植。"
+    ],
+    "borrow": "交互",
+    "view": 560,
+    "source": "https://github.com/markmead/hyperui/blob/main/public/examples/application/toggles/1.html",
+    "blobUrl": "https://api.github.com/repos/markmead/hyperui/git/blobs/9c2f586aed62b644246fc68e1759544982066ef0",
+    "license": "MIT",
+    "excerptSha256": "42a3476ab6b945cc4dd501b896c21189aee5b258254372855dd0fc23eed18f26",
+    "sourceFile": "/ui-topic/source/hyperui-toggle.html.txt",
+    "previewSrc": "/ui-topic/previews/hyperui-toggle/",
+    "image": "/media/ui-topic/hyperui-toggle.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "HyperUI · Mark Mead · MIT。组件全文。保留上游 checkbox 和 CSS 交互；Vibes 补充可访问名称、焦点轮廓和演示舞台。 这是 CSS + 浏览器原语，不是 Radix 或 Base UI 的移植。",
+    "terms": [
+      "Checkbox + CSS",
+      "checked / peer-checked / :has()",
+      "h-8；w-14；圆点 start-0 → start-6"
+    ]
+  },
+  {
+    "id": "hyperui-stats",
+    "title": "四组指标",
+    "author": "HyperUI · Mark Mead",
+    "repo": "markmead/hyperui",
+    "path": "public/examples/marketing/stats/1.html",
+    "upstreamBlobSha": "92ad90292e9e2bacf25601ec2f3fe02bd517909e",
+    "groups": [
+      "inspiration",
+      "blocks"
+    ],
+    "tag": "数据",
+    "description": "先看数字，再看含义。",
+    "behavior": "四项指标按屏宽换行；数字是原模板样例，不是平台业绩。",
+    "check": "长数字、零值与无数据都有明确表现；不要只靠颜色区分含义。",
+    "scope": "组件全文",
+    "notes": [
+      "移除上游站点外壳；预览隔离运行；代码排版已规整。",
+      "使用 Tailwind CSS 4.1.10 编译样式，未声称与上游网站逐像素一致。"
+    ],
+    "borrow": "布局",
+    "view": 1080,
+    "source": "https://github.com/markmead/hyperui/blob/main/public/examples/marketing/stats/1.html",
+    "blobUrl": "https://api.github.com/repos/markmead/hyperui/git/blobs/92ad90292e9e2bacf25601ec2f3fe02bd517909e",
+    "license": "MIT",
+    "excerptSha256": "a8db4ebf6ae72a3b0e3171e0d990ce473fc3641ce863fcf9a23b7c641ef47f0c",
+    "sourceFile": "/ui-topic/source/hyperui-stats.html.txt",
+    "previewSrc": "/ui-topic/previews/hyperui-stats/",
+    "image": "/media/ui-topic/hyperui-stats.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "HyperUI · Mark Mead · MIT。组件全文。移除上游站点外壳；预览隔离运行；代码排版已规整。 使用 Tailwind CSS 4.1.10 编译样式，未声称与上游网站逐像素一致。",
+    "terms": [
+      "Stats",
+      "dl / dt / dd + grid",
+      "1 → 2 → 4 列"
+    ]
+  },
+  {
+    "id": "props-slide",
+    "title": "从下方进入",
+    "author": "Open Props · Adam Argyle",
+    "repo": "argyleink/open-props",
+    "path": "src/props.animations.js",
+    "upstreamBlobSha": "778e48077dd2769a55e6afc3e3899d296b59fbf2",
+    "groups": [
+      "inspiration",
+      "components",
+      "primitives"
+    ],
+    "tag": "动效",
+    "description": "从下方滑到原来的位置。",
+    "behavior": "起点向下移动自身高度，半秒后回到原位。",
+    "check": "减少动态效果时保留静态内容；退出预览停止；检查快点和遮挡。",
+    "scope": "上游动画 + 演示外壳",
+    "notes": [
+      "动画关键帧与参数来自 Open Props；卡片、重播和参数控制是 Vibes 的演示外壳。",
+      "不把示例计数、假内容当成真实业务；尊重减少动态效果。"
+    ],
+    "borrow": "动效",
+    "view": 560,
+    "source": "https://github.com/argyleink/open-props/blob/main/src/props.animations.js",
+    "blobUrl": "https://api.github.com/repos/argyleink/open-props/git/blobs/778e48077dd2769a55e6afc3e3899d296b59fbf2",
+    "license": "MIT",
+    "excerptSha256": "ae39dd608a97f914901aa0f1eb4f94cb2d0f329edea418a00dd9c64998eba981",
+    "sourceFile": "/ui-topic/source/props-slide.css.txt",
+    "previewSrc": "/ui-topic/previews/props-slide/",
+    "image": "/media/ui-topic/props-slide.webp",
+    "relatedSources": [
+      {
+        "path": "src/props.easing.js",
+        "url": "https://api.github.com/repos/argyleink/open-props/git/blobs/f863c151d39c851e8d8ca315c92f33cd1826fdde",
+        "blobSha": "f863c151d39c851e8d8ca315c92f33cd1826fdde"
+      }
+    ],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "Open Props · Adam Argyle · MIT。上游动画 + 演示外壳。动画关键帧与参数来自 Open Props；卡片、重播和参数控制是 Vibes 的演示外壳。 不把示例计数、假内容当成真实业务；尊重减少动态效果。",
+    "video": "/media/ui-topic/props-slide.mp4",
+    "terms": [
+      "Slide in up",
+      "--animation-slide-in-up",
+      "0.5s；垂直 100% → 0"
+    ]
+  },
+  {
+    "id": "hyperui-accordion",
+    "title": "按需展开",
+    "author": "HyperUI · Mark Mead",
+    "repo": "markmead/hyperui",
+    "path": "public/examples/application/accordions/1.html",
+    "upstreamBlobSha": "3427b04d36146bf382ffc506d55fb5f896daee46",
+    "groups": [
+      "inspiration",
+      "components",
+      "primitives"
+    ],
+    "tag": "折叠",
+    "description": "先列问题，点开才看答案。",
+    "behavior": "用原生 details / summary 展开，多项可以同时打开；箭头旋转，内容高度不做动画。",
+    "check": "回车、空格可以展开；长答案不截断。",
+    "scope": "组件全文",
+    "notes": [
+      "移除上游站点外壳；预览隔离运行；代码排版已规整。",
+      "使用 Tailwind CSS 4.1.10 编译样式，未声称与上游网站逐像素一致。"
+    ],
+    "borrow": "交互",
+    "view": 720,
+    "source": "https://github.com/markmead/hyperui/blob/main/public/examples/application/accordions/1.html",
+    "blobUrl": "https://api.github.com/repos/markmead/hyperui/git/blobs/3427b04d36146bf382ffc506d55fb5f896daee46",
+    "license": "MIT",
+    "excerptSha256": "5f4b851083e7e7f47ede32e8d0eff43e4187cea97c8cdcaf401401ad3001b566",
+    "sourceFile": "/ui-topic/source/hyperui-accordion.html.txt",
+    "previewSrc": "/ui-topic/previews/hyperui-accordion/",
+    "image": "/media/ui-topic/hyperui-accordion.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "HyperUI · Mark Mead · MIT。组件全文。移除上游站点外壳；预览隔离运行；代码排版已规整。 使用 Tailwind CSS 4.1.10 编译样式，未声称与上游网站逐像素一致。",
+    "terms": [
+      "Details / Summary",
+      "open / group-open",
+      "多项独立；箭头 300ms"
+    ]
+  },
+  {
+    "id": "props-scale",
+    "title": "缓缓放大",
+    "author": "Open Props · Adam Argyle",
+    "repo": "argyleink/open-props",
+    "path": "src/props.animations.js",
+    "upstreamBlobSha": "778e48077dd2769a55e6afc3e3899d296b59fbf2",
+    "groups": [
+      "inspiration",
+      "components",
+      "primitives"
+    ],
+    "tag": "动效",
+    "description": "放大视觉，不推开旁边的内容。",
+    "behavior": "使用 transform 放大到 1.25 倍；文字和卡片一起缩放。",
+    "check": "减少动态效果时保留静态内容；退出预览停止；检查快点和遮挡。",
+    "scope": "上游动画 + 演示外壳",
+    "notes": [
+      "动画关键帧与参数来自 Open Props；卡片、重播和参数控制是 Vibes 的演示外壳。",
+      "不把示例计数、假内容当成真实业务；尊重减少动态效果。"
+    ],
+    "borrow": "动效",
+    "view": 560,
+    "source": "https://github.com/argyleink/open-props/blob/main/src/props.animations.js",
+    "blobUrl": "https://api.github.com/repos/argyleink/open-props/git/blobs/778e48077dd2769a55e6afc3e3899d296b59fbf2",
+    "license": "MIT",
+    "excerptSha256": "f337db7d3b0e9e282686d1d9782f0060e66c1918ce8838d8cb4811ad5df13378",
+    "sourceFile": "/ui-topic/source/props-scale.css.txt",
+    "previewSrc": "/ui-topic/previews/props-scale/",
+    "image": "/media/ui-topic/props-scale.webp",
+    "relatedSources": [
+      {
+        "path": "src/props.easing.js",
+        "url": "https://api.github.com/repos/argyleink/open-props/git/blobs/f863c151d39c851e8d8ca315c92f33cd1826fdde",
+        "blobSha": "f863c151d39c851e8d8ca315c92f33cd1826fdde"
+      }
+    ],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "Open Props · Adam Argyle · MIT。上游动画 + 演示外壳。动画关键帧与参数来自 Open Props；卡片、重播和参数控制是 Vibes 的演示外壳。 不把示例计数、假内容当成真实业务；尊重减少动态效果。",
+    "terms": [
+      "Scale up",
+      "--animation-scale-up",
+      "0.5s；缩放 1 → 1.25"
+    ]
+  },
+  {
+    "id": "hyperui-checkbox",
+    "title": "多项选择",
+    "author": "HyperUI · Mark Mead",
+    "repo": "markmead/hyperui",
+    "path": "public/examples/application/checkboxes/1.html",
+    "upstreamBlobSha": "a8c44b5023bebfdf36afae2339be5f00b669f278",
+    "groups": [
+      "components",
+      "primitives"
+    ],
+    "tag": "选择",
+    "description": "可以同时选几个，不必发明新的交互。",
+    "behavior": "使用原生 checkbox 与关联 label，点击文字也能勾选。",
+    "check": "空格键可切换；不要拿单选按钮做多选。",
+    "scope": "组件全文",
+    "notes": [
+      "移除上游站点外壳；预览隔离运行；代码排版已规整。",
+      "使用 Tailwind CSS 4.1.10 编译样式，未声称与上游网站逐像素一致。"
+    ],
+    "borrow": "交互",
+    "view": 560,
+    "source": "https://github.com/markmead/hyperui/blob/main/public/examples/application/checkboxes/1.html",
+    "blobUrl": "https://api.github.com/repos/markmead/hyperui/git/blobs/a8c44b5023bebfdf36afae2339be5f00b669f278",
+    "license": "MIT",
+    "excerptSha256": "22ccfa05f6b3c954de7cdaf2d3d1cd4022c56527743eee9d6d44325a21fedb7e",
+    "sourceFile": "/ui-topic/source/hyperui-checkbox.html.txt",
+    "previewSrc": "/ui-topic/previews/hyperui-checkbox/",
+    "image": "/media/ui-topic/hyperui-checkbox.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "HyperUI · Mark Mead · MIT。组件全文。移除上游站点外壳；预览隔离运行；代码排版已规整。 使用 Tailwind CSS 4.1.10 编译样式，未声称与上游网站逐像素一致。",
+    "terms": [
+      "Checkbox",
+      "input type=\"checkbox\" + label",
+      "选中 / 未选中"
+    ]
+  },
+  {
+    "id": "props-spacing",
+    "title": "间距尺度",
+    "author": "Open Props · Adam Argyle",
+    "repo": "argyleink/open-props",
+    "path": "src/props.sizes.js",
+    "upstreamBlobSha": "a6c8d4edcd6895aa3fe88f4c8c1cf7ec718e84a7",
+    "groups": [
+      "tokens"
+    ],
+    "tag": "Tokens",
+    "description": "变紧凑，不等于把字缩小。",
+    "behavior": "切换预设，直接看同一组控件的变化。这里演示单一参数族，不代表整套设计系统。",
+    "check": "把选定值映射到项目现有 Tokens；检查长中文、焦点和对比，不全量替换样式。",
+    "scope": "间距参数节选",
+    "notes": [
+      "变量名和值直接取自 Open Props；控件示意和切换器由 Vibes 提供。",
+      "只用系统字体，不分发字体文件；不是上游完整主题。"
+    ],
+    "borrow": "规范",
+    "view": 560,
+    "source": "https://github.com/argyleink/open-props/blob/main/src/props.sizes.js",
+    "blobUrl": "https://api.github.com/repos/argyleink/open-props/git/blobs/a6c8d4edcd6895aa3fe88f4c8c1cf7ec718e84a7",
+    "license": "MIT",
+    "excerptSha256": "16f765d135b07bdf96927b35fd489c41b9cd5a3056d19a5c3020daefc22328a7",
+    "sourceFile": "/ui-topic/source/props-spacing.css.txt",
+    "previewSrc": "/ui-topic/previews/props-spacing/",
+    "image": "/media/ui-topic/props-spacing.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "Open Props · Adam Argyle · MIT。间距参数节选。变量名和值直接取自 Open Props；控件示意和切换器由 Vibes 提供。 只用系统字体，不分发字体文件；不是上游完整主题。",
+    "terms": [
+      "Spacing",
+      "--size-2 / --size-3 / --size-5",
+      "0.5rem / 1rem / 1.5rem"
+    ]
+  },
+  {
+    "id": "props-radius",
+    "title": "圆角尺度",
+    "author": "Open Props · Adam Argyle",
+    "repo": "argyleink/open-props",
+    "path": "src/props.borders.js",
+    "upstreamBlobSha": "e3c609b9e44214f089502084746c0d1ef1349428",
+    "groups": [
+      "tokens"
+    ],
+    "tag": "Tokens",
+    "description": "按钮、表单、卡片一起换圆角。",
+    "behavior": "切换预设，直接看同一组控件的变化。这里演示单一参数族，不代表整套设计系统。",
+    "check": "把选定值映射到项目现有 Tokens；检查长中文、焦点和对比，不全量替换样式。",
+    "scope": "圆角参数节选",
+    "notes": [
+      "变量名和值直接取自 Open Props；控件示意和切换器由 Vibes 提供。",
+      "只用系统字体，不分发字体文件；不是上游完整主题。"
+    ],
+    "borrow": "规范",
+    "view": 560,
+    "source": "https://github.com/argyleink/open-props/blob/main/src/props.borders.js",
+    "blobUrl": "https://api.github.com/repos/argyleink/open-props/git/blobs/e3c609b9e44214f089502084746c0d1ef1349428",
+    "license": "MIT",
+    "excerptSha256": "655d6315607fe0c9bcc6eff07ce45118b653cdb41d4a03e7e35768e8be674899",
+    "sourceFile": "/ui-topic/source/props-radius.css.txt",
+    "previewSrc": "/ui-topic/previews/props-radius/",
+    "image": "/media/ui-topic/props-radius.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "Open Props · Adam Argyle · MIT。圆角参数节选。变量名和值直接取自 Open Props；控件示意和切换器由 Vibes 提供。 只用系统字体，不分发字体文件；不是上游完整主题。",
+    "terms": [
+      "Radius",
+      "--radius-1 / --radius-2 / --radius-3",
+      "2px / 5px / 1rem"
+    ]
+  },
+  {
+    "id": "props-type",
+    "title": "字体层级",
+    "author": "Open Props · Adam Argyle",
+    "repo": "argyleink/open-props",
+    "path": "src/props.fonts.js",
+    "upstreamBlobSha": "3112d34ebd09ce9cf2785be01cc5b16076a2fd6b",
+    "groups": [
+      "tokens"
+    ],
+    "tag": "Tokens",
+    "description": "固定正文，再拉开标题层级。",
+    "behavior": "切换预设，直接看同一组控件的变化。这里演示单一参数族，不代表整套设计系统。",
+    "check": "把选定值映射到项目现有 Tokens；检查长中文、焦点和对比，不全量替换样式。",
+    "scope": "字号参数节选",
+    "notes": [
+      "变量名和值直接取自 Open Props；控件示意和切换器由 Vibes 提供。",
+      "只用系统字体，不分发字体文件；不是上游完整主题。"
+    ],
+    "borrow": "规范",
+    "view": 560,
+    "source": "https://github.com/argyleink/open-props/blob/main/src/props.fonts.js",
+    "blobUrl": "https://api.github.com/repos/argyleink/open-props/git/blobs/3112d34ebd09ce9cf2785be01cc5b16076a2fd6b",
+    "license": "MIT",
+    "excerptSha256": "a5c232fcbc63da48c7b2aa0d9bef1e3cb9ccd0fd7d2b171a909f41940ed9b093",
+    "sourceFile": "/ui-topic/source/props-type.css.txt",
+    "previewSrc": "/ui-topic/previews/props-type/",
+    "image": "/media/ui-topic/props-type.webp",
+    "relatedSources": [],
+    "kind": "upstream",
+    "sourceLabel": "完整上游文件",
+    "provenance": "Open Props · Adam Argyle · MIT。字号参数节选。变量名和值直接取自 Open Props；控件示意和切换器由 Vibes 提供。 只用系统字体，不分发字体文件；不是上游完整主题。",
+    "terms": [
+      "Type scale",
+      "--font-size-1 / --font-size-3 / --font-size-5",
+      "1rem / 1.25rem / 2rem"
+    ]
+  }
+]

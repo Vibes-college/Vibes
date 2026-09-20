@@ -39,3 +39,5 @@ shaped-by: ['002']
 | [015 按任务范围执行Agent指导规则](015-agent-guidance/spec.md) | complete | document-governance, project-commands |
 
 | [016 内容发布通道](016-content-publishing-lane/spec.md) | complete | article-read, content-maintenance, project-commands |
+
+| [017 开源UI实践指南](017-open-source-ui-guide/spec.md) | in-progress | article-read, content-maintenance, project-commands |

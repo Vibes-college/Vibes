@@ -8,6 +8,7 @@ import { run } from './local-tools.ts';
 import { readCatalog } from '../src/lib/content/catalog.ts';
 import { optimizeImages } from './optimize-images.ts';
 import { bundleSandboxGame } from './sandbox-game.ts';
+import { secureUiTopicPreviews } from './ui-topic-preview.ts';
 
 // 合成目录使用独立输出及Astro缓存；所有构建先执行与维护命令相同的校验。
 const out = process.env.VIBES_OUT_DIR || 'dist';
@@ -31,6 +32,7 @@ writeContentSecurity(
   [...bundleSandboxGame(out), ...(nativeBuild?.sandboxScriptHashes ?? [])],
   Boolean(nativeBuild),
 );
+secureUiTopicPreviews(out);
 // 显式指定正文根；全站没有发布作品时也不能回退去索引导航页面。
 if (hasPublished)
   run(process.execPath, [

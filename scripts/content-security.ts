@@ -67,7 +67,8 @@ export function writeContentSecurity(out: string, sandboxHashes: string[] = [], 
     for (const entry of readdirSync(directory, { withFileTypes: true })) {
       const path = join(directory, entry.name);
       if (entry.isDirectory()) {
-        if (path !== join(out, 'paseo-preview')) scan(path);
+        if (path !== join(out, 'paseo-preview') && path !== join(out, 'ui-topic/previews'))
+          scan(path);
       } else if (entry.name.endsWith('.html'))
         for (const hash of inlineScriptHashes(readFileSync(path, 'utf8'))) hashes.add(hash);
     }

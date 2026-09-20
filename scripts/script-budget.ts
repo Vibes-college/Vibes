@@ -77,7 +77,10 @@ export function scriptBudget(
     tag.match(new RegExp(`\\b${name}=["']([^"']+)["']`, 'i'))?.[1];
   for (const html of pages) {
     const islands = [...html.matchAll(/<astro-island\b[^>]*>/gi)];
-    const roots = islands.length ? new Set<string>() : commonRoots;
+    // Astro components can enhance MDX without a React island. The article's
+    // complete script graph still belongs to the same per-article allowance.
+    const interactive = islands.length > 0 || /\bdata-article-format=["']mdx["']/.test(html);
+    const roots = interactive ? new Set<string>() : commonRoots;
     for (const [tag] of islands)
       for (const name of ['component-url', 'renderer-url']) {
         const path = attribute(tag, name);
@@ -95,10 +98,10 @@ export function scriptBudget(
       if (path) roots.add(path);
     }
     for (const body of inlineScripts(html)) {
-      if (!islands.length) commonInline.add(body);
+      if (!interactive) commonInline.add(body);
       for (const path of imports(body)) roots.add(path.path);
     }
-    if (islands.length) {
+    if (interactive) {
       for (const root of roots) islandRoots.add(root);
       interactivePages.push({ roots, inline: inlineScripts(html) });
     }

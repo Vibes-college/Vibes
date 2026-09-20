@@ -4,7 +4,7 @@ describes: '通过GitHub贡献并独立发布文章'
 status: 'complete'
 feature-ids: ['article-read', 'content-maintenance', 'project-commands']
 amends: ['004', '009', '014', '015']
-amended-by: []
+amended-by: ['017']
 approved-artifacts: ['research.md']
 research-trigger: 'MDX可执行边界、静态产物复用和fork预览凭据隔离'
 ---
