@@ -93,7 +93,7 @@ test('Astro navigation preserves the task draft, media modal focus and site retu
   await page.goto(accordion);
   const origin = await page.evaluate(() => performance.timeOrigin);
   await page.getByRole('button', { name: '改造设计', exact: true }).click();
-  await page.getByRole('button', { name: '方便同时比较', exact: true }).click();
+  await page.getByRole('button', { name: '方便同时比较答案', exact: true }).click();
   await page.getByRole('button', { name: /用这个效果/ }).click();
   await page.getByLabel('用在哪里', { exact: true }).fill('产品详情页');
   await page.getByText('查看同一任务的 JSON', { exact: true }).click();
@@ -109,7 +109,7 @@ test('Astro navigation preserves the task draft, media modal focus and site retu
   await page.getByRole('button', { name: '下一个作品', exact: true }).click();
   await expect(page).not.toHaveURL(new RegExp(accordion));
   await page.goBack();
-  await expect(page.getByRole('button', { name: '方便同时比较', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('button', { name: '方便同时比较答案', exact: true })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
