@@ -21,7 +21,7 @@ code-sources:
     'tests/unit/paseo-page-context.test.ts',
     'tests/unit/paseo-fixture-headers.test.ts',
   ]
-code-revision: 'd1e0afdb4cbcaaaa7081d65f6af5c0487c508bb3cf2cafab07451a4767c4c904'
+code-revision: 'b768c23cb7a949dd0075b26ee2df48d7f9bb887f7f3a420d5da9abf875f10e18'
 ---
 
 # 功能名：使用本地助手

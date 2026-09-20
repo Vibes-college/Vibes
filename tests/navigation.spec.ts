@@ -1,4 +1,4 @@
-import { test, expect } from './browser-test.ts';
+import { test, expect, documentIdentity } from './browser-test.ts';
 
 const first = '/zh/works/attention-is-all-you-need/';
 const second = '/zh/works/transformers-js/';
@@ -9,7 +9,7 @@ test('continuous lifecycle survives adjacent reading, history, search and langua
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/zh/');
-  const origin = await page.evaluate(() => performance.timeOrigin);
+  const originalDocument = await documentIdentity(page);
   await page.locator(`.card-link[href="${first}"]`).click();
   await expect(page.locator('h1')).toHaveText('Attention Is All You Need');
   await page.locator('[data-direction="next"]').click();
@@ -18,7 +18,7 @@ test('continuous lifecycle survives adjacent reading, history, search and langua
   await page.locator('h1').click();
   await page.keyboard.press('ArrowRight');
   await expect(page).toHaveURL(/\/works\/neural-networks\//);
-  expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+  expect(await documentIdentity(page)).toBe(originalDocument);
   await page.goBack();
   await expect(page).toHaveURL(new RegExp(second));
   await page.locator('[data-back-link]').click();
@@ -41,7 +41,7 @@ test('continuous lifecycle survives adjacent reading, history, search and langua
   ).toBeVisible();
   await page.locator('.language-switch a[hreflang="zh"]').click();
   await expect(page.locator('[data-search-grid] .card-link').first()).toBeVisible();
-  expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+  expect(await documentIdentity(page)).toBe(originalDocument);
   expect(errors).toEqual([]);
 });
 
@@ -65,10 +65,10 @@ test('visible detail preparation stays bounded', async ({ page, request }) => {
       .map((r) => r.name),
   );
   expect(prepared.every((url) => new URL(url).origin === new URL(page.url()).origin)).toBe(true);
-  const origin = await page.evaluate(() => performance.timeOrigin);
+  const originalDocument = await documentIdentity(page);
   await page.locator(`.card-link[href="${first}"]`).click();
   await expect(page.locator('h1')).toHaveText('Attention Is All You Need');
-  expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+  expect(await documentIdentity(page)).toBe(originalDocument);
 });
 
 test('late first navigation cannot replace the last selected work', async ({ page }) => {
@@ -77,13 +77,13 @@ test('late first navigation cannot replace the last selected work', async ({ pag
     await route.continue();
   });
   await page.goto('/zh/');
-  const origin = await page.evaluate(() => performance.timeOrigin);
+  const originalDocument = await documentIdentity(page);
   await page.locator(`.card-link[href="${first}"]`).click();
   await page.locator(`.card-link[href="${second}"]`).click();
   await expect(page.locator('h1')).toHaveText('Transformers.js');
   await page.waitForTimeout(850);
   await expect(page).toHaveURL(new RegExp(second));
-  expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+  expect(await documentIdentity(page)).toBe(originalDocument);
 });
 
 test('failed background requests fall back to a readable normal navigation', async ({ page }) => {
@@ -95,11 +95,11 @@ test('failed background requests fall back to a readable normal navigation', asy
     } else await route.abort('failed');
   });
   await page.goto('/zh/');
-  const origin = await page.evaluate(() => performance.timeOrigin);
+  const originalDocument = await documentIdentity(page);
   await page.locator(`.card-link[href="${first}"]`).click();
   await expect(page.locator('h1')).toHaveText('Attention Is All You Need');
   expect(fallback).toBe(true);
-  expect(await page.evaluate(() => performance.timeOrigin)).not.toBe(origin);
+  expect(await documentIdentity(page)).not.toBe(originalDocument);
 });
 
 test('reported save-data suppresses automatic prefetch without blocking navigation', async ({
@@ -130,7 +130,7 @@ test('return restores browse scroll and hash reading stays in the same document'
   const card = page.locator('.card-link[href="/zh/works/karpathy-llm/"]');
   await card.scrollIntoViewIfNeeded();
   const scroll = await page.evaluate(() => scrollY);
-  const origin = await page.evaluate(() => performance.timeOrigin);
+  const originalDocument = await documentIdentity(page);
   await card.click();
   await page.locator('.read-down').click();
   await expect(page).toHaveURL(/#reading$/);
@@ -141,7 +141,7 @@ test('return restores browse scroll and hash reading stays in the same document'
   await expect
     .poll(async () => Math.abs((await page.evaluate(() => scrollY)) - scroll))
     .toBeLessThan(3);
-  expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+  expect(await documentIdentity(page)).toBe(originalDocument);
 });
 
 test('touch intent prepares a card outside the automatic candidates', async ({ page }) => {
@@ -213,7 +213,7 @@ test('completed prefetch is reused in a persistent browser context', async ({
         ),
       )
       .toBe(true);
-    const origin = await page.evaluate(() => performance.timeOrigin);
+    const originalDocument = await documentIdentity(page);
     const count = await page.evaluate(
       (path) =>
         performance.getEntriesByType('resource').filter((r) => new URL(r.name).pathname === path)
@@ -222,7 +222,7 @@ test('completed prefetch is reused in a persistent browser context', async ({
     );
     await page.locator(`.card-link[href="${first}"]`).click();
     await expect(page.locator('h1')).toHaveText('Attention Is All You Need', { timeout: 1000 });
-    expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+    expect(await documentIdentity(page)).toBe(originalDocument);
     const cached = await page.evaluate(
       ({ path, count }) => {
         const entries = performance
@@ -244,7 +244,7 @@ test('completed prefetch is reused in a persistent browser context', async ({
       await page.goBack();
       await page.locator(`.card-link[href="${first}"]`).click();
       await expect(page.locator('h1')).toHaveText('Attention Is All You Need');
-      expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+      expect(await documentIdentity(page)).toBe(originalDocument);
       expect(
         await page.evaluate((path) => {
           const entries = performance
@@ -271,7 +271,7 @@ test('new-tab and external links preserve native navigation semantics', async ({
   context,
 }) => {
   await page.goto(first);
-  const origin = await page.evaluate(() => performance.timeOrigin);
+  const originalDocument = await documentIdentity(page);
   const external = page.locator('a[target="_blank"]').first();
   const destination = await external.getAttribute('href');
   expect(new URL(destination!).origin).not.toBe(new URL(page.url()).origin);
@@ -301,5 +301,5 @@ test('new-tab and external links preserve native navigation semantics', async ({
   );
   expect(uncancelled).toEqual([true, true]);
   await expect(page).toHaveURL(new RegExp(first));
-  expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+  expect(await documentIdentity(page)).toBe(originalDocument);
 });

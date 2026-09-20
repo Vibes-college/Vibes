@@ -21,6 +21,10 @@ shaped-by: ['004']
   原因：暂停Blob换源阻塞原生GStreamer管线；延后换源、调整回收顺序或直接赋src仍复现，偶然通过不能证明已修复。
   转化：[recording-seek.ts](../src/features/great-ui/recording-seek.ts)使用有界data副本，取消下载及转换并拒绝旧结果回写；[媒体回归](../tests/great-ui-previews.spec.ts)确认新尺寸和暂停后才继续播放，覆盖超限、503、取消与清理｜验证：修正后本机46项通过/2项设备跳过、Linux15项通过/1项跳过，实际代码Linux转屏另连续20项通过；完整CI凭据在PR维护｜转化日期：2026-09-20｜状态：已转化
 
+- [2026-09-20] 现象：英文媒体用例被21秒的外站缩略图阻塞，另一导航用例因timeOrigin相差1毫秒失败｜证据：resources/evidence/018-great-ui-scale/release-2026-09-19/verify-before-identity-fix.log及final-first-failures
+  原因：语言与无JS检查依赖了无关的远端图片，文档身份检查依赖了会舍入变化的时钟值。
+  转化：[媒体用例](../tests/media.spec.ts)局部替换无关缩略图；[documentIdentity](../tests/browser-test.ts)用当前window标记验证保持或真实刷新，保留网络排空、超时和实际缓存检查｜验证：三浏览器42项专项通过，覆盖站内保持、失败回退、真实刷新及缓存复用；完整CI凭据在PR维护｜转化日期：2026-09-20｜状态：已转化
+
 - [2026-09-14] 现象：对未接入正式站的本地工作台启动整站回归，用户连续指出范围错误｜证据：018任务对话及resources/evidence/018-great-ui-scale/verify.log中的中止运行
   原因：将组件路径和CI的保守分类直接套成本地验证，未先核对实际构建、引用和发布边界。
   转化：[检查与发布](system/checks-and-release.md)及[执行入口](../AGENTS.md)要求独立本地入口只运行自身检查；[great-ui:verify](../package.json)提供独立命令｜验证：018本地16项单元、66项浏览器、独立预算通过｜转化日期：2026-09-14｜状态：已转化

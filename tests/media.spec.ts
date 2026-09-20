@@ -1,4 +1,4 @@
-import { test, expect } from './browser-test.ts';
+import { test, expect, documentIdentity } from './browser-test.ts';
 import type { Locator, Page } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -340,14 +340,14 @@ test('game recovers with a full reload when an older document lacks its CSP hash
     await route.fulfill({ response, headers });
   });
   await page.goto(detail('demo'));
-  const firstLoad = await page.evaluate(() => performance.timeOrigin);
+  const firstDocument = await documentIdentity(page);
   await page.locator('[data-media-launch]').click();
   const refresh = page.getByRole('button', { name: '刷新重试', exact: true });
   await expect(refresh).toBeVisible({ timeout: 10000 });
   await expect(page.locator('iframe')).toHaveCount(0);
   await page.unroute(path);
   await refresh.click();
-  await expect.poll(() => page.evaluate(() => performance.timeOrigin)).toBeGreaterThan(firstLoad);
+  await expect.poll(() => documentIdentity(page)).not.toBe(firstDocument);
   await page.waitForLoadState('networkidle');
   await page.locator('[data-media-launch]').click();
   await expect(page.frameLocator('iframe').locator('.tile')).toHaveCount(2);
@@ -571,6 +571,10 @@ test('failed full video and dataset keep retry, poster and source fallback', asy
 });
 
 test('published English media and no-JS fallback remain readable', async ({ page, browser }) => {
+  // This case checks language and no-JS behavior, not YouTube thumbnail availability.
+  await page.route(/^https:\/\/i\.ytimg\.com\//, (route) =>
+    route.fulfill({ path: 'public/media/sintel/poster.webp', contentType: 'image/webp' }),
+  );
   await page.goto('/en/?q=Attention%20transformers');
   await expect(page.locator('.work-card--media:visible')).toHaveCount(1);
   await page.locator('.work-card--media:visible .card-link').click();

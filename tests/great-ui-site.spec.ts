@@ -1,4 +1,4 @@
-import { test, expect } from './browser-test.ts';
+import { test, expect, documentIdentity } from './browser-test.ts';
 import { registerJourneyTests } from './fixtures/great-ui/journey.ts';
 import { withMockSession } from './fixtures/paseo-webui/mock-session.ts';
 import { learningMaterials } from '../src/features/great-ui/site-content.ts';
@@ -91,7 +91,7 @@ test('Astro navigation preserves the task draft, media modal focus and site retu
   page,
 }) => {
   await page.goto(accordion);
-  const origin = await page.evaluate(() => performance.timeOrigin);
+  const originalDocument = await documentIdentity(page);
   await page.getByRole('button', { name: '改造设计', exact: true }).click();
   await page.getByRole('button', { name: '方便同时比较答案', exact: true }).click();
   await page.getByRole('button', { name: /用这个效果/ }).click();
@@ -122,7 +122,7 @@ test('Astro navigation preserves the task draft, media modal focus and site retu
   await expect(page.locator('.learning-navigation')).not.toHaveAttribute('inert', '');
   await page.getByRole('link', { name: '返回合集' }).click();
   await expect(page).toHaveURL(new RegExp(collection));
-  expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+  expect(await documentIdentity(page)).toBe(originalDocument);
 });
 
 test('case navigation remains locked while the next page is loading', async ({ page }) => {
@@ -168,7 +168,7 @@ for (const relation of [
   test(`related case navigation resolves stable IDs from ${relation.source}`, async ({ page }) => {
     const sourcePath = `/zh/works/${relation.source}/`;
     await page.goto(sourcePath);
-    const origin = await page.evaluate(() => performance.timeOrigin);
+    const originalDocument = await documentIdentity(page);
     await page
       .getByRole('region', { name: relation.group, exact: true })
       .getByRole('button', { name: new RegExp(relation.title) })
@@ -177,7 +177,7 @@ for (const relation of [
     await expect(page.locator('.great-ui h1')).toHaveText(relation.title);
     await page.goBack();
     await expect(page).toHaveURL(new RegExp(sourcePath + '$'));
-    expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+    expect(await documentIdentity(page)).toBe(originalDocument);
   });
 }
 
@@ -185,7 +185,7 @@ test('composition case navigation resolves its selected step and preserves the r
   page,
 }) => {
   await page.goto(accordion);
-  const origin = await page.evaluate(() => performance.timeOrigin);
+  const originalDocument = await documentIdentity(page);
   await page.getByRole('button', { name: '串联设计', exact: true }).click();
   const step = page
     .locator('.composition-plan[open] .recipe-steps .related-case')
@@ -204,7 +204,7 @@ test('composition case navigation resolves its selected step and preserves the r
     'aria-pressed',
     'true',
   );
-  expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+  expect(await documentIdentity(page)).toBe(originalDocument);
 });
 
 test('no JavaScript retains the full explanation, goals, glossary and sources', async ({

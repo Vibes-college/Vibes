@@ -1,4 +1,4 @@
-import { test, expect } from './browser-test.ts';
+import { test, expect, documentIdentity } from './browser-test.ts';
 import type { Page } from '@playwright/test';
 
 const native = '**/vendor/paseo/**/*.js';
@@ -9,13 +9,14 @@ const mounted = async (page: Page) => {
     timeout: 45_000,
   });
 };
-const shape = (page: Page) =>
-  page.evaluate(() => ({
+const shape = async (page: Page) => ({
+  ...(await page.evaluate(() => ({
     mounts: (window as unknown as { __vibesPaseo: { mountCount: number } }).__vibesPaseo.mountCount,
     styles: document.querySelector<HTMLStyleElement>('#react-native-stylesheet')?.sheet?.cssRules
       .length,
-    origin: performance.timeOrigin,
-  }));
+  }))),
+  document: await documentIdentity(page),
+});
 
 test('browsing and no-JS do not fetch or connect Paseo', async ({ page, browser, baseURL }) => {
   const resources: string[] = [];

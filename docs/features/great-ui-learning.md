@@ -24,7 +24,7 @@ code-sources:
     'tests/unit/great-ui-content.test.ts',
     'tests/unit/great-ui-browsing.test.ts',
   ]
-code-revision: 'c04bf1bdce9745096706d64e8c4b885e5be379c63eb5f759b5fc6f5a1a5b52bc'
+code-revision: '10061b4bbeedc59bd094b6440514077c32cdcbb26e8f3fd2153ae7028963bea9'
 ---
 
 # 功能名：学习交互作品并带入自己的项目
