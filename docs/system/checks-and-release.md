@@ -14,7 +14,7 @@ code-sources:
     'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: 'c19b858cce11a3e087b980b66c60768a572ce752c10d732e658ce5411c9b31bc'
+code-revision: '23c22b7ee32a48e24f93d27df305e8afa47e163293469b6e06cf3e42d9286d8e'
 ---
 
 # 检查与发布
@@ -205,7 +205,7 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 本地入口用`great-ui:build`校验目录、详情及能力结构，并输出.scratch/great-ui-dist；`great-ui:test`通过scripts/great-ui-test.ts运行独立Playwright配置，启动4336测试服务，结束由测试框架释放。不带筛选参数且全部用例通过时，核对测试前后源码摘要一致，再保存固定示例的路径记录；筛选重跑不能生成整体验证记录。great-ui-proof.ts在重建时核对记录与当前来源、Markdown、规则、适配器和测试，过期记录不显示为已验证。独立记录只用于standalone构建；正式学习页读取site记录，由test:e2e完整通过且测试前后源码一致时生成，两份回执不能相互替代。main的可信整树复用路径由great-ui-reuse.ts重建site回执，必须通过GitHub Actions、仓库、main push、当前SHA、干净文件树与原PR run/attempt守卫；记录明确标注复用来源，不当作本次重跑。great-ui:verify执行该入口的单元、浏览器、great-ui:evaluate与预算检查，独立于整站verify；单独运行great-ui:budget会先构建再检查压缩JS、CSS、目录、详情与本地媒体，不改变正式站预算。独立构建沿用站内规则，动态模块的预加载只准备依赖，目标模块由普通import加载，避免WebKit保留失败预加载；失败时提供返回说明和整页重载。不会调用发布命令。当前回归范围和待补覆盖见[功能说明](../features/great-ui-learning.md)，原始材料与浏览器证据不作为自动通过依据。
 
-48件高清、30件独立手机版本、轻量封面及海报按原始大小另计总量48MiB、单高清2MiB、单封面短片150KiB且封面短片合计4MiB、单海报200KiB。只加载当前选中素材；整套存储量不等于首页下载量，普通页面脚本预算不变。本地素材的来源、录制操作及文件摘要由data/local-recordings.json记录，单元检查拒绝缺失或摘要不符。稳定交互回归中的远端视频替身不证明外部可用性；实际媒体另检查解码与播放时间推进，并注明检查日期、原始地址及未重试的失败结果。
+51件高清、33件独立手机版本、轻量封面及海报按原始大小另计总量48MiB、单高清2MiB、单封面短片150KiB且封面短片合计4MiB、单海报200KiB。只加载当前选中素材；整套存储量不等于首页下载量，普通页面脚本预算不变。本地素材的来源、录制操作及文件摘要由data/local-recordings.json记录，单元检查拒绝缺失或摘要不符。稳定交互回归中的远端视频替身不证明外部可用性；实际媒体另检查解码与播放时间推进，并注明检查日期、原始地址及未重试的失败结果。
 
 tests/great-ui-previews.spec.ts覆盖三类两端素材、有效放大、键盘和鼠标移动、退出焦点、合集离屏无下载及旧视频释放、减少动态/省流量手动播放、连续旋转与失败入口。三个浏览器配置均检查回到开头时建立有界副本、后续跳转复用、无分段读取、超限拒绝及失败后不自动重播；首次正常播放不能额外fetch副本。手机Chromium另通过CDP发送双指缩放和单指移动；WebKit验证控件与鼠标/键盘移动，不将其等同于真机触摸。tests/great-ui-site.spec.ts逐件检查51段当前设备素材的解码、播放及无外部视频请求。
 

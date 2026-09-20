@@ -125,6 +125,62 @@ test('Astro navigation preserves the task draft, media modal focus and site retu
   expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
 });
 
+for (const relation of [
+  {
+    source: 'great-ui-button',
+    group: '相似作品',
+    title: '轻量立体按钮',
+    target: 'great-ui-minimal-buttons',
+  },
+  {
+    source: 'beui-combobox',
+    group: '相同原理',
+    title: '有层级的基础按钮',
+    target: 'great-ui-button',
+  },
+]) {
+  test(`related case navigation resolves stable IDs from ${relation.source}`, async ({ page }) => {
+    const sourcePath = `/zh/works/${relation.source}/`;
+    await page.goto(sourcePath);
+    const origin = await page.evaluate(() => performance.timeOrigin);
+    await page
+      .getByRole('region', { name: relation.group, exact: true })
+      .getByRole('button', { name: new RegExp(relation.title) })
+      .click();
+    await expect(page).toHaveURL(new RegExp(`/zh/works/${relation.target}/$`));
+    await expect(page.locator('.great-ui h1')).toHaveText(relation.title);
+    await page.goBack();
+    await expect(page).toHaveURL(new RegExp(sourcePath + '$'));
+    expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+  });
+}
+
+test('composition case navigation resolves its selected step and preserves the return panel', async ({
+  page,
+}) => {
+  await page.goto(accordion);
+  const origin = await page.evaluate(() => performance.timeOrigin);
+  await page.getByRole('button', { name: '串联设计', exact: true }).click();
+  const step = page
+    .locator('.composition-plan[open] .recipe-steps .related-case')
+    .filter({ hasNotText: '折叠问答' })
+    .first();
+  await expect(step).toBeVisible();
+  const title = (await step.innerText()).replace(/\s*→$/, '').trim();
+  const target = learningMaterials().entries.find((entry) => entry.title === title)!;
+  expect(target).toBeDefined();
+  await step.click();
+  await expect(page).toHaveURL(new RegExp(`/zh/works/${target.id}/$`));
+  await expect(page.locator('.great-ui h1')).toHaveText(target.title);
+  await page.goBack();
+  await expect(page).toHaveURL(new RegExp(accordion + '$'));
+  await expect(page.getByRole('button', { name: '串联设计', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+});
+
 test('no JavaScript retains the full explanation, goals, glossary and sources', async ({
   browser,
   baseURL,

@@ -64,7 +64,7 @@ code-revision: '99c89145421ac8c8a5dea69f8447cbbc05b66b1076bc9786f249f0e6f71cc347
 
 ### Great UI学习静态资料
 
-`GET /great-ui/content/catalog.json`提供48件轻量目录；capabilities.json提供组合能力，`<slug>.json`提供由同一Markdown生成的案例和任务所需字段，demo-proof.json只提供当前构建匹配的固定示例验收记录。`GET /great-ui/journeys/<id>.json`提供内置示例项目数据。均在构建时生成、只读、无用户输入和秘密；没有后台编辑或任务执行API。
+`GET /great-ui/content/catalog.json`提供51件轻量目录；capabilities.json提供组合能力，`<slug>.json`提供由同一Markdown生成的案例和任务所需字段，demo-proof.json只提供当前构建匹配的固定示例验收记录。`GET /great-ui/journeys/<id>.json`提供内置示例项目数据。均在构建时生成、只读、无用户输入和秘密；没有后台编辑或任务执行API。
 
 预览文件为`/great-ui/media/*`，任务使用以学习页公开地址解析的绝对URL；不要求访问维护者本机文件。普通目录只列合集，子项拥有独立作品网址并进入搜索和站点地图。对应src/pages/great-ui与GreatUiDetail.astro。
 
