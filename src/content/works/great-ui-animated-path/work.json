@@ -1,0 +1,73 @@
+{
+  "id": "great-ui-animated-path",
+  "originalLocale": "zh",
+  "order": 11003,
+  "sourceUrl": "https://www.great-ui.com/components/animated-path",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "animated-path",
+    "collectionId": "great-ui-learning",
+    "english": "Animated Path",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/AnimatedPath.tsx",
+    "previewSource": "components/site/previews/AnimatedPathPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/animated-path-demo.mp4",
+      "poster": "/great-ui/media/animated-path-demo-poster.jpg",
+      "width": 904,
+      "height": 616,
+      "mobile": {
+        "video": "/great-ui/media/animated-path-demo.mp4",
+        "poster": "/great-ui/media/animated-path-demo-poster.jpg",
+        "width": 904,
+        "height": 616,
+        "duration": 7.066667
+      },
+      "card": {
+        "video": "/great-ui/media/animated-path-card.mp4",
+        "poster": "/great-ui/media/animated-path-card-poster.jpg",
+        "width": 480,
+        "height": 328,
+        "duration": 7.125
+      }
+    },
+    "capability": {
+      "family": "path-drawing",
+      "roles": ["showcase"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "rawSvg 只解析 g、path、rect 和 circle 的部分属性，不是完整 SVG 渲染器；带渐变、蒙版、单引号属性或其他形状的素材要先核对转换结果。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    },
+    "sequence": 23
+  }
+}

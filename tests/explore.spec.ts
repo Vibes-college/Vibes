@@ -8,6 +8,11 @@ import { readCatalog } from '../src/lib/content/catalog.ts';
 const publishedPapers = readCatalog().works.filter(
   (work) => work.meta.typeId === 'paper' && work.versions.zh?.data.status === 'published',
 ).length;
+const learningWorks = new Set(
+  readCatalog()
+    .works.filter((work) => work.meta.learning)
+    .map((work) => work.meta.id),
+);
 
 test('local filtering, empty state, and URL survive refresh', async ({ page }) => {
   // Filtering does not test YouTube availability; a remote thumbnail must not stall teardown.
@@ -107,6 +112,13 @@ test('static output stays small and content routes exist', async ({ request, pag
   });
   for (const slug of readdirSync('dist/zh/works')) {
     const html = readFileSync(`dist/zh/works/${slug}/index.html`, 'utf8');
+    if (learningWorks.has(slug)) {
+      expect(html).toContain('class="learning-page"');
+      expect(html).toContain('class="learning-markdown"');
+      expect(html).toContain('data-pagefind-body');
+      expect(html).toContain('/great-ui/media/');
+      continue;
+    }
     expect(html).toContain('id="reading"');
     expect(html).toMatch(/<h2\b/);
     expect(html).toContain('class="original-site"');
@@ -529,6 +541,7 @@ test('vertical paging lands on reading and long content stays reachable', async 
 
 test('page state survives anchors and history while reading scroll remains native', async ({
   page,
+  browserName,
 }) => {
   await page.goto('/zh/works/transformers-js/');
   const root = page.locator('.detail-page');
@@ -536,6 +549,22 @@ test('page state survives anchors and history while reading scroll remains nativ
   await page.keyboard.press('PageDown');
   await expect(root).toHaveAttribute('data-detail-page', 'reading');
   await expect(page.locator('.detail-cover')).toBeHidden();
+  await expect(page.locator('#reading')).toBeFocused();
+  await expect(page.locator('#reading')).toHaveCSS('outline-style', 'none');
+  // Returning must move focus out of the hidden body without outlining the entire cover.
+  await page.keyboard.press('PageUp');
+  const cover = page.locator('.detail-cover');
+  await expect(cover).toBeFocused();
+  await expect.poll(() => cover.evaluate((node) => node.matches(':focus-visible'))).toBe(true);
+  await expect(cover).toHaveCSS('outline-style', 'none');
+  // WebKit's default Tab preference skips links; Option+Tab includes them.
+  await page.keyboard.press(browserName === 'webkit' ? 'Alt+Tab' : 'Tab');
+  const back = page.locator('.detail-navigation [data-back-link]');
+  await expect(back).toBeFocused();
+  await expect(back).toHaveCSS('outline-style', 'solid');
+  await expect(back).toHaveCSS('outline-width', '1px');
+  await page.locator('.read-down').press('Enter');
+  await expect(root).toHaveAttribute('data-detail-page', 'reading');
   await page.waitForTimeout(350);
   await page.evaluate(() => window.scrollTo({ top: 240, behavior: 'instant' }));
   await page.waitForTimeout(800);

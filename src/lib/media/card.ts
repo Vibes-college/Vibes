@@ -10,6 +10,11 @@ export interface CardImage {
   focalPoint: [number, number];
 }
 export interface CardMedia {
+  collection?: {
+    id: string;
+    count: number;
+    items: { id: string; title: string; card: CardMedia }[];
+  };
   kind: 'image' | 'video' | 'audio' | 'animation' | 'embed';
   embed?: { provider: EmbedProvider; resourceId: string };
   poster: CardImage;
@@ -141,5 +146,35 @@ export function parseCard(value: string): CardMedia {
   }
   image(card.poster);
   image(card.fallback);
+  const c = card.collection;
+  if (c) {
+    const id = (value: unknown) => typeof value === 'string' && /^[a-z0-9-]+$/.test(value);
+    if (
+      !id(c.id) ||
+      !Number.isInteger(c.count) ||
+      c.count < 1 ||
+      c.count > 200 ||
+      !Array.isArray(c.items) ||
+      !c.items.length ||
+      c.items.length > c.count
+    )
+      throw new Error('Invalid collection preview');
+    const ids = new Set();
+    for (const item of c.items) {
+      if (
+        !id(item.id) ||
+        typeof item.title !== 'string' ||
+        !item.title.trim() ||
+        item.title.length > 300 ||
+        ids.has(item.id) ||
+        !item.card ||
+        item.card.collection ||
+        item.card.kind !== 'video'
+      )
+        throw new Error('Invalid collection member');
+      ids.add(item.id);
+      parseCard(JSON.stringify(item.card));
+    }
+  }
   return card;
 }

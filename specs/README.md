@@ -39,3 +39,5 @@ shaped-by: ['002']
 | [015 按任务范围执行Agent指导规则](015-agent-guidance/spec.md) | complete | document-governance, project-commands |
 
 | [016 内容发布通道](016-content-publishing-lane/spec.md) | complete | article-read, content-maintenance, project-commands |
+
+| [018 网页动效与交互学习、共享术语与组合](018-great-ui-scale/spec.md) | complete | article-read, content-maintenance, explore-browse, great-ui-learning, project-commands, recording-previews |

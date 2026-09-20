@@ -8,6 +8,10 @@
   },
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
+    "great-ui:build": "node --experimental-strip-types scripts/great-ui.ts build",
+    "great-ui:dev": "node --experimental-strip-types scripts/great-ui.ts dev",
+    "great-ui:preview": "node --experimental-strip-types scripts/great-ui.ts preview",
+    "great-ui:test": "node --experimental-strip-types scripts/great-ui-test.ts",
     "build": "node --experimental-strip-types scripts/build.ts",
     "check:types": "astro check && tsc -p tsconfig.tools.json",
     "lint": "eslint . --max-warnings 0",
@@ -37,7 +41,10 @@
     "paseo:build": "node --experimental-strip-types scripts/paseo-webui-build.ts build",
     "paseo:ci": "node --experimental-strip-types scripts/paseo-webui-build.ts ci",
     "paseo:production": "node --experimental-strip-types scripts/paseo-webui-build.ts production",
-    "paseo:test-prepare": "node --experimental-strip-types scripts/paseo-webui-build.ts test-prepare"
+    "paseo:test-prepare": "node --experimental-strip-types scripts/paseo-webui-build.ts test-prepare",
+    "great-ui:evaluate": "node --experimental-strip-types scripts/great-ui-evaluate.ts",
+    "great-ui:budget": "npm run great-ui:build && node --experimental-strip-types scripts/great-ui-budget.ts",
+    "great-ui:verify": "node --experimental-strip-types --test tests/unit/great-ui-*.test.ts && npm run great-ui:test && npm run great-ui:evaluate && node --experimental-strip-types scripts/great-ui-budget.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "8.0.0",

@@ -1,0 +1,73 @@
+{
+  "id": "great-ui-deployment-checklist",
+  "originalLocale": "zh",
+  "order": 11004,
+  "sourceUrl": "https://www.great-ui.com/components/deployment-checklist",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "deployment-checklist",
+    "collectionId": "great-ui-learning",
+    "english": "Deployment Checklist",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/DeploymentChecklist.tsx",
+    "previewSource": "components/site/previews/DeploymentChecklistPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/deployment-checklist-demo.mp4",
+      "poster": "/great-ui/media/deployment-checklist-demo-poster.jpg",
+      "width": 892,
+      "height": 1176,
+      "mobile": {
+        "video": "/great-ui/media/deployment-checklist-mobile.mp4",
+        "poster": "/great-ui/media/deployment-checklist-mobile-poster.jpg",
+        "width": 588,
+        "height": 1300,
+        "duration": 19.066667
+      },
+      "card": {
+        "video": "/great-ui/media/deployment-checklist-card.mp4",
+        "poster": "/great-ui/media/deployment-checklist-card-poster.jpg",
+        "width": 480,
+        "height": 632,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "step-feedback",
+      "roles": ["feedback"],
+      "provides": ["status-display"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "runPipeline 是固定延时演示，没有克隆、构建或部署能力；initialTasks 只改变初始任务，运行时仍按数字ID预设结果。接入必须用真实任务结果驱动状态。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    },
+    "sequence": 5
+  }
+}

@@ -11,12 +11,19 @@ code-sources:
     '.github/workflows/',
     'playwright.config.ts',
     'playwright.content.config.ts',
+    'playwright.great-ui.config.ts',
     'wrangler.local.jsonc',
   ]
-code-revision: '4535b90af05487aa5d019a378b243c6c241f773a8eafab6f170e5efdc1726e6d'
+code-revision: '9a7b8564e4aac58fa95f2a1b291248cd21141a1274e3cf895668f5b1dc0aa527'
 ---
 
 # 检查与发布
+
+## 本地检查的影响边界
+
+先核对真实接入与依赖边界，不因文件叫组件、页面或测试就运行整站回归。未被正式站引用、打包或发布，且构建、资源与测试入口独立的本地页面、样板或实验，只运行自身必要的检查和预算；不启动整站、Paseo或数据库回归，也不自动并入整站verify。仅放在同一仓库、复用已安装依赖或新增独立命令不构成整站影响。实际改动站点路由、共用组件、全局样式、依赖解析或构建/发布链时，按受影响范围升级；运行整站回归前说明具体依赖与理由。未知先查引用和构建入口，不能把“不确定”直接作为全量理由。
+
+独立入口的构建、单元、交互、异常和资源预算仍须按实际风险验证；共享检查器的修改验证检查器本身，不因此启动无关网站浏览器。改动真正接入网站时再补对应接入验证。当前本地改动与整个PR累计差异分开判断，不能机械把CI的保守路径分类套成本地开发命令。
 
 ## 检查入口
 
@@ -43,25 +50,25 @@ verify与预算构建共享一个runner，budget仍是同名必需检查，以al
 
 PR基线为目标分支SHA；main范围从线上/__release.json的已发布SHA累计比较到当前源码，无法读取/非法/非当前历史时完整检查，防止旧网页提交被后续文档提交挤掉而漏发；checkout获取完整历史。冻结检查仍以事件比较提交和main共同祖先为准。DOCS_BASE_REF提供比较提交；冻结检查取它与origin/main的共同祖先，仅冻结已进入main的历史，不把未合并分支的complete稿提前冻结。无远端main的本地测试仓库可使用本地main，找不到有效基线仍失败。CHECK_BASE_REF用于范围分类。本地默认origin/main；冻结基线缺失仍失败，不因分类回退而绕过保护。远端main需保持最新。
 
-每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。整套浏览器用例串行执行，降低单个本地Worker的并发连接压力；全部设备与用例仍执行，不自动重试。浏览器测试关闭普通页面及独立缓存profile前，使用Playwright原生networkidle等待当前文档进入网络空闲，10秒超时仍失败，以降低本地代理在响应中断时退出的风险。筛选/刷新用例将YouTube缩略图替换为本地测试图片，避免外站可用性阻塞该用例；不代表原站可达，不改导航断言、原生音频或HTTP缓存专项。
+每周一09:00UTC单独输出文档体检，行数和比例仅观察。Playwright失败追踪上传Actions保存7天；完整回归将本地Wrangler诊断写入.scratch/ci-wrangler，失败时一并归档，供检查空白错误背后的代理原因。该verify步骤不持有生产发布凭据；日志可能包含仓库Worker源码，公开转贴前仍需复核。CI禁止test.only，测试不自动重试来掩盖不稳定断言。本地和CI均拒绝复用已启动的4322服务。整套浏览器用例串行执行，降低单个本地Worker的并发连接压力；全部设备与用例仍执行，不自动重试。浏览器测试关闭普通页面及独立缓存profile前，使用Playwright原生networkidle等待当前文档进入网络空闲，10秒超时仍失败，以降低本地代理在响应中断时退出的风险。筛选/刷新与英文媒体无JS用例将YouTube缩略图替换为本地测试图片，避免外站可用性阻塞该用例；不代表原站可达，不放宽导航行为断言，也不改变原生音频或HTTP缓存专项。
 
 功能文档可按操作路径归并；旧编号通过legacy-feature-ids追溯，缺失对应、重复编号或来源缺失仍失败。历史规格正文与现有冻结检查不变。
 
 ## docs:check红色意味着什么
 
-| 错误                      | 含义与修复                                                     |
-| ------------------------- | -------------------------------------------------------------- |
-| 缺少front matter/状态无效 | 按模板填写tense、describes、status及对应关系数组               |
-| 不在白名单                | 文档放错位置；临时稿移.scratch，额外产物在spec列明必要性和用途 |
-| 索引不一致                | 在功能/spec索引补真实文件，删除失效条目，同步状态与影响功能    |
-| 冻结正文修改/文件删除     | 恢复旧正文；新建spec记录新决定，并添加amends/amended-by        |
-| 缺少双向关系/shaped-by    | 核对编号、旧新规格和当前功能的来源关系                         |
-| 合并清单未完成            | 完成真实验收及最后的现状同步任务，不虚假打勾                   |
-| 基线不可读取              | fetch origin main，或传有效DOCS_BASE_REF；不使用空基线绕过     |
+| 错误                      | 含义与修复                                                                                |
+| ------------------------- | ----------------------------------------------------------------------------------------- |
+| 缺少front matter/状态无效 | 按模板填写tense、describes、status及对应关系数组                                          |
+| 不在白名单                | 核对文档位置与登记；主题策划放docs/topics并登记，临时稿移.scratch，规格附件在spec列明用途 |
+| 索引不一致                | 在功能/spec索引补真实文件，删除失效条目，同步状态与影响功能                               |
+| 冻结正文修改/文件删除     | 恢复旧正文；新建spec记录新决定，并添加amends/amended-by                                   |
+| 缺少双向关系/shaped-by    | 核对编号、旧新规格和当前功能的来源关系                                                    |
+| 合并清单未完成            | 完成真实验收及最后的现状同步任务，不虚假打勾                                              |
+| 基线不可读取              | fetch origin main，或传有效DOCS_BASE_REF；不使用空基线绕过                                |
 
 篇幅提示不属于错误，不使CI失败；根据职责、重复和导航决定是否整理。
 
-缺少标签会阻断项目治理Markdown；产品文章及固定上游资产采用自己的格式。自然语言是否精确表达现状仍需人工审核，脚本不使用禁词或固定任务措辞判断自然语言质量。
+缺少标签会阻断项目治理Markdown；产品文章、src/content/glossary中的词条/原文/模板及固定上游资产采用自己的格式。词条通过内容读取器校验，sources原文不经格式化器改写。自然语言是否精确表达现状仍需人工审核，脚本不使用禁词或固定任务措辞判断自然语言质量。
 
 ## 分支与PR的工作单位
 
@@ -125,7 +132,7 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 | `npm run format:check`              | 检查格式，不修改文件                                                             |
 | `npm run check`                     | 类型→lint→格式→文档→单元测试；不启动浏览器或清库                                 |
 | `npm run test:e2e`                  | 构建→Playwright启动专用本地Worker→桌面Chromium及手机Chromium/WebKit测试→清理服务 |
-| `npm run verify`                    | check→db:reset→test:e2e，完整验收，失败停止；不部署                              |
+| `npm run verify`                    | check→db:reset→test:e2e，网站完整验收，失败停止；不部署                          |
 | `npm run budget`                    | 构建并检查脚本、首页和优化图片体积；限值见[常量](../system/rules.md)             |
 | `npm run optimize:images`           | 对已有dist单独生成图片变体和manifest；通常由build自动调用                        |
 | `npm run ci:scope`                  | 根据CHECK_BASE_REF或origin/main计算docs/tools/content/full，不执行检查           |
@@ -135,7 +142,7 @@ AI在用户合并后继续收尾，不建立定时跟进。先核对PR已合并�
 | `npm run release:preview -- <PR号>` | 本地按范围验收后上传PR预览版本，不提升生产                                       |
 | `npm run cleanup:task -- <PR号>`    | 报告已合并/已部署分支清理候选；核对空闲后加--execute-idle                        |
 
-按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；受限内容修改运行verify:content；页面组件和测试基础设施修改运行verify与budget。
+按[CI范围规则](checks-and-release.md)选择必需检查，不因纯文档变化运行整站浏览器。`npm run verify`始终表示完整验收；同名CI job在main明确满足可信复用时负责生产检查，路径会显示在Actions摘要，不把快速检查伪装为本轮完整回归。日常工具修改运行check；受限内容修改运行verify:content；影响正式网站的页面组件或共用测试基础设施修改运行verify与budget；独立本地入口执行自己的检查。
 
 ## 媒体处理
 
@@ -157,7 +164,11 @@ UI开发实践文章的beUI回归会先展开原生details再操作其中控件�
 
 WebKit图片附件用例单独使用本任务创建的空持久profile，按普通窗口验证Blob附件；同版WebKit临时/私密上下文的IndexedDB无法保存Blob/File。该profile只初始化一次配对状态，成功或失败后均关闭并删除；其他原生mock用例继续使用临时上下文。真实Safari私密模式仍需真机验证。
 
+学习视频的Range处理与静态文件由同一Wrangler服务验收；tests/great-ui-previews.spec.ts核对实际206的片段字节、Content-Range、长度、ETag/缓存/安全头及416/If-Range回退，同时检查详情和合集的真实自然循环。生产上线后还须核对实际学习MP4的206响应与播放器时间推进，不能用本地模拟代替边缘部署。
+
 媒体测试完成播放、暂停和历史断言后，先通过正常页面导航退出播放器，释放可能仍保持连接的原生下载。测试页面关闭前等待静态资源传输结束，10秒内仍未空闲即失败；这是对Wrangler本地代理中断响应会退出问题的防护，不重试测试或吞掉错误。公共fixture见tests/browser-test.ts。
+
+文档是否保持同一运行环境，以当前window中首次生成的测试标记判断：Astro站内切换必须保留标记，失败回退或明确刷新必须产生新标记；不使用可能发生毫秒舍入变化的performance.timeOrigin作身份。实际播放、绘制与资源时序仍使用原生性能数据，缓存用例不拦截请求。
 
 手机项目包含Chromium与WebKit设备模拟，包含触摸横滑和320px列表/详情检查，不代表真实iPhone Safari通过。原生音频章节测试在成功或失败时均附捕获/冒泡阶段的媒体事件、进度及按钮状态，便于核对异步暂停。媒体测试附件记录首次/同会话缓存访问的DOMContentLoaded、首屏绘制、海报观测和点击到真实视频首帧；单次本机样本不当作公网性能，浏览器不支持的绘制指标保留null。导航缓存测试使用隔离空持久profile验证缓存复用，桌面项目另等待真实60秒TTL验证过期后读取。ego-browser仅在有视觉或体验验收目的时按需使用，不是自动化E2E前提。`npx playwright test --headed`可查看测试过程，运行前先构建。
 
@@ -188,8 +199,18 @@ Worker部署与.openai/hosting.json对应的Sites站点独立。检查通过不�
 
 ## 源码与说明同步检查
 
-功能、系统说明和项目总览的code-sources绑定真实实现文件或目录，code-revision保存复核过的SHA256摘要。docs:check读取Git管理范围及未跟踪新源码，检查路径、全体实现覆盖、当前说明本地链接和摘要一致性。源码新增、改名、删除、字节变化会要求复核对应说明；历史规格链接保留当时路径。
+功能、系统说明和项目总览的code-sources绑定真实实现文件或目录，code-revision保存复核过的SHA256摘要。docs:check读取Git管理范围及未跟踪新源码，检查路径、全体实现覆盖、当前说明本地链接和摘要一致性。源码含JSX及Great UI学习/评估JSON；新增、改名、删除、字节变化会要求复核对应说明；历史规格链接保留当时路径。
 
 `npm run docs:check -- --revisions`只打印当前源码的候选摘要，不写文件，不表示说明正确，也不替代正常docs:check。先对照改动核对文案、流程和验收，再记录摘要并运行正常检查。测试见tests/unit/docs-sources.test.ts；内容正文及work.json不在结构代码摘要里，数量从content:validate读取。
 
 新规格complete表示实现及验收完成，不等于已合并或已部署。全部任务已勾选而状态仍in-progress会失败；main中的complete与历史merged同样保护正文。合并后核对无需再创建状态补丁PR。
+
+## Great UI学习工作台检查
+
+本地入口用`great-ui:build`校验目录、详情及能力结构，并输出.scratch/great-ui-dist；`great-ui:test`通过scripts/great-ui-test.ts运行独立Playwright配置，启动4336测试服务，结束由测试框架释放。不带筛选参数且全部用例通过时，核对测试前后源码摘要一致，再保存固定示例的路径记录；筛选重跑不能生成整体验证记录。great-ui-proof.ts在重建时核对记录与当前来源、Markdown、规则、适配器和测试，过期记录不显示为已验证。独立记录只用于standalone构建；正式学习页读取site记录，由test:e2e完整通过且测试前后源码一致时生成，两份回执不能相互替代。main的可信整树复用路径由great-ui-reuse.ts重建site回执，必须通过GitHub Actions、仓库、main push、当前SHA、干净文件树与原PR run/attempt守卫；记录明确标注复用来源，不当作本次重跑。great-ui:verify执行该入口的单元、浏览器、great-ui:evaluate与预算检查，独立于整站verify；单独运行great-ui:budget会先构建再检查压缩JS、CSS、目录、详情与本地媒体，不改变正式站预算。独立构建沿用站内规则，动态模块的预加载只准备依赖，目标模块由普通import加载，避免WebKit保留失败预加载；失败时提供返回说明和整页重载。不会调用发布命令。当前回归范围和待补覆盖见[功能说明](../features/great-ui-learning.md)，原始材料与浏览器证据不作为自动通过依据。
+
+51件高清、33件独立手机版本、轻量封面及海报按原始大小另计总量48MiB、单高清2MiB、单封面短片150KiB且封面短片合计4MiB、单海报200KiB。只加载当前选中素材；整套存储量不等于首页下载量，普通页面脚本预算不变。本地素材的来源、录制操作及文件摘要由data/local-recordings.json记录，单元检查拒绝缺失或摘要不符。稳定交互回归中的远端视频替身不证明外部可用性；实际媒体另检查解码与播放时间推进，并注明检查日期、原始地址及未重试的失败结果。
+
+tests/great-ui-previews.spec.ts覆盖三类两端素材、有效放大、键盘和鼠标移动、退出焦点、合集离屏无下载及旧视频释放、减少动态/省流量手动播放、连续旋转与失败入口。三个浏览器配置均检查回到开头时建立有界副本、后续跳转复用、无分段读取、超限拒绝及失败后不自动重播；首次正常播放不能额外fetch副本。手机Chromium另通过CDP发送双指缩放和单指移动；WebKit验证控件与鼠标/键盘移动，不将其等同于真机触摸。tests/great-ui-site.spec.ts逐件检查51段当前设备素材的解码、播放及无外部视频请求。
+
+教学顺序与内容同源由tests/unit/learning-content.test.ts、great-ui-browsing.test.ts和great-ui-content.test.ts覆盖，包括八站路线、十类目录、合集内重复序号拒绝、Explore封面保持，以及首次顺序与已有随机偏好恢复。独立入口的learning.spec.ts按同一默认顺序检查延迟响应和失败恢复。跨来源专项同时检查原48件兼容、显式来源及路径拒绝、作者/仓库/固定版本一致性；great-ui-site.spec.ts覆盖三件真实媒体、低高度桌面任务按钮、窄屏、任务、相关作品与组合步骤的稳定ID导航，以及下一页慢加载期间的切换锁定。仅运行专项不签发完整回执。

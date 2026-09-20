@@ -1,8 +1,8 @@
 ---
 tense: 'living'
-describes: '给维护者阅读的项目总览与代码导航'
+describes: '项目定位与代码导航'
 status: 'current'
-shaped-by: ['001', '002', '003', '005', '009', '013', '016']
+shaped-by: ['001', '002', '003', '005', '009', '013', '016', '018']
 code-sources:
   [
     'package.json',
@@ -15,7 +15,7 @@ code-sources:
     'scripts/build.ts',
     'src/features/paseo-webui/host.ts',
   ]
-code-revision: '5d9cad76d11a5d16c3ef26c41fd6ae5cdad94f2c012e20c242893a9c2e8c7158'
+code-revision: '7b143530f75c382c4e5b5f05db2667fb73e7d51ef1fdee4cffd13153e81f592f'
 ---
 
 # VIBES项目总览
@@ -50,6 +50,8 @@ Explore服务寻找AI应用场景、理解能力边界、了解塑造AI的人物
 | 怎样让文档跟代码一起变化 | [维护文档](features/document-governance.md) | scripts/docs-check.ts、scripts/docs-sources.ts         |
 
 中英文路由、原文先发布、译文复核状态和全文搜索均已实现；英文内容量取决于实际发布文件，不代表全部译文完成。当前数量以`npm run content:validate`输出为准，不在多篇文档手抄同一组易过期数字。几千条内容与日更是规模目标，文章可通过GitHub PR贡献，维护者审阅合并后发布；[内容贡献流程](system/content-contributions.md)说明独立检查与预览。
+
+Explore中的[网页动效与交互学习](features/great-ui-learning.md)以一个合集连接51件独立详情，可看本站录屏、改造目标和任务，并体验三条组合。说明以Markdown维护，通用解释引用[共享术语库](../src/content/glossary/README.md)；站内页面与辅助本地工作台读取同一来源。
 
 ## 从内容到页面的链路
 
@@ -94,4 +96,4 @@ flowchart TD
 - 真机Safari、读屏等尚未做完整专项验收；平台分支保护状态需实时核对。
 - 移除测试库、缩减发布工具、简化预览图等是可讨论的维护取舍，并非已批准开发任务。现有迁移工具仍用于fixture构建，不当作当前内容入口。
 
-文件夹只分[用户路径](features/README.md)和系统说明；[文档地图](README.md)说明每份资料的职责，避免多个总览重复描述同一套代码。
+功能行为按[用户路径](features/README.md)组织，数据与交付见系统说明，具体内容主题另放docs/topics；[文档地图](README.md)说明每份资料的职责。

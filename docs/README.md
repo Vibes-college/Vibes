@@ -1,29 +1,36 @@
 ---
 tense: 'living'
-describes: '给维护者阅读的代码说明地图'
+describes: '项目、功能、系统与内容主题的文档地图'
 status: 'current'
 shaped-by: ['002', '003']
 ---
 
 # 文档地图
 
-Markdown是给你看的代码说明，不是另一套可以晚些更新的报告。先理解项目，再沿用户操作路径找到功能，遇到数据或配置细节时进入系统说明。
+Markdown是给你看的代码说明，不是另一套可以晚些更新的报告。先理解项目，再沿用户操作路径找到功能，遇到数据或配置细节时进入系统说明；内容选题与合集策划放在主题文档。
 
 ## 从哪里读
 
-| 想知道什么                               | 唯一维护入口                               |
-| ---------------------------------------- | ------------------------------------------ |
-| 项目是什么、已经实现什么、明确不做什么   | [项目总览](PROJECT_ANALYSIS.md)            |
-| 用户与维护者怎样完成一件事               | [功能索引](features/README.md)             |
-| 作品资料、译文、关系与本地测试表怎么保存 | [数据结构](system/content-model.md)        |
-| 框架、域名、环境变量和工具配置在哪里     | [运行配置](system/configuration.md)        |
-| 页面提供什么资源、调用了哪些外部服务     | [接口与服务](system/interfaces.md)         |
-| 数值限制、样式约束和校验规则是什么       | [系统规则](system/rules.md)                |
-| 怎样检查、审阅、发布与恢复               | [检查与发布](system/checks-and-release.md) |
-| Agent规则与Skills怎样使用、更新及恢复    | [Agent规则维护](system/agent-guidance.md)  |
-| 原生助手怎样连接电脑、重建与维护         | [Paseo接入](system/local-assistant.md)     |
+| 想知道什么                                 | 唯一维护入口                                                 |
+| ------------------------------------------ | ------------------------------------------------------------ |
+| 项目是什么、已经实现什么、明确不做什么     | [项目总览](PROJECT_ANALYSIS.md)                              |
+| 学习专题的正文、案例、关系与路线怎样组织   | [专题制作规范](features/content-maintenance.md#组织学习专题) |
+| UI/UX学习的大主题、精品收录与Agent协作方向 | [UI/UX学习主题](topics/ui-ux.md)                             |
+| 网页动效与交互合集怎样分类、先选哪些案例   | [目录与候选清单](topics/ui-ux-motion-interaction.md)         |
+| 用户与维护者怎样完成一件事                 | [功能索引](features/README.md)                               |
+| 作品资料、译文、关系与本地测试表怎么保存   | [数据结构](system/content-model.md)                          |
+| 框架、域名、环境变量和工具配置在哪里       | [运行配置](system/configuration.md)                          |
+| 页面提供什么资源、调用了哪些外部服务       | [接口与服务](system/interfaces.md)                           |
+| 数值限制、样式约束和校验规则是什么         | [系统规则](system/rules.md)                                  |
+| 怎样检查、审阅、发布与恢复                 | [检查与发布](system/checks-and-release.md)                   |
+| Agent规则与Skills怎样使用、更新及恢复      | [Agent规则维护](system/agent-guidance.md)                    |
+| 原生助手怎样连接电脑、重建与维护           | [Paseo接入](system/local-assistant.md)                       |
 
 正文组件与扩展语法见[Markdown排版](system/markdown.md)。
+
+查找UI/UX术语、变体、提示词和出处见[共享词库](../src/content/glossary/README.md)，收录与作品引用步骤见[内容维护](features/content-maintenance.md#收录与引用uiux术语)。
+
+新增演示短片的操作方法见[录制与维护交互演示](features/recording-previews.md)，包括原作录制、编码、来源登记和播放检查。
 
 ## 目录只按阅读目的划分
 
@@ -33,9 +40,12 @@ docs/
 ├── README.md            文档地图
 ├── features/            一条用户操作路径一篇说明
 ├── system/              数据、配置、接口、规则与交付的源码说明
+├── topics/              各内容主题的方向、合集目录与选材计划
 ├── DECISIONS.md         已冻结的历史原则决定
 └── LESSONS.md           待转化与已转化的失败经验
 ```
+
+topics按具体主题维护；UI/UX只是其中之一，其他主题在需要时增加自己的文档。主题文档区分已确认方向、候选策划与已发布内容，不以局部选题代替项目定位。
 
 同一事实只在一个地方解释清楚，其他页面链接过去；总览不再复制整张数据表或命令表。篇幅取决于需要解释的内容，不为减少文件或行数丢掉关键边界。
 

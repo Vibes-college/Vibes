@@ -1,0 +1,71 @@
+{
+  "id": "great-ui-text-reveal",
+  "originalLocale": "zh",
+  "order": 11002,
+  "sourceUrl": "https://www.great-ui.com/components/text-reveal",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "text-reveal",
+    "collectionId": "great-ui-learning",
+    "english": "Text Reveal",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/TextReveal.tsx",
+    "previewSource": "components/site/previews/TextRevealPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/text-reveal-source-capture.mp4",
+      "poster": "/great-ui/media/text-reveal-source-poster.jpg",
+      "width": 1920,
+      "height": 904,
+      "mobile": {
+        "video": "/great-ui/media/text-reveal-mobile.mp4",
+        "poster": "/great-ui/media/text-reveal-mobile-poster.jpg",
+        "width": 716,
+        "height": 1480,
+        "duration": 9.033333
+      },
+      "card": {
+        "video": "/great-ui/media/text-reveal-card.mp4",
+        "poster": "/great-ui/media/text-reveal-card-poster.jpg",
+        "width": 480,
+        "height": 226,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "scroll-text",
+      "roles": ["introduce"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": ["按实际语言分字词，重要正文保持可读；需要启停时添加适配。"],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    },
+    "sequence": 6
+  }
+}

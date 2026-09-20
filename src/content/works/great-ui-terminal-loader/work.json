@@ -1,0 +1,73 @@
+{
+  "id": "great-ui-terminal-loader",
+  "originalLocale": "zh",
+  "order": 11037,
+  "sourceUrl": "https://www.great-ui.com/components/terminal-loader",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "terminal-loader",
+    "collectionId": "great-ui-learning",
+    "english": "Terminal Loader",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/TerminalLoader.tsx",
+    "previewSource": "components/site/previews/TerminalLoaderPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/terminal-loader-demo.mp4",
+      "poster": "/great-ui/media/terminal-loader-demo-poster.jpg",
+      "width": 1104,
+      "height": 240,
+      "mobile": {
+        "video": "/great-ui/media/terminal-loader-demo.mp4",
+        "poster": "/great-ui/media/terminal-loader-demo-poster.jpg",
+        "width": 1104,
+        "height": 240,
+        "duration": 7.033008
+      },
+      "card": {
+        "video": "/great-ui/media/terminal-loader-card.mp4",
+        "poster": "/great-ui/media/terminal-loader-card-poster.jpg",
+        "width": 480,
+        "height": 104,
+        "duration": 7.083008
+      }
+    },
+    "capability": {
+      "family": "waiting-indicator",
+      "roles": ["feedback"],
+      "provides": ["status-display"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "没有百分比或完成信号，只能表示不确定等待。cols和blockWidth缺边界校验，固定字符宽度也会在窄屏溢出。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    },
+    "sequence": 30
+  }
+}

@@ -22,6 +22,8 @@ jobs:
       mode: ${{ steps.scope.outputs.mode }}
       base: ${{ steps.scope.outputs.base }}
       acceptance: ${{ steps.acceptance.outputs.acceptance }}
+      acceptance_run: ${{ steps.acceptance.outputs.acceptance_run }}
+      acceptance_attempt: ${{ steps.acceptance.outputs.acceptance_attempt }}
     permissions:
       contents: read
       actions: read
@@ -120,12 +122,20 @@ jobs:
           SITE_URL: https://vibes.college
           VIBES_DEPLOY: '1'
           DOCS_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
+          WRANGLER_LOG_PATH: .scratch/ci-wrangler
       - name: Prepare verified production source
         if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance == 'reuse'
         run: npm run paseo:production && npm run check
         env:
           CI_ACCEPTANCE_REUSED: 'true'
           DOCS_BASE_REF: ${{ github.event.before || 'origin/main' }}
+      - name: Restore learning demo coverage from verified PR acceptance
+        if: needs.scope.outputs.scope == 'full' && needs.scope.outputs.acceptance == 'reuse'
+        run: node --experimental-strip-types scripts/great-ui-reuse.ts
+        env:
+          CI_ACCEPTANCE_REUSED: 'true'
+          CI_ACCEPTANCE_RUN: ${{ needs.scope.outputs.acceptance_run }}
+          CI_ACCEPTANCE_ATTEMPT: ${{ needs.scope.outputs.acceptance_attempt }}
       - name: Validate content and project source
         if: steps.lane.outputs.scope == 'content'
         run: npm run check
@@ -189,7 +199,10 @@ jobs:
         if: failure() && (needs.scope.outputs.scope == 'full' || needs.scope.outputs.scope == 'content')
         with:
           name: playwright-failures
-          path: test-results/
+          path: |
+            test-results/
+            .scratch/ci-wrangler/
+          include-hidden-files: true
           retention-days: 7
           if-no-files-found: ignore
   budget:

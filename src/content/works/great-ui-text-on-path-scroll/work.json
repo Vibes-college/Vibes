@@ -1,0 +1,80 @@
+{
+  "id": "great-ui-text-on-path-scroll",
+  "originalLocale": "zh",
+  "order": 11015,
+  "sourceUrl": "https://www.great-ui.com/components/text-on-path-scroll",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "text-on-path-scroll",
+    "collectionId": "great-ui-learning",
+    "english": "Text On Path Scroll",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/TextOnPathScroll.tsx",
+    "previewSource": "components/site/previews/TextOnPathScrollPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/text-on-path-scroll-demo.mp4",
+      "poster": "/great-ui/media/text-on-path-scroll-demo-poster.jpg",
+      "width": 1600,
+      "height": 960,
+      "mobile": {
+        "video": "/great-ui/media/text-on-path-scroll-demo.mp4",
+        "poster": "/great-ui/media/text-on-path-scroll-demo-poster.jpg",
+        "width": 1600,
+        "height": 960,
+        "duration": 11.066667
+      },
+      "card": {
+        "video": "/great-ui/media/text-on-path-scroll-card.mp4",
+        "poster": "/great-ui/media/text-on-path-scroll-card-poster.jpg",
+        "width": 480,
+        "height": 288,
+        "duration": 3.0
+      }
+    },
+    "capability": {
+      "family": "path-text",
+      "roles": ["introduce"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [
+        {
+          "name": "svg-scroll-path-id",
+          "scope": "global",
+          "mode": "exclusive",
+          "phase": "*"
+        }
+      ],
+      "adaptations": [
+        "默认区域高800dvh，阅读成本很大；固定 id 为 scroll-path，多实例会冲突。路径文字不适合承担唯一正文，需要静态可读替代。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    },
+    "sequence": 28
+  }
+}

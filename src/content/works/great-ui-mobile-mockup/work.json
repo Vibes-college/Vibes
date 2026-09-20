@@ -1,0 +1,73 @@
+{
+  "id": "great-ui-mobile-mockup",
+  "originalLocale": "zh",
+  "order": 11008,
+  "sourceUrl": "https://www.great-ui.com/components/mobile-mockup",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "mobile-mockup",
+    "collectionId": "great-ui-learning",
+    "english": "Mobile Mockup",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/MobileMockup.tsx",
+    "previewSource": "components/site/previews/MobileMockupPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/mobile-mockup-demo.mp4",
+      "poster": "/great-ui/media/mobile-mockup-demo-poster.jpg",
+      "width": 656,
+      "height": 1180,
+      "mobile": {
+        "video": "/great-ui/media/mobile-mockup-demo.mp4",
+        "poster": "/great-ui/media/mobile-mockup-demo-poster.jpg",
+        "width": 656,
+        "height": 1180,
+        "duration": 11.066016
+      },
+      "card": {
+        "video": "/great-ui/media/mobile-mockup-card.mp4",
+        "poster": "/great-ui/media/mobile-mockup-card-poster.jpg",
+        "width": 480,
+        "height": 864,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "device-demo",
+      "roles": ["showcase"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "它是展示模型，没有聊天、通话、输入或发送能力。自动序列直接读取 messages 的前4个位置，过短数组会出现无效消息；长消息还需核对滚动与可读时间。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    },
+    "sequence": 40
+  }
+}

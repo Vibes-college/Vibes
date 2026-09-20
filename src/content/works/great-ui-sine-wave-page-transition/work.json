@@ -1,0 +1,80 @@
+{
+  "id": "great-ui-sine-wave-page-transition",
+  "originalLocale": "zh",
+  "order": 11022,
+  "sourceUrl": "https://www.great-ui.com/components/sine-wave-page-transition",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "sine-wave-page-transition",
+    "collectionId": "great-ui-learning",
+    "english": "Sine Wave Page Transition",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/SineWavePageTransition.tsx",
+    "previewSource": "components/site/previews/SineWavePageTransitionPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/sine-wave-page-transition-demo.mp4",
+      "poster": "/great-ui/media/sine-wave-page-transition-demo-poster.jpg",
+      "width": 1568,
+      "height": 1032,
+      "mobile": {
+        "video": "/great-ui/media/sine-wave-page-transition-mobile.mp4",
+        "poster": "/great-ui/media/sine-wave-page-transition-mobile-poster.jpg",
+        "width": 604,
+        "height": 1032,
+        "duration": 10.033333
+      },
+      "card": {
+        "video": "/great-ui/media/sine-wave-page-transition-card.mp4",
+        "poster": "/great-ui/media/sine-wave-page-transition-card-poster.jpg",
+        "width": 480,
+        "height": 316,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "page-transition",
+      "roles": ["navigate"],
+      "provides": ["navigation-intent"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [
+        {
+          "name": "route-overlay",
+          "scope": "global",
+          "mode": "exclusive",
+          "phase": "navigation"
+        }
+      ],
+      "adaptations": [
+        "将计时交接改成真实内容就绪、取消、失败恢复和退场完成；处理焦点、历史及减少动态效果。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": true
+    },
+    "sequence": 46
+  }
+}

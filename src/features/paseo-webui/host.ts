@@ -421,7 +421,7 @@ export async function openAssistant(button?: HTMLElement, visible = true) {
   if (stage === 'idle' || stage === 'resource-error') starting ??= start();
   await starting;
 }
-export function hideAssistant() {
+export function hideAssistant(restoreFocus = true) {
   if (!panel.hidden) hiddenRetention = captureSurface();
   if (document.activeElement instanceof HTMLElement && panel.contains(document.activeElement))
     document.activeElement.blur();
@@ -430,12 +430,14 @@ export function hideAssistant() {
   panel.dataset.openRequested = 'false';
   renderStatus();
   presentation();
-  (opener?.isConnected ? opener : document.querySelector<HTMLButtonElement>('.paseo-entry'))?.focus(
-    { preventScroll: true },
-  );
+  const returnTo = opener?.isConnected
+    ? opener
+    : document.querySelector<HTMLButtonElement>('.paseo-entry');
+  if (restoreFocus) returnTo?.focus({ preventScroll: true });
+  else if (document.activeElement === returnTo) returnTo?.blur();
 }
-export function closeAssistant() {
-  hideAssistant();
+export function closeAssistant(restoreFocus = true) {
+  hideAssistant(restoreFocus);
 }
 export function showSetup(show: boolean, focus = true) {
   panel.dataset.paseoGuide = String(show);

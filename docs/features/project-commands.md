@@ -2,7 +2,7 @@
 tense: 'living'
 describes: '检查与发布网站'
 status: 'current'
-shaped-by: ['001', '002', '003', '004', '005', '009', '010', '013', '014', '015', '016']
+shaped-by: ['001', '002', '003', '004', '005', '009', '010', '013', '014', '015', '016', '018']
 legacy-feature-ids: ['delivery-setup', 'local-database', 'site-metadata']
 code-sources:
   [
@@ -36,7 +36,7 @@ code-sources:
     'src/pages/sitemap.xml.ts',
     'src/pages/robots.txt.ts',
   ]
-code-revision: '8f71d186d700b393c62425ddfeff6c589023b1c605015e15ebe27b32c0a06def'
+code-revision: 'af1e766feac13b19fc4602f0cc7cf74b96722c616f5b7f7dacde27ad052a9e26'
 ---
 
 # 功能名：检查与发布网站
@@ -140,3 +140,7 @@ flowchart TD
 ## 已知问题 / 待办
 
 合并、自动发布、线上体验和本机清理是不同状态；未发生的步骤不能提前勾选。旧CI没有新验收记录、记录过期或查询失败时会完整回退，不能保证每次合并都走快速路径；新快速部署的真实耗时以首次合并后的运行记录为准。GitHub main保护和production仅main准入已于2026-09-06实查配置，首次生产发布及收尾已按上述记录验证；以后每次发布仍须验收对应版本。5000件双语规模样例超过免费档文件数，小目录能上线不代表大目录容量已解决，不自动升级套餐。
+
+## Great UI本地工作台
+
+`npm run great-ui:build`构建51件学习材料与三条固定示例；`npm run great-ui:preview`在127.0.0.1:4325预览，`npm run great-ui:dev`用于开发，`npm run great-ui:test`运行独立Playwright用例。先复用已确认归属的健康服务，详情见[学习操作路径](great-ui-learning.md)。great-ui:evaluate运行20个结构化需求样本和合成负载；great-ui:budget构建后检查独立资源上限，great-ui:verify串联本地专项，不进入整站verify，也不准备Paseo或重置数据库。这些辅助命令不会发布。正式站已从同一Markdown生成学习详情；修改其路由、模板或共享逻辑须另运行verify与budget。test:e2e在完整站内三浏览器通过且测试前后源码一致时保存site验收记录，独立great-ui:test只保存standalone记录。

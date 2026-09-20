@@ -1,0 +1,75 @@
+{
+  "id": "beui-combobox",
+  "originalLocale": "zh",
+  "order": 11049,
+  "sourceUrl": "https://beui.dev/components/motion/combobox",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Chauhan · beUI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "beui-combobox",
+    "collectionId": "great-ui-learning",
+    "english": "Combobox",
+    "sourceId": "beui",
+    "sourceSlug": "combobox",
+    "revision": "a40df6794375bb7269c7317fb5e22762ecee79fe",
+    "implementation": "components/motion/combobox.tsx",
+    "previewSource": "components/previews/motion/combobox.preview.tsx",
+    "sequence": 49,
+    "media": {
+      "video": "/great-ui/media/beui-combobox-demo.mp4",
+      "poster": "/great-ui/media/beui-combobox-demo-poster.jpg",
+      "width": 700,
+      "height": 760,
+      "mobile": {
+        "video": "/great-ui/media/beui-combobox-mobile.mp4",
+        "poster": "/great-ui/media/beui-combobox-mobile-poster.jpg",
+        "width": 660,
+        "height": 710,
+        "duration": 12.033333
+      },
+      "card": {
+        "video": "/great-ui/media/beui-combobox-card.mp4",
+        "poster": "/great-ui/media/beui-combobox-card-poster.jpg",
+        "width": 480,
+        "height": 522,
+        "duration": 10.0
+      }
+    },
+    "capability": {
+      "family": "search-choice",
+      "roles": ["act"],
+      "provides": ["input-collect"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现使用React与Motion。",
+          "adaptation": "按目标项目现有框架移植交互，保留语义与焦点行为。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "将演示数组替换为真实候选与稳定值；需要远程读取时补齐等待、失败及迟到响应处理。"
+      ],
+      "reducedMotion": "native",
+      "decorativeTransition": false
+    }
+  }
+}

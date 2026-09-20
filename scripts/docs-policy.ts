@@ -15,6 +15,8 @@ const livingFiles = new Set([
   'docs/LESSONS.md',
   '.github/pull_request_template.md',
   'docs/PROJECT_ANALYSIS.md',
+  'docs/topics/ui-ux.md',
+  'docs/topics/ui-ux-motion-interaction.md',
   'specs/README.md',
   'resources/README.md',
   'docs/system/configuration.md',
@@ -35,6 +37,7 @@ export function isExempt(path: string): boolean {
   return (
     // Git冻结基线仍可能包含迁移前文章；它们也不是治理文档。
     path.startsWith('src/content/articles/') ||
+    path.startsWith('src/content/glossary/') ||
     /^src\/content\/works\/[a-z0-9-]+\/(zh|en)\.md$/.test(path) ||
     path.startsWith('.agents/skills/speckit-') ||
     // 项目命令与hook参考使用Spec Kit原生格式，现状说明仍放docs/system。

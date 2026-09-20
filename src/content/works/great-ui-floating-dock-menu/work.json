@@ -1,0 +1,73 @@
+{
+  "id": "great-ui-floating-dock-menu",
+  "originalLocale": "zh",
+  "order": 11034,
+  "sourceUrl": "https://www.great-ui.com/components/floating-dock-menu",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "floating-dock-menu",
+    "collectionId": "great-ui-learning",
+    "english": "Floating Dock Menu",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/FloatingDockMenu.tsx",
+    "previewSource": "components/site/previews/FloatingDockMenuPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/floating-dock-menu-demo.mp4",
+      "poster": "/great-ui/media/floating-dock-menu-demo-poster.jpg",
+      "width": 720,
+      "height": 684,
+      "mobile": {
+        "video": "/great-ui/media/floating-dock-menu-demo.mp4",
+        "poster": "/great-ui/media/floating-dock-menu-demo-poster.jpg",
+        "width": 720,
+        "height": 684,
+        "duration": 9.033333
+      },
+      "card": {
+        "video": "/great-ui/media/floating-dock-menu-card.mp4",
+        "poster": "/great-ui/media/floating-dock-menu-card-poster.jpg",
+        "width": 480,
+        "height": 456,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "settings-dock",
+      "roles": ["act"],
+      "provides": ["action-intent"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "默认AI、安全、导出条目都只是示例状态或空回调，没有对应服务。开关缺名称、action行是不可聚焦div，隐藏分类文字后也可能无可读名称；传入新tabs不会重置内部开关。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    },
+    "sequence": 19
+  }
+}

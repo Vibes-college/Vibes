@@ -1,4 +1,4 @@
-import { test, expect } from './browser-test.ts';
+import { test, expect, documentIdentity } from './browser-test.ts';
 import type { Page } from '@playwright/test';
 
 const native = '**/vendor/paseo/**/*.js';
@@ -9,13 +9,14 @@ const mounted = async (page: Page) => {
     timeout: 45_000,
   });
 };
-const shape = (page: Page) =>
-  page.evaluate(() => ({
+const shape = async (page: Page) => ({
+  ...(await page.evaluate(() => ({
     mounts: (window as unknown as { __vibesPaseo: { mountCount: number } }).__vibesPaseo.mountCount,
     styles: document.querySelector<HTMLStyleElement>('#react-native-stylesheet')?.sheet?.cssRules
       .length,
-    origin: performance.timeOrigin,
-  }));
+  }))),
+  document: await documentIdentity(page),
+});
 
 test('browsing and no-JS do not fetch or connect Paseo', async ({ page, browser, baseURL }) => {
   const resources: string[] = [];
@@ -99,23 +100,78 @@ test('article speech bubble supports mouse hover and touch rediscovery without c
     return;
   }
   // A real touch must not leave a synthetic hover holding the bubble open.
+  let releaseHost!: () => void;
+  const pendingHost = new Promise<void>((resolve) => {
+    releaseHost = resolve;
+  });
+  await page.route('**/host.*.js', async (route) => {
+    await pendingHost;
+    await route.continue();
+  });
   await page.route(native, (route) => route.abort());
+  try {
+    await launcher(page).tap();
+    await expect(page.locator(panel)).toBeVisible();
+    await page.locator('[data-paseo-close]').tap();
+    await expect(page.locator(panel)).toBeHidden();
+    await expect(launcher(page)).not.toBeFocused();
+    await expect(bubble).toBeVisible();
+    await expect(bubble).toHaveCSS('animation-name', 'paseo-article-hint');
+    await expect(bubble).toBeHidden({ timeout: 6500 });
+  } finally {
+    releaseHost();
+  }
+  await expect(page.locator(panel)).toHaveAttribute('data-paseo-state', 'resource-error');
   await launcher(page).tap();
-  await expect(page.locator(panel)).toBeVisible();
   await page.locator('[data-paseo-close]').tap();
-  await expect(page.locator(panel)).toBeHidden();
-  await expect(bubble).toBeVisible();
-  await expect(bubble).toBeHidden({ timeout: 6500 });
-  await launcher(page).tap();
-  await page.locator('[data-paseo-close]').tap();
+  await expect(launcher(page)).not.toBeFocused();
   await expect(bubble).toBeVisible();
   await bubble.tap();
   await expect(page.locator(panel)).toBeVisible();
   await page.locator('[data-paseo-close]').tap();
   await expect(page.locator(panel)).toBeHidden();
+  await expect(bubble).not.toBeFocused();
   await expect(bubble).toBeVisible();
   await expect(bubble).toBeHidden({ timeout: 6500 });
 });
+
+for (const article of [false, true])
+  test(`keyboard close restores the ${article ? 'article' : 'ordinary'} opener before and after host loading`, async ({
+    page,
+  }) => {
+    let releaseHost!: () => void;
+    const pendingHost = new Promise<void>((resolve) => {
+      releaseHost = resolve;
+    });
+    await page.route('**/host.*.js', async (route) => {
+      await pendingHost;
+      await route.continue();
+    });
+    await page.route(native, (route) => route.abort());
+    await page.goto('/zh/works/attention-is-all-you-need/');
+    const bubble = page.locator('[data-paseo-article-open]');
+    const opener = article ? bubble : launcher(page);
+    const close = page.locator('[data-paseo-close]');
+    try {
+      await opener.press('Enter');
+      await expect(page.locator(panel)).toBeVisible();
+      await close.press('Enter');
+      await expect(page.locator(panel)).toBeHidden();
+      await expect(opener).toBeFocused();
+      await expect(bubble).toBeVisible();
+      await expect(bubble).toHaveCSS('animation-name', 'none');
+    } finally {
+      releaseHost();
+    }
+    await expect(page.locator(panel)).toHaveAttribute('data-paseo-state', 'resource-error');
+    await opener.press('Enter');
+    await expect(page.locator(panel)).toBeVisible();
+    await close.press('Enter');
+    await expect(page.locator(panel)).toBeHidden();
+    await expect(opener).toBeFocused();
+    await expect(bubble).toBeVisible();
+    await expect(bubble).toHaveCSS('animation-name', 'none');
+  });
 
 test('first click shows usable onboarding while the native bundle is pending', async ({ page }) => {
   let release!: () => void;

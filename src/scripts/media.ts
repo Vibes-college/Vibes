@@ -9,6 +9,21 @@ export function installMedia(signal: AbortSignal) {
   const small = matchMedia('(max-width: 800px)');
   const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
   let manual: HTMLElement | undefined;
+  let collectionLoading = false;
+  let refreshCollections = () => {};
+  function prepareCollection(root: Element) {
+    if (collectionLoading || !root.closest('[data-collection]')) return;
+    collectionLoading = true;
+    void import('./media-collection')
+      .then(({ installCollections }) => {
+        if (signal.aborted) return;
+        refreshCollections = installCollections(signal);
+        refresh();
+      })
+      .catch(() => {
+        collectionLoading = false;
+      });
+  }
   function visible(root: HTMLElement) {
     const rect = root.getBoundingClientRect();
     return (
@@ -65,13 +80,16 @@ export function installMedia(signal: AbortSignal) {
   }
   const observer = new IntersectionObserver(
     (changes) => {
-      for (const change of changes)
+      for (const change of changes) {
         visibility.set(change.target as HTMLElement, change.intersectionRatio);
+        if (change.intersectionRatio >= 0.5) prepareCollection(change.target);
+      }
       schedule();
     },
     { threshold: [0, 0.5, 1] },
   );
   function refresh() {
+    refreshCollections();
     for (const [root, entry] of entries)
       if (!root.isConnected) {
         entry.dispose();

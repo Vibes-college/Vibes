@@ -2,9 +2,10 @@
 tense: 'living'
 describes: '接口与外部服务'
 status: 'current'
-shaped-by: ['001', '003', '004', '005', '009', '010', '013', '014', '016']
+shaped-by: ['001', '003', '004', '005', '009', '010', '013', '014', '016', '018']
 code-sources:
   [
+    'src/worker.ts',
     'src/scripts/search.ts',
     'src/scripts/explore.ts',
     'src/pages/robots.txt.ts',
@@ -24,7 +25,7 @@ code-sources:
     'scripts/paseo-webui-preview.ts',
     'public/_headers',
   ]
-code-revision: '9c6dd3398f763a7295af10a3f882cdc662f03027ec1e87ac06936c62ea946a4d'
+code-revision: 'eb1496b1bfd9d0ec58fe9ccdc24b6181281698fb0fb690c84b9ac97f746d60fd'
 ---
 
 # 接口与外部服务
@@ -61,6 +62,16 @@ code-revision: '9c6dd3398f763a7295af10a3f882cdc662f03027ec1e87ac06936c62ea946a4d
 ### `GET /__release.json`
 
 发布产物包含源码sha与内容digest，用于线上版本核对，不是业务API、不含秘密。普通本地build不生成；release-artifact.ts在发布准备时写入，release-smoke.ts检查该SHA与zh/en页面。
+
+### Great UI学习静态资料
+
+`GET /great-ui/content/catalog.json`提供51件轻量目录；capabilities.json提供组合能力，`<slug>.json`提供由同一Markdown生成的案例和任务所需字段，demo-proof.json只提供当前构建匹配的固定示例验收记录。`GET /great-ui/journeys/<id>.json`提供内置示例项目数据。均在构建时生成、只读、无用户输入和秘密；没有后台编辑或任务执行API。
+
+预览文件为`/great-ui/media/*`，任务使用以学习页公开地址解析的绝对URL；不要求访问维护者本机文件。普通目录只列合集，子项拥有独立作品网址并进入搜索和站点地图。对应src/pages/great-ui与GreatUiDetail.astro。
+
+合集轻量索引直接随其有限分页HTML或Pagefind卡片数据交付，没有独立合集接口；浏览器只下载当前成员的短片。详情的recordingMedia提供桌面及可选手机素材，任务media.url为桌面绝对地址，手机素材不同则带mobileUrl。学习页以800px为断点选一份高清录屏，不同时预载两份。进度调整或旋转恢复为兼容不同静态预览服务，会读取当前MP4，原始下载最多2MiB，运行时转换为可定位的data URL（base64约为原始文件的4/3，另有解码内存）；普通播放不触发该请求。只保留当前副本，换源及卸载会取消下载/转换并清除旧引用；迟到的转换不能覆盖新素材。
+
+`src/worker.ts`只为`/great-ui/media/*.mp4`的GET/HEAD提供字节范围能力；页面、内容和视频文件仍来自同次构建的ASSETS。普通成功响应声明`Accept-Ranges: bytes`并保持流式交付；单个`bytes=n-m`、`n-`或`-n`请求最多读取2MiB，再返回206、实际Content-Range及片段长度，越界返回416及总长度。多段或无效语法、If-Range不匹配或不受支持的日期验证器回完整响应；HEAD不返回正文，304/404透传。ETag、缓存、MIME与安全头从ASSETS响应继承；超限或读取失败返回不可缓存的502。这里只能读取本站文件，不接受外部地址、上传或业务参数。
 
 ## 3 浏览器内部的搜索接口（不是本项目的 HTTP API）
 

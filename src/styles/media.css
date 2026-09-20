@@ -2,6 +2,85 @@
   position: relative;
   min-width: 0;
 }
+.work-card--collection,
+.collection-cover {
+  position: relative;
+  min-width: 0;
+}
+.collection-frame {
+  min-width: 0;
+}
+.collection-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  padding: 4px 7px;
+  border-radius: 4px;
+  background: #ffffffdf;
+  color: #4d5746;
+  font-size: 10px;
+  pointer-events: none;
+}
+.collection-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 0;
+}
+.collection-controls button {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.collection-controls button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.collection-controls button:first-child img {
+  transform: rotate(90deg);
+}
+.collection-controls button:last-child img {
+  transform: rotate(-90deg);
+}
+.collection-controls a {
+  min-width: 0;
+  flex: 1;
+  font-size: 11px;
+  line-height: 1.4;
+  color: inherit;
+  text-decoration: none;
+}
+.collection-controls [data-collection-position] {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  padding: 4px 7px;
+  border-radius: 4px;
+  background: #ffffffdf;
+  font-size: 9px;
+  color: #6b7463;
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.collection-controls :focus-visible {
+  outline: 2px solid #667459;
+  outline-offset: 2px;
+}
+.collection-cover .preview {
+  height: min(48dvh, 540px);
+  aspect-ratio: auto;
+}
+.collection-cover .collection-controls a {
+  font-size: 13px;
+}
 .media-stage {
   position: relative;
   overflow: hidden;

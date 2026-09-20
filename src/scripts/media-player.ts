@@ -1,3 +1,4 @@
+import { readLimited } from '../lib/media/read';
 import { isMediaUrl, mediaLimits } from '../config/media';
 import { mediaMessages } from '../lib/media/messages';
 
@@ -39,7 +40,9 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
   const imageSrcset = image?.getAttribute('srcset') || image?.dataset.srcset;
   const controller: MediaController = {
     root,
-    auto: root.hasAttribute('data-auto'),
+    get auto() {
+      return root.hasAttribute('data-auto');
+    },
     visible: false,
     userPaused: false,
     playing: false,
@@ -322,30 +325,9 @@ export function createMediaPlayer(root: HTMLElement, pageSignal: AbortSignal): M
         }
         try {
           const response = await fetch(source.src, { signal: active.signal });
-          if (
-            !response.ok ||
-            Number(response.headers.get('content-length')) > mediaLimits.localFileBytes
-          )
-            throw new Error('Media unavailable');
-          const reader = response.body!.getReader();
-          const chunks: Uint8Array<ArrayBuffer>[] = [];
-          let bytes = 0;
-          try {
-            while (true) {
-              const { value, done } = await reader.read();
-              if (done) break;
-              bytes += value.byteLength;
-              if (bytes > mediaLimits.localFileBytes) {
-                await reader.cancel();
-                throw new Error('Media too large');
-              }
-              chunks.push(new Uint8Array(value));
-            }
-          } finally {
-            reader.releaseLock();
-          }
+          const blob = await readLimited(response, mediaLimits.localFileBytes, source.type);
           if (active.signal.aborted || !alive()) return;
-          objectUrl = URL.createObjectURL(new Blob(chunks, { type: source.type }));
+          objectUrl = URL.createObjectURL(blob);
           seekRequest = undefined;
           const ticket = ++generation;
           controller.pending = true;

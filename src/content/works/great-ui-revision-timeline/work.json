@@ -1,0 +1,73 @@
+{
+  "id": "great-ui-revision-timeline",
+  "originalLocale": "zh",
+  "order": 11044,
+  "sourceUrl": "https://www.great-ui.com/components/revision-timeline",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "revision-timeline",
+    "collectionId": "great-ui-learning",
+    "english": "Revision Timeline",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/RevisionTimeline.tsx",
+    "previewSource": "components/site/previews/RevisionTimelinePreview.tsx",
+    "media": {
+      "video": "/great-ui/media/revision-timeline-demo.mp4",
+      "poster": "/great-ui/media/revision-timeline-demo-poster.jpg",
+      "width": 1104,
+      "height": 1304,
+      "mobile": {
+        "video": "/great-ui/media/revision-timeline-mobile.mp4",
+        "poster": "/great-ui/media/revision-timeline-mobile-poster.jpg",
+        "width": 636,
+        "height": 1312,
+        "duration": 11.066667
+      },
+      "card": {
+        "video": "/great-ui/media/revision-timeline-card.mp4",
+        "poster": "/great-ui/media/revision-timeline-card-poster.jpg",
+        "width": 480,
+        "height": 566,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "timeline-display",
+      "roles": ["showcase"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "defaultActiveId实际上进入受控模式，必须配回调更新。补位日期硬编码May与July 2026；title和author未直接显示，不能当完整版本审计。长日期跨度会生成大量节点。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    },
+    "sequence": 10
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "great-ui-scrambled-install-command",
+  "originalLocale": "zh",
+  "order": 11016,
+  "sourceUrl": "https://www.great-ui.com/components/scrambled-install-command",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "scrambled-install-command",
+    "collectionId": "great-ui-learning",
+    "english": "Scrambled Install Command",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/ScrambledInstallCommand.tsx",
+    "previewSource": "components/site/previews/ScrambledInstallCommandPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/scrambled-install-command-demo.mp4",
+      "poster": "/great-ui/media/scrambled-install-command-demo-poster.jpg",
+      "width": 1424,
+      "height": 312,
+      "mobile": {
+        "video": "/great-ui/media/scrambled-install-command-demo.mp4",
+        "poster": "/great-ui/media/scrambled-install-command-demo-poster.jpg",
+        "width": 1424,
+        "height": 312,
+        "duration": 10.066667
+      },
+      "card": {
+        "video": "/great-ui/media/scrambled-install-command-card.mp4",
+        "poster": "/great-ui/media/scrambled-install-command-card-poster.jpg",
+        "width": 480,
+        "height": 192,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "command-display",
+      "roles": ["act"],
+      "provides": ["action-intent"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "复制处理没有等待 clipboard.writeText 成功就显示完成，需要增加失败分支。作者预览命令含 localhost 地址，只用于演示，不应照抄执行。"
+      ],
+      "reducedMotion": "native",
+      "decorativeTransition": false
+    },
+    "sequence": 25
+  }
+}

@@ -1,5 +1,6 @@
 import { paseoDevAssets } from './scripts/paseo-webui-dev.ts';
 import { fileURLToPath } from 'node:url';
+import { realpathSync } from 'node:fs';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
@@ -18,6 +19,16 @@ export default defineConfig({
   trailingSlash: 'always',
   devToolbar: { enabled: false },
   vite: {
+    // Isolated checkouts reuse the installed dependency directory through a symlink.
+    // Permit that exact directory, without exposing the parent checkout to dev serving.
+    server: {
+      fs: {
+        allow: [
+          fileURLToPath(new URL('.', import.meta.url)),
+          realpathSync(new URL('./node_modules', import.meta.url)),
+        ],
+      },
+    },
     // Explicit baseline builds must omit the assistant's emitted client chunks too.
     resolve: {
       alias:
@@ -51,6 +62,13 @@ export default defineConfig({
                 output: {
                   codeSplitting: {
                     groups: [
+                      {
+                        // Small shared media helpers compress together; their callers
+                        // remain lazy, so ordinary page startup does not load this group.
+                        name: 'media-shared',
+                        includeDependenciesRecursively: false,
+                        test: /\/src\/(?:config\/media|lib\/media\/read)\.ts$/,
+                      },
                       {
                         name: 'site-boot',
                         includeDependenciesRecursively: false,

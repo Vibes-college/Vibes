@@ -52,7 +52,7 @@ export function isMediaUrl(value: string): boolean {
   if (/[\\\s%]/.test(value)) return false;
   if (value.startsWith('/'))
     return (
-      /^\/(media|images)\/[a-zA-Z0-9_./-]+$/.test(value) &&
+      /^\/(media|images|great-ui\/media)\/[a-zA-Z0-9_./-]+$/.test(value) &&
       value
         .slice(1)
         .split('/')

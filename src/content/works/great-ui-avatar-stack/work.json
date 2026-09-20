@@ -1,0 +1,79 @@
+{
+  "id": "great-ui-avatar-stack",
+  "originalLocale": "zh",
+  "order": 11042,
+  "sourceUrl": "https://www.great-ui.com/components/avatar-stack",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "avatar-stack",
+    "collectionId": "great-ui-learning",
+    "english": "Avatar Stack",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/AvatarStack.tsx",
+    "previewSource": "components/site/previews/AvatarStackPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/avatar-stack-demo.mp4",
+      "poster": "/great-ui/media/avatar-stack-demo-poster.jpg",
+      "width": 1288,
+      "height": 1196,
+      "mobile": {
+        "video": "/great-ui/media/avatar-stack-demo.mp4",
+        "poster": "/great-ui/media/avatar-stack-demo-poster.jpg",
+        "width": 1288,
+        "height": 1196,
+        "duration": 9.033333
+      },
+      "card": {
+        "video": "/great-ui/media/avatar-stack-card.mp4",
+        "poster": "/great-ui/media/avatar-stack-card-poster.jpg",
+        "width": 480,
+        "height": 446,
+        "duration": 8.0
+      }
+    },
+    "capability": {
+      "family": "people-list",
+      "roles": ["showcase"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        },
+        {
+          "key": "input",
+          "value": "pointer",
+          "reason": "原作依赖鼠标悬停或位置。",
+          "adaptation": "为触摸与键盘增加可发现的等价入口，并保留静态信息。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "头像只是div，没有选择、链接或键盘入口；默认人物来自示例图片。人数多时没有截断和更多人数入口。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    },
+    "sequence": 11
+  }
+}

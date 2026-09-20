@@ -1,0 +1,73 @@
+{
+  "id": "microkit-sliding-content-tabs",
+  "originalLocale": "zh",
+  "order": 11051,
+  "sourceUrl": "https://microkit.co/components/sliding-content-tabs",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Henrique Barone · MicroKit"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "microkit-sliding-content-tabs",
+    "collectionId": "great-ui-learning",
+    "english": "Sliding Content Tabs",
+    "sourceId": "microkit",
+    "sourceSlug": "sliding-content-tabs",
+    "revision": "2d065977a1bc1f5d32e4f491df282a32c80d24ff",
+    "implementation": "components/interactions/sliding-content-tabs/component.tsx",
+    "previewSource": "components/interactions/sliding-content-tabs/source.ts",
+    "sequence": 51,
+    "media": {
+      "video": "/great-ui/media/microkit-sliding-content-tabs-demo.mp4",
+      "poster": "/great-ui/media/microkit-sliding-content-tabs-demo-poster.jpg",
+      "width": 700,
+      "height": 320,
+      "mobile": {
+        "video": "/great-ui/media/microkit-sliding-content-tabs-mobile.mp4",
+        "poster": "/great-ui/media/microkit-sliding-content-tabs-mobile-poster.jpg",
+        "width": 700,
+        "height": 320,
+        "duration": 11.066667
+      },
+      "card": {
+        "video": "/great-ui/media/microkit-sliding-content-tabs-card.mp4",
+        "poster": "/great-ui/media/microkit-sliding-content-tabs-card-poster.jpg",
+        "width": 480,
+        "height": 220,
+        "duration": 10.0
+      }
+    },
+    "capability": {
+      "family": "content-tabs",
+      "roles": ["navigate"],
+      "provides": ["content-switch"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现使用React状态与CSS过渡。",
+          "adaptation": "按目标项目现有框架移植交互，保留语义与焦点行为。"
+        }
+      ],
+      "resources": [],
+      "adaptations": ["使用真实内容，补齐标签方向键、焦点管理与每个实例唯一的关联ID。"],
+      "reducedMotion": "native",
+      "decorativeTransition": false
+    }
+  }
+}

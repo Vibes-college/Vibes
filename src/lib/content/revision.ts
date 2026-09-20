@@ -27,6 +27,18 @@ export function sourceRevision(work: CatalogWork): string {
         summary: original.data.summary,
         description: original.data.description,
         previewText: original.data.previewText,
+        ...(work.meta.learning
+          ? {
+              learning: work.meta.learning,
+              learningText: original.data.learning,
+              glossary: Object.fromEntries(
+                Object.values(original.data.learning!.glossary).map((usage) => [
+                  usage.term,
+                  work.glossary?.[usage.term],
+                ]),
+              ),
+            }
+          : {}),
         ...(work.meta.media?.length
           ? {
               media: work.meta.media,

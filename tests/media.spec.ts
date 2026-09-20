@@ -1,4 +1,4 @@
-import { test, expect } from './browser-test.ts';
+import { test, expect, documentIdentity } from './browser-test.ts';
 import type { Locator, Page } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -340,14 +340,14 @@ test('game recovers with a full reload when an older document lacks its CSP hash
     await route.fulfill({ response, headers });
   });
   await page.goto(detail('demo'));
-  const firstLoad = await page.evaluate(() => performance.timeOrigin);
+  const firstDocument = await documentIdentity(page);
   await page.locator('[data-media-launch]').click();
   const refresh = page.getByRole('button', { name: '刷新重试', exact: true });
   await expect(refresh).toBeVisible({ timeout: 10000 });
   await expect(page.locator('iframe')).toHaveCount(0);
   await page.unroute(path);
   await refresh.click();
-  await expect.poll(() => page.evaluate(() => performance.timeOrigin)).toBeGreaterThan(firstLoad);
+  await expect.poll(() => documentIdentity(page)).not.toBe(firstDocument);
   await page.waitForLoadState('networkidle');
   await page.locator('[data-media-launch]').click();
   await expect(page.frameLocator('iframe').locator('.tile')).toHaveCount(2);
@@ -510,10 +510,17 @@ test('registered game and real dataset only start on demand and exit cleans up',
   // Keep opaque srcdoc independent of browser-specific subresource permissions.
   await expect(game.locator('script[src], link[rel="stylesheet"]')).toHaveCount(0);
   expect(requested.some((url) => /\/media\/2048\/game\.(js|css)$/.test(url))).toBe(false);
+  const total = () =>
+    game
+      .locator('.tile-inner')
+      .evaluateAll((tiles) => tiles.reduce((sum, tile) => sum + Number(tile.textContent), 0));
+  const initial = await total();
   await game.locator('.game-container').click();
-  await page.keyboard.press('ArrowLeft');
-  await page.keyboard.press('ArrowUp');
-  await expect.poll(() => game.locator('.tile').count()).toBeGreaterThan(2);
+  // A merge can keep the tile count at two. Four directions guarantee a legal
+  // move from any initial board; a spawned tile increases the total value.
+  for (const key of ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'])
+    await page.keyboard.press(key);
+  await expect.poll(total).toBeGreaterThan(initial);
   await page.locator('[data-media-exit]').click();
   await expect(page.locator('iframe')).toHaveCount(0);
   await page.locator('[data-media-launch]').click();
@@ -564,6 +571,10 @@ test('failed full video and dataset keep retry, poster and source fallback', asy
 });
 
 test('published English media and no-JS fallback remain readable', async ({ page, browser }) => {
+  // This case checks language and no-JS behavior, not YouTube thumbnail availability.
+  await page.route(/^https:\/\/i\.ytimg\.com\//, (route) =>
+    route.fulfill({ path: 'public/media/sintel/poster.webp', contentType: 'image/webp' }),
+  );
   await page.goto('/en/?q=Attention%20transformers');
   await expect(page.locator('.work-card--media:visible')).toHaveCount(1);
   await page.locator('.work-card--media:visible .card-link').click();

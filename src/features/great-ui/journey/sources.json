@@ -1,0 +1,44 @@
+{
+  "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+  "license": "LICENSE.txt",
+  "adaptations": [
+    {
+      "local": "Transition.tsx",
+      "source": "components/ui/StaggeredPageTransition.tsx",
+      "changes": [
+        "Use actual animation completion for both handoffs",
+        "Hold coverage until project data is ready",
+        "Three panels using quicker preset"
+      ]
+    },
+    {
+      "local": "TextReveal.tsx",
+      "source": "components/ui/TextReveal.tsx",
+      "changes": [
+        "Grapheme-safe segmentation",
+        "Readable base color, no blur",
+        "Static reduced-motion rendering",
+        "One accessible copy of the full text"
+      ]
+    },
+    {
+      "local": "Accordion.tsx",
+      "source": "components/ui/Accordion.tsx",
+      "changes": [
+        "ARIA expansion and labelled regions",
+        "Explicit initial state",
+        "Optional multiple-open comparison",
+        "No answer/outside click closing"
+      ]
+    },
+    {
+      "local": "Tool.tsx",
+      "source": "components/ui/DeploymentChecklist.tsx",
+      "changes": [
+        "Original application implementation of state-row pattern",
+        "Actual input validation and local data request",
+        "No simulated external deployment or fixed result"
+      ]
+    }
+  ]
+}

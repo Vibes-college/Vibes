@@ -1,0 +1,73 @@
+{
+  "id": "great-ui-diagonal-marquee-carousel",
+  "originalLocale": "zh",
+  "order": 11043,
+  "sourceUrl": "https://www.great-ui.com/components/diagonal-marquee-carousel",
+  "typeId": "article",
+  "tagIds": [],
+  "preview": {
+    "kind": "code",
+    "color": "#e9eee9"
+  },
+  "facts": [
+    {
+      "key": "author",
+      "kind": "author",
+      "label": {
+        "zh": "原作"
+      },
+      "value": {
+        "zh": "Saurabh Sharma · Great UI"
+      }
+    }
+  ],
+  "related": [],
+  "learning": {
+    "slug": "diagonal-marquee-carousel",
+    "collectionId": "great-ui-learning",
+    "english": "Diagonal Marquee Carousel",
+    "revision": "eda1b85ed81ab45d0f0cbc27dc0206560d11c801",
+    "implementation": "components/ui/DiagonalMarqueeCarousel.tsx",
+    "previewSource": "components/site/previews/DiagonalMarqueeCarouselPreview.tsx",
+    "media": {
+      "video": "/great-ui/media/diagonal-marquee-carousel-demo.mp4",
+      "poster": "/great-ui/media/diagonal-marquee-carousel-demo-poster.jpg",
+      "width": 1440,
+      "height": 624,
+      "mobile": {
+        "video": "/great-ui/media/diagonal-marquee-carousel-mobile.mp4",
+        "poster": "/great-ui/media/diagonal-marquee-carousel-mobile-poster.jpg",
+        "width": 716,
+        "height": 1480,
+        "duration": 6.033008
+      },
+      "card": {
+        "video": "/great-ui/media/diagonal-marquee-carousel-card.mp4",
+        "poster": "/great-ui/media/diagonal-marquee-carousel-card-poster.jpg",
+        "width": 384,
+        "height": 166,
+        "duration": 3.0
+      }
+    },
+    "capability": {
+      "family": "image-marquee",
+      "roles": ["showcase"],
+      "provides": ["content-visible"],
+      "requires": [
+        {
+          "key": "framework",
+          "value": "react",
+          "reason": "固定实现基于 React。",
+          "adaptation": "按项目现有框架移植行为，不能直接粘贴 React 组件。"
+        }
+      ],
+      "resources": [],
+      "adaptations": [
+        "baseSpeed实际是秒数，越大越慢；默认6张生成180个img，没有懒加载。全局动画类名可能冲突，缺整体暂停和减少动态效果。 悬停类名不等于实际暂停，需要核对真正运动层的状态。"
+      ],
+      "reducedMotion": "adaptation",
+      "decorativeTransition": false
+    },
+    "sequence": 29
+  }
+}

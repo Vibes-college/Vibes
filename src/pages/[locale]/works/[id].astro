@@ -4,6 +4,7 @@ import { escapeHtml } from '../../../lib/preview';
 import { getEntry, render } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import WorkDetail from '../../../components/WorkDetail.astro';
+import GreatUiDetail from '../../../components/GreatUiDetail.astro';
 import SectionReaction from '../../../components/SectionReaction.astro';
 import '../../../styles/section-reactions.css';
 import 'virtual:prose-ui.css';
@@ -52,7 +53,9 @@ const alternates = locales.flatMap((locale) => {
 ---
 
 <Layout
-  detail
+  detail={!work.meta.learning}
+  hideHeader={Boolean(work.meta.learning)}
+  workId={work.slug}
   locale={work.locale}
   title={`${work.title} — Vibes`}
   description={work.summary}
@@ -60,38 +63,45 @@ const alternates = locales.flatMap((locale) => {
   defaultPath={workPath(work.originalLocale, work.slug)}
   publicWork={createPublicWorkReference(
     work,
-    new URL(workPath(work.locale, work.slug), buildSite().origin).href,
+    new URL(
+      workPath(work.locale, work.slug),
+      import.meta.env.DEV ? Astro.url.origin : buildSite().origin,
+    ).href,
   )}
 >
   <main
     id="main"
-    class="detail-page"
+    class={work.meta.learning ? 'learning-page' : 'detail-page'}
     data-locale={work.locale}
     data-article-format={isMdx ? 'mdx' : 'md'}
   >
     <article lang={htmlLanguages[work.locale]} data-pagefind-body>
-      <WorkDetail work={work}>
-        {
-          Content ? (
-            <Content components={{ h2: MdxHeading }} />
-          ) : (
-            sections.map((section) =>
-              section.heading ? (
-                <section class="reading-section">
-                  <SectionReaction heading={section.heading} locale={work.locale} />
-                  <div class="section-content">
-                    <Fragment set:html={section.body} />
-                  </div>
-                </section>
-              ) : (
-                <Fragment set:html={section.body} />
-              ),
-            )
-          )
-        }
-      </WorkDetail>
+      {
+        work.meta.learning ? (
+          <GreatUiDetail work={work} html={entry.rendered?.html || ''} />
+        ) : (
+          <WorkDetail work={work}>
+            {Content ? (
+              <Content components={{ h2: MdxHeading }} />
+            ) : (
+              sections.map((section) =>
+                section.heading ? (
+                  <section class="reading-section">
+                    <SectionReaction heading={section.heading} locale={work.locale} />
+                    <div class="section-content">
+                      <Fragment set:html={section.body} />
+                    </div>
+                  </section>
+                ) : (
+                  <Fragment set:html={section.body} />
+                ),
+              )
+            )}
+          </WorkDetail>
+        )
+      }
     </article>
-    <ReadingProgress sections={sections} locale={work.locale} />
+    {!work.meta.learning && <ReadingProgress sections={sections} locale={work.locale} />}
   </main>
 </Layout>
 
