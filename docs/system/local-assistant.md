@@ -23,7 +23,7 @@ code-sources:
     'tests/unit/paseo-webui-contract.test.ts',
     'tests/unit/paseo-page-context.test.ts',
   ]
-code-revision: 'e5c3c26b17eaeb6aad2d727af9c543d902e8845aee086fc203a619927d387614'
+code-revision: 'ac76ed21178ab82c34fc30efc8c1b97a10d48de81af42fa15ceddf345c9e7e33'
 ---
 
 # Paseo原生助手
@@ -35,6 +35,8 @@ code-revision: 'e5c3c26b17eaeb6aad2d727af9c543d902e8845aee086fc203a619927d387614
 Vibes在已有页面内直接挂载固定Paseo Web应用。宿主只管理首次加载、安装说明、界面尺寸、页面语言与显式文章引用；配对、连接协调、会话目录、历史、草稿、工具、审批、停止与文件窗口沿用原生实现。没有另一个Vibes会话客户端或聊天代理服务。精简页头尚未接回的工作区快捷操作和插件执行限制见[使用本地助手](../features/local-assistant.md#已知问题--待办)。
 
 `src/scripts/paseo-boot.ts`是普通页面的轻量入口；首次点击才导入`host.ts`并请求原生资源。宿主验证资源配置，以SRI加载CSS和入口脚本，只挂载一个原生根。Astro站内切页保留该根和动态CSS规则；收起保留原生尺寸与状态，并发送可见性、焦点和页面前后台变化。收起不会停止电脑上的任务。
+
+收起按钮按实际激活方式恢复焦点：键盘或辅助技术的零detail点击返回原入口，鼠标和触摸点击释放入口焦点，避免触摸后的程序聚焦使文章提示一直显示。该规则同时用于轻量入口与已加载宿主；不根据手机尺寸判断输入方式。原生合同的close事件没有输入类型，仍保留默认焦点恢复。
 
 宿主提供同一行44px工具栏的原生插槽和尺寸/收起按钮，原生`src/embedded/toolbar.tsx`通过React portal在插槽内渲染新对话或菜单动作。进入compact时恢复当前工作区的会话或草稿；已在compact主动打开文件或终端时，原生通过surface事件请求full，保留目标标签。窄屏full保留原生`MobileWorkspaceTabSwitcher`，不额外添加Agent/Terminal新标签加号菜单；返回compact再选择最近会话，不复制草稿或关闭文件、终端标签。
 

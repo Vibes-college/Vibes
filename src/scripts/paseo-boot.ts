@@ -108,10 +108,13 @@ document.addEventListener('click', (event) => {
   if (!button) return;
   if (button.hasAttribute('data-paseo-reload')) location.reload();
   if (button.hasAttribute('data-paseo-close')) {
-    if (host) host.closeAssistant();
+    // Programmatic focus after a tap can make WebKit retain the keyboard-only hint.
+    const restoreFocus = event.detail === 0;
+    if (host) host.closeAssistant(restoreFocus);
     else {
       show(false);
-      latestOpener?.focus({ preventScroll: true });
+      if (restoreFocus) latestOpener?.focus({ preventScroll: true });
+      else if (document.activeElement === latestOpener) latestOpener?.blur();
     }
   }
   if (button.hasAttribute('data-paseo-expand')) changeSurface('full');

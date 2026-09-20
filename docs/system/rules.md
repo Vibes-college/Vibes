@@ -23,7 +23,7 @@ code-sources:
     'scripts/docs-policy.ts',
     'scripts/docs-sources.ts',
   ]
-code-revision: '3cebe87357890c6f6796fe97381b90e6771ebc0c46638724e83905e2a67bd47e'
+code-revision: '8d4fea1014a4376e93aa1f2377ebb79e7bed10795bdbf6ec6a8992f1031e6be5'
 ---
 
 # 常量、规则表与正则
